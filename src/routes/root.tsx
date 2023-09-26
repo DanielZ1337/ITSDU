@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react"
+import {useEffect, useState} from "react"
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
-
-const baseUrl = import.meta.env.DEV ? 'http://localhost:8080/' : 'https://sdu.itslearning.com/'
+import {useNavigate} from "react-router-dom";
+import { baseUrl } from "@/lib/utils";
 
 export default function Root() {
     const [code, setCode] = useState<string>("")
@@ -35,7 +34,8 @@ export default function Root() {
             </button>
             {baseUrl}
             {showLogin && (
-                <webview src="https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=10ae9d30-1853-48ff-81cb-47b58a325685&state=damn&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login"></webview>
+                <webview
+                    src="https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=10ae9d30-1853-48ff-81cb-47b58a325685&state=damn&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login"></webview>
             )}
             <button onClick={() => navigate('/contacts/1')}>
                 go to contacts
@@ -85,27 +85,27 @@ export default function Root() {
 }
 
 
-function getAccessToken() {
+async function getAccessToken() {
     const oauthUrl = `${baseUrl}restapi/oauth2/token`
-    const body = {
+    const qs = await import ('qs').then(m => m.default)
+    const body = qs.stringify({
         "grant_type": "authorization_code",
         "code": window.localStorage.getItem("code"),
         "client_id": "10ae9d30-1853-48ff-81cb-47b58a325685",
-    }
-
+    })
 
     axios.post(oauthUrl, body, {
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
-        },
+        }
     }).then(res => {
-        console.log(res)
         window.localStorage.setItem("access_token", res.data.access_token)
+        window.location.reload()
     }).catch(err => console.log(err))
 }
 
 function sendRequest() {
-    axios(`${baseUrl}restapi/personal/person/v1`, {
+    axios.get(`${baseUrl}restapi/personal/person/v1`, {
         params: {
             "access_token": window.localStorage.getItem("access_token")
         }

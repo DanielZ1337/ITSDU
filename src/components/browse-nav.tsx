@@ -1,15 +1,39 @@
 import { Button } from '@/components/ui/button'
 import { ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon } from 'lucide-react'
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { Input } from './ui/input'
-import { useLocation, useNavigate } from 'react-router-dom'
+import {useLocation, useNavigate, useNavigation} from 'react-router-dom'
 
 export default function BrowserNav() {
     const navigate = useNavigate()
-    const navigation = useLocation()
-    console.log(navigation)
-    const pathname = navigation.pathname
+    const location = useLocation()
+    const pathname = location.pathname
     const [address, setAddress] = useState(pathname)
+    const navigation = useNavigation();
+
+    let isNormalLoad =
+        navigation.state === "loading" &&
+        navigation.formData == null;
+
+// Are we reloading after an action?
+    let isReloading =
+        navigation.state === "loading" &&
+        navigation.formData != null &&
+        navigation.formAction === navigation.location.pathname;
+
+// Are we redirecting after an action?
+    let isRedirecting =
+        navigation.state === "loading" &&
+        navigation.formData != null &&
+        navigation.formAction !== navigation.location.pathname;
+    
+    useEffect(() => {
+        console.log(navigation.state)
+        console.log(isNormalLoad)
+        console.log(isReloading)
+        console.log(isRedirecting)
+        setAddress(pathname)
+    }, [isNormalLoad, isRedirecting, isReloading, navigation, pathname]);
 
     return (
         <div className='flex w-full py-4 px-2 justify-center items-center gap-1'>
