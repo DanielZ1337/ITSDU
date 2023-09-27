@@ -22,6 +22,16 @@ export default function Root() {
         .then(data => console.log(data))
     }, []) */
 
+    useEffect(() => {
+        axios.get(`${baseUrl}signalr/hubs/negotiate`).then(res => {
+            const connectionToken = res.data.ConnectionToken
+            console.log(connectionToken)
+            axios.get(`${baseUrl}signalr/hubs/start?transport=webSockets&clientProtocol=2.1&connectionToken=${connectionToken}&connectionData=%5B%7B%22name%22%3A%22instantmessagehub%22%7D%5D&_=${new Date().getTime()}`).then(res => {
+                console.log(res)
+            })
+        })
+    }, []);
+
     const [showLogin, setShowLogin] = useState<boolean>(false)
 
     const navigate = useNavigate()

@@ -31,7 +31,7 @@ function darkModeSubscribeHandle() {
     })
 }
 
-export default function darkModeHandler() {
+export default function darkModeHandlerInitializer() {
     darkModeToogleHandler()
     darkModeSetSystemHandler()
     darkModeGetHandler()

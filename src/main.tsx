@@ -1,4 +1,4 @@
-import React from 'react'
+// import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {createHashRouter, RouterProvider} from 'react-router-dom'
@@ -61,9 +61,9 @@ const router = createHashRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <Providers>
-        <React.StrictMode>
+        {/*<React.StrictMode>*/}
             <RouterProvider router={router}/>
-        </React.StrictMode>
+        {/*</React.StrictMode>*/}
     </Providers>
 )
 

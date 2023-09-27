@@ -56,6 +56,7 @@ export default function Me() {
                         <span className="font-semibold">Can Access Personal Settings:</span>
                         <span>{data.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
                     </div>
+                    {JSON.stringify(data)}
                     {/* Add more important fields as needed */}
                 </div>
             </div>
