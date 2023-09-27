@@ -3,7 +3,7 @@
  */
 {
 	$schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-	appId: 'YourAppID',
+	appId: 'itslearning-desktop-app',
 	asar: true,
 	productName: 'itslearning Desktop App',
 	directories: {
@@ -24,9 +24,9 @@
 		artifactName: '${productName}-Windows-${version}-Setup.${ext}',
 	},
 	nsis: {
-		oneClick: false,
+		oneClick: true,
 		perMachine: false,
-		allowToChangeInstallationDirectory: true,
+//		allowToChangeInstallationDirectory: true,
 		deleteAppDataOnUninstall: true,
 	},
 	linux: {

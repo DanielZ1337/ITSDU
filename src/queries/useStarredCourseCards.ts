@@ -1,6 +1,7 @@
 import {QueryOptions, useQuery} from '@tanstack/react-query';
 import {baseUrl} from "@/lib/utils.ts";
 import axios from "axios";
+import {StarredCourses} from "@/reponseTypes/starredCourses.ts";
 
 type StarredCourseCards = {
     pageIndex?: string,
@@ -14,11 +15,13 @@ const url = ({pageIndex, pageSize, sortBy, searchText, isShowMore}: StarredCours
 
 export function useStarredCourseCards({pageIndex, pageSize, sortBy, searchText, isShowMore}: StarredCourseCards, options?: QueryOptions) {
     return useQuery(['starredCourseCards'], async () => {
-        return await axios.get(url({pageIndex, pageSize, sortBy, searchText, isShowMore}), {
+        const res = await axios.get(url({pageIndex, pageSize, sortBy, searchText, isShowMore}), {
             params: {
                 "access_token": localStorage.getItem("access_token") || "",
             }
         })
+        const {data} = res
+        return data as StarredCourses
     }, {
         enabled: false,
         ...options

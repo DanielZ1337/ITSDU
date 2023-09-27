@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button'
-import { ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon } from 'lucide-react'
+import {Button} from '@/components/ui/button'
+import {ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon} from 'lucide-react'
 import {useEffect, useState} from 'react'
-import { Input } from './ui/input'
+import {Input} from './ui/input'
 import {useLocation, useNavigate, useNavigation} from 'react-router-dom'
 
 export default function BrowserNav() {
@@ -26,7 +26,7 @@ export default function BrowserNav() {
         navigation.state === "loading" &&
         navigation.formData != null &&
         navigation.formAction !== navigation.location.pathname;
-    
+
     useEffect(() => {
         console.log(navigation.state)
         console.log(isNormalLoad)
@@ -38,22 +38,25 @@ export default function BrowserNav() {
     return (
         <div className='flex w-full py-4 px-2 justify-center items-center gap-1'>
             {/* Back button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => window.history.back()}><ArrowLeftSquareIcon /></Button>
+            <Button variant={"ghost"} size={"icon"}
+                    onClick={() => navigate(-1)}><ArrowLeftSquareIcon/></Button>
             {/* Forward button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => window.history.forward()}><ArrowRightSquareIcon /></Button>
+            <Button variant={"ghost"} size={"icon"}
+                    onClick={() => navigate(1)}><ArrowRightSquareIcon/></Button>
             {/* Reload button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => window.location.reload()}><RefreshCwIcon /></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon/></Button>
             {/* Home button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon /></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon/></Button>
             {/* Address bar */}
-            <form onSubmit={() => navigate(address)} className='w-full px-2'>
-                <Input className='w-full' type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+            <form onSubmit={(e) => {
+                e.preventDefault()
+                navigate(address)
+            }} className='w-full px-2'>
+                <Input className='w-full' type="text" value={address}
+                       onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
+                       onChange={(e) => setAddress(e.target.value)}/>
             </form>
             {/* Address bar */}
-
-
-
-
 
 
             {/* Search bar */}
