@@ -1,4 +1,4 @@
-import {app, BrowserWindow, nativeTheme, protocol, session} from 'electron'
+import {app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray} from 'electron'
 import path from 'node:path'
 import axios from "axios";
 import darkModeHandlerInitializer from './handlers/dark-mode-handlers'
@@ -47,40 +47,6 @@ async function createWindow() {
         height: 720,
         alwaysOnTop: false,
     })
-
-    /*const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
-
-    tray.on('double-click', () => {
-        win?.show()
-    })
-
-    win.on('close', (e) => {
-        e.preventDefault()
-        win?.hide()
-    })
-
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show App', click: function () {
-                win?.show();
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                win?.close()
-                win?.destroy()
-            }
-        }
-    ]);*/
-
-    /*Menu.setApplicationMenu(contextMenu)
-    tray.setToolTip('itslearning')
-    tray.on('right-click', () => {
-        contextMenu.items[0].enabled = !win?.isVisible()!
-        setTimeout(() => {
-            tray.popUpContextMenu(contextMenu)
-        }, 100)
-    })*/
 
     /*const deeplink = new Deeplink({
         app,
@@ -244,6 +210,59 @@ app.whenReady().then(async () => {
             })
         }
         const win = await createWindow()
+
+        win.on('close', (e) => {
+            e.preventDefault()
+            // TODO: have some preferences and follow those
+            require('electron').dialog.showMessageBox(win, {
+                type: 'question',
+                buttons: ['Yes', 'No'],
+                title: 'Confirm',
+                message: 'Are you sure you want to quit?'
+            }).then(result => {
+                if (result.response === 0) {
+                    win.close()
+                    win.destroy()
+                    app.quit()
+                } else {
+                    win.hide()
+                }
+            }).catch(err => {
+                console.log(err)
+                app.quit()
+            })
+        })
+
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Show App', click: function () {
+                    win.show();
+                }
+            },
+            {
+                label: 'Quit', click: function () {
+                    win.close()
+                    win.destroy()
+                    app.quit()
+                }
+            }
+        ]);
+
+        const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
+
+        tray.on('double-click', () => {
+            win?.show()
+        })
+
+        tray.setToolTip('itslearning')
+        tray.on('right-click', () => {
+            tray.focus()
+            contextMenu.items[0].enabled = !win.isVisible()
+            tray.setContextMenu(contextMenu)
+            setTimeout(() => {
+                tray.popUpContextMenu(contextMenu)
+            }, 250)
+        })
 
         const localStorageTheme = await win.webContents.executeJavaScript(`window.localStorage.getItem('theme')`)
         console.log('localStorageTheme', localStorageTheme)
