@@ -16,6 +16,10 @@ contextBridge.exposeInMainWorld('notification', {
         sendNotifcation(title, body)
     },
 })
+contextBridge.exposeInMainWorld('app', {
+    quit: () => ipcRenderer.invoke('app:quit'),
+    getVersion: () => ipcRenderer.invoke('app:getVersion'),
+})
 
 
 // edit window object and type definition
@@ -31,6 +35,10 @@ declare global {
         notification: {
             // eslint-disable-next-line no-unused-vars
             send: (title: string, body: string) => void
+        },
+        app: {
+            quit: () => Promise<void>
+            getVersion: () => Promise<string>
         }
     }
 }

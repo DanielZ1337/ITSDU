@@ -3,6 +3,7 @@ import path from 'node:path'
 import axios from "axios";
 import darkModeHandlerInitializer from './handlers/dark-mode-handlers'
 import * as fs from "fs";
+import appHandlerInitializer from "./handlers/app-handler.ts";
 
 // The built directory structure
 //
@@ -23,6 +24,7 @@ let deeplinkingUrl: string | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 darkModeHandlerInitializer()
+appHandlerInitializer()
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'itsl-itslearning-file',
@@ -40,12 +42,15 @@ async function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             webviewTag: true,
             nodeIntegration: true,
+            // devTools: process.env.NODE_ENV === 'development',
         },
         show: false,
         autoHideMenuBar: true,
         width: 1280,
         height: 720,
         alwaysOnTop: false,
+        minHeight: 600,
+        minWidth: 800,
     })
 
     /*const deeplink = new Deeplink({
@@ -186,6 +191,7 @@ app.whenReady().then(async () => {
             proxy.use(express.json())
             proxy.all('*', async (req, res) => {
                 const url = req.url.replace('/api', '')
+                const params = req.params
                 // const headers = req.headers
                 const method = req.method
                 const body = req.body
@@ -195,7 +201,8 @@ app.whenReady().then(async () => {
                     },
                     url: `https://sdu.itslearning.com${url}`,
                     data: body,
-                    method: method
+                    method,
+                    params
                 }).then(res => {
                     // console.log(res.data)
                     return res
@@ -204,6 +211,8 @@ app.whenReady().then(async () => {
                     return err
                 })
 
+                // manual await for the response to simulate slow network
+                await new Promise(resolve => setTimeout(resolve, 1000))
                 res.json(data)
             }).listen(8080, () => {
                 console.log('API Proxy Server with CORS enabled is listening on port 8080')
@@ -216,16 +225,20 @@ app.whenReady().then(async () => {
             // TODO: have some preferences and follow those
             require('electron').dialog.showMessageBox(win, {
                 type: 'question',
-                buttons: ['Yes', 'No'],
+                buttons: ['Yes', 'Minimize', 'No'],
                 title: 'Confirm',
-                message: 'Are you sure you want to quit?'
+                message: 'Are you sure you want to quit?',
+                icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+                noLink: true,
             }).then(result => {
                 if (result.response === 0) {
                     win.close()
                     win.destroy()
                     app.quit()
-                } else {
+                } else if (result.response === 1) {
                     win.hide()
+                } else if (result.response === 2) {
+                    e.preventDefault()
                 }
             }).catch(err => {
                 console.log(err)
@@ -251,7 +264,7 @@ app.whenReady().then(async () => {
         const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
 
         tray.on('double-click', () => {
-            win?.show()
+            win.show()
         })
 
         tray.setToolTip('itslearning')
@@ -290,7 +303,7 @@ app.whenReady().then(async () => {
                 deeplinkingUrl = matches[1]
                 logEverywhere('protocol.handle# setting code to localStorage...')
                 logEverywhere('protocol.handle# ' + 'code ' + deeplinkingUrl)
-                win?.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
+                win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
 
                 logEverywhere('protocol.handle# requesting access_token...')
                 console.log(deeplinkingUrl)
@@ -306,11 +319,13 @@ app.whenReady().then(async () => {
                 }).then(res => {
                     logEverywhere('protocol.handle# setting access_token to localStorage...')
                     logEverywhere('protocol.handle# access_token ' + res.data.access_token)
-                    win?.webContents.executeJavaScript(`window.localStorage.setItem('access_token', '${res.data.access_token}')`)
+                    access_token = res.data.access_token
+                    win.webContents.executeJavaScript(`window.localStorage.setItem('access_token', '${res.data.access_token}')`)
                     logEverywhere('protocol.handle# setting refresh_token to localStorage...')
                     logEverywhere('protocol.handle# refresh_token ' + res.data.refresh_token)
-                    win?.webContents.executeJavaScript(`window.localStorage.setItem('refresh_token', '${res.data.refresh_token}')`)
-                    win?.webContents.executeJavaScript(`window.location.reload()`)
+                    refresh_token = res.data.refresh_token
+                    win.webContents.executeJavaScript(`window.localStorage.setItem('refresh_token', '${res.data.refresh_token}')`)
+                    win.webContents.executeJavaScript(`window.location.reload()`)
                     itslearningWin.close()
                 }).catch(err => {
                     logEverywhereError('protocol.handle# ' + err)

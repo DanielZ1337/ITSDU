@@ -8,11 +8,13 @@ export default function Layout() {
 
     return (
         <div className="min-h-[100dvh] min-w-[100dvw] flex flex-1 flex-col w-full max-h-[100dvh] overflow-hidden">
-            <BrowserNav/>
-            <Header/>
+            <div className={"flex flex-shrink-0 flex-grow-0 flex-col"}>
+                <BrowserNav/>
+                <Header/>
+            </div>
             <React.Suspense
                 fallback={<Spinner size="lg" color="primary" label="Loading..." className={"m-auto"}/>}>
-                <div className="flex flex-1 flex-col overflow-x-auto mt-6">
+                <div className="flex flex-1 flex-col overflow-x-auto py-4">
                     <Outlet/>
                 </div>
             </React.Suspense>

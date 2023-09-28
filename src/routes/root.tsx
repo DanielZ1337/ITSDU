@@ -61,8 +61,6 @@ export default function Root() {
                 make request
             </button>
             <button onClick={() => {
-                window.localStorage.removeItem("code")
-                window.localStorage.removeItem("access_token")
                 window.localStorage.clear()
                 window.location.reload()
             }} className="px-4 py-2 bg-black text-white">

@@ -2,10 +2,15 @@ import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {baseUrl} from "@/lib/utils.ts";
 import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input.tsx";
+import {Suspense, useState} from "react";
+import {Label} from "@radix-ui/react-dropdown-menu";
+import TestSuspense from "@/components/test.tsx";
 
 export default function Me() {
+    const [requestUrl, setRequestUrl] = useState<string>()
     console.log(window.localStorage.getItem("access_token"))
-    const {data, isLoading} = useQuery(['me'], async () => {
+    const {data} = useQuery(['me'], async () => {
         const res = await axios.get(`${baseUrl}restapi/personal/person/v1`, {
             params: {
                 "access_token": window.localStorage.getItem("access_token")
@@ -15,17 +20,35 @@ export default function Me() {
             return res
         })
         return res.data
+    }, {
+        suspense: true,
+        refetchOnReconnect: true,
+        refetchOnWindowFocus: false,
+        refetchInterval: 1000 * 60 * 60,
+        refetchIntervalInBackground: true,
     })
-
-    if (isLoading) {
-        return (
-            <div>Loading...</div>
-        )
-    }
 
     return (
         <div>
             <h1>Me</h1>
+            <Suspense fallback={<p>Loading...</p>}>
+                <TestSuspense/>
+            </Suspense>
+            {/*make a test request to sdu.itslearning.com*/}
+            <form onSubmit={(event) => {
+                event.preventDefault()
+
+                axios.get(`${baseUrl}${requestUrl}`, {
+                    params: {
+                        "access_token": window.localStorage.getItem("access_token")
+                    }
+                }).then(res => {
+                    console.log(res)
+                })
+            }}>
+                <Label>Make a test request to sdu.itslearning.com</Label>
+                <Input type="text" value={requestUrl} onChange={(e) => setRequestUrl(e.target.value)}/>
+            </form>
             <Button onClick={() => {
                 window.notification.send('yeet', 'This is a test notification')
             }}>Send notifcation</Button>
