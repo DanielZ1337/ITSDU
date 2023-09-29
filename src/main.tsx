@@ -5,6 +5,7 @@ import './index.css'
 import {createHashRouter, defer, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
+import {app, BrowserView} from "electron";
 
 // const Root = React.lazy(() => import("./routes/root"));
 const ErrorPage = React.lazy(() => import("./error-page"));

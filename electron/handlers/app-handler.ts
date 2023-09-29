@@ -11,7 +11,15 @@ function getVersionHandler() {
     })
 }
 
+function relaunchHandler(){
+    ipcMain.handle('app:relaunch', () => {
+        app.relaunch()
+        app.quit()
+    })
+}
+
 export default function appHandlerInitializer() {
     quitHandler()
     getVersionHandler()
+    relaunchHandler()
 }

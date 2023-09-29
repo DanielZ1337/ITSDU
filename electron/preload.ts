@@ -19,6 +19,7 @@ contextBridge.exposeInMainWorld('notification', {
 contextBridge.exposeInMainWorld('app', {
     quit: () => ipcRenderer.invoke('app:quit'),
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
+    relaunch: () => ipcRenderer.invoke('app:relaunch'),
 })
 
 
@@ -39,6 +40,7 @@ declare global {
         app: {
             quit: () => Promise<void>
             getVersion: () => Promise<string>
+            relaunch: () => Promise<void>
         }
     }
 }

@@ -42,6 +42,14 @@ export default function BrowserNav() {
     }, [setTheme]);
 
     useEffect(() => {
+        const pathname = location.pathname
+        const search = location.search
+        setAddress(pathname + search)
+        // console.log(navigation)
+        console.log(pathname + search)
+    }, [location.pathname, location.search, navigation]);
+
+    useEffect(() => {
         window.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 't') {
                 e.preventDefault()
@@ -97,7 +105,6 @@ export default function BrowserNav() {
         console.log(isNormalLoad)
         console.log(isReloading)
         console.log(isRedirecting)
-        setAddress(pathname)
     }, [isNormalLoad, isRedirecting, isReloading, navigation, pathname]);
 
     return (

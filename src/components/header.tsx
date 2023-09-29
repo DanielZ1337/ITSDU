@@ -1,5 +1,6 @@
 import {Link, NavLink} from "react-router-dom"
 import {cn} from "@/lib/utils.ts";
+import {Button} from "@/components/ui/button.tsx";
 
 export default function Header() {
 
@@ -38,12 +39,12 @@ export default function Header() {
                         <Link to={"/"}>
                             <img src="/icon.ico" alt="Logo" className={"w-8 h-8"}/>
                         </Link>
-                        <button onClick={() => {
+                        <Button onClick={() => {
                             window.localStorage.clear()
                             window.location.reload()
                         }} className="px-4 py-2 bg-black text-white">
                             CLEAR LOCAL STORAGE
-                        </button>
+                        </Button>
                     </div>
                     <div className={"flex flex-row items-center justify-center gap-4"}>
                         {links.map((link) => {

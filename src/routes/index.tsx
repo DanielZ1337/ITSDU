@@ -1,10 +1,12 @@
 import axios from "axios";
 import {baseUrl, cn} from "@/lib/utils";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {ClipboardList, ListTodo, Megaphone, StarIcon, UserSquare2} from "lucide-react";
 import {Link} from "react-router-dom";
+import {Button} from "@/components/ui/button.tsx";
 
 export default function Index() {
+    const queryClient = useQueryClient()
 
     const {data, isLoading} = useQuery(['starredcards'], async () => {
         const res = await axios.get(`${baseUrl}restapi/personal/courses/cards/starred/v1?SortBy=rank&isShowMore=false&PageIndex=0&PageSize=24`, {
@@ -19,6 +21,12 @@ export default function Index() {
 
         console.log(res.data)
         return res.data
+    }, {
+        refetchOnReconnect: false,
+        refetchOnWindowFocus: false,
+        refetchInterval: 1000 * 60 * 60 * 24,
+        refetchIntervalInBackground: true,
+        refetchOnMount:false
     })
 
     if (isLoading) {
@@ -27,7 +35,7 @@ export default function Index() {
                 <div className={"flex flex-row flex-wrap gap-4 items-center justify-center"}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((card: any) => {
                         return (
-                            <div className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
+                            <div key={card} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
                                 <div className={"flex flex-col w-full h-1/2 p-4"}>
                                     <div className={"flex flex-row justify-between items-center"}>
                                         <div className={"w-4/5 h-4 bg-gray-200 rounded-md animate-pulse"}/>
@@ -48,6 +56,11 @@ export default function Index() {
 
     return (
         <div className={"flex flex-col"}>
+            {data?.EntityArray.length === 0 && (
+                <div className={"flex flex-col items-center justify-center h-full"}>
+                    <span className={"text-gray-500 text-sm"}>No starred cards</span>
+                </div>
+            )}
             <div className={"flex flex-row flex-wrap gap-4 items-center justify-center"}>
                 {data?.EntityArray.map((card: any) => {
                     return (
