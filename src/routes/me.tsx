@@ -1,11 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {baseUrl} from "@/lib/utils.ts";
-import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input.tsx";
-import {Suspense, useState} from "react";
+import {useState} from "react";
 import {Label} from "@radix-ui/react-dropdown-menu";
-import TestSuspense from "@/components/test.tsx";
 
 export default function Me() {
     const [requestUrl, setRequestUrl] = useState<string>()
@@ -30,11 +28,6 @@ export default function Me() {
 
     return (
         <div>
-            <h1>Me</h1>
-            <Suspense fallback={<p>Loading...</p>}>
-                <TestSuspense/>
-            </Suspense>
-            {/*make a test request to sdu.itslearning.com*/}
             <form onSubmit={(event) => {
                 event.preventDefault()
 
@@ -49,9 +42,6 @@ export default function Me() {
                 <Label>Make a test request to sdu.itslearning.com</Label>
                 <Input type="text" value={requestUrl} onChange={(e) => setRequestUrl(e.target.value)}/>
             </form>
-            <Button onClick={() => {
-                window.notification.send('yeet', 'This is a test notification')
-            }}>Send notifcation</Button>
             <div className="border rounded-lg shadow-lg p-6">
                 <h2 className="text-2xl font-bold mb-4">User Profile</h2>
                 <div className="space-y-4">
@@ -79,9 +69,8 @@ export default function Me() {
                         <span className="font-semibold">Can Access Personal Settings:</span>
                         <span>{data.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
                     </div>
-                    {JSON.stringify(data)}
-                    {/* Add more important fields as needed */}
                 </div>
+                {JSON.stringify(data)}
             </div>
         </div>
     )

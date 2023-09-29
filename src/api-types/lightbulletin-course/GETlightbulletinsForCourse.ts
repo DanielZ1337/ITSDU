@@ -29,8 +29,8 @@ export type GETlightbulletinsForCourse = {
 export type GETlightbulletinsForCourseParams = {
     courseId: number
     timePeriod?: ItslearningRestApiEntitiesLightBulletinsLightBulletinTimePeriod
-    UseNewerThan?:boolean
-    FromId?:number
-    PageIndex?:number
-    PageSize?:number
+    UseNewerThan?: boolean
+    FromId?: number
+    PageIndex?: number
+    PageSize?: number
 }

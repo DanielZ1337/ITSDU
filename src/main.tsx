@@ -1,11 +1,10 @@
-import {baseUrl, cn} from "@/lib/utils.ts";
-import React, {Suspense} from "react";
+import {apiUrl, baseUrl} from "@/lib/utils.ts";
+import React from "react";
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {createHashRouter, defer, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
-import {StarIcon} from "lucide-react";
 
 // const Root = React.lazy(() => import("./routes/root"));
 const ErrorPage = React.lazy(() => import("./error-page"));
@@ -16,6 +15,7 @@ const Test1 = React.lazy(() => import("./routes/test1"));
 const Me = React.lazy(() => import("./routes/me"));
 const Index = React.lazy(() => import("./routes/index"));
 const Course = React.lazy(() => import("./routes/course"));
+const Querytesting = React.lazy(() => import("./routes/querytesting"));
 // import Root from "@/routes/root.tsx";
 /*import ErrorPage from "@/error-page.tsx";
 import Contact from "@/routes/contact.tsx";
@@ -33,24 +33,7 @@ const router = createHashRouter([
         children: [
             {
                 path: "/",
-                element: <Suspense fallback={<div className={"flex flex-col"}>
-                    <div className={"flex flex-row flex-wrap gap-4 items-center justify-center"}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((card: any) => (
-                                <div key={card} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
-                                    <div className={"flex flex-col w-full h-1/2 p-4"}>
-                                        <div className={"flex flex-row justify-between items-center"}>
-                                            <div className={"w-4/5 h-4 bg-gray-200 rounded-md animate-pulse"}/>
-                                            <StarIcon
-                                                className={cn("stroke-yellow-500 shrink-0 m-1", card.IsFavouriteCourse && 'fill-yellow-500')}/>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </div>}>
-                    <Index/>
-                </Suspense>,
+                element: <Index/>,
                 errorElement: <ErrorPage/>,
             },
             {
@@ -70,6 +53,11 @@ const router = createHashRouter([
                         courseData
                     });
                 },
+            },
+            {
+                path: "/querytesting",
+                element: <Querytesting/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/me",
@@ -109,6 +97,30 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         {/*</React.StrictMode>*/}
     </Providers>
 )
+
+setInterval(async () => {
+    // refresh token
+    const refresh_token = window.localStorage.getItem('refresh_token')
+    if (refresh_token) {
+        try {
+            // @ts-ignore
+            const {data} = await axios.post(apiUrl('restapi/oauth2/token'), {
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_token,
+                "client_id": '10ae9d30-1853-48ff-81cb-47b58a325685',
+            }, {
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                }
+            })
+
+            window.localStorage.setItem('access_token', data.access_token)
+            window.localStorage.setItem('refresh_token', data.refresh_token)
+        } catch (e) {
+            console.log(e)
+        }
+    }
+}, 1000 * 60 * 60) // 1 hour
 
 setInterval(() => {
     const access_token = window.localStorage.getItem('access_token')

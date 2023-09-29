@@ -24,6 +24,6 @@ export type GETstarredCoursesParams = {
     PageIndex: number
     PageSize: number
     sortBy?: string
-    searchText: string
+    searchText?: string
     isShowMore?: boolean
 }

@@ -5,7 +5,7 @@ import {
 
 const GETcalenderEventsApiEndpoint = "restapi/personal/calendar/events/v1?fromDate={fromDate}&PageIndex={PageIndex}&PageSize={PageSize}"
 
-export const GETcalenderEventsApiUrl = (params: GETcalendarEventsParams) => {
+export function GETcalenderEventsApiUrl(params: GETcalendarEventsParams) {
     return apiUrl(GETcalenderEventsApiEndpoint, {
         PageIndex: params.page,
         PageSize: params.pageSize,

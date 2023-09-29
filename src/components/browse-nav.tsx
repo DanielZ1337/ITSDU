@@ -65,7 +65,6 @@ export default function BrowserNav() {
             })
         }
     }, [handleDarkModeToggle]);
-
     const {data, isLoading} = useQuery(['me'], async () => {
         const res = await axios.get(`${baseUrl}restapi/personal/person/v1`, {
             params: {

@@ -1,31 +1,15 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {Await, useLoaderData, useNavigation, useSearchParams} from "react-router-dom";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {baseUrl} from "@/lib/utils.ts";
 import {Helmet} from "react-helmet";
-import {GETcalenderEventsApiUrl} from "@/api-types/calendar/GETcalendarEvents.ts";
 
 export default function Course() {
     const data = useLoaderData() as any;
     let [searchParams] = useSearchParams();
     const navigation = useNavigation();
     const state = navigation.state;
-
-    useEffect(() => {
-        console.log(state)
-
-        axios.get(GETcalenderEventsApiUrl({
-            page: 0,
-            pageSize: 10,
-        }), {
-            params: {
-                'access_token': window.localStorage.getItem('access_token')
-            }
-        }).then((res) => {
-            console.log(res.data)
-        })
-    }, [state]);
 
     const {data: courseBasicData} = useQuery(['courseBasicData'], async () => {
         const {data} = await axios.get(`${baseUrl}restapi/personal/courses/${searchParams.get('id')}/v1`, {

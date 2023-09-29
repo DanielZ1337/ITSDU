@@ -1,27 +1,26 @@
 import {Button} from "@/components/ui/button.tsx";
-import {useEffect} from "react";
-import {useStarredCourseCards} from "@/queries/useStarredCourseCards.ts";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {StarredCourses} from "@/api-types/GETstarredCourses.ts";
+import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses.ts";
 
 export default function Test() {
-    // const [fetchData, setFetchData] = useState<boolean>(false)
-
-    const {data, isLoading, refetch, isFetching} = useStarredCourseCards({
-        pageIndex: "0",
-        pageSize: "10",
-        sortBy: "rank",
-        searchText: "",
-        isShowMore: "false",
+    const {data, isLoading, refetch} = useGETstarredCourses({
+        isShowMore: false,
+        PageIndex: 0,
+        PageSize: 10,
     }, {
-        //@ts-ignore
-        enabled: true
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        retryOnMount: false,
+        retryDelay: 0,
     })
 
+    if (isLoading) {
+        return <p>Loading...</p>
+    }
 
-    useEffect(() => {
-        console.log(data)
-    }, [data]);
+    console.log(data)
 
     return (
         <>
@@ -31,29 +30,25 @@ export default function Test() {
                     console.log(data)
                 })
             }}>test</Button>
-            {isLoading && isFetching && <p>loading...</p>}
             {/*{data && <pre>{JSON.stringify(data, null, 2)}</pre>}*/}
             <div className="grid grid-cols-3 gap-4">
-            {/*@ts-ignore*/}
-                {data && data["EntityArray"].map((card:StarredCourses["EntityArray"][0]) => {
-                        return (
-                            <Card className={"w-fit"} key={card.CourseId}>
-                                <CardHeader>
-                                    <CardTitle>{card.Title} {card.IsFavouriteCourse && "⭐"}</CardTitle>
-                                </CardHeader>
-                                <CardDescription>
-                                    {card.NumberOfAnnouncements} {card.NumberOfAnnouncements > 1 ? "Announcements" : "Announcement"}
-                                </CardDescription>
-                                <CardContent>
-                                    <p>Card Content</p>
-                                </CardContent>
-                                <CardFooter>
-                                    <p>Card Footer</p>
-                                </CardFooter>
-                            </Card>
-                        )
-                    }
-                )}
+                {/*@ts-ignore*/}
+                {data.EntityArray.map((card) => {
+                    return <Card className={"w-fit"} key={card.CourseId}>
+                        <CardHeader>
+                            <CardTitle>{card.Title} {card.IsFavouriteCourse && "⭐"}</CardTitle>
+                        </CardHeader>
+                        <CardDescription>
+                            {card.NumberOfAnnouncements} {card.NumberOfAnnouncements > 1 ? "Announcements" : "Announcement"}
+                        </CardDescription>
+                        <CardContent>
+                            <p>Card Content</p>
+                        </CardContent>
+                        <CardFooter>
+                            <p>Card Footer</p>
+                        </CardFooter>
+                    </Card>
+                })}
             </div>
         </>
     )

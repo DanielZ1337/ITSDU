@@ -1,7 +1,7 @@
 import {
     ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 } from "@/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2.ts";
-import { apiUrl } from "@/lib/utils";
+import {apiUrl} from "@/lib/utils";
 
 const GETbulletinApiEndpoint = "restapi/personal/bulletins/{bulletinId}/v2"
 

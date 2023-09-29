@@ -20,6 +20,6 @@ export type GETlightbulletinResources = {
 
 export type GETlightbulletinResourcesParams = {
     bulletinId: number
-    PageIndex?:number
-    PageSize?:number
+    PageIndex?: number
+    PageSize?: number
 }

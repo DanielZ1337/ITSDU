@@ -14,7 +14,7 @@ export const GETcourseResourcesBySearchApiUrl = (params: GETcourseResourcesBySea
 }
 
 export type GETcourseResourcesBySearch = {
-    Resources:EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
+    Resources: EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
     AddElementUrl: string
 }
 

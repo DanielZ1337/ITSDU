@@ -1,6 +1,4 @@
-import {
-    ItslearningRestApiEntitiesPersonSimple
-} from "@/api-types/utils/Itslearning.RestApi.Entities.PersonSimple.ts";
+import {ItslearningRestApiEntitiesPersonSimple} from "@/api-types/utils/Itslearning.RestApi.Entities.PersonSimple.ts";
 
 export type ItslearningRestApiEntitiesComment = {
     Id: number

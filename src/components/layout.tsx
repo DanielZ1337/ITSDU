@@ -1,6 +1,6 @@
 import {Outlet} from "react-router-dom";
 import BrowserNav from "./browse-nav";
-import React from "react";
+import {Suspense} from "react";
 import {Spinner} from "@nextui-org/spinner";
 import Header from "@/components/header";
 
@@ -12,14 +12,14 @@ export default function Layout() {
                 <BrowserNav/>
                 <Header/>
             </div>
-            <React.Suspense
+            <Suspense
                 fallback={<Spinner size="lg" color="primary" label="Loading..." className={"m-auto"}/>}>
-                <div className="flex flex-1 flex-col overflow-x-auto py-4" style={{
+                <div className="flex flex-1 flex-col overflow-x-auto" style={{
                     scrollbarGutter: "stable both-edges"
                 }}>
                     <Outlet/>
                 </div>
-            </React.Suspense>
+            </Suspense>
         </div>
     )
 }

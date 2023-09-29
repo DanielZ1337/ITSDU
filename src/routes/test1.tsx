@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default function Test1() {
 
-    const {data, isLoading } = useQuery(['bulletins'], async () => {
+    const {data, isLoading} = useQuery(['bulletins'], async () => {
         const res = await axios.get(`${baseUrl}restapi/personal/courses/29222/bulletins/v1`, {
             params: {
                 'access_token': window.localStorage.getItem('access_token')

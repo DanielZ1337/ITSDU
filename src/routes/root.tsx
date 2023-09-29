@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react"
 import axios from 'axios';
 import {useNavigate} from "react-router-dom";
-import { baseUrl } from "@/lib/utils";
+import {baseUrl} from "@/lib/utils";
 import {Button} from "@/components/ui/button.tsx";
 
 export default function Root() {
@@ -43,7 +43,8 @@ export default function Root() {
             <div data-size="large" className="data-[size=large]:bg-pink-800">
                 lmaoo
             </div>
-            <Button data-lmaowtf={count} className={"data-[lmaowtf='10']:bg-pink-800"} onClick={() => setCount((prev) => prev + 1)}>count: {count}</Button>
+            <Button data-lmaowtf={count} className={"data-[lmaowtf='10']:bg-pink-800"}
+                    onClick={() => setCount((prev) => prev + 1)}>count: {count}</Button>
             <button onClick={() => axios.get('http://localhost:8080/api/yes').then(res => {
                 console.log(res)
             })}>
