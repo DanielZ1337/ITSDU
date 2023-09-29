@@ -1,7 +1,7 @@
 import {QueryOptions, useQuery} from '@tanstack/react-query';
 import {baseUrl} from "@/lib/utils.ts";
 import axios from "axios";
-import {StarredCourses} from "@/reponseTypes/starredCourses.ts";
+import {StarredCourses} from "@/api-types/GETstarredCourses.ts";
 
 type StarredCourseCards = {
     pageIndex?: string,

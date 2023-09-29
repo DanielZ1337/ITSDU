@@ -2,7 +2,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {useEffect} from "react";
 import {useStarredCourseCards} from "@/queries/useStarredCourseCards.ts";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {StarredCourses} from "@/reponseTypes/starredCourses.ts";
+import {StarredCourses} from "@/api-types/GETstarredCourses.ts";
 
 export default function Test() {
     // const [fetchData, setFetchData] = useState<boolean>(false)

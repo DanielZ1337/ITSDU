@@ -1,11 +1,11 @@
-import {baseUrl} from "@/lib/utils.ts";
-import React from "react";
+import {baseUrl, cn} from "@/lib/utils.ts";
+import React, {Suspense} from "react";
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import {createHashRouter, defer, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
-import {app, BrowserView} from "electron";
+import {StarIcon} from "lucide-react";
 
 // const Root = React.lazy(() => import("./routes/root"));
 const ErrorPage = React.lazy(() => import("./error-page"));
@@ -33,7 +33,24 @@ const router = createHashRouter([
         children: [
             {
                 path: "/",
-                element: <Index/>,
+                element: <Suspense fallback={<div className={"flex flex-col"}>
+                    <div className={"flex flex-row flex-wrap gap-4 items-center justify-center"}>
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((card: any) => (
+                                <div key={card} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
+                                    <div className={"flex flex-col w-full h-1/2 p-4"}>
+                                        <div className={"flex flex-row justify-between items-center"}>
+                                            <div className={"w-4/5 h-4 bg-gray-200 rounded-md animate-pulse"}/>
+                                            <StarIcon
+                                                className={cn("stroke-yellow-500 shrink-0 m-1", card.IsFavouriteCourse && 'fill-yellow-500')}/>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        )}
+                    </div>
+                </div>}>
+                    <Index/>
+                </Suspense>,
                 errorElement: <ErrorPage/>,
             },
             {

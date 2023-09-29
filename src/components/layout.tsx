@@ -14,7 +14,9 @@ export default function Layout() {
             </div>
             <React.Suspense
                 fallback={<Spinner size="lg" color="primary" label="Loading..." className={"m-auto"}/>}>
-                <div className="flex flex-1 flex-col overflow-x-auto py-4">
+                <div className="flex flex-1 flex-col overflow-x-auto py-4" style={{
+                    scrollbarGutter: "stable both-edges"
+                }}>
                     <Outlet/>
                 </div>
             </React.Suspense>

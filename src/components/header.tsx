@@ -12,7 +12,7 @@ export default function Header() {
         },
         {
             name: "Courses",
-            href: "/courses"
+            href: "/course-cards"
         },
         {
             name: "Messages",
