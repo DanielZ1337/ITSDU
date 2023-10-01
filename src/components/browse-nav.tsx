@@ -46,7 +46,6 @@ export default function BrowserNav() {
         const search = location.search
         setAddress(pathname + search)
         // console.log(navigation)
-        console.log(pathname + search)
     }, [location.pathname, location.search, navigation]);
 
     useEffect(() => {

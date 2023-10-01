@@ -1,9 +1,15 @@
 import {Link, useRouteError} from "react-router-dom";
 import {buttonVariants} from "@/components/ui/button.tsx";
 
-export default function ErrorPage() {
-    const error = useRouteError() as any;
-    console.error(error);
+export default function ErrorPage({children}: { children?: React.ReactNode }) {
+    const routeError = useRouteError() as any;
+    console.error(routeError);
+
+    if (children) {
+        return <>
+            {children}
+        </>
+    }
 
     return (
         <div className={"flex flex-col items-center justify-center gap-6"}>
@@ -12,7 +18,7 @@ export default function ErrorPage() {
                 <h1>Oops!</h1>
                 <p>Sorry, an unexpected error has occurred.</p>
                 <p>
-                    <i>{error?.statusText || error?.message}</i>
+                    <i>{routeError?.statusText || routeError?.message}</i>
                 </p>
             </div>
             <Link className={buttonVariants()} to="/">Go back to the home page</Link>

@@ -21,6 +21,8 @@ export default function useGETlightbulletinsForCourse(params: GETlightbulletinsF
 
         if (res.status !== 200) throw new Error(res.statusText);
 
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
         return res.data;
     }, {
         ...queryConfig

@@ -6,14 +6,16 @@
 	appId: 'itslearning-desktop-app',
 	asar: true,
 	productName: 'itslearning Desktop App',
-	publish: {
+	compression: "maximum",
+	artifactName: '${productName}-${version}.${ext}',
+	/*publish: {
 		private: true,
 		provider: 'github',
 		releaseType: 'release',
 		owner: 'DanielZ1337',
 		repo: 'itslearning',
 		token: '${GITHUB_TOKEN}'
-	},
+	},*/
 	directories: {
 		output: 'release/${version}'
 	},

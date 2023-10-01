@@ -37,7 +37,7 @@ export default function Header() {
                 <div className={"flex flex-row items-center justify-center gap-4"}>
                     <div className={"flex flex-row items-center justify-center gap-2"}>
                         <Link to={"/"}>
-                            <img src="/icon.ico" alt="Logo" className={"w-8 h-8"}/>
+                            <img src="itsl-itslearning-file://icon.ico" alt="Logo" className={"w-8 h-8 rounded-md"}/>
                         </Link>
                         <Button onClick={() => {
                             window.localStorage.clear()

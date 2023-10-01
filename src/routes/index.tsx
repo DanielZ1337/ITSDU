@@ -30,7 +30,7 @@ function Cards() {
                     <div
                         className={"flex flex-col w-full p-4 justify-between h-full hover:outline outline-offset-4 rounded-md outline-foreground/50 hover:cursor-pointer"}>
                         <div className={"flex flex-row justify-between"}>
-                            <span className={"leading-none tracking-tight text-black font-semibold"}>{card.Title}</span>
+                            <span className={"leading-snug tracking-tighter text-black font-semibold"}>{card.Title}</span>
                             <div
                                 className={"hover:cursor-pointer hover:bg-black/10 w-fit h-fit rounded-full p-1"}>
                                 <StarIcon

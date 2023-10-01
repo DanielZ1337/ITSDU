@@ -1,33 +1,22 @@
-import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {baseUrl} from "@/lib/utils.ts";
 import {Input} from "@/components/ui/input.tsx";
 import {useState} from "react";
 import {Label} from "@radix-ui/react-dropdown-menu";
+import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
+import {Button} from "@/components/ui/button.tsx";
 
-export default function Me() {
+export default function Profile() {
     const [requestUrl, setRequestUrl] = useState<string>()
-    console.log(window.localStorage.getItem("access_token"))
-    const {data} = useQuery(['me'], async () => {
-        const res = await axios.get(`${baseUrl}restapi/personal/person/v1`, {
-            params: {
-                "access_token": window.localStorage.getItem("access_token")
-            }
-        }).then(res => {
-            console.log(res)
-            return res
-        })
-        return res.data
-    }, {
+    const {data} = useGETcurrentUser({
         suspense: true,
-        refetchOnReconnect: true,
-        refetchOnWindowFocus: false,
-        refetchInterval: 1000 * 60 * 60,
-        refetchIntervalInBackground: true,
     })
 
     return (
         <div>
+            <Button onClick={() => {
+                window.notification.send("Test Notification", "This is a test notification")
+            }}>Test Notification</Button>
             <form onSubmit={(event) => {
                 event.preventDefault()
 
@@ -47,30 +36,29 @@ export default function Me() {
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Name:</span>
-                        <span>{data.FullName}</span>
+                        <span>{data?.FullName}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Language:</span>
-                        <span>{data.Language}</span>
+                        <span>{data?.Language}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Time Zone:</span>
-                        <span>{data.TimeZoneId}</span>
+                        <span>{data?.TimeZoneId}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Message System:</span>
-                        <span>{data.CanAccessMessageSystem ? 'Yes' : 'No'}</span>
+                        <span>{data?.CanAccessMessageSystem ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Calendar:</span>
-                        <span>{data.CanAccessCalendar ? 'Yes' : 'No'}</span>
+                        <span>{data?.CanAccessCalendar ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Personal Settings:</span>
-                        <span>{data.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
+                        <span>{data?.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
                     </div>
                 </div>
-                {JSON.stringify(data)}
             </div>
         </div>
     )

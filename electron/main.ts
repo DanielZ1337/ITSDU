@@ -40,7 +40,6 @@ async function createWindow() {
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            webviewTag: true,
             nodeIntegration: true,
             // devTools: process.env.NODE_ENV === 'development',
         },
@@ -242,7 +241,7 @@ app.whenReady().then(async () => {
                 }
             }).catch(err => {
                 console.log(err)
-                app.quit()
+                app.exit(0)
             })
         })
 
@@ -256,7 +255,7 @@ app.whenReady().then(async () => {
                 label: 'Quit', click: function () {
                     win.close()
                     win.destroy()
-                    app.quit()
+                    app.exit(0)
                 }
             }
         ]);
@@ -291,9 +290,15 @@ app.whenReady().then(async () => {
             resizable: false,
             height: 600,
             width: 800,
-            alwaysOnTop: true,
+            // alwaysOnTop: true,
             darkTheme: false,
+            focusable: true,
         })
+
+        /*itslearningWin.on('close', (e) => {
+            e.preventDefault()
+            app.exit(0)
+        })*/
 
         // @ts-ignore
         protocol.handle('itsl-itslearning', async (req) => {

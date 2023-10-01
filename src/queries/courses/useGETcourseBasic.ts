@@ -1,16 +1,12 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {
-    GETstarredCourses,
-    GETstarredCoursesApiUrl,
-    GETstarredCoursesParams
-} from "@/api-types/course-cards/GETstarredCourses.ts";
+import {GETcourseBasic, GETcourseBasicApiUrl, GETcourseBasicParams} from "@/api-types/courses/GETcourseBasic.ts";
 
-export default function useGETstarredCourses(params: GETstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses, Error, GETstarredCourses, string[]>) {
+export default function useGETcourseBasic(params: GETcourseBasicParams, queryConfig?: UseQueryOptions<GETcourseBasic, Error, GETcourseBasic, string[]>) {
 
-    return useQuery(['starredCourses', ...getQueryKeysFromParamsObject(params)], async () => {
-        const res = await axios.get(GETstarredCoursesApiUrl({
+    return useQuery(['courseBasic', ...getQueryKeysFromParamsObject(params)], async () => {
+        const res = await axios.get(GETcourseBasicApiUrl({
             ...params
         }), {
             params: {

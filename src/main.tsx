@@ -1,30 +1,32 @@
 import {apiUrl, baseUrl} from "@/lib/utils.ts";
-import React from "react";
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import {createHashRouter, defer, RouterProvider} from 'react-router-dom'
+import {createHashRouter, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
 
 // const Root = React.lazy(() => import("./routes/root"));
+/*
 const ErrorPage = React.lazy(() => import("./error-page"));
 const Contact = React.lazy(() => import("./routes/contact"));
 const Layout = React.lazy(() => import("./components/layout"));
 const Test = React.lazy(() => import("./routes/test"));
 const Test1 = React.lazy(() => import("./routes/test1"));
-const Me = React.lazy(() => import("./routes/me"));
+const Profile = React.lazy(() => import("./routes/profile.tsx"));
 const Index = React.lazy(() => import("./routes/index"));
 const Course = React.lazy(() => import("./routes/course"));
 const Querytesting = React.lazy(() => import("./routes/querytesting"));
-// import Root from "@/routes/root.tsx";
-/*import ErrorPage from "@/error-page.tsx";
-import Contact from "@/routes/contact.tsx";
-import Layout from "@/components/layout.tsx";
-import Test from "@/routes/test.tsx";
-import Test1 from "@/routes/test1.tsx";
-import Me from "@/routes/me.tsx";
-import Index from "@/routes/index.tsx";
-import Course from "@/routes/course.tsx";*/
+*/
+
+import ErrorPage from "./error-page.tsx"
+import Contact from "./routes/contact.tsx"
+import Layout from "./components/layout.tsx"
+import Test from "./routes/test.tsx"
+import Test1 from "./routes/test1.tsx"
+import Profile from "./routes/profile.tsx"
+import Index from "./routes/index.tsx"
+import Course from "./routes/course.tsx"
+import Querytesting from "./routes/querytesting.tsx"
 
 const router = createHashRouter([
     {
@@ -35,24 +37,12 @@ const router = createHashRouter([
                 path: "/",
                 element: <Index/>,
                 errorElement: <ErrorPage/>,
+                index: true,
             },
             {
                 path: "/course",
                 element: <Course/>,
                 errorElement: <ErrorPage/>,
-                loader: async ({request}) => {
-                    const url = new URL(request.url);
-                    const courseId = url.searchParams.get("id");
-                    const courseData = axios.get(`${baseUrl}restapi/personal/courses/${courseId}/bulletins/v1`, {
-                        params: {
-                            'access_token': window.localStorage.getItem('access_token')
-                        }
-                    })
-
-                    return defer({
-                        courseData
-                    });
-                },
             },
             {
                 path: "/querytesting",
@@ -60,8 +50,8 @@ const router = createHashRouter([
                 errorElement: <ErrorPage/>,
             },
             {
-                path: "/me",
-                element: <Me/>,
+                path: "/profile",
+                element: <Profile/>,
                 errorElement: <ErrorPage/>,
             },
             {
@@ -98,6 +88,22 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </Providers>
 )
 
+/*setInterval(async () => {
+    const access_token = window.localStorage.getItem('access_token')
+
+    try {
+        axios.post(apiUrl('restApi/keepalive/online/v1'), {
+            "access_token": access_token
+        }, {
+            params: {
+                "access_token": access_token
+            }
+        })
+    } catch (e) {
+        console.log(e)
+    }
+}, 1000 * 60 * 60) // 1 hour*/
+
 setInterval(async () => {
     // refresh token
     const refresh_token = window.localStorage.getItem('refresh_token')
@@ -111,7 +117,7 @@ setInterval(async () => {
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
-                }
+                },
             })
 
             window.localStorage.setItem('access_token', data.access_token)
@@ -120,7 +126,7 @@ setInterval(async () => {
             console.log(e)
         }
     }
-}, 1000 * 60 * 60) // 1 hour
+}, 1000 * 60 * 30) // 30 minutes
 
 setInterval(() => {
     const access_token = window.localStorage.getItem('access_token')
