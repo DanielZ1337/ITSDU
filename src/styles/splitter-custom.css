@@ -1,0 +1,45 @@
+/*gutter*/
+.__dbk__gutter.Horizontal,.__dbk__gutter.Vertical {
+    @apply bg-foreground/20 !important;
+    @apply border-border !important;
+    border-radius: 0 !important;
+    /*height: 100dvh !important;*/
+    /*margin: 0 8px !important;
+    width: 12px !important;*/
+    @apply flex-1 !important;
+}
+
+.__dbk__gutter:hover > .__dbk__dragger.Horizontal,.__dbk__gutter:hover > .__dbk__dragger.Vertical {
+    @apply bg-foreground/80 !important;
+}
+
+/*dragger*/
+.__dbk__dragger.Horizontal,.__dbk__dragger.Vertical {
+    @apply bg-foreground !important;
+}
+
+
+/*gutter hover states*/
+.__dbk__gutter.Horizontal:hover,.__dbk__gutter.Vertical:hover {
+    @apply bg-foreground/10 !important;
+}
+
+.__dbk__container.Horizontal {
+    height: auto;
+}
+
+.__dbk__container.Vertical {
+    width: auto;
+}
+
+
+/*gutter active states*/
+.__dbk__gutter.Horizontal:active,.__dbk__gutter.Vertical:active {
+    @apply bg-foreground/5 !important;
+}
+
+.__dbk__child-wrapper {
+    @apply overflow-hidden !important;
+    padding: 10px !important;
+}
+

@@ -3,9 +3,10 @@ import {GETlightbulletinsForCourse} from "@/api-types/lightbulletin-course/GETli
 export default function LightbulletinCard({bulletin}: { bulletin: GETlightbulletinsForCourse['EntityArray'][0] }) {
 
     return (
-        <div key={bulletin.LightBulletinId} className="p-4 rounded-md bg-foreground/10 shadow-md hover:shadow-lg">
+        <div key={bulletin.LightBulletinId}
+             className="p-4 rounded-md bg-foreground/10 shadow-md hover:shadow-lg overflow-hidden">
             <p className={"line-clamp-6"}>{bulletin.Text}</p>
-            <p className="text-gray-500">
+            <p className="text-gray-500 truncate">
                 Published by{' '}
                 <a
                     href={bulletin.PublishedBy.ProfileUrl}
@@ -15,13 +16,13 @@ export default function LightbulletinCard({bulletin}: { bulletin: GETlightbullet
                 </a>{' '}
                 on {new Date(bulletin.PublishedDate).toLocaleDateString()}
             </p>
-            <div className="mt-2 flex justify-between">
-        <span className="text-gray-600">
-          {bulletin.CommentsCount} Comment{bulletin.CommentsCount !== 1 && 's'}
-        </span>
+            <div className="mt-2 flex justify-between truncate">
                 <span className="text-gray-600">
-          {bulletin.ResourcesCount} Resource{bulletin.ResourcesCount !== 1 && 's'}
-        </span>
+                  {bulletin.CommentsCount} Comment{bulletin.CommentsCount !== 1 && 's'}
+                </span>
+                <span className="text-gray-600">
+                  {bulletin.ResourcesCount} Resource{bulletin.ResourcesCount !== 1 && 's'}
+                </span>
                 {bulletin.IsSubscribed && (
                     <span className="text-green-500 font-semibold">Subscribed</span>
                 )}

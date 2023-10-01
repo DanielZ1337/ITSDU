@@ -5,6 +5,7 @@ import {createHashRouter, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
 
+
 // const Root = React.lazy(() => import("./routes/root"));
 /*
 const ErrorPage = React.lazy(() => import("./error-page"));
@@ -17,7 +18,6 @@ const Index = React.lazy(() => import("./routes/index"));
 const Course = React.lazy(() => import("./routes/course"));
 const Querytesting = React.lazy(() => import("./routes/querytesting"));
 */
-
 import ErrorPage from "./error-page.tsx"
 import Contact from "./routes/contact.tsx"
 import Layout from "./components/layout.tsx"
@@ -27,6 +27,7 @@ import Profile from "./routes/profile.tsx"
 import Index from "./routes/index.tsx"
 import Course from "./routes/course.tsx"
 import Querytesting from "./routes/querytesting.tsx"
+import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 
 const router = createHashRouter([
     {
@@ -41,7 +42,7 @@ const router = createHashRouter([
             },
             {
                 path: "/course",
-                element: <Course/>,
+                element: <SuspenseWrapper><Course/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
             {
@@ -102,7 +103,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     } catch (e) {
         console.log(e)
     }
-}, 1000 * 60 * 60) // 1 hour*/
+}, 1000 * 60 * 60) // 1 hour*/  // Disabled because it's not working
 
 setInterval(async () => {
     // refresh token
@@ -120,14 +121,29 @@ setInterval(async () => {
                 },
             })
 
+            console.log(data)
+            console.log('refreshed token')
             window.localStorage.setItem('access_token', data.access_token)
             window.localStorage.setItem('refresh_token', data.refresh_token)
+            window.location.reload()
         } catch (e) {
             console.log(e)
         }
     }
 }, 1000 * 60 * 30) // 30 minutes
 
+
+// unread messages notification system
+type UnreadMessages = {
+    count: number
+    timestamp: number
+}
+const unreadMessages: UnreadMessages[] = [
+    {
+        count: 0,
+        timestamp: Date.now()
+    }
+]
 setInterval(() => {
     const access_token = window.localStorage.getItem('access_token')
     axios.get(`${baseUrl}restapi/personal/instantmessages/messagethreads/unread/count/v1`, {
@@ -135,18 +151,31 @@ setInterval(() => {
             'access_token': access_token
         }
     }).then((res: { data: number; }) => {
-        console.log(res.data)
-        const count = res.data
-        if (res.data > 0) {
-            new Notification('itslearning', {
-                body: `You have ${count} unread messages`,
-                icon: 'itsl-itslearning-file://icon.ico'
-            })
+        unreadMessages.push({
+            count: res.data,
+            timestamp: Date.now()
+        })
+
+        if (unreadMessages.length > 10) {
+            unreadMessages.shift()
+        }
+
+        console.log(unreadMessages)
+
+        // check if there are any unread messages based on the timestamps and the count
+        if (unreadMessages[unreadMessages.length - 1].count > 0 && unreadMessages[unreadMessages.length - 1].timestamp - unreadMessages[0].timestamp < 1000 * 60 * 5) {
+            if (unreadMessages[unreadMessages.length - 1].count !== unreadMessages[unreadMessages.length - 2].count) {
+                new Notification('itslearning', {
+                    body: `You have ${unreadMessages[unreadMessages.length - 1].count} unread messages`,
+                    icon: 'itsl-itslearning-file://icon.ico'
+                })
+
+            }
         }
     }).catch((err: any) => {
         console.log(err)
     })
-}, 1000 * 60) // 1 minute
+}, 1000 * 15) // 1 minute
 
 // Remove Preload scripts loading
 postMessage({payload: 'removeLoading'}, '*')

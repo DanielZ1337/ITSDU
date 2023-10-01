@@ -36,9 +36,9 @@ export type POSTcourseAllResourcesParams = {
 }
 
 export type POSTcourseAllResourcesBody = {
-    ElementTypes: ItsolutionsItslUtilsConstantsElementType
+    ElementType: ItsolutionsItslUtilsConstantsElementType
     LearningToolIds: number[]
-    LearningToolTypes: ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType
+    LearningToolType: ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType
     ElementPermissions: ItslearningPlatformRestApiSdkLearningToolAppEntitiesElementPermission
     ElementIds: number[]
     IncludeDeleted: boolean
