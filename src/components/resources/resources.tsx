@@ -4,6 +4,7 @@ import {File, FolderClosedIcon, FolderOpenIcon} from "lucide-react";
 import {Suspense, useState} from "react";
 import ErrorPage from "@/error-page.tsx";
 import {ErrorBoundary} from "react-error-boundary";
+import {toast} from "@/components/ui/use-toast.ts";
 
 type NestedItem = {
     [key: string]: boolean
@@ -40,13 +41,24 @@ export default function Resources({courseId}: { courseId: number }) {
                         {/* rendering files */}
                         {/*@ts-ignore*/}
                         {parent.ElementType !== 'Folder' && (
-                            <a className={"inline-flex gap-2"}
-                               onClick={() => {
-                                   
-                               }}
-                               >
+                            <button className={"inline-flex gap-2"}
+                                    onClick={() => {
+                                        toast({
+                                            title: 'Downloading...',
+                                            description: parent.Title,
+                                            duration: 3000,
+                                        })
+                                        window.itslearning_file_scraping.start(parent.ElementId, parent.Title).then(() => {
+                                            toast({
+                                                title: 'Downloaded',
+                                                description: parent.Title,
+                                                duration: 3000,
+                                                variant: 'success'
+                                            })
+                                        })
+                                    }}>
                                 <File className={"shrink-0 inline-block"}/> {parent.Title}
-                            </a>
+                            </button>
                         )}
                         <ErrorBoundary fallback={<ErrorPage/>}>
                             <Suspense fallback={<div>Loading...</div>}>

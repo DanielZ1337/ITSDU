@@ -153,9 +153,11 @@ app.on('will-finish-launching', function () {
 
 app.whenReady().then(async () => {
         const ses = session.defaultSession
-        ipcMain.handle("itslearning-element:download", async (event, {url,resourceLink, filename}) => {
+        ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
             /*const win = BrowserWindow.fromWebContents(event.sender)
             if (!win) return*/
+
+            console.log(url, resourceLink, filename)
 
             const newWin = new BrowserWindow({
                 show: false,
@@ -164,7 +166,6 @@ app.whenReady().then(async () => {
                     contextIsolation: false,
                 }
             })
-
             await newWin.loadURL(resourceLink)
             console.log('download# ' + url)
             const downloadItem = await download(newWin, url, {
@@ -173,6 +174,29 @@ app.whenReady().then(async () => {
             logEverywhere('download# ' + downloadItem.getSavePath())
             event.sender.send("download:complete", downloadItem.getSavePath())
         })
+
+        ipcMain.handle("itslearning-file-scraping:start", async (_, url) => {
+            try {
+                const scrapeWindow = new BrowserWindow({
+                    show: false,
+                    webPreferences: {
+                        nodeIntegration: true,
+                    }
+                })
+                await scrapeWindow.loadURL(url)
+
+                const iframeSrc = await scrapeWindow.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
+                await scrapeWindow.loadURL(iframeSrc)
+                const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType').getAttribute('href')`)
+                const fileLink = 'https://resource.itslearning.com' + downloadHref
+                scrapeWindow.close()
+                return fileLink
+            } catch (e) {
+                console.error(e)
+                return null
+            }
+        })
+
         ses.protocol.registerBufferProtocol('itsl-itslearning-file', (request, callback) => {
             // get image file path
             const url = request.url.replace('itsl-itslearning-file://', '')

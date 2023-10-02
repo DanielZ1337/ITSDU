@@ -4,6 +4,7 @@ import {File, FolderClosedIcon, FolderOpenIcon} from "lucide-react";
 import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import ErrorPage from "@/error-page.tsx";
+import {useToast} from "@/components/ui/use-toast.ts";
 
 type NestedItem = {
     [key: string]: boolean
@@ -15,6 +16,7 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
     isOpen: boolean
 }) {
     const [showNested, setShowNested] = useState<NestedItem>({})
+    const {toast} = useToast()
 
     const {data} = useGETcourseFolderResources({
         courseId: courseId,
@@ -34,18 +36,19 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                 return (
                     <div key={parent.ElementId}>
                         {/* rendering folders */}
-                       <ErrorBoundary fallback={<ErrorPage/>}>
-                           <Suspense fallback={<div>Loading...</div>}>
-                               {/*@ts-ignore*/}
-                               {parent.ElementType === 'Folder' &&
-                                   <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
-                                       {showNested[parent.ElementId] ? <FolderOpenIcon className={"shrink-0"}/> :
-                                           <FolderClosedIcon className={"shrink-0"}/>}
-                                       <span className={"ml-2 text-left"}>{parent.Title}<RecursiveFileExplorer
-                                           courseId={courseId} folderId={parent.ElementId} isOpen={showNested[parent.ElementId]}/></span>
-                                   </button>}
-                           </Suspense>
-                       </ErrorBoundary>
+                        <ErrorBoundary fallback={<ErrorPage/>}>
+                            <Suspense fallback={<div>Loading...</div>}>
+                                {/*@ts-ignore*/}
+                                {parent.ElementType === 'Folder' &&
+                                    <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
+                                        {showNested[parent.ElementId] ? <FolderOpenIcon className={"shrink-0"}/> :
+                                            <FolderClosedIcon className={"shrink-0"}/>}
+                                        <span className={"ml-2 text-left"}>{parent.Title}<RecursiveFileExplorer
+                                            courseId={courseId} folderId={parent.ElementId}
+                                            isOpen={showNested[parent.ElementId]}/></span>
+                                    </button>}
+                            </Suspense>
+                        </ErrorBoundary>
                         {/* rendering files */}
                         {/* @ts-ignore */}
                         {/*<div style={{display: !showNested[parent.ElementId] && 'none'}}>
@@ -55,11 +58,21 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                         {isOpen && parent.ElementType !== 'Folder' && (
                             <button className={"inline-flex gap-2"}
                                     onClick={() => {
-                                        window.download.start(parent.ElementId, 'test.pdf').then(() => {
-                                            console.log('done')
+                                        toast({
+                                            title: 'Downloading...',
+                                            description: parent.Title,
+                                            duration: 3000,
+                                        })
+                                        window.itslearning_file_scraping.start(parent.ElementId, parent.Title).then(() => {
+                                            toast({
+                                                title: 'Downloaded',
+                                                description: parent.Title,
+                                                duration: 3000,
+                                                variant: 'success'
+                                            })
                                         })
                                     }}
-                               >
+                            >
                                 <File className={"shrink-0 inline-block"}/> {parent.Title}
                             </button>
                         )}

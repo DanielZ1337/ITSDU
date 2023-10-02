@@ -3,6 +3,7 @@ import BrowserNav from "./browse-nav";
 import {Suspense} from "react";
 import {Spinner} from "@nextui-org/spinner";
 import Header from "@/components/header";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 export default function Layout() {
@@ -27,6 +28,7 @@ export default function Layout() {
                     scrollbarGutter: "stable both-edges"
                 }}>
                     <Outlet/>
+                    <Toaster />
                 </div>
             </Suspense>
         </div>

@@ -1,8 +1,8 @@
 import {app, ipcMain} from "electron";
 
 function quitHandler() {
-    ipcMain.handle('app:quit', () => {
-        app.quit()
+    ipcMain.handle('app:exit', () => {
+        app.exit(0)
     })
 }
 function getVersionHandler() {

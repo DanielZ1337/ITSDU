@@ -152,10 +152,21 @@ export default function BrowserNav() {
                         <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                         <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>Profile</DropdownMenuItem>
-                    <DropdownMenuItem>Billing</DropdownMenuItem>
-                    <DropdownMenuItem>Team</DropdownMenuItem>
-                    <DropdownMenuItem>Subscription</DropdownMenuItem>
+                    {/*<DropdownMenuItem>Profile</DropdownMenuItem>*/}
+                    {/*<DropdownMenuItem>Billing</DropdownMenuItem>*/}
+                    {/*<DropdownMenuItem>Team</DropdownMenuItem>*/}
+                    {/*<DropdownMenuItem>Subscription</DropdownMenuItem>*/}
+                    <DropdownMenuSeparator/>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            window.app.exit().then(r => {
+                                console.log(r)
+                            })
+                        }}
+                        className={cn(buttonVariants({
+                            variant: 'destructive',
+                        }), 'px-2 py-1.5 w-full justify-start hover:bg-destructive hover:text-destructive-foreground')}
+                    >Exit</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
