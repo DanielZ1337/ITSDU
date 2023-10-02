@@ -10,7 +10,7 @@ export default function LightbulletinsForCourse({courseId}: { courseId: number }
     })
 
     return (
-        <div className={"grid grid-cols-1 gap-4"}>
+        <div className={"grid grid-cols-1 gap-4 overflow-hidden"}>
             {data!.EntityArray.map((bulletin, idx) => {
                     return (
                         <LightbulletinCard key={idx} bulletin={bulletin}/>

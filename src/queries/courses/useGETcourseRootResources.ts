@@ -9,7 +9,7 @@ import {
 
 export default function useGETcourseRootResources(params: GETcourseRootResourcesParams, queryConfig?: UseQueryOptions<GETcourseRootResources, Error, GETcourseRootResources, string[]>) {
 
-    return useQuery(['courseAllResources', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery(['courseRootResources', ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseRootResourcesApiUrl({
             ...params
         }), {

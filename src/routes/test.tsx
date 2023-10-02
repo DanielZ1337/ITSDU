@@ -2,6 +2,7 @@ import {Button} from "@/components/ui/button.tsx";
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses.ts";
 
+
 export default function Test() {
     const {data, isLoading, refetch} = useGETstarredCourses({
         isShowMore: false,
@@ -24,6 +25,15 @@ export default function Test() {
 
     return (
         <>
+            <Button onClick={() => {
+                // ipcRenderer.send('download')
+                // ipcRenderer.invoke('download', 'https://www.google.com')
+                window.download.start('https://s2.q4cdn.com/175719177/files/doc_presentations/Placeholder-PDF.pdf','test.pdf').then(() => {
+                    console.log('done')
+                })
+            }}>
+                download
+            </Button>
             yes
             <Button onClick={() => {
                 refetch().then(() => {

@@ -2,6 +2,8 @@ import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResourc
 import RecursiveFileExplorer from "@/components/recursive-file-explorer.tsx";
 import {File, FolderClosedIcon, FolderOpenIcon} from "lucide-react";
 import {Suspense, useState} from "react";
+import ErrorPage from "@/error-page.tsx";
+import {ErrorBoundary} from "react-error-boundary";
 
 type NestedItem = {
     [key: string]: boolean
@@ -38,14 +40,21 @@ export default function Resources({courseId}: { courseId: number }) {
                         {/* rendering files */}
                         {/*@ts-ignore*/}
                         {parent.ElementType !== 'Folder' && (
-                            <span className={"inline-flex gap-2"}>
-                                    <File className={"shrink-0 inline-block"}/> {parent.Title}
-                            </span>
+                            <a className={"inline-flex gap-2"}
+                               onClick={() => {
+                                   
+                               }}
+                               >
+                                <File className={"shrink-0 inline-block"}/> {parent.Title}
+                            </a>
                         )}
-                        <Suspense fallback={<div>Loading...</div>}>
-                            {showNested[parent.ElementId] && parent && <RecursiveFileExplorer courseId={courseId}
-                                                                                              folderId={parent.ElementId}/>}
-                        </Suspense>
+                        <ErrorBoundary fallback={<ErrorPage/>}>
+                            <Suspense fallback={<div>Loading...</div>}>
+                                {showNested[parent.ElementId] && parent &&
+                                    <RecursiveFileExplorer isOpen={showNested[parent.ElementId]} courseId={courseId}
+                                                           folderId={parent.ElementId}/>}
+                            </Suspense>
+                        </ErrorBoundary>
                     </div>
                 )
             })}

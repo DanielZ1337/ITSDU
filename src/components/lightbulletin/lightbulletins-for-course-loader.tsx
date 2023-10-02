@@ -1,7 +1,7 @@
 export default function LightbulletinsForCourseLoader() {
     return (
         [...Array(4).keys()].map(i => i + 1).map((i) => (
-            <div key={i} className="p-4 rounded-md bg-foreground/10 shadow-md hover:shadow-lg">
+            <div key={i} className="p-4 rounded-md bg-foreground/10 shadow-md hover:shadow-lg overflow-hidden">
                 <div className="animate-pulse flex space-x-4">
                     <div className="flex-1 space-y-4 py-1">
                         <div className="space-y-2">

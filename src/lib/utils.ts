@@ -33,12 +33,13 @@ export const baseUrl = import.meta.env.DEV ? 'http://localhost:8080/' : 'https:/
 export const apiUrl = (route: string, options?: {
     [key: string]: string | number | Date | undefined | boolean | number[]
 }) => {
+
     // replace all path parameters with the values from the options object
     route.match(/{(.*?)}/g)?.forEach((match) => {
         const key = match.replace("{", "").replace("}", "")
         if (options?.[key] !== undefined) {
             route = route.replace(match, options[key]!.toString())
-            delete options[key]
+            // delete options[key]
         }
     })
 

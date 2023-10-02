@@ -64,11 +64,16 @@ export default function Course() {
                     </div>
                 </div>
                 <div
-                    className={"flex flex-col gap-4 min-w-[33vw] max-w-[33vw] overflow-y-auto overflow-x-hidden"}>
+                    className={"flex flex-col gap-4 min-w-[33vw] overflow-y-auto overflow-x-hidden"}>
                     <h2 className={"text-xl font-bold"}>Resources</h2>
                     <ErrorPage>
                         <Suspense
-                            fallback={<div className={"h-96 w-full bg-foreground/10 rounded-md shadow-md"}/>}>
+                            fallback={<div className={"flex flex-col gap-2 animate-pulse w-full"}>
+                                <div className="h-4 bg-gray-400 rounded"/>
+                                <div className="h-4 bg-gray-400 rounded"/>
+                                <div className="h-4 bg-gray-400 rounded"/>
+                                <div className="h-4 bg-gray-400 rounded"/>
+                            </div>}>
                             <Resources courseId={courseId}/>
                         </Suspense>
                     </ErrorPage>

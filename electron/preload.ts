@@ -1,5 +1,6 @@
 import {contextBridge, ipcRenderer} from 'electron'
 import {sendNotifcation} from "./handlers/notifcation-handler.ts";
+import axios from "axios";
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -22,6 +23,56 @@ contextBridge.exposeInMainWorld('app', {
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
 })
 
+contextBridge.exposeInMainWorld('download', {
+    start: async (elementId: number, filename: string) => {
+
+        const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`, {
+            params: {
+                'access_token': window.localStorage.getItem('access_token')
+            }
+        })
+
+        console.log(data)
+
+        const downloadLink = data.Url
+
+        const puppeteer = require("puppeteer");
+
+        // Launch the browser
+        const browser = await puppeteer.launch({
+            headless: true,
+        });
+
+        // Open a new tab
+        const page = await browser.newPage();
+
+        // Visit the page and wait until network connections are completed
+        await page.goto(downloadLink, {
+            // waitUntil: 'networkidle2',
+        });
+
+
+        // get iframes
+        const iframes = page.frames()
+
+        // get the first iframe
+        const iframe = iframes[1]
+
+        // write the iframe body content to a file
+        const container = await iframe.waitForSelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType')
+        const downloadHref = await container.evaluate((node: any) => node.getAttribute('href'))
+
+        await browser.close()
+
+        const fileLink = 'https://resource.itslearning.com' + downloadHref
+
+        ipcRenderer.invoke('itslearning-element:download', {
+            url: fileLink,
+            resourceLink:downloadLink,
+            filename,
+        })
+    }
+})
 
 // edit window object and type definition
 declare global {
@@ -41,6 +92,10 @@ declare global {
             quit: () => Promise<void>
             getVersion: () => Promise<string>
             relaunch: () => Promise<void>
+        }
+        download: {
+            // eslint-disable-next-line no-unused-vars
+            start: (elementId: number, filename: string) => Promise<void>
         }
     }
 }

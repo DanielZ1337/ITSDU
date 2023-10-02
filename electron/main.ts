@@ -1,9 +1,10 @@
-import {app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray} from 'electron'
+import {app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray} from 'electron'
 import path from 'node:path'
 import axios from "axios";
 import darkModeHandlerInitializer from './handlers/dark-mode-handlers'
 import * as fs from "fs";
 import appHandlerInitializer from "./handlers/app-handler.ts";
+import {download} from "electron-dl";
 
 // The built directory structure
 //
@@ -152,6 +153,26 @@ app.on('will-finish-launching', function () {
 
 app.whenReady().then(async () => {
         const ses = session.defaultSession
+        ipcMain.handle("itslearning-element:download", async (event, {url,resourceLink, filename}) => {
+            /*const win = BrowserWindow.fromWebContents(event.sender)
+            if (!win) return*/
+
+            const newWin = new BrowserWindow({
+                show: false,
+                webPreferences: {
+                    nodeIntegration: true,
+                    contextIsolation: false,
+                }
+            })
+
+            await newWin.loadURL(resourceLink)
+            console.log('download# ' + url)
+            const downloadItem = await download(newWin, url, {
+                filename: filename,
+            })
+            logEverywhere('download# ' + downloadItem.getSavePath())
+            event.sender.send("download:complete", downloadItem.getSavePath())
+        })
         ses.protocol.registerBufferProtocol('itsl-itslearning-file', (request, callback) => {
             // get image file path
             const url = request.url.replace('itsl-itslearning-file://', '')
@@ -211,7 +232,7 @@ app.whenReady().then(async () => {
                 })
 
                 // manual await for the response to simulate slow network
-                await new Promise(resolve => setTimeout(resolve, 1000))
+                // await new Promise(resolve => setTimeout(resolve, 1000))
                 res.json(data)
             }).listen(8080, () => {
                 console.log('API Proxy Server with CORS enabled is listening on port 8080')
@@ -308,7 +329,7 @@ app.whenReady().then(async () => {
                 deeplinkingUrl = matches[1]
                 logEverywhere('protocol.handle# setting code to localStorage...')
                 logEverywhere('protocol.handle# ' + 'code ' + deeplinkingUrl)
-                win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
+                await win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
 
                 logEverywhere('protocol.handle# requesting access_token...')
                 console.log(deeplinkingUrl)
