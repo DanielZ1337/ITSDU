@@ -1,4 +1,3 @@
-
 function sendNotifcation(title: string, body: string) {
     const myNotification = new Notification(title, {
         body,

@@ -52,7 +52,7 @@ const router = createHashRouter([
             },
             {
                 path: "/profile",
-                element: <Profile/>,
+                element: <SuspenseWrapper><Profile/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
             {

@@ -4,7 +4,9 @@ import {File, FolderClosedIcon, FolderOpenIcon} from "lucide-react";
 import {Suspense, useState} from "react";
 import ErrorPage from "@/error-page.tsx";
 import {ErrorBoundary} from "react-error-boundary";
-import {toast} from "@/components/ui/use-toast.ts";
+import {useToast} from "@/components/ui/use-toast.ts";
+import {LearningToolIdTypes} from "@/api-types/extra/learning-tool-id-types.ts";
+import ReactLoading from "react-loading";
 
 type NestedItem = {
     [key: string]: boolean
@@ -17,6 +19,8 @@ export default function Resources({courseId}: { courseId: number }) {
     }, {
         suspense: true,
     })
+
+    const {toast, dismiss} = useToast()
 
     const [showNested, setShowNested] = useState<NestedItem>({})
 
@@ -41,27 +45,49 @@ export default function Resources({courseId}: { courseId: number }) {
                         {/* rendering files */}
                         {/*@ts-ignore*/}
                         {parent.ElementType !== 'Folder' && (
-                            <button className={"inline-flex gap-2"}
-                                    onClick={() => {
-                                        toast({
-                                            title: 'Downloading...',
-                                            description: parent.Title,
-                                            duration: 3000,
-                                        })
-                                        window.itslearning_file_scraping.start(parent.ElementId, parent.Title).then(() => {
+                            parent.LearningToolId === LearningToolIdTypes.PDF ? (
+                                <button className={"inline-flex gap-2"}
+                                        onClick={async () => {
                                             toast({
-                                                title: 'Downloaded',
+                                                title: 'Downloading...',
                                                 description: parent.Title,
                                                 duration: 3000,
-                                                variant: 'success'
                                             })
-                                        })
-                                    }}>
-                                <File className={"shrink-0 inline-block"}/> {parent.Title}
-                            </button>
+                                            await window.itslearning_file_scraping.start(parent.ElementId, parent.Title)
+                                            window.ipcRenderer.on('download:complete', (_, args) => {
+                                                console.log(args)
+                                                toast({
+                                                    title: 'Downloaded',
+                                                    description: parent.Title,
+                                                    duration: 3000,
+                                                    variant: 'success',
+                                                    onClick: async () => {
+                                                        await window.app.openShell(args)
+                                                        dismiss()
+                                                    }
+                                                })
+                                            })
+                                            window.ipcRenderer.on('download:error', (_, args) => {
+                                                console.log(args)
+                                                toast({
+                                                    title: 'Download error',
+                                                    description: parent.Title,
+                                                    duration: 3000,
+                                                    variant: 'destructive'
+                                                })
+                                            })
+                                        }}>
+                                    <File className={"shrink-0 inline-block"}/> {parent.Title}
+                                </button>
+                            ) : (
+                                <div className={"inline-flex gap-2"}>
+                                    <File className={"shrink-0 inline-block"}/> {parent.Title}
+                                </div>
+                            )
                         )}
                         <ErrorBoundary fallback={<ErrorPage/>}>
-                            <Suspense fallback={<div>Loading...</div>}>
+                            <Suspense
+                                fallback={<ReactLoading className={"-mt-2"} height={20} width={20} type={"bubbles"}/>}>
                                 {showNested[parent.ElementId] && parent &&
                                     <RecursiveFileExplorer isOpen={showNested[parent.ElementId]} courseId={courseId}
                                                            folderId={parent.ElementId}/>}

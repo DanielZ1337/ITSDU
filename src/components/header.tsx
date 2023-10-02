@@ -1,8 +1,17 @@
 import {Link, NavLink} from "react-router-dom"
 import {cn} from "@/lib/utils.ts";
 import {Button} from "@/components/ui/button.tsx";
+import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 
 export default function Header() {
+
+    const {data} = useGETcurrentUser({
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
+    })
 
 
     const links = [
@@ -24,12 +33,6 @@ export default function Header() {
         }
     ]
 
-    /*useEffect(() => {
-        axios.get(`${baseUrl}ContentArea/ContentArea.aspx?LocationType=1&LocationID=29222&ElementID=1242155&ElementType=131072&FromNotification=True`).then(res => {
-            console.log(res)
-        })
-    }, []);*/
-
 
     return (
         <header>
@@ -42,11 +45,11 @@ export default function Header() {
                         <Button onClick={() => {
                             window.localStorage.clear()
                             window.location.reload()
-                        }} className="px-4 py-2 bg-black text-white">
+                        }} className="px-4 py-2 bg-black text-white line-clamp-1 truncate">
                             CLEAR LOCAL STORAGE
                         </Button>
                     </div>
-                    <div className={"flex flex-row items-center justify-center gap-4"}>
+                    <div className={"flex flex-row items-center justify-center gap-4 px-4"}>
                         {links.map((link) => {
                                 return (
                                     <NavLink key={link.name} to={link.href} className={({isActive, isPending}) =>
@@ -59,6 +62,7 @@ export default function Header() {
                         )}
                     </div>
                 </div>
+                <p className={"text-lg font-semibold line-clamp-1"}>{data?.FullName}</p>
             </nav>
         </header>
     )

@@ -22,6 +22,10 @@ contextBridge.exposeInMainWorld('app', {
     exit: () => ipcRenderer.invoke('app:exit'),
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
+    getPath: (path: string) => ipcRenderer.invoke('app:getPath', path),
+    getDownloadPath: () => ipcRenderer.invoke('app:getDownloadPath'),
+    openShell: (path: string) => ipcRenderer.invoke('app:openShell', path),
+    openItem: (path: string) => ipcRenderer.invoke('app:openItem', path),
 })
 
 contextBridge.exposeInMainWorld('itslearning_file_scraping', {
@@ -64,6 +68,13 @@ declare global {
             exit: () => Promise<void>
             getVersion: () => Promise<string>
             relaunch: () => Promise<void>
+            // eslint-disable-next-line no-unused-vars
+            getPath: (path: string) => Promise<string>
+            getDownloadPath: () => Promise<string>
+            // eslint-disable-next-line no-unused-vars
+            openShell: (path: string) => Promise<void>
+            // eslint-disable-next-line no-unused-vars
+            openItem: (path: string) => Promise<void>
         },
         download: {
             // eslint-disable-next-line no-unused-vars

@@ -153,26 +153,51 @@ app.on('will-finish-launching', function () {
 
 app.whenReady().then(async () => {
         const ses = session.defaultSession
+        ipcMain.handle('app:getDownloadPath', async () => {
+            console.log(app.getPath('downloads'))
+            return app.getPath('downloads')
+        })
+        ipcMain.handle('app:openShell', async (_, path) => {
+            console.log(path)
+            const shell = await import('electron').then(m => m.shell)
+            await shell.openPath(path)
+        })
+        ipcMain.handle('app:openItem', async (_, path) => {
+            console.log(path)
+            const shell = await import('electron').then(m => m.shell)
+            // shell.showItemInFolder(path)
+            //open the file with the default app
+            await shell.openPath(path)
+        })
         ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
-            /*const win = BrowserWindow.fromWebContents(event.sender)
+            try { /*const win = BrowserWindow.fromWebContents(event.sender)
             if (!win) return*/
 
-            console.log(url, resourceLink, filename)
+                console.log(url, resourceLink, filename)
 
-            const newWin = new BrowserWindow({
-                show: false,
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false,
-                }
-            })
-            await newWin.loadURL(resourceLink)
-            console.log('download# ' + url)
-            const downloadItem = await download(newWin, url, {
-                filename: filename,
-            })
-            logEverywhere('download# ' + downloadItem.getSavePath())
-            event.sender.send("download:complete", downloadItem.getSavePath())
+                const newWin = new BrowserWindow({
+                    show: false,
+                    webPreferences: {
+                        nodeIntegration: true,
+                        contextIsolation: false,
+                    }
+                })
+                await newWin.loadURL(resourceLink)
+                console.log('download# ' + url)
+
+                // download the file
+                const downloadItem = await download(newWin, url, {
+                    filename: filename,
+                    directory: app.getPath('downloads'),
+                    showProgressBar: true,
+                    showBadge: true,
+                })
+                logEverywhere('download# ' + downloadItem.getSavePath())
+                event.sender.send("download:complete", downloadItem.getSavePath())
+            } catch (e) {
+                console.error(e)
+                event.sender.send("download:error", null)
+            }
         })
 
         ipcMain.handle("itslearning-file-scraping:start", async (_, url) => {
@@ -256,7 +281,7 @@ app.whenReady().then(async () => {
                 })
 
                 // manual await for the response to simulate slow network
-                // await new Promise(resolve => setTimeout(resolve, 1000))
+                await new Promise(resolve => setTimeout(resolve, 1000))
                 res.json(data)
             }).listen(8080, () => {
                 console.log('API Proxy Server with CORS enabled is listening on port 8080')

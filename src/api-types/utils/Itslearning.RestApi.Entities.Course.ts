@@ -2,7 +2,7 @@ export type ItslearningRestApiEntitiesCourse = {
     Code: string
     CourseId: number
     CreatedDateTimeUtc: Date
-    Title:string
+    Title: string
     OrganisationId: number
     CourseColorClass: string
     SyncKey: string

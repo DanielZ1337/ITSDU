@@ -13,9 +13,8 @@ import {
     DropdownMenuTrigger
 } from './ui/dropdown-menu'
 import {useTheme} from "next-themes";
-import {baseUrl, cn} from "@/lib/utils.ts";
-import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
+import {cn} from "@/lib/utils.ts";
+import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 
 export default function BrowserNav() {
     const navigate = useNavigate()
@@ -64,22 +63,12 @@ export default function BrowserNav() {
             })
         }
     }, [handleDarkModeToggle]);
-    const {data, isLoading} = useQuery(['me'], async () => {
-        const res = await axios.get(`${baseUrl}restapi/personal/person/v1`, {
-            params: {
-                "access_token": window.localStorage.getItem("access_token")
-            }
-        }).then(res => {
-            console.log(res)
-            return res
-        })
-        return res.data
-    }, {
-        refetchOnWindowFocus: false,
-        refetchInterval: 1000 * 60 * 60 * 24,
-        refetchIntervalInBackground: true,
+    const {data, isLoading} = useGETcurrentUser({
         refetchOnMount: false,
+        refetchOnWindowFocus: false,
         refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
     })
 
     let isNormalLoad =
@@ -145,7 +134,7 @@ export default function BrowserNav() {
                     </DropdownMenuLabel>
                     {/*user name*/}
                     <DropdownMenuLabel className={"font-normal"}>
-                        {isLoading && !data ? 'Loading...' : data.FullName}
+                        {isLoading && !data ? 'Loading...' : data!.FullName}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem onClick={handleDarkModeToggle}>
@@ -163,9 +152,7 @@ export default function BrowserNav() {
                                 console.log(r)
                             })
                         }}
-                        className={cn(buttonVariants({
-                            variant: 'destructive',
-                        }), 'px-2 py-1.5 w-full justify-start hover:bg-destructive hover:text-destructive-foreground')}
+                        className={"text-destructive-foreground bg-destructive hover:bg-destructive-hover hover:text-destructive-foreground"}
                     >Exit</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>

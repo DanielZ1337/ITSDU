@@ -28,7 +28,7 @@ export default function Layout() {
                     scrollbarGutter: "stable both-edges"
                 }}>
                     <Outlet/>
-                    <Toaster />
+                    <Toaster/>
                 </div>
             </Suspense>
         </div>
