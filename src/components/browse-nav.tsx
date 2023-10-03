@@ -53,12 +53,27 @@ export default function BrowserNav() {
                 e.preventDefault()
                 handleDarkModeToggle()
             }
+
+            if (e.ctrlKey && e.key === 'q') {
+                e.preventDefault()
+                window.app.exit().then(r => {
+                    console.log(r)
+                })
+            }
         })
+
         return () => {
             window.removeEventListener('keydown', (e) => {
                 if (e.ctrlKey && e.key === 't') {
                     e.preventDefault()
                     handleDarkModeToggle()
+                }
+
+                if (e.ctrlKey && e.key === 'q') {
+                    e.preventDefault()
+                    window.app.exit().then(r => {
+                        console.log(r)
+                    })
                 }
             })
         }
@@ -152,8 +167,11 @@ export default function BrowserNav() {
                                 console.log(r)
                             })
                         }}
-                        className={"text-destructive-foreground bg-destructive hover:bg-destructive-hover hover:text-destructive-foreground"}
-                    >Exit</DropdownMenuItem>
+                        className={"hover:!bg-destructive"}
+                    >
+                        <span>Exit</span>
+                        <DropdownMenuShortcut>⌘Q</DropdownMenuShortcut>
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
