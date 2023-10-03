@@ -1,8 +1,7 @@
 import {GETlightbulletinsForCourse} from "@/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
 import React, {useEffect, useState} from "react";
 import {BsChatSquareTextFill, BsFileEarmarkFill} from "react-icons/bs";
-import {badgeVariants} from "@/components/ui/badge.tsx";
-import {cn} from "@/lib/utils.ts";
+import {Badge} from "@/components/ui/badge.tsx";
 import {BellOff, BellRing} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
@@ -15,7 +14,7 @@ export default function LightbulletinCard({bulletin}: {
     const [hasReadMore, setHasReadMore] = useState<boolean>(false)
     const textRef = React.useRef<HTMLParagraphElement>(null);
 
-    const {mutate,data, isLoading} = usePUTlightbulletinNotifications({
+    const {mutate, data, isLoading} = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     }, {
         isSubscribed: !bulletin.IsSubscribed
@@ -34,7 +33,7 @@ export default function LightbulletinCard({bulletin}: {
     useEffect(() => {
         console.log(data)
         console.log(isLoading)
-    }, [isLoading,data]);
+    }, [isLoading, data]);
 
 
     return (
@@ -96,16 +95,18 @@ export default function LightbulletinCard({bulletin}: {
                 on {new Date(bulletin.PublishedDate).toLocaleDateString()}
             </p>
             <div className="mt-2 flex gap-4 truncate text-lg">
-                <div
-                    className={cn(badgeVariants({variant: "outline"}), "hover:bg-secondary-200 gap-2 px-4 py-1 text-sm")}>
+                <Badge
+                    variant={"outline"}
+                    className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
                     {bulletin.CommentsCount}
                     <BsChatSquareTextFill className={"mt-1"}/>
-                </div>
-                <div
-                    className={cn(badgeVariants({variant: "outline"}), "hover:bg-secondary-200 gap-2 px-4 py-1 text-sm")}>
+                </Badge>
+                <Badge
+                    variant={"outline"}
+                    className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
                     {bulletin.ResourcesCount}
-                    <BsFileEarmarkFill className={""}/>
-                </div>
+                    <BsFileEarmarkFill/>
+                </Badge>
             </div>
             {/*<div className="mt-4 flex justify-end">
                 {hasReadMore && (

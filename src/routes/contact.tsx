@@ -70,7 +70,11 @@ export default function Contact() {
     );
 }
 
-function Favorite({contact}: { contact: { favorite: boolean } }) {
+function Favorite({contact}: {
+    contact: {
+        favorite: boolean
+    }
+}) {
     // yes, this is a `let` for later
     const favorite = contact.favorite;
     return (

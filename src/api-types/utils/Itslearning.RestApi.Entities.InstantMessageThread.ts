@@ -31,15 +31,15 @@ export type ItslearningRestApiEntitiesInstantMessageThread = {
     LocationRecipients: ItslearningRestApiEntitiesLocationRecipient[]
     LastReadInstantMessageId: number
     SortIndex: number
-    OnlyThreadAdminCanSendToThread:boolean
-    IsThreadAdministrator:boolean
-    IsThreadModerator:boolean
-    InstantMessageLocationId:number
-    IsBlocked:boolean
-    UserAllowToBlockThread:boolean
-    IsAbuse:boolean
-    IsAbuseReportedByCurrentUser:boolean
-    MassMessageType:ItslearningRestApiEntitiesInstantMessageMassMessageType
-    Tooltip:string
-    CanDelete:boolean
+    OnlyThreadAdminCanSendToThread: boolean
+    IsThreadAdministrator: boolean
+    IsThreadModerator: boolean
+    InstantMessageLocationId: number
+    IsBlocked: boolean
+    UserAllowToBlockThread: boolean
+    IsAbuse: boolean
+    IsAbuseReportedByCurrentUser: boolean
+    MassMessageType: ItslearningRestApiEntitiesInstantMessageMassMessageType
+    Tooltip: string
+    CanDelete: boolean
 }

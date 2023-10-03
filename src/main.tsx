@@ -150,7 +150,9 @@ setInterval(() => {
         params: {
             'access_token': access_token
         }
-    }).then((res: { data: number; }) => {
+    }).then((res: {
+        data: number;
+    }) => {
         unreadMessages.push({
             count: res.data,
             timestamp: Date.now()

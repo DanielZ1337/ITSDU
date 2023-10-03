@@ -41,7 +41,8 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                         {/* rendering folders */}
                         <ErrorBoundary fallback={<ErrorPage/>}>
                             <Suspense
-                                fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30} type={"bubbles"}/>}>
+                                fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30}
+                                                        type={"bubbles"}/>}>
                                 {/*@ts-ignore*/}
                                 {parent.ElementType === 'Folder' &&
                                     <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>

@@ -3,7 +3,9 @@ import LightbulletinCard from "@/components/lightbulletin/lightbulletin-card.tsx
 import {ScrollShadow} from "@nextui-org/react";
 import React, {useEffect} from "react";
 
-export default function LightbulletinsForCourse({courseId}: { courseId: number }) {
+export default function LightbulletinsForCourse({courseId}: {
+    courseId: number
+}) {
 
     const {data} = useGETlightbulletinsForCourse({
         courseId: courseId

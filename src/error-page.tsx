@@ -1,7 +1,9 @@
 import {Link, useRouteError} from "react-router-dom";
 import {buttonVariants} from "@/components/ui/button.tsx";
 
-export default function ErrorPage({children}: { children?: React.ReactNode }) {
+export default function ErrorPage({children}: {
+    children?: React.ReactNode
+}) {
     const routeError = useRouteError() as any;
     console.error(routeError);
 

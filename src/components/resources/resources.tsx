@@ -1,5 +1,6 @@
 import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources.ts";
 import RecursiveFileExplorer from "@/components/recursive-file-explorer.tsx";
+// eslint-disable-next-line no-redeclare
 import {File, FolderClosedIcon, FolderOpenIcon} from "lucide-react";
 import {Suspense, useState} from "react";
 import ErrorPage from "@/error-page.tsx";
@@ -14,7 +15,9 @@ type NestedItem = {
 }
 
 
-export default function Resources({courseId}: { courseId: number }) {
+export default function Resources({courseId}: {
+    courseId: number
+}) {
     const {data} = useGETcourseRootResources({
         courseId: courseId
     }, {
@@ -92,9 +95,10 @@ export default function Resources({courseId}: { courseId: number }) {
                                                     duration: 3000,
                                                     variant: 'destructive'
                                                 })
-                                            })}}>
-                                        <File className={"shrink-0 inline-block"}/>
-                                        <p className={"text-left"}>{parent.Title}</p>
+                                            })
+                                        }}>
+                                    <File className={"shrink-0 inline-block"}/>
+                                    <p className={"text-left"}>{parent.Title}</p>
                                 </button>
                             ) : (
                                 <div className={"inline-flex gap-2"}>
@@ -105,7 +109,8 @@ export default function Resources({courseId}: { courseId: number }) {
                         )}
                         <ErrorBoundary fallback={<ErrorPage/>}>
                             <Suspense
-                                fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30} type={"bubbles"}/>}>
+                                fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30}
+                                                        type={"bubbles"}/>}>
                                 {showNested[parent.ElementId] && parent &&
                                     <RecursiveFileExplorer isOpen={showNested[parent.ElementId]} courseId={courseId}
                                                            folderId={parent.ElementId}/>}

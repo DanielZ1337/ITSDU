@@ -4,7 +4,7 @@ import {
 
 export type ItslearningRestApiEntitiesLocationRecipient = {
     LocationRecipientId: number
-    Type:ItslearningRestApiEntitiesLocationRecipientType
-    Title:string
-    ColorScheme:string
+    Type: ItslearningRestApiEntitiesLocationRecipientType
+    Title: string
+    ColorScheme: string
 }

@@ -15,7 +15,9 @@ import {
 } from "@/api-types/extra/course-cards-sort-by-types.ts";
 import {Helmet} from "react-helmet";
 
-function Cards({config}: { config: GETstarredCoursesParams }) {
+function Cards({config}: {
+    config: GETstarredCoursesParams
+}) {
     const {data} = useGETstarredCourses({
         ...config
     }, {
@@ -26,7 +28,8 @@ function Cards({config}: { config: GETstarredCoursesParams }) {
         return (
             <div className={"flex flex-col w-5/6 sm:w-72 h-36 m-40"}>
                 <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
-                    <span className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                    <span
+                        className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
                         <ClipboardList/> No courses
                     </span>
                 </div>

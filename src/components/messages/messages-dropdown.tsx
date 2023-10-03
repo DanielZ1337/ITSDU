@@ -95,7 +95,8 @@ export default function MessagesDropdown() {
                                                         <span
                                                             className="flex gap-2 items-center justify-start">
                                                             <Avatar>
-                                                                <AvatarImage src={thread.LastMessage.CreatedByAvatar} alt={thread.LastMessage.CreatedByName}/>
+                                                                <AvatarImage src={thread.LastMessage.CreatedByAvatar}
+                                                                             alt={thread.LastMessage.CreatedByName}/>
                                                                 <AvatarFallback>
                                                                     {thread.LastMessage.CreatedByName.split(" ").map((name) => name[0]).slice(0, 3).join("")}
                                                                 </AvatarFallback>
