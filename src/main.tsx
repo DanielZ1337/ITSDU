@@ -177,6 +177,13 @@ setInterval(() => {
     })
 }, 1000 * 15) // 1 minute
 
+window.addEventListener('storage', (e) => {
+    // check refresh and access token
+    if (e.key === 'access_token' || e.key === 'refresh_token') {
+        console.log('token changed')
+    }
+})
+
 // Remove Preload scripts loading
 postMessage({payload: 'removeLoading'}, '*')
 

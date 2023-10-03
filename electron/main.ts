@@ -281,7 +281,7 @@ app.whenReady().then(async () => {
                 })
 
                 // manual await for the response to simulate slow network
-                await new Promise(resolve => setTimeout(resolve, 1000))
+                // await new Promise(resolve => setTimeout(resolve, 10000))
                 res.json(data)
             }).listen(8080, () => {
                 console.log('API Proxy Server with CORS enabled is listening on port 8080')

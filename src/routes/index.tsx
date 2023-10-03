@@ -13,6 +13,7 @@ import {
     CourseCardsSortByTypesConst,
     CourseCardsSortByTypesLabels
 } from "@/api-types/extra/course-cards-sort-by-types.ts";
+import {Helmet} from "react-helmet";
 
 function Cards({config}: { config: GETstarredCoursesParams }) {
     const {data} = useGETstarredCourses({
@@ -23,8 +24,12 @@ function Cards({config}: { config: GETstarredCoursesParams }) {
 
     if (data!.EntityArray.length === 0) {
         return (
-            <div className={"m-auto"}>
-                <span className={"text-gray-500 text-sm"}>No starred cards</span>
+            <div className={"flex flex-col w-5/6 sm:w-72 h-36 m-40"}>
+                <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
+                    <span className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                        <ClipboardList/> No courses
+                    </span>
+                </div>
             </div>
         )
     }
@@ -86,11 +91,14 @@ export default function Index() {
 
     return (
         <div className={"flex flex-col flex-1 h-full w-full py-4"}>
+            <Helmet>
+                <title>itslearning</title>
+            </Helmet>
             <div className={"flex flex-row flex-1 gap-4 flex-wrap justify-center"}>
                 <div className={"items-center w-full h-full flex-wrap flex gap-4 justify-center flex-1 my-auto"}>
-                    <div className={"flex flex-col gap-4 w-full px-4"}>
+                    <div className={"flex flex-col gap-4 w-full sm:px-2 lg:px-4 xl:px-10"}>
                         <h1 className={"text-3xl font-bold"}>Starred</h1>
-                        <div className={"flex flex-row gap-4 w-full"}>
+                        <div className={"flex flex-row gap-4 w-full justify-end"}>
                             <Input className={"w-1/3"} placeholder={"Search"} value={searchInput} onChange={(e) => {
                                 setSearchInput(e.target.value)
                             }}/>
@@ -99,7 +107,9 @@ export default function Index() {
                             }} value={selectedRankedBy}
                             >
                                 <SelectTrigger className="w-[180px]">
-                                    <SelectValue placeholder="Theme"/>
+                                    <SelectValue placeholder={"Sort by"} className={"text-left"}>
+                                        {CourseCardsSortByTypesLabels[selectedRankedBy]}
+                                    </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
                                     {Object.entries(CourseCardsSortByTypesConst).map(([key, value]) => (

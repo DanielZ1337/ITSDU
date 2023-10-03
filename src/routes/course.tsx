@@ -1,7 +1,5 @@
-/*eslint-disable no-unused-vars*/
-
 import {Suspense} from "react";
-import {useSearchParams} from "react-router-dom";
+import {useNavigate, useSearchParams} from "react-router-dom";
 import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import {Helmet} from "react-helmet";
@@ -21,43 +19,32 @@ export default function Course() {
     }, {
         suspense: true,
     })
-    // const navigation = useNavigation();
-    // const state = navigation.state;
 
-    /*const {data: courseBasicData} = useQuery(['courseBasicData'], async () => {
-        const {data} = await axios.get(`${baseUrl}restapi/personal/courses/${searchParams.get('id')}/v1`, {
-            params: {
-                'access_token': window.localStorage.getItem('access_token')
-            }
-        })
-        return data
-    }, {
-        suspense: true,
-        refetchInterval: 10000,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchIntervalInBackground: false,
-    })*/
+    const navigate = useNavigate()
 
     if (!courseId) {
         return (
-            <p>Course not found</p>
+            <div className={"m-auto"}>
+                <div className={"flex flex-col gap-4 w-full p-4 items-center"}>
+                    <p className={"text-3xl font-bold text-balance"}>Course not found</p>
+                    <Button variant={"secondary"} size={"lg"} onClick={() => navigate(-1)}>Go back</Button>
+                </div>
+            </div>
         )
     }
 
     return (
-        <div className={"flex gap-4 flex-1"}>
+        <div className={"flex gap-4 flex-1 h-full"}>
             <Helmet>
                 <title>{data!.Title}</title>
             </Helmet>
-            <Splitter direction={SplitDirection.Horizontal}>
-                <div className={"flex flex-col h-full"}>
+            <Splitter direction={SplitDirection.Horizontal} minWidths={[300, 300]} initialSizes={[200, 100]}>
+                <div className={"flex flex-col flex-1"}>
                     <div className={"flex items-end gap-2"}>
                         <h1 className={"text-3xl font-bold text-balance"}>{data!.Title}</h1>
                         <p className={"text-gray-500 flex-shrink-0"}>{data!.Code}</p>
                     </div>
-                    <div className={"flex flex-col gap-4"}>
+                    <div className={"flex flex-col flex-1 gap-4"}>
                         <h2 className={"text-xl font-bold"}>Lightbulletins</h2>
                         <ErrorBoundary
                             FallbackComponent={Fallback}
@@ -71,7 +58,7 @@ export default function Course() {
                     </div>
                 </div>
                 <div
-                    className={"flex flex-col gap-4 min-w-[33vw] overflow-y-auto overflow-x-hidden"}>
+                    className={"flex flex-col gap-4 overflow pr-4"}>
                     <h2 className={"text-xl font-bold"}>Resources</h2>
                     <ErrorBoundary
                         FallbackComponent={Fallback}
