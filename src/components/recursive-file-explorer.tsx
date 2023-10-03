@@ -29,7 +29,6 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
     })
 
     const toggleNested = (name: string | number) => {
-        // @ts-ignore
         setShowNested({...showNested, [name]: !showNested[name]})
     }
 
@@ -43,23 +42,27 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                             <Suspense
                                 fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30}
                                                         type={"bubbles"}/>}>
-                                {/*@ts-ignore*/}
+                                {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
                                 {parent.ElementType === 'Folder' &&
                                     <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
-                                        {showNested[parent.ElementId] ? <FolderOpenIcon className={"shrink-0"}/> :
-                                            <FolderClosedIcon className={"shrink-0"}/>}
-                                        <span className={"ml-2 text-left"}>{parent.Title}<RecursiveFileExplorer
-                                            courseId={courseId} folderId={parent.ElementId}
-                                            isOpen={showNested[parent.ElementId]}/></span>
-                                    </button>}
+                                        {showNested[parent.ElementId] ?
+                                            (
+                                                <FolderOpenIcon className={"shrink-0"}/>
+                                            ) : (
+                                                <FolderClosedIcon className={"shrink-0"}/>
+                                            )
+                                        }
+                                        <span className={"ml-2 text-left"}>
+                                            {parent.Title}
+                                            <RecursiveFileExplorer courseId={courseId} folderId={parent.ElementId}
+                                                                   isOpen={showNested[parent.ElementId]}/>
+                                        </span>
+                                    </button>
+                                }
                             </Suspense>
                         </ErrorBoundary>
                         {/* rendering files */}
-                        {/* @ts-ignore */}
-                        {/*<div style={{display: !showNested[parent.ElementId] && 'none'}}>
-                            {parent && <RecursiveFileExplorer courseId={courseId} folderId={parent.ElementId}/>}
-                        </div>*/}
-                        {/*@ts-ignore*/}
+                        {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
                         {isOpen && parent.ElementType !== 'Folder' && (
                             parent.LearningToolId === LearningToolIdTypes.PDF ? (
                                 <button className={"inline-flex gap-2"}

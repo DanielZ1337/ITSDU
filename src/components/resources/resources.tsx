@@ -14,7 +14,6 @@ type NestedItem = {
     [key: string]: boolean
 }
 
-
 export default function Resources({courseId}: {
     courseId: number
 }) {
@@ -29,7 +28,6 @@ export default function Resources({courseId}: {
     const [showNested, setShowNested] = useState<NestedItem>({})
 
     const toggleNested = (name: string | number) => {
-        // @ts-ignore
         setShowNested({...showNested, [name]: !showNested[name]})
     }
 
@@ -39,7 +37,7 @@ export default function Resources({courseId}: {
                 return (
                     <div key={parent.ElementId} className={""}>
                         {/* rendering folders */}
-                        {/*@ts-ignore*/}
+                        {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
                         {parent.ElementType === 'Folder' &&
                             <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
                                 {showNested[parent.ElementId] ? <FolderOpenIcon className={"shrink-0"}/> :
@@ -47,7 +45,7 @@ export default function Resources({courseId}: {
                                 <span className={"ml-2 text-left"}>{parent.Title}</span>
                             </button>}
                         {/* rendering files */}
-                        {/*@ts-ignore*/}
+                        {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
                         {parent.ElementType !== 'Folder' && (
                             parent.LearningToolId === LearningToolIdTypes.PDF ? (
                                 <button className={"inline-flex gap-2"}
@@ -122,23 +120,3 @@ export default function Resources({courseId}: {
         </div>
     )
 }
-/*
-
-
-const FolderItem = ({folder, onItemClick}: { folder: any, onItemClick: any }) => {
-    const handleItemClick = () => {
-        onItemClick(folder);
-    };
-
-    return (
-        <div>
-      <span onClick={handleItemClick} style={{cursor: 'pointer'}}>
-        {folder.Title}
-      </span>
-        </div>
-    );
-};
-
-const FileItem = ({file}: { file: any }) => {
-    return <div>{file.Title}</div>;
-};*/

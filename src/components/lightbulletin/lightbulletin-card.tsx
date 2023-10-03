@@ -58,7 +58,7 @@ export default function LightbulletinCard({bulletin}: {
                                 bulletin.IsSubscribed = !bulletin.IsSubscribed
                                 toast({
                                     title: "Success",
-                                    description: "You will now receive notifications for this lightbulletin",
+                                    description: bulletin.IsSubscribed ? "You will now receive notifications for this lightbulletin" : "You will no longer receive notifications for this lightbulletin",
                                     duration: 3000,
                                     variant: "success"
                                 })
