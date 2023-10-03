@@ -7,6 +7,7 @@ import ErrorPage from "@/error-page.tsx";
 import {useToast} from "@/components/ui/use-toast.ts";
 import {LearningToolIdTypes} from "@/api-types/extra/learning-tool-id-types.ts";
 import ReactLoading from "react-loading";
+import '@/styles/3-dots-loading.css'
 
 type NestedItem = {
     [key: string]: boolean
@@ -40,7 +41,7 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                         {/* rendering folders */}
                         <ErrorBoundary fallback={<ErrorPage/>}>
                             <Suspense
-                                fallback={<ReactLoading className={"-mt-2"} height={20} width={20} type={"bubbles"}/>}>
+                                fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30} type={"bubbles"}/>}>
                                 {/*@ts-ignore*/}
                                 {parent.ElementType === 'Folder' &&
                                     <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
@@ -68,20 +69,36 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                                                 duration: 3000,
                                             })
                                             await window.itslearning_file_scraping.start(parent.ElementId, parent.Title)
-                                            window.ipcRenderer.on('download:complete', (_, args) => {
+                                            window.ipcRenderer.once('download:complete', (_, args) => {
                                                 console.log(args)
                                                 toast({
                                                     title: 'Downloaded',
                                                     description: parent.Title,
                                                     duration: 3000,
                                                     variant: 'success',
-                                                    onClick: async () => {
-                                                        await window.app.openShell(args)
-                                                        dismiss()
-                                                    }
+                                                    onMouseDown: async () => {
+                                                        // if the user clicks on the toast, open the file
+                                                        // get the time that the mouse was pressed
+                                                        const mouseDownTime = new Date().getTime()
+                                                        // wait for the mouse to be released
+                                                        await new Promise<void>((resolve) => {
+                                                            window.addEventListener('mouseup', () => {
+                                                                resolve()
+                                                            }, {once: true})
+                                                        })
+
+                                                        // if the mouse was pressed for less than 500ms, open the file
+                                                        if (new Date().getTime() - mouseDownTime < 100) {
+                                                            console.log("Opening shell")
+                                                            await window.app.openShell(args)
+                                                            dismiss()
+                                                        } else {
+                                                            console.log("Not opening shell")
+                                                        }
+                                                    },
                                                 })
                                             })
-                                            window.ipcRenderer.on('download:error', (_, args) => {
+                                            window.ipcRenderer.once('download:error', (_, args) => {
                                                 console.log(args)
                                                 toast({
                                                     title: 'Download error',
@@ -92,11 +109,15 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                                             })
                                         }}
                                 >
-                                    <File className={"shrink-0 inline-block"}/> {parent.Title}
+                                    <div className={"inline-flex gap-2"}>
+                                        <File className={"shrink-0 inline-block"}/>
+                                        <p className={"text-left"}>{parent.Title}</p>
+                                    </div>
                                 </button>
                             ) : (
                                 <div className={"inline-flex gap-2"}>
-                                    <File className={"shrink-0 inline-block"}/> {parent.Title}
+                                    <File className={"shrink-0 inline-block"}/>
+                                    <p className={"text-left"}>{parent.Title}</p>
                                 </div>
                             )
                         )}
