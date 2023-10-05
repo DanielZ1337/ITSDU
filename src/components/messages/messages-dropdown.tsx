@@ -101,8 +101,6 @@ export default function MessagesDropdown() {
                                                                     {thread.LastMessage.CreatedByName.split(" ").map((name) => name[0]).slice(0, 3).join("")}
                                                                 </AvatarFallback>
                                                             </Avatar>
-                                                            {/*<img src={"itsl-itslearning-file://icon.ico"} alt={"icon"}
-                                                                 className={"w-8 h-8 rounded-full"}/>*/}
                                                             <span
                                                                 className={"text-sm font-medium group-data-[read=true]:font-light text-foreground line-clamp-2"}>{thread.LastMessage.CreatedByName}</span>
                                                         </span>

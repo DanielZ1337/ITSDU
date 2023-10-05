@@ -116,8 +116,10 @@ if (gotTheLock) {
         console.log('second-instance', argv)
         // Someone tried to run a second instance, we should focus our window.
         if (win) {
-            if (win.isMinimized()) win.restore()
-            win.focus()
+            if (win.isMinimized()){
+                win.restore()
+                win.focus()
+            }
         }
 
         /*// Protocol handler for win32
@@ -494,6 +496,10 @@ app.whenReady().then(async () => {
             itslearningWin.close()
             itslearningWin.destroy()
             win.show()
+        }
+        if (itslearningWin) {
+            // redirect to actual login microsoft sso page
+            itslearningWin.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
         }
     }
 )
