@@ -1,22 +1,29 @@
-import { Input } from "@/components/ui/input.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import React, { FormEvent, useCallback, useEffect } from "react";
+import {Input} from "@/components/ui/input.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import React, {FormEvent, useCallback, useEffect} from "react";
 import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
-import { Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import {Loader2} from "lucide-react";
+import {useToast} from "@/components/ui/use-toast";
+import {useDebounce} from "@uidotdev/usehooks";
 
-export default function LightbulletinCommentForm({ lightbulletinId }: {
+export default function LightbulletinCommentForm({lightbulletinId}: {
     lightbulletinId: number
 }) {
 
     const [comment, setComment] = React.useState<string>("")
-    const { toast } = useToast()
+    const {toast} = useToast()
 
-    const { mutate, isLoading } = usePOSTlightbulletinAddComment({
+    const {mutate, isLoading} = usePOSTlightbulletinAddComment({
         lightBulletinId: lightbulletinId,
-    }, { Comment: comment }, {
+    }, {Comment: comment}, {
         onSuccess: () => {
             setComment("")
+            toast({
+                title: "Success",
+                description: "Comment added successfully",
+                variant: "success",
+                duration: 3000,
+            })
         },
         onError: (err) => {
             toast({
@@ -39,18 +46,17 @@ export default function LightbulletinCommentForm({ lightbulletinId }: {
     }, [comment, mutate])
 
     useEffect(() => {
-        window.addEventListener("keydown", (e) => {
+        function handleKeyDown(e: KeyboardEvent) {
             if (e.key === "Enter" && e.ctrlKey) {
+                console.log("ctrl+enter")
                 handleSubmit(e)
             }
-        })
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
 
         return () => {
-            window.removeEventListener("keydown", (e) => {
-                if (e.key === "Enter" && e.ctrlKey) {
-                    handleSubmit(e)
-                }
-            })
+            window.removeEventListener("keydown", handleKeyDown)
         }
     }, [handleSubmit]);
 
@@ -76,7 +82,7 @@ export default function LightbulletinCommentForm({ lightbulletinId }: {
                     className="w-full"
                     type="submit">
                     {isLoading ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
-                        <Loader2 className="animate-spin inline-block mr-2" size={16} />
+                        <Loader2 className="animate-spin inline-block mr-2" size={16}/>
                         Adding comment...
                     </span> : "Add comment"}
                 </Button>

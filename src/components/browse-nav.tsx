@@ -48,7 +48,7 @@ export default function BrowserNav() {
     }, [location.pathname, location.search, navigation]);
 
     useEffect(() => {
-        window.addEventListener('keydown', (e) => {
+        function handleKeyDown(e: KeyboardEvent) {
             if (e.ctrlKey && e.key === 't') {
                 e.preventDefault()
                 handleDarkModeToggle()
@@ -60,22 +60,10 @@ export default function BrowserNav() {
                     console.log(r)
                 })
             }
-        })
+        }
 
         return () => {
-            window.removeEventListener('keydown', (e) => {
-                if (e.ctrlKey && e.key === 't') {
-                    e.preventDefault()
-                    handleDarkModeToggle()
-                }
-
-                if (e.ctrlKey && e.key === 'q') {
-                    e.preventDefault()
-                    window.app.exit().then(r => {
-                        console.log(r)
-                    })
-                }
-            })
+            window.removeEventListener('keydown', handleKeyDown)
         }
     }, [handleDarkModeToggle]);
     const {data, isLoading} = useGETcurrentUser({
