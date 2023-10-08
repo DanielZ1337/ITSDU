@@ -23,6 +23,7 @@ export default function useGETstarredCourses(params: GETstarredCoursesParams, qu
 
         return res.data;
     }, {
+        suspense: true,
         ...queryConfig
     })
 }
