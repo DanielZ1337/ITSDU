@@ -19,7 +19,6 @@ process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
 
-
 let win: BrowserWindow | null
 let deeplinkingUrl: string | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x

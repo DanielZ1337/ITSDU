@@ -27,6 +27,7 @@ import Profile from "./routes/profile.tsx"
 import Index from "./routes/index.tsx"
 import Course from "./routes/course.tsx"
 import Querytesting from "./routes/querytesting.tsx"
+import Calendar from "./routes/calendar.tsx"
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 
 const router = createHashRouter([
@@ -41,7 +42,12 @@ const router = createHashRouter([
                 index: true,
             },
             {
-                path: "/course",
+                path: "/calendar",
+                element: <SuspenseWrapper><Calendar/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
+            },
+            {
+                path: "/course/:id",
                 element: <SuspenseWrapper><Course/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
@@ -80,13 +86,17 @@ const router = createHashRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <Providers>
-        {/*<React.StrictMode>*/}
-        <RouterProvider fallbackElement={<ErrorPage/>} future={{
-            v7_startTransition: true,
-        }} router={router}/>
-        {/*</React.StrictMode>*/}
-    </Providers>
+    <SuspenseWrapper>
+        <Providers>
+            <SuspenseWrapper>
+                {/*<React.StrictMode>*/}
+                <RouterProvider fallbackElement={<ErrorPage/>} future={{
+                    v7_startTransition: true,
+                }} router={router}/>
+                {/*</React.StrictMode>*/}
+            </SuspenseWrapper>
+        </Providers>
+    </SuspenseWrapper>
 )
 
 /*setInterval(async () => {
@@ -178,13 +188,6 @@ setInterval(() => {
         console.log(err)
     })
 }, 1000 * 15) // 1 minute
-
-window.addEventListener('storage', (e) => {
-    // check refresh and access token
-    if (e.key === 'access_token' || e.key === 'refresh_token') {
-        console.log('token changed')
-    }
-})
 
 // Remove Preload scripts loading
 postMessage({payload: 'removeLoading'}, '*')

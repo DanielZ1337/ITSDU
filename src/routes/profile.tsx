@@ -72,6 +72,10 @@ export default function Profile() {
                         <span>{data?.FullName}</span>
                     </div>
                     <div className="flex justify-between items-center">
+                        <span className="font-semibold">ID:</span>
+                        <span>{data?.PersonId}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
                         <span className="font-semibold">Language:</span>
                         <span>{data?.Language}</span>
                     </div>

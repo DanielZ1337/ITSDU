@@ -8,7 +8,7 @@ export default function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurre
         const res = await axios.get(GETcurrentUserApiUrl(), {
             params: {
                 "access_token": localStorage.getItem('access_token') || '',
-            }
+            },
         });
 
         if (res.status !== 200) throw new Error(res.statusText);
