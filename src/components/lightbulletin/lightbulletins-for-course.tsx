@@ -1,6 +1,5 @@
 import useGETlightbulletinsForCourse from "@/queries/lightbulletin-course/useGETlightbulletinsForCourse.ts";
 import LightbulletinCard from "@/components/lightbulletin/lightbulletin-card.tsx";
-import React from "react";
 
 export default function LightbulletinsForCourse({courseId}: {
     courseId: number

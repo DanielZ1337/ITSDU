@@ -14,6 +14,7 @@ import usePUTlightbulletinUpdateComment from "@/queries/lightbulletin/usePUTligh
 import {useEffect, useState} from "react";
 import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETElightbulletinComment.ts";
 import {Input} from "@/components/ui/input.tsx";
+import {toast} from "@/components/ui/use-toast.ts";
 
 export default function LightbulletinComment({comment}: { comment: ItslearningRestApiEntitiesComment }) {
     const [commentText, setCommentText] = useState(comment.CommentText)
@@ -35,13 +36,11 @@ export default function LightbulletinComment({comment}: { comment: ItslearningRe
             comment.CommentText = commentText
         },
         onError: (err) => {
-            import('@/components/ui/use-toast.ts').then(({toast}) => {
-                toast({
-                    title: "Error",
-                    description: err.message || "An error occurred while trying to update the comment",
-                    variant: "destructive",
-                    duration: 5000,
-                })
+            toast({
+                title: "Error",
+                description: err.message || "An error occurred while trying to update the comment",
+                variant: "destructive",
+                duration: 5000,
             })
         }
     })
@@ -49,17 +48,12 @@ export default function LightbulletinComment({comment}: { comment: ItslearningRe
     const {mutate: deleteComment, isLoading: isDeleting} = useDELETElightbulletinComment({
         commentId: comment.Id,
     }, {
-        onSuccess: () => {
-            setCommentText("")
-        },
         onError: (err) => {
-            import('@/components/ui/use-toast.ts').then(({toast}) => {
-                toast({
-                    title: "Error",
-                    description: err.message || "An error occurred while trying to update the comment",
-                    variant: "destructive",
-                    duration: 5000,
-                })
+            toast({
+                title: "Error",
+                description: err.message || "An error occurred while trying to update the comment",
+                variant: "destructive",
+                duration: 5000,
             })
         }
     })
@@ -142,25 +136,23 @@ export default function LightbulletinComment({comment}: { comment: ItslearningRe
                             )}
                             {comment.AllowDeleteComment && (
                                 <DropdownMenuItem onClick={() => {
-                                    deleteComment(undefined, {
+                                    deleteComment({
+                                        commentId: comment.Id,
+                                    }, {
                                         onSuccess: () => {
-                                            import('@/components/ui/use-toast.ts').then(({toast}) => {
-                                                toast({
-                                                    title: "Success",
-                                                    description: "Comment deleted successfully",
-                                                    variant: "success",
-                                                    duration: 5000,
-                                                })
+                                            toast({
+                                                title: "Success",
+                                                description: "Comment deleted successfully",
+                                                variant: "success",
+                                                duration: 5000,
                                             })
                                         },
                                         onError: (err) => {
-                                            import('@/components/ui/use-toast.ts').then(({toast}) => {
-                                                toast({
-                                                    title: "Error",
-                                                    description: err.message || "An error occurred while trying to delete the comment",
-                                                    variant: "destructive",
-                                                    duration: 5000,
-                                                })
+                                            toast({
+                                                title: "Error",
+                                                description: err.message || "An error occurred while trying to delete the comment",
+                                                variant: "destructive",
+                                                duration: 5000,
                                             })
                                         }
                                     })

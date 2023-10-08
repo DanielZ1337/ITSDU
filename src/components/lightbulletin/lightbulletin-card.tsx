@@ -103,7 +103,7 @@ export default function LightbulletinCard({bulletin}: {
                 </>
             )}
             <div className="mt-2 flex gap-4 truncate text-lg">
-                {bulletin.CommentsCount > 0 && (
+                {/*{bulletin.CommentsCount > 0 && (*/}
                     <Badge
                         onClick={() => setShowComments(!showComments)}
                         variant={"outline"}
@@ -111,7 +111,7 @@ export default function LightbulletinCard({bulletin}: {
                         {bulletin.CommentsCount}
                         <BsChatSquareTextFill className={"mt-1"}/>
                     </Badge>
-                )}
+                {/*)}*/}
                 {bulletin.ResourcesCount > 0 && (
                     <Badge
                         variant={"outline"}
