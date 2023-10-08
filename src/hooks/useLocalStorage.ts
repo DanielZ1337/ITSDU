@@ -1,3 +1,4 @@
+/*
 import {useCallback, useSyncExternalStore} from "react";
 
 export default function useLocalStorage(key: string) {
@@ -37,4 +38,4 @@ export default function useLocalStorage(key: string) {
 function getSnapshot() {
     alert("localStorage changed")
     return localStorage.getItem("item");
-}
+}*/
