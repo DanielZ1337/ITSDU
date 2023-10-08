@@ -4,6 +4,7 @@ import {Button} from "@/components/ui/button.tsx";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 import MessagesDropdown from "@/components/messages/messages-dropdown.tsx";
 import {Suspense} from "react";
+import {MessageCircle} from "lucide-react";
 
 export default function Header() {
 
@@ -62,7 +63,8 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={"flex flex-row items-center justify-center gap-4"}>
-                    <Suspense fallback={<div>Loading...</div>}>
+                    <Suspense fallback={<Button className={"shrink-0"} variant={"ghost"} size={"icon"}><MessageCircle
+                        className={"animate-pulse"}/></Button>}>
                         <MessagesDropdown/>
                     </Suspense>
                     <p className={"text-lg font-semibold line-clamp-1"}>{data?.FullName}</p>

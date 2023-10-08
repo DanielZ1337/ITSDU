@@ -16,17 +16,47 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import {ScrollShadow} from "@nextui-org/react";
 import {UnreadNotificationIndicator} from "@/components/messages/unread-notification-indicator";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
+import {useInView} from "react-intersection-observer";
+import {useEffect} from "react";
 
 export default function MessagesDropdown() {
-    const {data} = useGETinstantMessagesv2({
+    const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETinstantMessagesv2({
         maxThreadCount: 15,
-        maxMessages: 15,
+        // maxMessages: 1,
         threadPage: 0
     }, {
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
+        refetchIntervalInBackground: false,
         suspense: true,
+        getNextPageParam: (lastPage) => {
+            console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
+            if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+                return lastPage.CurrentPageIndex + 1;
+            } else {
+                return undefined;
+            }
+        },
+        getPreviousPageParam: (firstPage) => {
+            if (firstPage.CurrentPageIndex > 0) {
+                return firstPage.CurrentPageIndex - 1;
+            } else {
+                return undefined;
+            }
+        }
     })
+    const {ref, inView} = useInView();
 
-    const threads = data!.EntityArray
+    useEffect(() => {
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            fetchNextPage().then(r => console.log(r)).catch(e => console.log(e))
+        }
+    }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
+
+    const threads = data?.pages.flatMap((page) => page.EntityArray)
+    const total = data?.pages[0].Total
 
     return (
         <DropdownMenu>
@@ -34,12 +64,20 @@ export default function MessagesDropdown() {
                 <Button
                     variant={"ghost"}
                     size={"icon"}
+                    className={"shrink-0"}
                 >
                     <MessageCircle/>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80">
-                <DropdownMenuLabel>Messages</DropdownMenuLabel>
+                <DropdownMenuLabel className={"flex justify-between items-center"}>
+                    <span>
+                        Messages
+                    </span>
+                    <span className={"text-xs text-muted-foreground"}>
+                        {threads && total && `${threads.length}/${total}`}
+                    </span>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator/>
                 <DropdownMenuGroup>
                     {!threads && (
@@ -105,7 +143,7 @@ export default function MessagesDropdown() {
                                                                 className={"text-sm font-medium group-data-[read=true]:font-light text-foreground line-clamp-2"}>{thread.LastMessage.CreatedByName}</span>
                                                         </span>
                                                         <span
-                                                            className="group-data-[read=false]:font-medium text-xs text-muted-foreground w-full line-clamp-3">{thread.LastMessage.Text.substring(0, 300)}</span>
+                                                            className={cn("group-data-[read=false]:font-medium text-xs text-muted-foreground w-full line-clamp-3", thread.LastMessage.MessageId !== thread.LastReadInstantMessageId && "font-semibold")}>{thread.LastMessage.Text.substring(0, 300)}</span>
                                                         <span
                                                             className="text-xs text-muted-foreground">{thread.LastMessage.CreatedLocalDateStamp}</span>
                                                     </div>
@@ -117,6 +155,37 @@ export default function MessagesDropdown() {
                                     </div>
                                 ))
                             )}
+                            {isFetchingNextPage && (
+                                <>
+                                    <Separator
+                                        className={"my-2"}/>
+                                    <div className="flex flex-col items-center justify-center py-6 h-72 w-full">
+                                        <Skeleton className={"w-8 h-8 rounded-full"}/>
+                                        <h3 className="text-foreground font-medium text-xl mt-4">
+                                            Loading
+                                        </h3>
+                                        <p className="text-muted-foreground text-center px-6">
+                                            Loading more messages...
+                                        </p>
+                                    </div>
+                                </>
+                            )}
+                            {!hasNextPage && (
+                                <>
+                                    <Separator
+                                        className={"my-2"}/>
+                                    <div className="flex flex-col items-center justify-center py-6 h-72 w-full">
+                                        <AlertCircle className={"stroke-destructive"}/>
+                                        <h3 className="text-foreground font-medium text-xl mt-4">
+                                            No more messages
+                                        </h3>
+                                        <p className="text-muted-foreground text-center px-6">
+                                            You have reached the end of your messages.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
+                            {hasNextPage && <div ref={ref}/>}
                         </ScrollShadow>
                     )}
                 </DropdownMenuGroup>
