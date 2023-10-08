@@ -1,5 +1,5 @@
-import { ItslearningRestApiEntitiesComment } from "@/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import {ItslearningRestApiEntitiesComment} from "@/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,22 +8,22 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { ChevronDown } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx";
+import {ChevronDown} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx";
 import usePUTlightbulletinUpdateComment from "@/queries/lightbulletin/usePUTlightbulletinUpdateComment.ts";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETElightbulletinComment.ts";
-import { Input } from "@/components/ui/input.tsx";
-import { useToast } from "@/components/ui/use-toast";
+import {Input} from "@/components/ui/input.tsx";
+import {useToast} from "@/components/ui/use-toast";
 
-export default function LightbulletinComment({ comment }: { comment: ItslearningRestApiEntitiesComment }) {
+export default function LightbulletinComment({comment}: { comment: ItslearningRestApiEntitiesComment }) {
     const [commentText, setCommentText] = useState(comment.CommentText)
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [showUpdate, setShowUpdate] = useState<boolean>(false)
-    const { toast } = useToast()
-    const { mutate: updateComment, isLoading: isUpdating } = usePUTlightbulletinUpdateComment({
+    const {toast} = useToast()
+    const {mutate: updateComment, isLoading: isUpdating} = usePUTlightbulletinUpdateComment({
         commentId: comment.Id,
-    }, { Comment: commentText }, {
+    }, {Comment: commentText}, {
         onSuccess: () => {
             setIsEditing(false)
             toast({
@@ -44,7 +44,7 @@ export default function LightbulletinComment({ comment }: { comment: Itslearning
         }
     })
 
-    const { mutate: deleteComment, isLoading: isDeleting } = useDELETElightbulletinComment({
+    const {mutate: deleteComment, isLoading: isDeleting} = useDELETElightbulletinComment({
         commentId: comment.Id,
     }, {
         onError: (err) => {
@@ -65,7 +65,7 @@ export default function LightbulletinComment({ comment }: { comment: Itslearning
         <div className="flex items-start space-x-2">
             <Avatar>
                 <AvatarImage src={comment.Author.ProfileImageUrlSmall}
-                    alt={comment.Author.FullName} />
+                             alt={comment.Author.FullName}/>
                 <AvatarFallback>
                     {comment.Author.FullName.split(" ").map((name) => name[0]).join("")}
                 </AvatarFallback>
@@ -85,23 +85,23 @@ export default function LightbulletinComment({ comment }: { comment: Itslearning
                     >
                         <Input type="text" className="mb-2 w-full" value={commentText} onChange={(e) => {
                             setCommentText(e.target.value)
-                        }} />
+                        }}/>
                         <div className="flex gap-2 mb-2">
                             <Button variant={"ghost"} size={"sm"} onClick={() => setIsEditing(false)}>Cancel</Button>
                             {showUpdate && (
                                 <Button variant={"outline"} size={"sm"} type={"submit"}
-                                    disabled={commentText.length === 0 || isDeleting || isUpdating || !showUpdate}
-                                    className={"inline-flex justify-center items-center text-center space-x-2"}>
+                                        disabled={commentText.length === 0 || isDeleting || isUpdating || !showUpdate}
+                                        className={"inline-flex justify-center items-center text-center space-x-2"}>
                                     {isUpdating ? (
                                         <span
                                             className={"inline-flex shrink-0 text-center justify-center items-center"}>
                                             <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24">
+                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                 viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10"
-                                                    stroke="currentColor" strokeWidth="4" />
+                                                        stroke="currentColor" strokeWidth="4"/>
                                                 <path className="opacity-75" fill="currentColor"
-                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                                             </svg>
                                             Updating...
                                         </span>
@@ -120,16 +120,16 @@ export default function LightbulletinComment({ comment }: { comment: Itslearning
             </div>
             {comment.Author.PersonId === 467633 && (
                 <>
-                    <div className={"flex-grow"} />
+                    <div className={"flex-grow"}/>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant={"ghost"} size={"icon"} className={"rounded-full hover:shadow"}>
-                                <ChevronDown />
+                                <ChevronDown/>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator/>
                             {comment.AllowEditComment && (
                                 <DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
                             )}

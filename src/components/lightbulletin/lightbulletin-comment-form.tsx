@@ -4,7 +4,6 @@ import React, {FormEvent, useCallback, useEffect} from "react";
 import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
 import {Loader2} from "lucide-react";
 import {useToast} from "@/components/ui/use-toast";
-import {useDebounce} from "@uidotdev/usehooks";
 
 export default function LightbulletinCommentForm({lightbulletinId}: {
     lightbulletinId: number
