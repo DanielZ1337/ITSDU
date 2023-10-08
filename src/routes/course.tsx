@@ -1,5 +1,5 @@
 import {Suspense} from "react";
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import {Helmet} from "react-helmet";
@@ -12,8 +12,8 @@ import {ErrorBoundary} from "react-error-boundary";
 import {Button} from "@/components/ui/button.tsx";
 
 export default function Course() {
-    let [searchParams] = useSearchParams();
-    const courseId = Number(searchParams.get('id'))
+    const params = useParams();
+    const courseId = Number(params.id)
     const {data} = useGETcourseBasic({
         courseId: courseId
     }, {
