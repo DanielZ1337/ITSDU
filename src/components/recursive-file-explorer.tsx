@@ -8,6 +8,9 @@ import {useToast} from "@/components/ui/use-toast.ts";
 import {LearningToolIdTypes} from "@/api-types/extra/learning-tool-id-types.ts";
 import ReactLoading from "react-loading";
 import '@/styles/3-dots-loading.css'
+import {
+    ItsolutionsItslUtilsConstantsElementType
+} from "@/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 
 type NestedItem = {
     [key: string]: boolean
@@ -43,7 +46,7 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                                 fallback={<ReactLoading className={"loading-dots -ml-0.5 -mt-2"} height={30} width={30}
                                                         type={"bubbles"}/>}>
                                 {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-                                {parent.ElementType === 'Folder' &&
+                                {parent.ElementType === ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] &&
                                     <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
                                         {showNested[parent.ElementId] ?
                                             (
@@ -63,7 +66,7 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                         </ErrorBoundary>
                         {/* rendering files */}
                         {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-                        {isOpen && parent.ElementType !== 'Folder' && (
+                        {isOpen && parent.ElementType !== ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
                             parent.LearningToolId === LearningToolIdTypes.PDF ? (
                                 <button className={"inline-flex gap-2"}
                                         onClick={async () => {

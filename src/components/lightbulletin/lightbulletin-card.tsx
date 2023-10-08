@@ -8,19 +8,27 @@ import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTligh
 import {useToast} from "@/components/ui/use-toast.ts";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
+import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbulletinResources.ts";
 
 export default function LightbulletinCard({bulletin}: {
     bulletin: GETlightbulletinsForCourse['EntityArray'][0]
 }) {
     const [readMore, setReadMore] = useState(false);
     const [hasReadMore, setHasReadMore] = useState<boolean>(false)
-    const textRef = React.useRef<HTMLParagraphElement>(null);
+    const textRef = React.useRef<HTMLPreElement>(null);
     const [showComments, setShowComments] = useState<boolean>(false)
+    const [showResources, setShowResources] = useState<boolean>(false)
 
     const {mutate, isLoading} = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     }, {
         isSubscribed: !bulletin.IsSubscribed
+    })
+
+    const {data: Resources} = useGETlightbulletinResources({
+        bulletinId: bulletin.LightBulletinId,
+    }, {
+        enabled: bulletin.ResourcesCount > 0,
     })
 
     const {toast} = useToast()
@@ -39,12 +47,12 @@ export default function LightbulletinCard({bulletin}: {
              data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
              className="h-fit group p-4 has data-[hasreadmore=true]:hover:bg-foreground/15 data-[readmore=true]:hover:bg-foreground/15 rounded-md transition-all duration-200 bg-foreground/10 shadow-md hover:shadow-lg overflow-hidden">
             <div className="flex justify-between">
-                <p ref={textRef} onClick={() => {
+                <pre ref={textRef} onClick={() => {
                     setReadMore(!readMore)
                 }}
-                   className={"font-sans font-semibold tracking-tight leading-snug group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
+                     className={"text-wrap font-sans font-semibold tracking-tight leading-snug group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
                     {bulletin.Text}
-                </p>
+                </pre>
                 <Button
                     disabled={isLoading}
                     onClick={() => {
@@ -82,6 +90,22 @@ export default function LightbulletinCard({bulletin}: {
                     )}
                 </Button>
             </div>
+            {showResources && (
+                <div className="mt-4 mb-4 flex flex-col space-y-4">
+                    {Resources!.EntityArray.map((resource) => (
+                        <div className={"hover:cursor-pointer"} key={resource.ElementId} onClick={() => {
+                            window.app.openExternal(resource.ContentUrl, true)
+                        }}>
+                            <div className="flex items-center space-x-2 text-blue-500 hover:text-blue-600">
+                                <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"}/>
+                                <span className="truncate">{resource.Title}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+
             <p className="text-gray-500 truncate group-data-[marginonpublished=true]:mt-4 group-data-[marginonpublished=false]:mt-0">
                 Published by{' '}
                 <a
@@ -94,11 +118,13 @@ export default function LightbulletinCard({bulletin}: {
             </p>
             {showComments && (
                 <>
-                    <Suspense fallback={
-                        <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
-                    }>
-                        <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
-                    </Suspense>
+                    {bulletin.CommentsCount > 0 && (
+                        <Suspense fallback={
+                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
+                        }>
+                            <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
+                        </Suspense>
+                    )}
                     <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId}/>
                 </>
             )}
@@ -114,6 +140,7 @@ export default function LightbulletinCard({bulletin}: {
                 {/*)}*/}
                 {bulletin.ResourcesCount > 0 && (
                     <Badge
+                        onClick={() => setShowResources(!showResources)}
                         variant={"outline"}
                         className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
                         {bulletin.ResourcesCount}

@@ -115,7 +115,7 @@ if (gotTheLock) {
         console.log('second-instance', argv)
         // Someone tried to run a second instance, we should focus our window.
         if (win) {
-            if (win.isMinimized()){
+            if (win.isMinimized()) {
                 win.restore()
                 win.focus()
             }
@@ -154,6 +154,21 @@ app.on('will-finish-launching', function () {
 
 app.whenReady().then(async () => {
         const ses = session.defaultSession
+        ipcMain.handle('app:openExternal', async (_, url, sso) => {
+            // open the url with the default browser and get sso url
+            if (sso) {
+                const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+                    params: {
+                        'access_token': await win.webContents.executeJavaScript(`window.localStorage.getItem('access_token')`)
+                    }
+                })
+                url = data.Url
+            }
+
+            // open the url with the default browser
+            const shell = await import('electron').then(m => m.shell)
+            await shell.openExternal(url)
+        })
         ipcMain.handle('app:getDownloadPath', async () => {
             console.log(app.getPath('downloads'))
             return app.getPath('downloads')
@@ -213,8 +228,18 @@ app.whenReady().then(async () => {
 
                 const iframeSrc = await scrapeWindow.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
                 await scrapeWindow.loadURL(iframeSrc)
-                const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType').getAttribute('href')`)
-                const fileLink = 'https://resource.itslearning.com' + downloadHref
+                // const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType').getAttribute('href')`)
+                // const fileLink = 'https://resource.itslearning.com' + downloadHref
+                //document.querySelector('#aspnetForm').action
+                const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#aspnetForm').action`)
+                // get LearningObjectId and LearningObjectInstanceId from the action url
+                const regex = /LearningObjectId=(.*)&LearningObjectInstanceId=(.*)/gm;
+                const matches = regex.exec(downloadHref)
+                if (!matches) throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')
+                const LearningObjectId = matches[1]
+                const LearningObjectInstanceId = matches[2]
+                // https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=365284744&LearningObjectInstanceId=510275481
+                const fileLink = `https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=${LearningObjectId}&LearningObjectInstanceId=${LearningObjectInstanceId}`
                 scrapeWindow.close()
                 return fileLink
             } catch (e) {

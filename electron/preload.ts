@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('app', {
     getDownloadPath: () => ipcRenderer.invoke('app:getDownloadPath'),
     openShell: (path: string) => ipcRenderer.invoke('app:openShell', path),
     openItem: (path: string) => ipcRenderer.invoke('app:openItem', path),
+    openExternal: (url: string, sso: boolean = true) => ipcRenderer.invoke('app:openExternal', url, sso),
 })
 
 contextBridge.exposeInMainWorld('itslearning_file_scraping', {
@@ -75,6 +76,8 @@ declare global {
             openShell: (path: string) => Promise<void>
             // eslint-disable-next-line no-unused-vars
             openItem: (path: string) => Promise<void>
+            // eslint-disable-next-line no-unused-vars
+            openExternal: (url: string, sso?: boolean) => Promise<void>
         },
         download: {
             // eslint-disable-next-line no-unused-vars

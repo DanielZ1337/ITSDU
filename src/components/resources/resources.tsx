@@ -9,6 +9,9 @@ import {useToast} from "@/components/ui/use-toast.ts";
 import {LearningToolIdTypes} from "@/api-types/extra/learning-tool-id-types.ts";
 import ReactLoading from "react-loading";
 import '@/styles/3-dots-loading.css'
+import {
+    ItsolutionsItslUtilsConstantsElementType
+} from "@/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 
 type NestedItem = {
     [key: string]: boolean
@@ -38,7 +41,7 @@ export default function Resources({courseId}: {
                     <div key={parent.ElementId} className={""}>
                         {/* rendering folders */}
                         {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-                        {parent.ElementType === 'Folder' &&
+                        {parent.ElementType === ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] &&
                             <button className={"inline-flex"} onClick={() => toggleNested(parent.ElementId)}>
                                 {showNested[parent.ElementId] ? <FolderOpenIcon className={"shrink-0"}/> :
                                     <FolderClosedIcon className={"shrink-0"}/>}
@@ -46,7 +49,7 @@ export default function Resources({courseId}: {
                             </button>}
                         {/* rendering files */}
                         {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-                        {parent.ElementType !== 'Folder' && (
+                        {parent.ElementType !== ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
                             parent.LearningToolId === LearningToolIdTypes.PDF ? (
                                 <button className={"inline-flex gap-2"}
                                         onClick={async () => {
