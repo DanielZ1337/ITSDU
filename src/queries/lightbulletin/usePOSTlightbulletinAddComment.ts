@@ -1,14 +1,13 @@
 import {useMutation, UseMutationOptions} from "@tanstack/react-query";
-import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
-    POSTlightbulletinAddComment,
     POSTlightbulletinAddCommentApiUrl,
     POSTlightbulletinAddCommentBody,
     POSTlightbulletinAddCommentParams
 } from "@/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
+import axios from "axios";
 
-export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, body: POSTlightbulletinAddCommentBody, queryConfig?: UseMutationOptions<POSTlightbulletinAddComment, Error, POSTlightbulletinAddComment, string[]>) {
+export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, body: POSTlightbulletinAddCommentBody, queryConfig?: UseMutationOptions<POSTlightbulletinAddCommentBody, Error, POSTlightbulletinAddCommentBody, string[]>) {
 
     return useMutation(['lightbulletinAddComment', ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.post(POSTlightbulletinAddCommentApiUrl({

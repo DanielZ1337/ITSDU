@@ -8,7 +8,7 @@ import {
     PUTlightbulletinUpdateCommentParams
 } from "@/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
 
-export default function usePUTlightbulletinUpdateComment(params: PUTlightbulletinUpdateCommentParams, body: PUTlightbulletinUpdateCommentBody, queryConfig?: UseMutationOptions<PUTlightbulletinUpdateComment, Error, PUTlightbulletinUpdateComment, string[]>) {
+export default function usePUTlightbulletinUpdateComment(params: PUTlightbulletinUpdateCommentParams, body: PUTlightbulletinUpdateCommentBody, queryConfig?: UseMutationOptions<PUTlightbulletinUpdateComment, Error, PUTlightbulletinUpdateCommentBody, string[]>) {
 
     return useMutation(['lightbulletinUpdateComment', ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.put(PUTlightbulletinUpdateCommentApiUrl({

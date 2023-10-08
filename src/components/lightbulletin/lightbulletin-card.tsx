@@ -1,11 +1,13 @@
 import {GETlightbulletinsForCourse} from "@/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
-import React, {useEffect, useState} from "react";
+import React, {Suspense, useEffect, useState} from "react";
 import {BsChatSquareTextFill, BsFileEarmarkFill} from "react-icons/bs";
 import {Badge} from "@/components/ui/badge.tsx";
-import {BellOff, BellRing} from "lucide-react";
+import {BellOff, BellRing, Loader2} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
 import {useToast} from "@/components/ui/use-toast.ts";
+import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
+import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 
 export default function LightbulletinCard({bulletin}: {
     bulletin: GETlightbulletinsForCourse['EntityArray'][0]
@@ -13,8 +15,9 @@ export default function LightbulletinCard({bulletin}: {
     const [readMore, setReadMore] = useState(false);
     const [hasReadMore, setHasReadMore] = useState<boolean>(false)
     const textRef = React.useRef<HTMLParagraphElement>(null);
+    const [showComments, setShowComments] = useState<boolean>(false)
 
-    const {mutate, data, isLoading} = usePUTlightbulletinNotifications({
+    const {mutate, isLoading} = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     }, {
         isSubscribed: !bulletin.IsSubscribed
@@ -29,11 +32,6 @@ export default function LightbulletinCard({bulletin}: {
             }
         }, 1000)
     }, []);
-
-    useEffect(() => {
-        console.log(data)
-        console.log(isLoading)
-    }, [isLoading, data]);
 
 
     return (
@@ -94,19 +92,34 @@ export default function LightbulletinCard({bulletin}: {
                 </a>{' '}
                 on {new Date(bulletin.PublishedDate).toLocaleDateString()}
             </p>
+            {showComments && (
+                <>
+                    <Suspense fallback={
+                        <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
+                    }>
+                        <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
+                    </Suspense>
+                    <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId}/>
+                </>
+            )}
             <div className="mt-2 flex gap-4 truncate text-lg">
-                <Badge
-                    variant={"outline"}
-                    className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
-                    {bulletin.CommentsCount}
-                    <BsChatSquareTextFill className={"mt-1"}/>
-                </Badge>
-                <Badge
-                    variant={"outline"}
-                    className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
-                    {bulletin.ResourcesCount}
-                    <BsFileEarmarkFill/>
-                </Badge>
+                {bulletin.CommentsCount > 0 && (
+                    <Badge
+                        onClick={() => setShowComments(!showComments)}
+                        variant={"outline"}
+                        className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
+                        {bulletin.CommentsCount}
+                        <BsChatSquareTextFill className={"mt-1"}/>
+                    </Badge>
+                )}
+                {bulletin.ResourcesCount > 0 && (
+                    <Badge
+                        variant={"outline"}
+                        className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
+                        {bulletin.ResourcesCount}
+                        <BsFileEarmarkFill/>
+                    </Badge>
+                )}
             </div>
             {/*<div className="mt-4 flex justify-end">
                 {hasReadMore && (

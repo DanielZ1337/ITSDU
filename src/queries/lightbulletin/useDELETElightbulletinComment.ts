@@ -7,7 +7,7 @@ import {
     DELETElightbulletinCommentParams
 } from "@/api-types/lightbulletin/DELETElightbulletinComment.ts";
 
-export default function useDELETElightbulletinComment(params: DELETElightbulletinCommentParams, queryConfig?: UseMutationOptions<DELETElightbulletinComment, Error, DELETElightbulletinComment, string[]>) {
+export default function useDELETElightbulletinComment(params: DELETElightbulletinCommentParams, queryConfig?: UseMutationOptions<DELETElightbulletinComment, Error, undefined, string[]>) {
 
     return useMutation(['lightbulletinComment', ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.delete(DELETElightbulletinCommentApiUrl({
