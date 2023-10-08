@@ -104,13 +104,13 @@ export default function LightbulletinCard({bulletin}: {
             )}
             <div className="mt-2 flex gap-4 truncate text-lg">
                 {/*{bulletin.CommentsCount > 0 && (*/}
-                    <Badge
-                        onClick={() => setShowComments(!showComments)}
-                        variant={"outline"}
-                        className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
-                        {bulletin.CommentsCount}
-                        <BsChatSquareTextFill className={"mt-1"}/>
-                    </Badge>
+                <Badge
+                    onClick={() => setShowComments(!showComments)}
+                    variant={"outline"}
+                    className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
+                    {bulletin.CommentsCount}
+                    <BsChatSquareTextFill className={"mt-1"}/>
+                </Badge>
                 {/*)}*/}
                 {bulletin.ResourcesCount > 0 && (
                     <Badge

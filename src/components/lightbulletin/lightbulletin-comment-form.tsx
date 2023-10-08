@@ -1,29 +1,29 @@
-import {Input} from "@/components/ui/input.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import React, {FormEvent, useCallback, useEffect} from "react";
+import { Input } from "@/components/ui/input.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import React, { FormEvent, useCallback, useEffect } from "react";
 import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
-import {Loader2} from "lucide-react";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-export default function LightbulletinCommentForm({lightbulletinId}: {
+export default function LightbulletinCommentForm({ lightbulletinId }: {
     lightbulletinId: number
 }) {
 
     const [comment, setComment] = React.useState<string>("")
+    const { toast } = useToast()
 
-    const {mutate, isLoading} = usePOSTlightbulletinAddComment({
+    const { mutate, isLoading } = usePOSTlightbulletinAddComment({
         lightBulletinId: lightbulletinId,
-    }, {Comment: comment}, {
+    }, { Comment: comment }, {
         onSuccess: () => {
             setComment("")
         },
         onError: (err) => {
-            import('@/components/ui/use-toast.ts').then(({toast}) => {
-                toast({
-                    title: "Error",
-                    description: err.message || "An error occurred while trying to add the comment",
-                    variant: "destructive",
-                    duration: 5000,
-                })
+            toast({
+                title: "Error",
+                description: err.message || "An error occurred while trying to add the comment",
+                variant: "destructive",
+                duration: 5000,
             })
         }
     })
@@ -76,7 +76,7 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
                     className="w-full"
                     type="submit">
                     {isLoading ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
-                        <Loader2 className="animate-spin inline-block mr-2" size={16}/>
+                        <Loader2 className="animate-spin inline-block mr-2" size={16} />
                         Adding comment...
                     </span> : "Add comment"}
                 </Button>
