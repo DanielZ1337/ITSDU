@@ -5,7 +5,7 @@ import {
     GETstarredCourses,
     GETstarredCoursesApiUrl,
     GETstarredCoursesParams
-} from "@/api-types/course-cards/GETstarredCourses.ts";
+} from "@/types/api-types/course-cards/GETstarredCourses.ts";
 
 export default function useGETstarredCourses(params: GETstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses, Error, GETstarredCourses, string[]>) {
 

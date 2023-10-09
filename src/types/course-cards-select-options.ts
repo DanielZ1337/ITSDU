@@ -1,0 +1,1 @@
+export type CourseCardsSelectOptions = "Starred" | "Unstarred" | "All"

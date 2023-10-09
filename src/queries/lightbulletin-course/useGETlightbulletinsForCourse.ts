@@ -5,7 +5,7 @@ import {
     GETlightbulletinsForCourse,
     GETlightbulletinsForCourseApiUrl,
     GETlightbulletinsForCourseParams
-} from "@/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
+} from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
 
 export default function useGETlightbulletinsForCourse(params: GETlightbulletinsForCourseParams, queryConfig?: UseQueryOptions<GETlightbulletinsForCourse, Error, GETlightbulletinsForCourse, string[]>) {
 

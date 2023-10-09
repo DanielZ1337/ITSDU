@@ -5,7 +5,7 @@ import {
     GETcourseFollowUpTasks,
     GETcourseFollowUpTasksApiUrl,
     GETcourseFollowUpTasksParams
-} from "@/api-types/courses/GETcourseFollowUpTasks.ts";
+} from "@/types/api-types/courses/GETcourseFollowUpTasks.ts";
 
 export default function useGETcourseFollowUpTasks(params: GETcourseFollowUpTasksParams, queryConfig?: UseQueryOptions<GETcourseFollowUpTasks, Error, GETcourseFollowUpTasks, string[]>) {
 

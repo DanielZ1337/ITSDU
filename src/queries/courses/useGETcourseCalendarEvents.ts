@@ -5,7 +5,7 @@ import {
     GETcourseCalenderEvents,
     GETcourseCalenderEventsApiUrl,
     GETcourseCalenderEventsParams
-} from "@/api-types/courses/GETcourseCalenderEvents.ts";
+} from "@/types/api-types/courses/GETcourseCalenderEvents.ts";
 
 export default function useGETcourseCalendarEvents(params: GETcourseCalenderEventsParams, queryConfig?: UseQueryOptions<GETcourseCalenderEvents, Error, GETcourseCalenderEvents, string[]>) {
 

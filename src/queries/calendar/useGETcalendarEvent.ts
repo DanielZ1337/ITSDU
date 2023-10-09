@@ -2,7 +2,7 @@ import {
     GETcalenderEvent,
     GETcalenderEventApiUrl,
     GETcalenderEventParams
-} from "@/api-types/calendar/GETcalenderEvent.ts";
+} from "@/types/api-types/calendar/GETcalenderEvent.ts";
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";

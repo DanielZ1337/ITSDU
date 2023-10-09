@@ -1,4 +1,5 @@
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {CourseCardsSelectOptions} from "@/types/course-cards-select-options.ts";
 
 const CourseCardsStarredOptions = {
     "All": "All",
@@ -14,7 +15,7 @@ export default function CourseCardStarredSelect({
                                                 }: {
     selectedStarredOption: string
     // eslint-disable-next-line no-unused-vars
-    setSelectedStarredOption: (value: string) => void
+    setSelectedStarredOption: (value: CourseCardsSelectOptions) => void
 }) {
 
     return (

@@ -6,7 +6,7 @@ import {
     POSTcourseCardSettingsApiUrl,
     POSTcourseCardSettingsBody,
     POSTcourseCardSettingsParams
-} from "@/api-types/course-cards/POSTcourseCardSettings.ts";
+} from "@/types/api-types/course-cards/POSTcourseCardSettings.ts";
 
 export default function usePOSTcourseCardSettings(params: POSTcourseCardSettingsParams, body: POSTcourseCardSettingsBody, queryConfig?: UseMutationOptions<POSTcourseCardSettings, Error, POSTcourseCardSettings, string[]>) {
 

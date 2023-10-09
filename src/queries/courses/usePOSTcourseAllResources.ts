@@ -6,7 +6,7 @@ import {
     POSTcourseAllResourcesApiUrl,
     POSTcourseAllResourcesBody,
     POSTcourseAllResourcesParams
-} from "@/api-types/courses/POSTcourseAllResources.ts";
+} from "@/types/api-types/courses/POSTcourseAllResources.ts";
 
 export default function usePOSTcourseAllResources(params: POSTcourseAllResourcesParams, body: POSTcourseAllResourcesBody, queryConfig?: UseMutationOptions<POSTcourseAllResources, Error, POSTcourseAllResources, string[]>) {
 

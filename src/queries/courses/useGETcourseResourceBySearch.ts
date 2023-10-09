@@ -5,7 +5,7 @@ import {
     GETcourseResourcesBySearch,
     GETcourseResourcesBySearchApiUrl,
     GETcourseResourcesBySearchParams
-} from "@/api-types/courses/GETcourseResourcesBySearch.ts";
+} from "@/types/api-types/courses/GETcourseResourcesBySearch.ts";
 
 export default function useGETcourseResourceBySearch(params: GETcourseResourcesBySearchParams, queryConfig?: UseQueryOptions<GETcourseResourcesBySearch, Error, GETcourseResourcesBySearch, string[]>) {
 

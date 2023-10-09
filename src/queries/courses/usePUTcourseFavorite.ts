@@ -5,7 +5,7 @@ import {
     PUTcourseFavorite,
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams
-} from "@/api-types/courses/PUTcourseFavorite.ts";
+} from "@/types/api-types/courses/PUTcourseFavorite.ts";
 
 export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams, string[]>) {
 

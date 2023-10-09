@@ -1,4 +1,4 @@
-import {GETlightbulletinsForCourse} from "@/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
+import {GETlightbulletinsForCourse} from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
 import React, {Suspense, useEffect, useState} from "react";
 import {BsChatSquareTextFill, BsFileEarmarkFill} from "react-icons/bs";
 import {Badge} from "@/components/ui/badge.tsx";

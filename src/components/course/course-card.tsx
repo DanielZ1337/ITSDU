@@ -1,7 +1,7 @@
 import {ClipboardList, ListTodo, Megaphone, StarIcon, UserSquare2} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 import {useNavigate} from "react-router-dom";
-import {ItslearningRestApiEntitiesCourseCard} from "@/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
+import {ItslearningRestApiEntitiesCourseCard} from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {useToast} from "@/components/ui/use-toast";

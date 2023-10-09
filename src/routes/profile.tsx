@@ -5,7 +5,7 @@ import {useState} from "react";
 import {Label} from "@radix-ui/react-dropdown-menu";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 import {Button} from "@/components/ui/button.tsx";
-import {GETssoUrlApiUrl} from "@/api-types/sso/GETssoUrl.ts";
+import {GETssoUrlApiUrl} from "@/types/api-types/sso/GETssoUrl.ts";
 
 export default function Profile() {
     const [requestUrl, setRequestUrl] = useState<string>()

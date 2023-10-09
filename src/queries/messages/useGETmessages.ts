@@ -1,6 +1,6 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import {GETmessages, GETmessagesApiUrl, GETmessagesParams} from "@/api-types/messages/GETmessages.ts";
+import {GETmessages, GETmessagesApiUrl, GETmessagesParams} from "@/types/api-types/messages/GETmessages.ts";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 
 export default function useGETmessages(params: GETmessagesParams, queryConfig?: UseQueryOptions<GETmessages, Error, GETmessages, string[]>) {

@@ -5,12 +5,12 @@ import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderRes
 import {ErrorBoundary} from "react-error-boundary";
 import ErrorPage from "@/error-page.tsx";
 import {useToast} from "@/components/ui/use-toast.ts";
-import {LearningToolIdTypes} from "@/api-types/extra/learning-tool-id-types.ts";
+import {LearningToolIdTypes} from "@/types/api-types/extra/learning-tool-id-types.ts";
 import ReactLoading from "react-loading";
 import '@/styles/3-dots-loading.css'
 import {
     ItsolutionsItslUtilsConstantsElementType
-} from "@/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
+} from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 
 type NestedItem = {
     [key: string]: boolean

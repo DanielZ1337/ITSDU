@@ -1,4 +1,4 @@
-import {ItslearningRestApiEntitiesComment} from "@/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
+import {ItslearningRestApiEntitiesComment} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {
     DropdownMenu,

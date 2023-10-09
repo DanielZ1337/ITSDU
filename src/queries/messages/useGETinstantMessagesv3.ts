@@ -5,7 +5,7 @@ import {
     GETinstantMessagesv3,
     GETinstantMessagesv3ApiUrl,
     GETinstantMessagesv3Params
-} from "@/api-types/messages/GETinstantMessagesv3.ts";
+} from "@/types/api-types/messages/GETinstantMessagesv3.ts";
 
 export default function useGETinstantMessagesv3(params: GETinstantMessagesv3Params, queryConfig?: UseQueryOptions<GETinstantMessagesv3, Error, GETinstantMessagesv3, string[]>) {
 

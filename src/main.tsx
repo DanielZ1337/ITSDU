@@ -29,6 +29,7 @@ import Course from "./routes/course.tsx"
 import Querytesting from "./routes/querytesting.tsx"
 import Calendar from "./routes/calendar.tsx"
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
+import Messages from "@/components/messages/messages.tsx";
 
 const router = createHashRouter([
     {
@@ -59,6 +60,11 @@ const router = createHashRouter([
             {
                 path: "/profile",
                 element: <SuspenseWrapper><Profile/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
+            },
+            {
+                path: "/messages",
+                element: <SuspenseWrapper><Messages/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
             {
@@ -178,7 +184,7 @@ setInterval(() => {
         if (unreadMessages[unreadMessages.length - 1].count > 0 && unreadMessages[unreadMessages.length - 1].timestamp - unreadMessages[0].timestamp < 1000 * 60 * 5) {
             if (unreadMessages[unreadMessages.length - 1].count !== unreadMessages[unreadMessages.length - 2].count) {
                 new Notification('itslearning', {
-                    body: `You have ${unreadMessages[unreadMessages.length - 1].count} unread messages`,
+                    body: `You have ${unreadMessages[unreadMessages.length - 1].count} unread message${unreadMessages[unreadMessages.length - 1].count > 1 ? 's' : ''}`,
                     icon: 'itsl-itslearning-file://icon.ico'
                 })
 

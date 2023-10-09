@@ -5,7 +5,7 @@ import {
     GETcourseFeatures,
     GETcourseFeaturesApiUrl,
     GETcourseFeaturesParams
-} from "@/api-types/course-features/GETcourseFeatures.ts";
+} from "@/types/api-types/course-features/GETcourseFeatures.ts";
 
 export default function useGETcourseFeatures(params: GETcourseFeaturesParams, queryConfig?: UseQueryOptions<GETcourseFeatures, Error, GETcourseFeatures, string[]>) {
 

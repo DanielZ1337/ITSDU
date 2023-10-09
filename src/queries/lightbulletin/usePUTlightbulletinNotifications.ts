@@ -6,7 +6,7 @@ import {
     PUTlightbulletinNotificationsApiUrl,
     PUTlightbulletinNotificationsBody,
     PUTlightbulletinNotificationsParams
-} from "@/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
+} from "@/types/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
 
 export default function usePUTlightbulletinNotifications(params: PUTlightbulletinNotificationsParams, body: PUTlightbulletinNotificationsBody, queryConfig?: UseMutationOptions<PUTlightbulletinNotifications, Error, PUTlightbulletinNotificationsBody, string[]>) {
 

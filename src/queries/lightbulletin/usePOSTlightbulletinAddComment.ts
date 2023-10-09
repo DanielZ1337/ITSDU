@@ -4,7 +4,7 @@ import {
     POSTlightbulletinAddCommentApiUrl,
     POSTlightbulletinAddCommentBody,
     POSTlightbulletinAddCommentParams
-} from "@/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
+} from "@/types/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
 import axios from "axios";
 
 export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, body: POSTlightbulletinAddCommentBody, queryConfig?: UseMutationOptions<POSTlightbulletinAddCommentBody, Error, POSTlightbulletinAddCommentBody, string[]>) {

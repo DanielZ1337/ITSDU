@@ -1,7 +1,7 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {GETbulletin, GETbulletinApiUrl, GETbulletinParams} from "@/api-types/lightbulletin/GETbulletin.ts";
+import {GETbulletin, GETbulletinApiUrl, GETbulletinParams} from "@/types/api-types/lightbulletin/GETbulletin.ts";
 
 export default function useGETbulletin(params: GETbulletinParams, queryConfig?: UseQueryOptions<GETbulletin, Error, GETbulletin, string[]>) {
 

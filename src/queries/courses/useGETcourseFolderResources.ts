@@ -5,7 +5,7 @@ import {
     GETcourseFolderResources,
     GETcourseFolderResourcesApiUrl,
     GETcourseFolderResourcesParams
-} from "@/api-types/courses/GETcourseFolderResources.ts";
+} from "@/types/api-types/courses/GETcourseFolderResources.ts";
 
 export default function useGETcourseFolderResources(params: GETcourseFolderResourcesParams, queryConfig?: UseQueryOptions<GETcourseFolderResources, Error, GETcourseFolderResources, string[]>) {
 

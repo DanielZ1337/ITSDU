@@ -4,7 +4,7 @@ import {
     GETcalendarEvents,
     GETcalendarEventsParams,
     GETcalenderEventsApiUrl
-} from "@/api-types/calendar/GETcalendarEvents.ts";
+} from "@/types/api-types/calendar/GETcalendarEvents.ts";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 
 export default function useGETcalendarEvents(params: GETcalendarEventsParams, queryConfig?: UseQueryOptions<GETcalendarEvents, Error, GETcalendarEvents, string[]>) {

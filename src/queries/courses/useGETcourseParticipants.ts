@@ -5,7 +5,7 @@ import {
     GETcourseParticipants,
     GETcourseParticipantsApiUrl,
     GETcourseParticipantsParams
-} from "@/api-types/courses/GETcourseParticipants.ts";
+} from "@/types/api-types/courses/GETcourseParticipants.ts";
 
 export default function useGETcourseParticipants(params: GETcourseParticipantsParams, queryConfig?: UseQueryOptions<GETcourseParticipants, Error, GETcourseParticipants, string[]>) {
 

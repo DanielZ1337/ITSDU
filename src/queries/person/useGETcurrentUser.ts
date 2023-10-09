@@ -1,6 +1,6 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import {GETcurrentUser, GETcurrentUserApiUrl} from "@/api-types/person/GETcurrentUser.ts";
+import {GETcurrentUser, GETcurrentUserApiUrl} from "@/types/api-types/person/GETcurrentUser.ts";
 
 export default function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>) {
 

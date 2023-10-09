@@ -5,7 +5,7 @@ import {
     GETcourseCardSettings,
     GETcourseCardSettingsApiUrl,
     GETcourseCardSettingsParams
-} from "@/api-types/course-cards/GETcourseCardSettings.ts";
+} from "@/types/api-types/course-cards/GETcourseCardSettings.ts";
 
 export default function useGETcourseCardSettings(params: GETcourseCardSettingsParams, queryConfig?: UseQueryOptions<GETcourseCardSettings, Error, GETcourseCardSettings, string[]>) {
 

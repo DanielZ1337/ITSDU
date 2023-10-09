@@ -2,7 +2,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {
     CourseCardsSortByTypesConst,
     CourseCardsSortByTypesLabels
-} from "@/api-types/extra/course-cards-sort-by-types.ts";
+} from "@/types/api-types/extra/course-cards-sort-by-types.ts";
 
 export default function CourseSortSelect({
                                              selectedRankedBy,

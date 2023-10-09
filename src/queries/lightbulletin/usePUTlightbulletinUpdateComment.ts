@@ -6,7 +6,7 @@ import {
     PUTlightbulletinUpdateCommentApiUrl,
     PUTlightbulletinUpdateCommentBody,
     PUTlightbulletinUpdateCommentParams
-} from "@/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
+} from "@/types/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
 
 export default function usePUTlightbulletinUpdateComment(params: PUTlightbulletinUpdateCommentParams, body: PUTlightbulletinUpdateCommentBody, queryConfig?: UseMutationOptions<PUTlightbulletinUpdateComment, Error, PUTlightbulletinUpdateCommentBody, string[]>) {
 

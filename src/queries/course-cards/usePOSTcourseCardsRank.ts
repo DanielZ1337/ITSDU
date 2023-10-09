@@ -1,6 +1,9 @@
 import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
-import {POSTcourseCardsRankApiUrl, POSTcourseCardsRankBody} from "@/api-types/course-cards/POSTcourseCardsRank.ts";
+import {
+    POSTcourseCardsRankApiUrl,
+    POSTcourseCardsRankBody
+} from "@/types/api-types/course-cards/POSTcourseCardsRank.ts";
 
 export default function usePOSTcourseCardsRank(body: POSTcourseCardsRankBody, queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>) {
 

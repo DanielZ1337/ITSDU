@@ -5,7 +5,7 @@ import {
     GETcourseRootResources,
     GETcourseRootResourcesApiUrl,
     GETcourseRootResourcesParams
-} from "@/api-types/courses/GETcourseRootResources.ts";
+} from "@/types/api-types/courses/GETcourseRootResources.ts";
 
 export default function useGETcourseRootResources(params: GETcourseRootResourcesParams, queryConfig?: UseQueryOptions<GETcourseRootResources, Error, GETcourseRootResources, string[]>) {
 

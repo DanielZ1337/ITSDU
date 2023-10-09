@@ -5,7 +5,7 @@ import {
     GETlightbulletinResources,
     GETlightbulletinResourcesApiUrl,
     GETlightbulletinResourcesParams
-} from "@/api-types/lightbulletin/GETlightbulletinResources.ts";
+} from "@/types/api-types/lightbulletin/GETlightbulletinResources.ts";
 
 export default function useGETlightbulletinResources(params: GETlightbulletinResourcesParams, queryConfig?: UseQueryOptions<GETlightbulletinResources, Error, GETlightbulletinResources, string[]>) {
 

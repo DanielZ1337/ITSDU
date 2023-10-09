@@ -5,7 +5,7 @@ import {
     GETlightbulletinAllComments,
     GETlightbulletinAllCommentsApiUrl,
     GETlightbulletinAllCommentsParams
-} from "@/api-types/lightbulletin/GETlightbulletinAllComments.ts";
+} from "@/types/api-types/lightbulletin/GETlightbulletinAllComments.ts";
 
 export default function useGETlightbulletinAllComments(params: GETlightbulletinAllCommentsParams, queryConfig?: UseQueryOptions<GETlightbulletinAllComments, Error, GETlightbulletinAllComments, string[]>) {
 

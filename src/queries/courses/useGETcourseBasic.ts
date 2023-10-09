@@ -1,7 +1,7 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {GETcourseBasic, GETcourseBasicApiUrl, GETcourseBasicParams} from "@/api-types/courses/GETcourseBasic.ts";
+import {GETcourseBasic, GETcourseBasicApiUrl, GETcourseBasicParams} from "@/types/api-types/courses/GETcourseBasic.ts";
 
 export default function useGETcourseBasic(params: GETcourseBasicParams, queryConfig?: UseQueryOptions<GETcourseBasic, Error, GETcourseBasic, string[]>) {
 

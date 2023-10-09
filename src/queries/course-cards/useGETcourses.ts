@@ -5,12 +5,12 @@ import {
     GETstarredCourses,
     GETstarredCoursesApiUrl,
     GETstarredCoursesParams
-} from "@/api-types/course-cards/GETstarredCourses.ts";
+} from "@/types/api-types/course-cards/GETstarredCourses.ts";
 import {
     GETunstarredCourses,
     GETunstarredCoursesApiUrl,
     GETunstarredCoursesParams
-} from "@/api-types/course-cards/GETunstarredCourses.ts";
+} from "@/types/api-types/course-cards/GETunstarredCourses.ts";
 
 export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All" = "Starred", params: GETstarredCoursesParams | GETunstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses | GETunstarredCourses, Error, GETstarredCourses | GETunstarredCourses, string[]>) {
 

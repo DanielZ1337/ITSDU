@@ -5,7 +5,7 @@ import {
     DELETElightbulletinComment,
     DELETElightbulletinCommentApiUrl,
     DELETElightbulletinCommentParams
-} from "@/api-types/lightbulletin/DELETElightbulletinComment.ts";
+} from "@/types/api-types/lightbulletin/DELETElightbulletinComment.ts";
 
 export default function useDELETElightbulletinComment(params: DELETElightbulletinCommentParams, queryConfig?: UseMutationOptions<DELETElightbulletinComment, Error, DELETElightbulletinCommentParams, string[]>) {
 
