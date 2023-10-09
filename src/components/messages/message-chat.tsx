@@ -59,7 +59,7 @@ export default function MessageChat({
                 </p>
                 <div
                     className={cn("mt-1 bg-foreground/10 p-2 rounded-lg inline-block", me ? 'float-right bg-blue-500 text-white' : 'float-left')}>
-                    <p>{he.decode(messageText)}</p>
+                    <p className={"whitespace-pre-wrap"}>{he.decode(messageText)}</p>
                 </div>
             </div>
         </div>

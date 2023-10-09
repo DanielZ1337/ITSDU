@@ -6,11 +6,11 @@ export default function MessagesSidebarChat({ title, author, pictureUrl, setCurr
     title: string
     author: string
     pictureUrl: string
-    setCurrentChat: (id: number | undefined) => void
+    setCurrentChat: () => void
 }) {
     return (
         <div
-            onClick={() => setCurrentChat(undefined)}
+            onClick={setCurrentChat}
             className="p-4 border-b cursor-pointer flex items-center hover:bg-foreground/10 transition-colors">
             <div className="mr-3">
                 <Avatar>

@@ -6,6 +6,8 @@ import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 import {useEffect, useState} from "react";
 import MessagesSidebarChat from "@/components/messages/messages-sidebar-chat.tsx";
 import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2.ts";
+import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
+import {useQueryClient} from "@tanstack/react-query";
 
 
 export default function Messages() {
@@ -23,6 +25,7 @@ export default function Messages() {
 
     const [currentChat, setCurrentChat] = useState<number | undefined>()
     const [message, setMessage] = useState<string>('')
+    const queryClient = useQueryClient()
 
     const {mutate, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
         InstantMessageThreadId: currentChat !== undefined ? messages?.pages[0]!.EntityArray[currentChat].InstantMessageThreadId! : undefined,
@@ -30,6 +33,9 @@ export default function Messages() {
     }, {
         onSuccess: () => {
             setMessage('')
+            queryClient.invalidateQueries({
+                queryKey: ["messagesv2"]
+            })
         },
         onError: (error) => {
             console.log(error)
@@ -50,18 +56,22 @@ export default function Messages() {
         })
     }
 
+    console.log(messages?.pages[0]!.EntityArray[currentChat!])
+
     return (
         <div className="flex w-full h-full overflow-y-hidden flex-1">
-            <div className="w-1/4 border-r overflow-y-auto overflow-x-hidden">
-                {messages?.pages[0]!.EntityArray.map((message, idx) => (
-                    <MessagesSidebarChat
-                        key={message.InstantMessageThreadId}
-                        title={message.LastMessage.Text}
-                        author={message.LastMessage.CreatedByShortName}
-                        pictureUrl={message.LastMessage.CreatedByAvatar}
-                        setCurrentChat={() => setCurrentChat(idx)}
-                    />
-                ))}
+            <div className="w-1/4 border-r overflow-y-hidden overflow-x-hidden">
+                <MessagesSidebar>
+                    {messages?.pages[0]!.EntityArray.map((message, idx) => (
+                        <MessagesSidebarChat
+                            key={message.InstantMessageThreadId}
+                            title={message.LastMessage.Text}
+                            author={message.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")!}
+                            pictureUrl={message.LastMessage.CreatedByAvatar}
+                            setCurrentChat={() => setCurrentChat(idx)}
+                        />
+                    ))}
+                </MessagesSidebar>
             </div>
             <div className="flex flex-col w-3/4">
                 <div className="p-4 border-b flex items-center justify-between">
@@ -82,6 +92,7 @@ export default function Messages() {
                         ))
                     )}
                 </div>
+                {currentChat !== undefined && (
                 <div className="p-4 border-t">
                     <form className="flex items-center" onSubmit={handleSubmit}>
                         <Input className="w-full mr-2 h-8"
@@ -89,13 +100,14 @@ export default function Messages() {
                                onChange={(e) => setMessage(e.target.value)}
                                placeholder="Type your message..." type="text"/>
                         <Button variant={"outline"}
-                                className="px-3 py-2 text-white rounded-md h-8 text-center" type="submit"
+                                className="px-3 py-2     rounded-md h-8 text-center" type="submit"
                                 disabled={isSendingMessage}
                         >
                             {isSendingMessage ? "Sending..." : "Send"}
                         </Button>
                     </form>
                 </div>
+                )}
             </div>
         </div>
     )
