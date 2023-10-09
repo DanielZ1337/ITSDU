@@ -65,7 +65,7 @@ export default function Messages() {
             </div>
             <div className="flex flex-col w-3/4">
                 <div className="p-4 border-b flex items-center justify-between">
-                    <h2 className="font-semibold text-lg">Thread 1</h2>
+                    <h2 className="font-semibold text-lg">{currentChat !== undefined ? messages?.pages[0]!.EntityArray[currentChat].Participants.map((participant) => participant.FullName).join(", ") : ""}</h2>
                     <Button variant={"outline"} type="button">
                         Other Actions
                     </Button>
@@ -77,6 +77,7 @@ export default function Messages() {
                                          messageText={message.Text}
                                          author={message.CreatedByName} time={message.Created}
                                          edited={message.IsEdited}
+                                         key={message.MessageId}
                             />
                         ))
                     )}

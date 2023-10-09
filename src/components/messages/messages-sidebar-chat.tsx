@@ -1,6 +1,8 @@
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+/* eslint-disable no-unused-vars */
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import he from "he";
 
-export default function MessagesSidebarChat({title, author, pictureUrl, setCurrentChat}: {
+export default function MessagesSidebarChat({ title, author, pictureUrl, setCurrentChat }: {
     title: string
     author: string
     pictureUrl: string
@@ -13,7 +15,7 @@ export default function MessagesSidebarChat({title, author, pictureUrl, setCurre
             <div className="mr-3">
                 <Avatar>
                     <AvatarImage src={pictureUrl}
-                                 alt={author}/>
+                        alt={author} />
                     <AvatarFallback>
                         {author.split(" ").map((name) => name[0]).slice(0, 3).join("")}
                     </AvatarFallback>
@@ -21,7 +23,7 @@ export default function MessagesSidebarChat({title, author, pictureUrl, setCurre
             </div>
             <div className={"w-5/6"}>
                 <h2 className="font-semibold text-base">{author}</h2>
-                <p className="text-sm text-gray-500 line-clamp-1">{title}</p>
+                <p className="text-sm text-gray-500 line-clamp-1">{he.decode(title)}</p>
             </div>
         </div>
     )

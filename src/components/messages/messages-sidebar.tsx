@@ -1,4 +1,4 @@
-import MessagesSidebarChat from "@/components/messages/messages-sidebar-chat.tsx";
+/* import MessagesSidebarChat from "@/components/messages/messages-sidebar-chat.tsx";
 import {GETinstantMessagesv2} from "@/types/api-types/messages/GETinstantMessagesv2.ts";
 
 export default function MessagesSidebar({
@@ -20,4 +20,4 @@ export default function MessagesSidebar({
             ))}
         </div>
     )
-}
+} */
