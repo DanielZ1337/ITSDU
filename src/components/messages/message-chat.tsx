@@ -17,13 +17,19 @@ export default function MessageChat({
                                         author,
                                         time,
                                         edited,
+                                        attachmentName,
+                                        attachmentUrl,
+                                        isSystemMessage,
                                     }: {
     me: boolean
     pictureUrl: string
     messageText: string
     author: string
-    time: Date
+    time: string
     edited?: boolean
+    attachmentName?: string
+    attachmentUrl?: string
+    isSystemMessage?: boolean
 }) {
 
     return (
@@ -54,12 +60,16 @@ export default function MessageChat({
             </div>
             <div className={cn(me ? "order-1" : "order-2")}>
                 <p className={cn("text-sm text-gray-500 ", me ? 'text-end' : 'text-start')}>
-                    {new Date(time).getHours() < 10 ? "0" + new Date(time).getHours() : new Date(time).getHours()}:{new Date(time).getMinutes() < 10 ? "0" + new Date(time).getMinutes() : new Date(time).getMinutes()}
+                    {time}
                     {edited && <span className={"text-gray-400"}> (edited)</span>}
                 </p>
                 <div
                     className={cn("mt-1 bg-foreground/10 p-2 rounded-lg inline-block", me ? 'float-right bg-blue-500 text-white' : 'float-left')}>
-                    <p className={"whitespace-pre-wrap"}>{he.decode(messageText)}</p>
+                    <p className={cn("whitespace-pre-wrap break-all", isSystemMessage && 'text-foreground/80 italic')}>{he.decode(messageText)}</p>
+                    {attachmentUrl && (
+                        <a href={attachmentUrl} target={"_blank"} rel={"noopener noreferrer"}
+                           className={"text-blue-500 hover:underline"}>{attachmentName}</a>
+                    )}
                 </div>
             </div>
         </div>
