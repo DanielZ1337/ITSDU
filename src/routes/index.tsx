@@ -24,7 +24,7 @@ export default function Index() {
     useEffect(() => {
         console.log(isCoursesBulkEditing)
     }, [isCoursesBulkEditing]);
-    
+
     return (
         <div className={"flex flex-col flex-1 h-full w-full py-4"}>
             <Helmet>
@@ -44,7 +44,9 @@ export default function Index() {
                                               setSelectedRankedBy={setSelectedRankedBy}/>
                             <CourseCardStarredSelect selectedStarredOption={selectedStarredOption}
                                                      setSelectedStarredOption={setSelectedStarredOption}/>
-                            <Toggle aria-label="Toggle bulk edit" onPressedChange={setIsCoursesBulkEditing} checked={isCoursesBulkEditing} defaultPressed={isCoursesBulkEditing} variant={"outline"} className={"py-2 px-3"}>
+                            <Toggle aria-label="Toggle bulk edit" onPressedChange={setIsCoursesBulkEditing}
+                                    defaultPressed={isCoursesBulkEditing}
+                                    variant={"outline"} className={"py-2 px-3"}>
                                 <Pencil className={"stroke-foreground shrink-0 m-1 h-6 w-6"}/>
                             </Toggle>
                         </div>

@@ -42,7 +42,7 @@ export default function MessageChat({
 
     const isVideo = attachmentUrl && attachmentName.match(/\.(mp4|webm|ogg)$/)
 
-    const {toast} = useToast()
+    const {toast,dismiss} = useToast()
 
     if (isSystemMessage) return (
         <p className={cn("whitespace-pre-wrap break-all text-center text-gray-500 italic")}>{he.decode(messageText)}</p>

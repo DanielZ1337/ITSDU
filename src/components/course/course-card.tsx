@@ -75,12 +75,12 @@ export default function CourseCard({card}: {
                                 defaultChecked={card.IsFavouriteCourse}
                                 checked={card.IsFavouriteCourse}
                                 defaultSelected={card.IsFavouriteCourse}
-                                onChange={() => {
+                                /*onChange={() => {
                                     setCoursesBulkEdit({
                                         ...coursesBulkEdit,
                                         [card.CourseId]: !card.IsFavouriteCourse,
                                     })
-                                }}
+                                }}*/
                             />
                         </div>
                     )}
