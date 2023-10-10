@@ -1,10 +1,13 @@
-import {ClipboardList, ListTodo, Megaphone, StarIcon, UserSquare2} from "lucide-react";
+import {ClipboardList, ListTodo, Loader2, Megaphone, StarIcon, UserSquare2} from "lucide-react";
 import {cn} from "@/lib/utils.ts";
 import {useNavigate} from "react-router-dom";
 import {ItslearningRestApiEntitiesCourseCard} from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {useToast} from "@/components/ui/use-toast";
+import {useAtom} from "jotai/index";
+import {CoursesBulkStarEditAtom, isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
+import {Checkbox} from "@nextui-org/react";
 
 export default function CourseCard({card}: {
     card: ItslearningRestApiEntitiesCourseCard
@@ -14,6 +17,8 @@ export default function CourseCard({card}: {
     const {mutate, isLoading} = usePUTcourseFavorite({
         courseId: card.CourseId,
     })
+    const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom)
+    const [coursesBulkEdit, setCoursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
 
     return (
         <div key={card.CourseId}
@@ -56,9 +61,29 @@ export default function CourseCard({card}: {
                             })
                         }}
                         className={"hover:cursor-pointer hover:bg-black/10 w-fit h-fit rounded-full p-1"}>
-                        <StarIcon
-                            className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')}/>
+                        {!isCoursesBulkEditing ? isLoading ? (
+                            <Loader2 className={"stroke-black shrink-0 m-1 h-6 w-6 animate-spin"}/>
+                        ) : (
+                            <StarIcon
+                                className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')}/>
+                        ) : undefined}
                     </Button>
+                    {isCoursesBulkEditing && (
+                        <div className={"hover:bg-background/10 rounded-full"}>
+                            <Checkbox
+                                className={"m-0 p-0 w-fit max-h-[20px] max-w-[20px] flex-shrink-0 flex-grow-0"}
+                                defaultChecked={card.IsFavouriteCourse}
+                                checked={card.IsFavouriteCourse}
+                                defaultSelected={card.IsFavouriteCourse}
+                                onChange={() => {
+                                    setCoursesBulkEdit({
+                                        ...coursesBulkEdit,
+                                        [card.CourseId]: !card.IsFavouriteCourse,
+                                    })
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className={"flex gap-2"}>
                     {card.NumberOfAnnouncements > 0 && (

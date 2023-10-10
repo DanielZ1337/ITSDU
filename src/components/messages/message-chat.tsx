@@ -217,24 +217,3 @@ export default function MessageChat({
         </div>
     )
 }
-
-/*
-return (
-    <div className={cn("mb-4 flex", me ? "justify-end items-end" : "justify-start items-start")}>
-        <div className="mr-3">
-            <Avatar>
-                <AvatarImage src={pictureUrl}
-                             alt={author}/>
-                <AvatarFallback>
-                    {author.split(" ").map((name) => name[0]).slice(0, 3).join("")}
-                </AvatarFallback>
-            </Avatar>
-        </div>
-        <div>
-            <p className="text-sm text-gray-500">{new Date(time).toLocaleString()}</p>
-            <div className="mt-1 bg-foreground/10 p-2 rounded-lg inline-block">
-                <p>{messageText}</p>
-            </div>
-        </div>
-    </div>
-)*/

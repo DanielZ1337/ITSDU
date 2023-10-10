@@ -1,5 +1,5 @@
-import {StarIcon} from "lucide-react";
-import {Suspense, useState} from "react";
+import {EditIcon, Pencil, StarIcon} from "lucide-react";
+import {Suspense, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
 import {useDebounce} from "@uidotdev/usehooks";
 import {Skeleton} from "@/components/ui/skeleton"
@@ -9,13 +9,22 @@ import CourseSortSelect from "@/components/course/course-sort-select.tsx";
 import CourseCardStarredSelect from "@/components/course/course-card-starred-select.tsx";
 import CourseCards from "@/components/course/course-cards.tsx";
 import {CourseCardsSelectOptions} from "@/types/course-cards-select-options.ts";
+import {CoursesBulkStarEditAtom, isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
+import {useAtom} from "jotai";
+import {Toggle} from "@/components/ui/toggle.tsx";
 
 export default function Index() {
     const [searchInput, setSearchInput] = useState<string>('')
     const debouncedSearchTerm = useDebounce(searchInput, 200);
     const [selectedRankedBy, setSelectedRankedBy] = useState<CourseCardsSortByTypes>("Rank")
     const [selectedStarredOption, setSelectedStarredOption] = useState<CourseCardsSelectOptions>("Starred")
+    const [coursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
+    const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom)
 
+    useEffect(() => {
+        console.log(isCoursesBulkEditing)
+    }, [isCoursesBulkEditing]);
+    
     return (
         <div className={"flex flex-col flex-1 h-full w-full py-4"}>
             <Helmet>
@@ -35,6 +44,9 @@ export default function Index() {
                                               setSelectedRankedBy={setSelectedRankedBy}/>
                             <CourseCardStarredSelect selectedStarredOption={selectedStarredOption}
                                                      setSelectedStarredOption={setSelectedStarredOption}/>
+                            <Toggle aria-label="Toggle bulk edit" onPressedChange={setIsCoursesBulkEditing} checked={isCoursesBulkEditing} defaultPressed={isCoursesBulkEditing} variant={"outline"} className={"py-2 px-3"}>
+                                <Pencil className={"stroke-foreground shrink-0 m-1 h-6 w-6"}/>
+                            </Toggle>
                         </div>
                         {searchInput.length > 0 && (
                             <span
