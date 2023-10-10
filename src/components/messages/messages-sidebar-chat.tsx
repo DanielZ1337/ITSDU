@@ -1,17 +1,22 @@
 /* eslint-disable no-unused-vars */
+import { currentChatAtom } from "@/atoms/current-chat";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import { cn } from "@/lib/utils";
 import he from "he";
+import { useAtom } from "jotai";
 
-export default function MessagesSidebarChat({ title, author, pictureUrl, setCurrentChat }: {
+export default function MessagesSidebarChat({ title, author, pictureUrl, id }: {
     title: string
     author: string
     pictureUrl: string
-    setCurrentChat: () => void
+    id: number
 }) {
+    const [currentChatAtomId, setcurrentChatAtomId] = useAtom(currentChatAtom)
+
     return (
         <div
-            onClick={setCurrentChat}
-            className="p-4 border-b cursor-pointer flex items-center hover:bg-foreground/10 transition-colors">
+            onClick={() => setcurrentChatAtomId(id === currentChatAtomId ? undefined : id)}
+            className={cn("p-4 border-b cursor-pointer flex items-center hover:bg-foreground/10 transition-colors", id === currentChatAtomId && 'bg-foreground/10')}>
             <div className="mr-3">
                 <Avatar>
                     <AvatarImage src={pictureUrl}
