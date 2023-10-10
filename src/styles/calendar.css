@@ -30,23 +30,3 @@
     overflow-y: scroll !important;
     overflow-x: hidden !important;
 }
-
-* {
-    scrollbar-width: auto !important;
-    scrollbar-color: #5e5e5e rgba(0, 0, 0, 0) !important;
-}
-
-*::-webkit-scrollbar {
-    width: 8px !important;
-}
-
-*::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0) !important;
-}
-
-*::-webkit-scrollbar-thumb {
-    background-color: #5e5e5e !important;
-    border-radius: 10px !important;
-    border: 3px solid rgba(0, 0, 0, 0) !important;
-}
-
