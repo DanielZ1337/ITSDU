@@ -1,27 +1,27 @@
-import {Button} from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
 import MessageChat from "@/components/messages/message-chat.tsx";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MessagesSidebarChat from "@/components/messages/messages-sidebar-chat.tsx";
 import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2.ts";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
-import {useQueryClient} from "@tanstack/react-query";
-import {currentChatAtom} from '@/atoms/current-chat.ts';
-import {useAtom} from "jotai";
-import {Textarea} from "@/components/ui/textarea"
-import {useToast} from "@/components/ui/use-toast.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { currentChatAtom } from '@/atoms/current-chat.ts';
+import { useAtom } from "jotai";
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/components/ui/use-toast.ts";
 import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
-import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
 import {
     ItslearningRestApiEntitiesReferencedInstantMessageType
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ReferencedInstantMessageType.ts";
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread.ts";
-import {Input} from "@/components/ui/input.tsx";
+import { Input } from "@/components/ui/input.tsx";
 
 
 export default function Messages() {
-    const {data: messages} = useGETinstantMessagesv2({
+    const { data: messages } = useGETinstantMessagesv2({
         maxMessages: 10,
         threadPage: 0,
         maxThreadCount: 10,
@@ -29,14 +29,14 @@ export default function Messages() {
         suspense: true,
     })
 
-    const {data: user} = useGETcurrentUser({
+    const { data: user } = useGETcurrentUser({
         suspense: true,
     })
 
     const [currentChat] = useAtom(currentChatAtom)
     const [message, setMessage] = useState<string>('')
     const queryClient = useQueryClient()
-    const {toast} = useToast()
+    const { toast } = useToast()
     const [newThreadName, setNewThreadName] = useState<string>('')
     const [isSettingNewThreadName, setIsSettingNewThreadName] = useState<boolean>(false)
 
@@ -44,7 +44,7 @@ export default function Messages() {
     const chatRef = useRef<HTMLDivElement>(null)
     const [recipientsSelected, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
 
-    const {mutate: sendMessage, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
+    const { mutate: sendMessage, isLoading: isSendingMessage } = usePOSTinstantMessagev2({
         InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
         ToPersonIds: currentChat === -1 ? recipientsSelected.map((recipient) => recipient.Id) : undefined,
         SendAsIndividualMessages: currentChat === -1 ? false : undefined,
@@ -95,7 +95,7 @@ export default function Messages() {
         if (currentChat !== undefined && currentChat !== -1 && messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Messages.EntityArray.length) {
             chatRef.current?.scrollTo({
                 top: chatRef.current?.scrollHeight,
-                behavior: "smooth",
+                behavior: "instant",
             })
         }
     }, [currentChat, messages?.pages]);
@@ -112,7 +112,7 @@ export default function Messages() {
         return () => window.removeEventListener('keydown', handleSendShortcut)
     }, [handleSubmit])
 
-    const {mutate: editThreadName, isLoading:isPendingThreadName} = usePUTinstantMessageThread({
+    const { mutate: editThreadName, isLoading: isPendingThreadName } = usePUTinstantMessageThread({
         threadId: currentChat!
     }, {
         UpdateName: true,
@@ -179,7 +179,7 @@ export default function Messages() {
                                 Name: newThreadName,
                             })
                         }}>
-                            <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)}/>
+                            <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)} />
                             <Button disabled={newThreadName === '' || isPendingThreadName}>
                                 {isPendingThreadName ? "Saving..." : "Save"}
                             </Button>
@@ -187,11 +187,10 @@ export default function Messages() {
                     ) : (
                         <h2 className="font-semibold text-lg">
                             {currentChat !== undefined && currentChat !== -1
-                                // include name
-                                ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Name || messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")!
+                                ? messages?.pages[0].EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Name || messages?.pages[0].EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")
                                 : currentChat === -1 && recipientsSelected.length === 0
                                     ? "New chat" : recipientsSelected.length > 0
-                                        ? recipientsSelected.map((recipient) => recipient.SearchLabel).join(", ") : "Select a chat"
+                                        ? currentChat !== undefined && "Select a chat" ? recipientsSelected.map((recipient) => recipient.SearchLabel).join(", ") : "Select a chat" : "Select a chat"
                             }
                         </h2>
                     )}
@@ -201,28 +200,29 @@ export default function Messages() {
                                 Other Actions
                             </Button>
                             <Button variant={"outline"} type="button"
-                                    onClick={() => setIsSettingNewThreadName(!isSettingNewThreadName)}>
+                                onClick={() => setIsSettingNewThreadName(!isSettingNewThreadName)}>
                                 {isSettingNewThreadName ? "Cancel" : "Edit name"}
                             </Button>
                         </div>
                     )}
                     {currentChat !== undefined && currentChat === -1 && (
-                        <MessagesAddRecipients textareaRef={textareaRef}/>
+                        <MessagesAddRecipients textareaRef={textareaRef} />
                     )}
                 </div>
                 <div className="flex-1 p-4 overflow-x-hidden" ref={chatRef}>
                     {currentChat !== undefined && currentChat !== -1 && (
                         messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Messages.EntityArray.map((message) => (
                             <MessageChat me={user!.PersonId === message.CreatedBy}
-                                         pictureUrl={message.CreatedByAvatar}
-                                         messageText={message.Text}
-                                         author={message.CreatedByName}
-                                         time={message.CreatedRelative}
-                                         edited={message.IsEdited}
-                                         key={message.MessageId}
-                                         attachmentName={message.AttachmentName}
-                                         attachmentUrl={message.AttachmentUrl}
-                                         isSystemMessage={message.IsSystemMessage}
+                                pictureUrl={message.CreatedByAvatar}
+                                messageText={message.Text}
+                                author={message.CreatedByName}
+                                time={message.CreatedRelative}
+                                edited={message.IsEdited}
+                                key={message.MessageId}
+                                attachmentName={message.AttachmentName}
+                                attachmentUrl={message.AttachmentUrl}
+                                isSystemMessage={message.IsSystemMessage}
+                                canDelete={message.CanDelete}
                             />
                         ))
                     )}
@@ -231,18 +231,18 @@ export default function Messages() {
                     <div className="p-4 border-t max-h-64">
                         <form className="flex items-center" onSubmit={handleSubmit}>
                             <Textarea rows={1} className="w-full mr-2 min-h-[2.5rem] max-h-48 overflow-hidden"
-                                      ref={textareaRef}
-                                      onInput={(e) => {
-                                          // resize textarea
-                                          e.currentTarget.style.height = "auto"
-                                          e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
-                                      }}
-                                      value={message}
-                                      onChange={(e) => setMessage(e.target.value)}
-                                      placeholder="Type your message..."/>
+                                ref={textareaRef}
+                                onInput={(e) => {
+                                    // resize textarea
+                                    e.currentTarget.style.height = "auto"
+                                    e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
+                                }}
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type your message..." />
                             <Button variant={"outline"}
-                                    className="rounded-full" type="submit"
-                                    disabled={isSendingMessage}
+                                className="rounded-full" type="submit"
+                                disabled={isSendingMessage}
                             >
                                 {isSendingMessage ? "Sending..." : "Send"}
                             </Button>

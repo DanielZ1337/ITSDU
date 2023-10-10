@@ -47,8 +47,16 @@ contextBridge.exposeInMainWorld('itslearning_file_scraping', {
             resourceLink: downloadLink,
             filename: slugify(filename),
         })
-    }
+    },
+})
 
+contextBridge.exposeInMainWorld('download', {
+    external: async (url:string, filename: string) => {
+        ipcRenderer.invoke('download:external', {
+            url,
+            filename: slugify(filename),
+        })
+    }
 })
 
 // edit window object and type definition
@@ -82,6 +90,8 @@ declare global {
         download: {
             // eslint-disable-next-line no-unused-vars
             start: (elementId: number, filename: string) => Promise<void>
+            // eslint-disable-next-line no-unused-vars
+            external: (url: string, filename: string) => Promise<void>
         },
         itslearning_file_scraping: {
             // eslint-disable-next-line no-unused-vars
