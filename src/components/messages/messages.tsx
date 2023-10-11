@@ -1,27 +1,30 @@
-import {Button} from "@/components/ui/button.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
 import MessageChat from "@/components/messages/message-chat.tsx";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import MessagesSidebarChat from "@/components/messages/messages-sidebar-chat.tsx";
 import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2.ts";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
-import {useQueryClient} from "@tanstack/react-query";
-import {currentChatAtom} from '@/atoms/current-chat.ts';
-import {useAtom} from "jotai";
-import {Textarea} from "@/components/ui/textarea"
-import {useToast} from "@/components/ui/use-toast.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { currentChatAtom } from '@/atoms/current-chat.ts';
+import { useAtom } from "jotai";
+import { Textarea } from "@/components/ui/textarea"
+import { useToast } from "@/components/ui/use-toast.ts";
 import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
-import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
 import {
     ItslearningRestApiEntitiesReferencedInstantMessageType
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ReferencedInstantMessageType.ts";
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread.ts";
-import {Input} from "@/components/ui/input.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import axios from "axios";
+import { POSTmessageAttachmentApiUrl } from '../../types/api-types/messages/POSTmessageAttachment';
+import { AiOutlineLink } from "react-icons/ai";
 
 
 export default function Messages() {
-    const {data: messages} = useGETinstantMessagesv2({
+    const { data: messages } = useGETinstantMessagesv2({
         maxMessages: 10,
         threadPage: 0,
         maxThreadCount: 10,
@@ -29,16 +32,17 @@ export default function Messages() {
         suspense: true,
     })
 
-    const {data: user} = useGETcurrentUser({
+    const { data: user } = useGETcurrentUser({
         suspense: true,
     })
 
-    // const [file, setFile] = useState<File | null>(null)
-    // const fileInputRef = useRef<HTMLInputElement>(null)
+    const [file, setFile] = useState<File | null>(null)
+    const [fileId, setFileId] = useState<string | null>(null)
+    const fileInputRef = useRef<HTMLInputElement>(null)
     const [currentChat] = useAtom(currentChatAtom)
     const [message, setMessage] = useState<string>('')
     const queryClient = useQueryClient()
-    const {toast} = useToast()
+    const { toast } = useToast()
     const [newThreadName, setNewThreadName] = useState<string>('')
     const [isSettingNewThreadName, setIsSettingNewThreadName] = useState<boolean>(false)
 
@@ -46,13 +50,16 @@ export default function Messages() {
     const chatRef = useRef<HTMLDivElement>(null)
     const [recipientsSelected, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
 
-    const {mutate: sendMessage, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
+    const { mutate: sendMessage, isLoading: isSendingMessage } = usePOSTinstantMessagev2({
         InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
         ToPersonIds: currentChat === -1 ? recipientsSelected.map((recipient) => recipient.Id) : undefined,
         SendAsIndividualMessages: currentChat === -1 ? false : undefined,
         // @ts-ignore
         ReferencedInstantMessageType: currentChat === -1 ? ItslearningRestApiEntitiesReferencedInstantMessageType[ItslearningRestApiEntitiesReferencedInstantMessageType.None] : undefined,
-        Text: message,
+        ...(file === null ? { Text: message } : {
+            FileIds: [fileId!],
+            InstantMessageThreadId: currentChat === -1 ? undefined : messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId,
+        })
     }, {
         onSuccess: () => {
             setMessage('')
@@ -114,7 +121,7 @@ export default function Messages() {
         return () => window.removeEventListener('keydown', handleSendShortcut)
     }, [handleSubmit])
 
-    const {mutate: editThreadName, isLoading: isPendingThreadName} = usePUTinstantMessageThread({
+    const { mutate: editThreadName, isLoading: isPendingThreadName } = usePUTinstantMessageThread({
         threadId: currentChat!
     }, {
         UpdateName: true,
@@ -142,6 +149,49 @@ export default function Messages() {
                 duration: 3000,
             })
         },
+    })
+
+    const { mutate: sendFile, isLoading: isSendingFile } = useMutation([POSTmessageAttachmentApiUrl], async (file: File) => {
+        const formData = new FormData()
+        formData.append('file', file!)
+        const res = await axios.post(POSTmessageAttachmentApiUrl(), formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            params: {
+                'access_token': localStorage.getItem('access_token')
+            }
+        })
+
+        return res.data
+    }, {
+        onError: (error) => {
+            console.error(error)
+        },
+        onSuccess: (data) => {
+            /* [
+                {
+                    "m_Item1": "98808916-0cda-4364-8095-5ef1b82241e8",
+                    "m_Item2": "tree-736885_1280.jpg"
+                }
+            ] */
+            console.log(data)
+            const fileId = data[0].m_Item1
+
+            setFileId(fileId)
+
+            sendMessage({
+                InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
+                ToPersonIds: currentChat === -1 ? recipientsSelected.map((recipient) => recipient.Id) : undefined,
+                SendAsIndividualMessages: currentChat === -1 ? false : undefined,
+                // @ts-ignore
+                ReferencedInstantMessageType: currentChat === -1 ? ItslearningRestApiEntitiesReferencedInstantMessageType[ItslearningRestApiEntitiesReferencedInstantMessageType.None] : undefined,
+                ...(file === null ? { Text: message } : {
+                    FileIds: [fileId!],
+                    InstantMessageThreadId: currentChat === -1 ? undefined : messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId,
+                })
+            })
+        }
     })
 
     return (
@@ -181,7 +231,7 @@ export default function Messages() {
                                 Name: newThreadName,
                             })
                         }}>
-                            <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)}/>
+                            <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)} />
                             <Button disabled={newThreadName === '' || isPendingThreadName}>
                                 {isPendingThreadName ? "Saving..." : "Save"}
                             </Button>
@@ -202,39 +252,39 @@ export default function Messages() {
                                 Other Actions
                             </Button>
                             <Button variant={"outline"} type="button"
-                                    onClick={() => setIsSettingNewThreadName(!isSettingNewThreadName)}>
+                                onClick={() => setIsSettingNewThreadName(!isSettingNewThreadName)}>
                                 {isSettingNewThreadName ? "Cancel" : "Edit name"}
                             </Button>
                         </div>
                     )}
                     {currentChat !== undefined && currentChat === -1 && (
-                        <MessagesAddRecipients textareaRef={textareaRef}/>
+                        <MessagesAddRecipients textareaRef={textareaRef} />
                     )}
                 </div>
                 <div className="flex-1 p-4 overflow-x-hidden" ref={chatRef}>
                     {currentChat !== undefined && currentChat !== -1 && (
                         messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].Messages.EntityArray.map((message) => (
                             <MessageChat me={user!.PersonId === message.CreatedBy}
-                                         pictureUrl={message.CreatedByAvatar}
-                                         messageText={message.Text}
-                                         author={message.CreatedByName}
-                                         time={message.CreatedRelative}
-                                         edited={message.IsEdited}
-                                         key={message.MessageId}
-                                         attachmentName={message.AttachmentName}
-                                         attachmentUrl={message.AttachmentUrl}
-                                         isSystemMessage={message.IsSystemMessage}
-                                         canDelete={message.CanDelete}
+                                pictureUrl={message.CreatedByAvatar}
+                                messageText={message.Text}
+                                author={message.CreatedByName}
+                                time={message.CreatedRelative}
+                                edited={message.IsEdited}
+                                key={message.MessageId}
+                                attachmentName={message.AttachmentName}
+                                attachmentUrl={message.AttachmentUrl}
+                                isSystemMessage={message.IsSystemMessage}
+                                canDelete={message.CanDelete}
                             />
                         ))
                     )}
                 </div>
                 {currentChat !== undefined && (
                     <div className="p-4 border-t max-h-64">
-                        {/*{file !== null && (
+                        {file !== null && (
                             <div className="flex items-center space-x-2">
                                 <Button variant={"ghost"} size={"icon"} onClick={() => setFile(null)}>
-                                    <AiOutlineLink className={"w-6 h-6"}/>
+                                    <AiOutlineLink className={"w-6 h-6"} />
                                 </Button>
                                 <p>{file.name}</p>
                             </div>
@@ -246,9 +296,9 @@ export default function Messages() {
                         }}>
                             <label htmlFor="file">
                                 <Button variant={"ghost"} size={"icon"}
-                                        onClick={() => fileInputRef.current?.click()}
+                                    onClick={() => fileInputRef.current?.click()}
                                 >
-                                    <AiOutlineLink className={"w-6 h-6"}/>
+                                    <AiOutlineLink className={"w-6 h-6"} />
                                 </Button>
                             </label>
                             <Input
@@ -261,25 +311,25 @@ export default function Messages() {
                                 placeholder={"Send a photo"}
                             />
                             <Button variant={"ghost"} size={"icon"} type={"submit"}
-                                    disabled={file === null || isSendingFile}
+                                disabled={file === null || isSendingFile}
                             >
                                 Submit
                             </Button>
-                        </form>*/}
+                        </form>
                         <form className="flex items-center" onSubmit={handleSubmit}>
                             <Textarea rows={1} className="w-full mr-2 min-h-[2.5rem] max-h-48 overflow-hidden"
-                                      ref={textareaRef}
-                                      onInput={(e) => {
-                                          // resize textarea
-                                          e.currentTarget.style.height = "auto"
-                                          e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
-                                      }}
-                                      value={message}
-                                      onChange={(e) => setMessage(e.target.value)}
-                                      placeholder="Type your message..."/>
+                                ref={textareaRef}
+                                onInput={(e) => {
+                                    // resize textarea
+                                    e.currentTarget.style.height = "auto"
+                                    e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
+                                }}
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                                placeholder="Type your message..." />
                             <Button variant={"outline"}
-                                    className="rounded-full" type="submit"
-                                    disabled={isSendingMessage}
+                                className="rounded-full" type="submit"
+                                disabled={isSendingMessage}
                             >
                                 {isSendingMessage ? "Sending..." : "Send"}
                             </Button>
