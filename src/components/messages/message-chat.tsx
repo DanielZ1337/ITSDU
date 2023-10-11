@@ -38,9 +38,9 @@ export default function MessageChat({
     canDelete?: boolean
 }) {
 
-    const isImage = attachmentUrl && attachmentName.match(/\.(jpeg|jpg|gif|png)$/)
+    const isImage = attachmentUrl && attachmentName?.match(/\.(jpeg|jpg|gif|png)$/)
 
-    const isVideo = attachmentUrl && attachmentName.match(/\.(mp4|webm|ogg)$/)
+    const isVideo = attachmentUrl && attachmentName?.match(/\.(mp4|webm|ogg)$/)
 
     const {toast,dismiss} = useToast()
 
@@ -97,7 +97,7 @@ export default function MessageChat({
                            onClick={(e) => {
                                e.stopPropagation()
                                console.log(attachmentUrl, attachmentName)
-                               window.download.external(attachmentUrl, attachmentName)
+                               window.download.external(attachmentUrl, attachmentName!)
                                window.ipcRenderer.once('download:complete', (_, args) => {
                                    console.log(args)
                                    toast({
@@ -143,7 +143,7 @@ export default function MessageChat({
                     )}
                     {attachmentUrl && isImage && (
                         <Dialog>
-                            <DialogTrigger>
+                            <DialogTrigger className={"max-w-[50dvw] max-h-[50dvh] rounded-md overflow-hidden"}>
                                 <img
                                     src={attachmentUrl}
                                     alt={attachmentName}
@@ -163,7 +163,7 @@ export default function MessageChat({
                                 <DialogFooter>
                                     <Button variant={"outline"} className={"mr-2"} onClick={() => {
                                         console.log(attachmentUrl, attachmentName)
-                                        window.download.external(attachmentUrl, attachmentName)
+                                        window.download.external(attachmentUrl, attachmentName!)
                                         window.ipcRenderer.once('download:complete', (_, args) => {
                                             console.log(args)
                                             toast({

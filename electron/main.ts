@@ -311,6 +311,7 @@ app.whenReady().then(async () => {
                 // const headers = req.headers
                 const method = req.method
                 const body = req.body
+
                 const {data} = await axios.request({
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -320,10 +321,11 @@ app.whenReady().then(async () => {
                     method,
                     params
                 }).then(res => {
+                    console.log(res)
                     // console.log(res.data)
                     return res
                 }).catch(err => {
-                    // console.log(err)
+                    console.log(err)
                     return err
                 })
 
