@@ -1,5 +1,9 @@
-import { ItslearningRestApiEntitiesNotificationType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.NotificationType";
-import { ItslearningRestApiEntitiesPersonSimple } from "@/types/api-types/utils/Itslearning.RestApi.Entities.PersonSimple";
+import {
+    ItslearningRestApiEntitiesNotificationType
+} from "@/types/api-types/utils/Itslearning.RestApi.Entities.NotificationType";
+import {
+    ItslearningRestApiEntitiesPersonSimple
+} from "@/types/api-types/utils/Itslearning.RestApi.Entities.PersonSimple";
 
 export type ItslearningRestApiEntitiesNotification = {
     NotificationId: number;

@@ -1,4 +1,4 @@
-import {EditIcon, Pencil, StarIcon} from "lucide-react";
+import {Pencil, StarIcon} from "lucide-react";
 import {Suspense, useEffect, useState} from "react";
 import {Input} from "@/components/ui/input.tsx";
 import {useDebounce} from "@uidotdev/usehooks";

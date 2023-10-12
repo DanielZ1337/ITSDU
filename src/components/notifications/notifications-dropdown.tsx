@@ -29,7 +29,8 @@ export default function NotificationsDropdown() {
             <DropdownMenuContent>
                 <ScrollArea className={"max-h-96 overflow-y-auto p-2 flex-1"}>
                     {notifications?.EntityArray.map(notification => (
-                        <div className={"flex flex-col gap-1 p-4 hover:bg-foreground/10 rounded-md my-1"} key={notification.NotificationId}>
+                        <div className={"flex flex-col gap-1 p-4 hover:bg-foreground/10 rounded-md my-1"}
+                             key={notification.NotificationId}>
                             <div className={"flex flex-row gap-1"}>
                                 <div className={"flex flex-col"}>
                                         <span

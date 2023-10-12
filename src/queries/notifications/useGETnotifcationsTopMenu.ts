@@ -1,7 +1,11 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
-import { GETnotificationsTopMenu, GETnotificationsTopMenuApiParams, GETnotificationsTopMenuApiUrl } from '@/types/api-types/notifications/GETnotifcationsTopMenu';
+import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {
+    GETnotificationsTopMenu,
+    GETnotificationsTopMenuApiParams,
+    GETnotificationsTopMenuApiUrl
+} from '@/types/api-types/notifications/GETnotifcationsTopMenu';
 
 export default function useGETnotificationsTopMenu(params: GETnotificationsTopMenuApiParams, queryConfig?: UseQueryOptions<GETnotificationsTopMenuApiParams, Error, GETnotificationsTopMenu, string[]>) {
 

@@ -1,7 +1,11 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getQueryKeysFromParamsObject } from "@/lib/utils";
-import { GETnotifications, GETnotificationsParams, GETnotificationsApiUrl } from '@/types/api-types/notifications/GETnotifications';
+import {getQueryKeysFromParamsObject} from "@/lib/utils";
+import {
+    GETnotifications,
+    GETnotificationsApiUrl,
+    GETnotificationsParams
+} from '@/types/api-types/notifications/GETnotifications';
 
 export default function useGETnotifications(params: GETnotificationsParams, queryConfig?: UseQueryOptions<GETnotificationsParams, Error, GETnotifications, string[]>) {
 

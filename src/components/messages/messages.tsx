@@ -16,7 +16,7 @@ import {
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread.ts";
 import usePOSTmessageAttachment from "@/queries/messages/usePOSTmessageAttachment.ts";
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
-import MessagesChatInputs from "@/components/messages/messages-chat-inputs.tsx";
+import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 
 
 export default function Messages() {
@@ -233,10 +233,10 @@ export default function Messages() {
                     )}
                 </div>
                 {currentChat !== undefined && (
-                    <MessagesChatInputs files={files} setFiles={setFiles} isSendingFile={isSendingFile}
-                                        uploadProgress={uploadProgress} textareaRef={textareaRef}
-                                        handleSubmit={handleSubmit} isSendingMessage={isSendingMessage}
-                                        message={message} setMessage={setMessage}/>
+                    <MessagesChatInputsField files={files} setFiles={setFiles} isSendingFile={isSendingFile}
+                                             uploadProgress={uploadProgress} textareaRef={textareaRef}
+                                             handleSubmit={handleSubmit} isSendingMessage={isSendingMessage}
+                                             message={message} setMessage={setMessage}/>
                 )}
             </div>
         </div>

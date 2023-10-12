@@ -1,5 +1,7 @@
-import { apiUrl } from "@/lib/utils";
-import { ItslearningRestApiEntitiesNotification } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Notification";
+import {apiUrl} from "@/lib/utils";
+import {
+    ItslearningRestApiEntitiesNotification
+} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Notification";
 
 const GETnotifcationsApiEndpoint = 'restapi/personal/notifications/v2?UseNewerThan={UseNewerThan}&FromId={FromId}&PageIndex={PageIndex}&PageSize={PageSize}';
 

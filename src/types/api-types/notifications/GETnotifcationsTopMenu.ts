@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils";
+import {apiUrl} from "@/lib/utils";
 
 const GETnotificationsTopMenuApiEndpoint = 'restapi/topmenu/notifications/v1?FromId={FromId}&PageSize={PageSize}&UseNewerThan={UseNewerThan}&UseOlderThan={UseOlderThan}&UseUnreadOnly={UseUnreadOnly}';
 
