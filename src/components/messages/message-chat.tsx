@@ -8,11 +8,12 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {ChevronDown} from "lucide-react";
+import {ChevronDown, Loader2} from "lucide-react";
 import {Dialog, DialogContent, DialogFooter, DialogTrigger} from "@/components/ui/dialog.tsx";
 import Linkify from "linkify-react";
 import renderLink from "@/components/custom-render-link-linkify.tsx";
 import {useToast} from "@/components/ui/use-toast.ts";
+import {useState} from "react";
 
 export default function MessageChat({
                                         me,
@@ -42,12 +43,13 @@ export default function MessageChat({
 
     const isVideo = attachmentUrl && attachmentName?.match(/\.(mp4|webm|ogg)$/)
 
-    const {toast,dismiss} = useToast()
+    const [isDownloadingImage, setIsDownloadingImage] = useState<boolean>(false)
+
+    const {toast, dismiss} = useToast()
 
     if (isSystemMessage) return (
         <p className={cn("whitespace-pre-wrap break-all text-center text-gray-500 italic")}>{he.decode(messageText)}</p>
     )
-
 
     return (
         <div className={cn("mb-4 flex", me ? "justify-end" : "justify-start")}>
@@ -85,7 +87,7 @@ export default function MessageChat({
                     {edited && <span className={"text-gray-400"}> (edited)</span>}
                 </p>
                 <div
-                    className={cn("mt-1 p-2 rounded-lg inline-block", me ? 'float-right bg-blue-500 text-white' : 'float-left', !isImage && 'bg-foreground/10')}>
+                    className={cn("mt-1 p-2 rounded-lg inline-block max-h-[50vh]", me ? 'float-right bg-blue-500 text-white' : 'float-left bg-foreground/10', isImage || isVideo ? 'max-w-[50dvw] max-h-[50dvh] bg-transparent' : 'max-w-[80dvw]')}>
                     <p className={cn("whitespace-pre-wrap break-all")}>
                         <Linkify options={{render: renderLink}}>
                             {he.decode(messageText)}
@@ -93,7 +95,7 @@ export default function MessageChat({
                     </p>
                     {attachmentUrl && !isImage && (
                         <a href={attachmentUrl}
-                           className={"text-blue-500 hover:underline"}
+                           className={cn("hover:underline", me ? 'text-white' : 'text-blue-500')}
                            onClick={(e) => {
                                e.stopPropagation()
                                console.log(attachmentUrl, attachmentName)
@@ -151,18 +153,20 @@ export default function MessageChat({
                                 />
                             </DialogTrigger>
                             <DialogContent
-                                className={"break-all bg-foreground/5 backdrop-blur-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-opacity-50 max-w-[50dvw]"}>
-                                <div className={"flex flex-col items-center"}>
+                                className={"break-all bg-foreground/5 backdrop-blur-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-opacity-50 max-h-[80dvh] max-w-[80dvh]"}>
+                                <div className={"rounded-md mx-auto w-fit mt-4 overflow-hidden"}>
                                     <img
+                                        loading={"lazy"}
                                         src={attachmentUrl}
                                         alt={attachmentName}
-                                        className={"max-w-[50dvw] max-h-[50dvh] rounded-md object-contain"}
+                                        className={"max-w-full h-full hover:scale-105 transform transition-all duration-200"}
                                     />
-                                    <p className={"text-gray-500 text-sm"}>{attachmentName}</p>
                                 </div>
+                                <p className={"mt-0 sm:mt-2 xl:mt-4 xl:text-base text-gray-500 text-sm text-center"}>{attachmentName}</p>
                                 <DialogFooter>
-                                    <Button variant={"outline"} className={"mr-2"} onClick={() => {
-                                        console.log(attachmentUrl, attachmentName)
+                                    <Button disabled={isDownloadingImage} variant={"outline"}
+                                            className={"mr-2 inline-flex gap-2"} onClick={() => {
+                                        setIsDownloadingImage(true)
                                         window.download.external(attachmentUrl, attachmentName!)
                                         window.ipcRenderer.once('download:complete', (_, args) => {
                                             console.log(args)
@@ -192,6 +196,7 @@ export default function MessageChat({
                                                     }
                                                 },
                                             })
+                                            setIsDownloadingImage(false)
                                         })
                                         window.ipcRenderer.once('download:error', (_, args) => {
                                             console.log(args)
@@ -201,8 +206,12 @@ export default function MessageChat({
                                                 duration: 3000,
                                                 variant: 'destructive'
                                             })
+                                            setIsDownloadingImage(false)
                                         })
                                     }}>
+                                        {isDownloadingImage && (
+                                            <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin"}/>
+                                        )}
                                         Download
                                     </Button>
                                 </DialogFooter>
@@ -210,7 +219,8 @@ export default function MessageChat({
                         </Dialog>
                     )}
                     {attachmentUrl && isVideo && (
-                        <video controls className={"max-w-full h-full rounded-lg"} src={attachmentUrl}/>
+                        <video controls className={"max-w-full h-full rounded-lg max-h-[47dvh]"}
+                               src={attachmentUrl}/>
                     )}
                 </div>
             </div>

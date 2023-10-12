@@ -5,9 +5,10 @@ import {POSTmessageAttachment, POSTmessageAttachmentApiUrl} from "@/types/api-ty
 export default function usePOSTmessageAttachment(queryConfig?: UseMutationOptions<POSTmessageAttachment, Error, File[], string[]>) {
 
     return useMutation(['POSTmessageAttachment'], async (files) => {
+        await new Promise(resolve => setTimeout(resolve, 10000));
         const formData = new FormData()
         files.forEach(file => {
-            formData.append('file', file)
+            formData.append(`${file.name}`, file)
         })
         const res = await axios.post(POSTmessageAttachmentApiUrl(), formData, {
             params: {

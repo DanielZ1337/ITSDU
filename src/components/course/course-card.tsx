@@ -5,7 +5,7 @@ import {ItslearningRestApiEntitiesCourseCard} from "@/types/api-types/utils/Itsl
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {useToast} from "@/components/ui/use-toast";
-import {useAtom} from "jotai/index";
+import {useAtom} from "jotai";
 import {CoursesBulkStarEditAtom, isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
 import {Checkbox} from "@nextui-org/react";
 

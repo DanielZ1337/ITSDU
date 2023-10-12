@@ -14,7 +14,7 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
 
     const {mutate, isLoading} = usePOSTlightbulletinAddComment({
         lightBulletinId: lightbulletinId,
-    }, {Comment: comment}, {
+    }, {
         onSuccess: () => {
             setComment("")
             toast({
