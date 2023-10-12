@@ -5,9 +5,9 @@ import {
     POSTcourseCardsRankBody
 } from "@/types/api-types/course-cards/POSTcourseCardsRank.ts";
 
-export default function usePOSTcourseCardsRank(body: POSTcourseCardsRankBody, queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>) {
+export default function usePOSTcourseCardsRank(queryConfig?: UseMutationOptions<any, Error, POSTcourseCardsRankBody, string[]>) {
 
-    return useMutation(['courseCardsRank'], async () => {
+    return useMutation(['courseCardsRank'], async (body) => {
         const res = await axios.post(POSTcourseCardsRankApiUrl, body, {
             params: {
                 "access_token": localStorage.getItem('access_token') || '',

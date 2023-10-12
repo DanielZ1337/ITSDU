@@ -6,9 +6,9 @@ import {
     POSTinstantMessagev2Body
 } from "@/types/api-types/messages/POSTinstantMessagev2.ts";
 
-export default function usePOSTinstantMessagev2(body: POSTinstantMessagev2Body, queryConfig?: UseMutationOptions<POSTinstantMessagev2, Error, POSTinstantMessagev2Body, string[]>) {
+export default function usePOSTinstantMessagev2(queryConfig?: UseMutationOptions<POSTinstantMessagev2, Error, POSTinstantMessagev2Body, string[]>) {
 
-    return useMutation(['POSTmessage'], async () => {
+    return useMutation(['POSTmessage'], async (body) => {
         const res = await axios.post(POSTinstantMessagev2ApiUrl(), body, {
             params: {
                 'access_token': localStorage.getItem('access_token'),

@@ -8,9 +8,9 @@ import {
     PUTlightbulletinNotificationsParams
 } from "@/types/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
 
-export default function usePUTlightbulletinNotifications(params: PUTlightbulletinNotificationsParams, body: PUTlightbulletinNotificationsBody, queryConfig?: UseMutationOptions<PUTlightbulletinNotifications, Error, PUTlightbulletinNotificationsBody, string[]>) {
+export default function usePUTlightbulletinNotifications(params: PUTlightbulletinNotificationsParams, queryConfig?: UseMutationOptions<PUTlightbulletinNotifications, Error, PUTlightbulletinNotificationsBody, string[]>) {
 
-    return useMutation(['lightbulletinNotifications', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useMutation(['lightbulletinNotifications', ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.put(PUTlightbulletinNotificationsApiUrl({
             ...params
         }), body, {

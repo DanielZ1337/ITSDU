@@ -19,8 +19,9 @@ import {
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread.ts";
 import { Input } from "@/components/ui/input.tsx";
 import axios from "axios";
-import { POSTmessageAttachmentApiUrl } from '../../types/api-types/messages/POSTmessageAttachment';
+import { POSTmessageAttachmentApiUrl } from '@/types/api-types/messages/POSTmessageAttachment';
 import { AiOutlineLink } from "react-icons/ai";
+import usePOSTmessageAttachment from "@/queries/messages/usePOSTmessageAttachment.ts";
 
 
 export default function Messages() {
@@ -151,7 +152,16 @@ export default function Messages() {
         },
     })
 
-    const { mutate: sendFile, isLoading: isSendingFile } = useMutation([POSTmessageAttachmentApiUrl], async (file: File) => {
+    const {mutate: sendFile, isloading:isSendingFile} = usePOSTmessageAttachment({
+        onSuccess: (data) => {
+            console.log(data)
+        },
+        onError: (error) => {
+            console.error(error)
+        }
+    })
+
+    /*const { mutate: sendFile, isLoading: isSendingFile } = useMutation([POSTmessageAttachmentApiUrl], async (file: File) => {
         const formData = new FormData()
         formData.append('file', file!)
         const res = await axios.post(POSTmessageAttachmentApiUrl(), formData, {
@@ -169,12 +179,12 @@ export default function Messages() {
             console.error(error)
         },
         onSuccess: (data) => {
-            /* [
+            /!* [
                 {
                     "m_Item1": "98808916-0cda-4364-8095-5ef1b82241e8",
                     "m_Item2": "tree-736885_1280.jpg"
                 }
-            ] */
+            ] *!/
             console.log(data)
             const fileId = data[0].m_Item1
 
@@ -192,7 +202,7 @@ export default function Messages() {
                 })
             })
         }
-    })
+    })*/
 
     return (
         <div className="flex w-full h-full overflow-y-hidden flex-1">
@@ -292,7 +302,7 @@ export default function Messages() {
                         <form onSubmit={(e) => {
                             if (file === null) return
                             e.preventDefault()
-                            sendFile(file)
+                            sendFile([file])
                         }}>
                             <label htmlFor="file">
                                 <Button variant={"ghost"} size={"icon"}

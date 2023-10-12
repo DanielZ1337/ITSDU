@@ -8,9 +8,9 @@ import {
     POSTcourseCardSettingsParams
 } from "@/types/api-types/course-cards/POSTcourseCardSettings.ts";
 
-export default function usePOSTcourseCardSettings(params: POSTcourseCardSettingsParams, body: POSTcourseCardSettingsBody, queryConfig?: UseMutationOptions<POSTcourseCardSettings, Error, POSTcourseCardSettings, string[]>) {
+export default function usePOSTcourseCardSettings(params: POSTcourseCardSettingsParams, queryConfig?: UseMutationOptions<POSTcourseCardSettings, Error, POSTcourseCardSettingsBody, string[]>) {
 
-    return useMutation(['courseCardSettings', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useMutation(['courseCardSettings', ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.post(POSTcourseCardSettingsApiUrl({
             ...params
         }), body, {
