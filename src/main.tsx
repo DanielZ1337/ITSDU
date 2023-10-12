@@ -30,6 +30,7 @@ import Querytesting from "./routes/querytesting.tsx"
 import Calendar from "./routes/calendar.tsx"
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 import Messages from "@/components/messages/messages.tsx";
+import Sidebar from "./routes/sidebar.tsx"
 
 const router = createHashRouter([
     {
@@ -41,6 +42,11 @@ const router = createHashRouter([
                 element: <Index/>,
                 errorElement: <ErrorPage/>,
                 index: true,
+            },
+            {
+                path: "/sidebar",
+                element: <Sidebar/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/calendar",

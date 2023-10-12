@@ -7,6 +7,7 @@ import {Suspense} from "react";
 import {MessageCircle} from "lucide-react";
 import {AiOutlineNotification} from "react-icons/ai";
 import NotificationsDropdown from "./notifications/notifications-dropdown";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 
 export default function Header() {
 
@@ -31,6 +32,10 @@ export default function Header() {
         {
             name: "Messages",
             href: "/messages"
+        },
+        {
+            name: "Calendar",
+            href: "/calendar"
         },
         {
             name: "Profile",
@@ -75,7 +80,18 @@ export default function Header() {
                         <NotificationsDropdown/>
                     </Suspense>
 
-                    <p className={"text-lg font-semibold line-clamp-1"}>{data?.FullName}</p>
+                    <div className={"flex flex-row items-center justify-center gap-2"}>
+                        <Avatar className={"flex-shrink-0 w-8 h-8"}>
+                            <AvatarImage src={data?.ProfileImageUrl}
+                                         alt={data?.FullName}
+                                         className={"object-cover"}
+                            />
+                            <AvatarFallback className={"bg-foreground/20 text-sm"}>
+                                {data?.FullName.split(" ").map((name) => name[0]).join("")}
+                            </AvatarFallback>
+                        </Avatar>
+                        <p className={"text-lg font-semibold line-clamp-1"}>{data?.FullName}</p>
+                    </div>
                 </div>
             </nav>
         </header>

@@ -41,7 +41,7 @@ export default function NotificationsDropdown() {
                             </div>
                             <div className={"flex flex-row gap-1"}>
                                 <div className={"flex flex-col"}>
-                                    <span className={"text-xs text-gray-400"}>{notification.Text}</span>
+                                    <span className={"text-xs text-gray-400 line-clamp-1 break-all"}>{notification.Text}</span>
                                 </div>
                             </div>
                         </div>
