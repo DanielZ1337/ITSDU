@@ -34,15 +34,18 @@ export default function MessagesChatInputFileDialog({
                 <FileDrop setFiles={setFiles} files={files} disabled={isSendingFile}
                           uploadProgress={uploadProgress}/>
                 <div
-                    className={"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] mt-4"}>
+                    className={"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] p-1"}>
                     {files?.map((file, idx) => (
                         <div className={"flex items-center gap-2"}>
-                            <X className={"shrink-0 w-5 h-5 text-destructive/60 hover:text-destructive cursor-pointer transition-colors duration-200"}
-                               onClick={() => {
-                                   const newFiles = [...files!]
-                                   newFiles.splice(idx, 1)
-                                   setFiles(newFiles)
-                               }}/>
+                            <Button disabled={isSendingFile} onClick={() => {
+                                setFiles(files.filter((_, i) => i !== idx))
+                            }}
+                                    size={"smSquare"}
+                                    variant={"ghost"}
+                                    className={"rounded-full"}
+                            >
+                                <X className={"shrink-0 w-5 h-5 text-destructive/60 hover:text-destructive cursor-pointer transition-colors duration-200"}/>
+                            </Button>
                             <span className={"text-foreground/60"}>{file.name}</span>
                             <AiOutlineLink className={"shrink-0 w-5 h-5 text-foreground/60"}/>
                         </div>

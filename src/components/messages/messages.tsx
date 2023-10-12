@@ -46,6 +46,8 @@ export default function Messages() {
     const [uploadProgress, setUploadProgress] = useState<number>(0)
 
     const startSimulatedProgress = useCallback(() => {
+        setUploadProgress(0)
+
         const interval = setInterval(() => {
             // simulate upload progress and if it's at 90% then stop
             setUploadProgress((prevProgress) => {
@@ -70,7 +72,7 @@ export default function Messages() {
             });
         }, 800);
 
-        return () => clearInterval(interval)
+        return interval
     }, [uploadProgress])
 
     const {mutate: sendMessage, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
@@ -120,8 +122,42 @@ export default function Messages() {
         if (message === '' && !files) return
         const isNewChat = currentChat === -1
         if (files !== null) {
-            startSimulatedProgress()
-            sendFile(files)
+            const interval = startSimulatedProgress()
+            sendFile(files, {
+                onSuccess: (data) => {
+                    clearInterval(interval)
+                    setUploadProgress(100)
+                    sendMessage({
+                        InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
+                        ToPersonIds: isNewChat ? recipientsSelected.map((recipient) => recipient.Id) : undefined,
+                        SendAsIndividualMessages: isNewChat ? false : undefined,
+                        // @ts-ignore
+                        ReferencedInstantMessageType: isNewChat ? ItslearningRestApiEntitiesReferencedInstantMessageType[ItslearningRestApiEntitiesReferencedInstantMessageType.None] : undefined,
+                        FileIds: data.map((file) => file.m_Item1)
+                    }, {
+                        onSuccess: () => {
+                            if (message !== '') {
+                                sendMessage({
+                                    InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
+                                    ToPersonIds: isNewChat ? recipientsSelected.map((recipient) => recipient.Id) : undefined,
+                                    SendAsIndividualMessages: isNewChat ? false : undefined,
+                                    // @ts-ignore
+                                    ReferencedInstantMessageType: isNewChat ? ItslearningRestApiEntitiesReferencedInstantMessageType[ItslearningRestApiEntitiesReferencedInstantMessageType.None] : undefined,
+                                    Text: message,
+                                })
+
+                                setMessage('')
+                                textareaRef.current!.style.height = "auto"
+                                queryClient.invalidateQueries({
+                                    queryKey: ["messagesv2"]
+                                })
+                                setRecipientsSelected([])
+                                setFiles(null)
+                            }
+                        }
+                    })
+                }
+            })
         } else {
             sendMessage({
                 InstantMessageThreadId: currentChat !== undefined && currentChat !== -1 ? messages?.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0].InstantMessageThreadId : undefined,
