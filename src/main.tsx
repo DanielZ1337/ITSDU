@@ -1,36 +1,39 @@
 import {apiUrl, baseUrl} from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client'
-import './index.css'
+import '@/index.css'
 import {createHashRouter, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
 
-
-// const Root = React.lazy(() => import("./routes/root"));
+// const Root = React.lazy(() => import("@/routes/root"));
 /*
-const ErrorPage = React.lazy(() => import("./error-page"));
-const Contact = React.lazy(() => import("./routes/contact"));
-const Layout = React.lazy(() => import("./components/layout"));
-const Test = React.lazy(() => import("./routes/test"));
-const Test1 = React.lazy(() => import("./routes/test1"));
-const Profile = React.lazy(() => import("./routes/profile.tsx"));
-const Index = React.lazy(() => import("./routes/index"));
-const Course = React.lazy(() => import("./routes/course"));
-const Querytesting = React.lazy(() => import("./routes/querytesting"));
+const ErrorPage = React.lazy(() => import("@/error-page"));
+const Contact = React.lazy(() => import("@/routes/contact"));
+const Layout = React.lazy(() => import("@/components/layout"));
+const Test = React.lazy(() => import("@/routes/test"));
+const Test1 = React.lazy(() => import("@/routes/test1"));
+const Profile = React.lazy(() => import("@/routes/profile.tsx"));
+const Index = React.lazy(() => import("@/routes/index"));
+const Course = React.lazy(() => import("@/routes/course"));
+const Querytesting = React.lazy(() => import("@/routes/querytesting"));
 */
-import ErrorPage from "./error-page.tsx"
-import Contact from "./routes/contact.tsx"
-import Layout from "./components/layout.tsx"
-import Test from "./routes/test.tsx"
-import Test1 from "./routes/test1.tsx"
-import Profile from "./routes/profile.tsx"
-import Index from "./routes/index.tsx"
-import Course from "./routes/course.tsx"
-import Querytesting from "./routes/querytesting.tsx"
-import Calendar from "./routes/calendar.tsx"
+import ErrorPage from "@/error-page.tsx"
+import Contact from "@/routes/contact.tsx"
+import Layout from "@/components/layout.tsx"
+import Test from "@/routes/test.tsx"
+import Test1 from "@/routes/test1.tsx"
+import Profile from "@/routes/profile.tsx"
+import Index from "@/routes/index.tsx"
+import Querytesting from "@/routes/querytesting.tsx"
+import Calendar from "@/routes/calendar.tsx"
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 import Messages from "@/components/messages/messages.tsx";
-import Sidebar from "./routes/sidebar.tsx"
+import Sidebar from "@/routes/sidebar.tsx"
+import CourseLayout from "@/components/course/course-layout.tsx";
+import CourseIndex from "@/routes/course/course-index.tsx";
+import CourseParticipants from "@/routes/course/course-participants.tsx";
+import CourseInformation from "@/routes/course/course-information.tsx";
+import NotificationsIndex from "./routes/notifications/notifications-index";
 
 const router = createHashRouter([
     {
@@ -49,14 +52,66 @@ const router = createHashRouter([
                 errorElement: <ErrorPage/>,
             },
             {
+                path: "/notifications",
+                element: <SuspenseWrapper><NotificationsIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
+            },
+            {
                 path: "/calendar",
                 element: <SuspenseWrapper><Calendar/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
             {
                 path: "/course/:id",
-                element: <SuspenseWrapper><Course/></SuspenseWrapper>,
+                element: <SuspenseWrapper><CourseLayout/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
+                children: [
+                    {
+                        element: <SuspenseWrapper><CourseIndex/></SuspenseWrapper>,
+                        index: true,
+                        errorElement: <ErrorPage/>,
+                    },
+                    {
+                        path: "resources",
+                        element: <SuspenseWrapper>
+                            <div>
+                                <h1>Resources</h1>
+                            </div>
+                        </SuspenseWrapper>,
+                        errorElement: <ErrorPage/>,
+                    },
+                    {
+                        path: "announcements",
+                        element: <SuspenseWrapper>
+                            <div>
+                                <h1>Announcements</h1>
+                            </div>
+                        </SuspenseWrapper>,
+                    },
+                    {
+                        path: "course-information",
+                        element: <SuspenseWrapper><CourseInformation/></SuspenseWrapper>,
+                    },
+                    {
+                        path: "tasks",
+                        element: <SuspenseWrapper>
+                            <div>
+                                <h1>Tasks</h1>
+                            </div>
+                        </SuspenseWrapper>,
+                    },
+                    {
+                        path: "participants",
+                        element: <SuspenseWrapper>
+                            <CourseParticipants/>
+                        </SuspenseWrapper>,
+                    },
+                    {
+                        path: "*",
+                        element: <ErrorPage/>,
+                        errorElement: <ErrorPage/>,
+                    }
+                ],
             },
             {
                 path: "/querytesting",
