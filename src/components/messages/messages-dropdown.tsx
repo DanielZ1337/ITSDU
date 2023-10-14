@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {AlertCircle, MessageCircle} from "lucide-react";
+import {AlertCircle, ArrowRightIcon, MessageCircle} from "lucide-react";
 import {Skeleton} from "@/components/ui/skeleton";
 import {Separator} from "@/components/ui/separator";
 import {cn} from "@/lib/utils";
@@ -18,6 +18,8 @@ import {UnreadNotificationIndicator} from "@/components/messages/unread-notifica
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
 import {useInView} from "react-intersection-observer";
 import {useEffect} from "react";
+import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
+import {Link} from "react-router-dom";
 
 export default function MessagesDropdown() {
     const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETinstantMessagesv2({
@@ -57,6 +59,7 @@ export default function MessagesDropdown() {
 
     const threads = data?.pages.flatMap((page) => page.EntityArray)
     const total = data?.pages[0].Total
+    const unreadMessages = threads?.filter((thread) => thread.LastMessage.MessageId !== thread.LastReadInstantMessageId)
 
     return (
         <DropdownMenu>
@@ -64,16 +67,23 @@ export default function MessagesDropdown() {
                 <Button
                     variant={"ghost"}
                     size={"icon"}
-                    className={"shrink-0"}
+                    className={"shrink-0 relative"}
                 >
                     <MessageCircle/>
+                    {unreadMessages && unreadMessages.length > 0 && (
+                        <UnreadNotificationsPingIndicator amount={unreadMessages.length}/>
+                    )}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80">
                 <DropdownMenuLabel className={"flex justify-between items-center"}>
-                    <span>
-                        Messages
-                    </span>
+                    <Link to={"/messages"} className={"group flex gap-1 items-center justify-center"}>
+                        <span className={"text-base font-medium group-hover:underline"}>
+                            Messages
+                        </span>
+                        <ArrowRightIcon
+                            className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"}/>
+                    </Link>
                     <span className={"text-xs text-muted-foreground"}>
                         {threads && total && `${threads.length}/${total}`}
                     </span>
@@ -125,7 +135,7 @@ export default function MessagesDropdown() {
                                     <div key={idx}>
                                         <DropdownMenuItem>
                                             <div className="flex items-center justify-between group pr-2"
-                                                 data-read={thread}>
+                                                 data-read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}>
                                                 <div className="flex items-center gap-3">
                                                     <UnreadNotificationIndicator
                                                         read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}/>
@@ -140,7 +150,7 @@ export default function MessagesDropdown() {
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <span
-                                                                className={"text-sm font-medium group-data-[read=true]:font-light text-foreground line-clamp-2"}>{thread.LastMessage.CreatedByName}</span>
+                                                                className={"text-sm font-medium group-data-[read=true]:font-normal text-foreground line-clamp-2"}>{thread.LastMessage.CreatedByName}</span>
                                                         </span>
                                                         <span
                                                             className={cn("group-data-[read=false]:font-medium text-xs text-muted-foreground w-full line-clamp-3", thread.LastMessage.MessageId !== thread.LastReadInstantMessageId && "font-semibold")}>{thread.LastMessage.Text.substring(0, 300)}</span>
