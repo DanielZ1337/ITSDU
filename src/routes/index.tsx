@@ -39,7 +39,8 @@ export default function Index() {
                         <div className={"flex flex-row gap-4 w-full justify-end"}>
                             <Input className={"w-1/3"} placeholder={"Search"} value={searchInput} onChange={(e) => {
                                 setSearchInput(e.target.value)
-                            }}/>
+                            }} autoFocus
+                            />
                             <CourseSortSelect selectedRankedBy={selectedRankedBy}
                                               setSelectedRankedBy={setSelectedRankedBy}/>
                             <CourseCardStarredSelect selectedStarredOption={selectedStarredOption}
