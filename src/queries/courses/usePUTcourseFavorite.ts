@@ -7,15 +7,15 @@ import {
     PUTcourseFavoriteParams
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
 
-export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams, string[]>) {
+export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams | undefined, string[]>) {
 
-    return useMutation(['courseFavorite', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useMutation(['courseFavorite', ...getQueryKeysFromParamsObject(params)], async (variables) => {
         const res = await axios.put(PUTcourseFavoriteApiUrl({
-            ...params
+            ...(variables || params)
         }), undefined, {
             params: {
                 "access_token": localStorage.getItem('access_token') || '',
-                ...params,
+                ...(variables || params)
             }
         })
 

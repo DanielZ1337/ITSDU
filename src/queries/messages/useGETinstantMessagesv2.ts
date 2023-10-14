@@ -8,7 +8,7 @@ import {
 } from "@/types/api-types/messages/GETinstantMessagesv2.ts";
 
 export default function useGETinstantMessagesv2(params: GETinstantMessagesv2Params, queryConfig?: UseInfiniteQueryOptions<GETinstantMessagesv2, Error, GETinstantMessagesv2, GETinstantMessagesv2, string[]>) {
-    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.threadPage,}) => {
+    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.threadPage}) => {
         console.log('useGETmessages')
         const res = await axios.get(GETinstantMessagesv2ApiUrl({
             ...params,
