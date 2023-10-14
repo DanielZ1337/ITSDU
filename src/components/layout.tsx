@@ -6,7 +6,6 @@ import Header from "@/components/header";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import ScrollToTopButton from "@/components/scroll-to-top-button.tsx";
 
-
 export default function Layout() {
     const ref = useRef<HTMLDivElement>(null);
 
@@ -19,9 +18,9 @@ export default function Layout() {
             <Suspense
                 fallback={<Spinner size="lg" color="primary" label="Loading..." className={"m-auto"}/>}>
                 <div className="flex flex-1 flex-col overflow-x-auto overflow-y-auto"
-                     style={{
+                     /*style={{
                          scrollbarGutter: "stable both-edges"
-                     }}
+                     }}*/
                      ref={ref}>
                     <Outlet/>
                 </div>

@@ -1,10 +1,13 @@
 import {Link} from "react-router-dom";
 import {Input} from "@/components/ui/input.tsx";
 import {Star} from "lucide-react";
+import {AiOutlineSearch} from "react-icons/ai";
 
 export default function Sidebar() {
+    const courseId = 29219
+
     return (
-        <div className="grid h-screen min-h-screen w-full overflow-hidden grid-cols-[200px_1fr] xl:grid-cols-[280px_1fr]">
+        <div className="grid flex-1 w-full overflow-hidden grid-cols-[200px_1fr] xl:grid-cols-[280px_1fr]">
             <div className="hidden border-r bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
                 <div className="flex h-full max-h-screen flex-col gap-2">
                     <div className="flex h-[60px] items-center border-b px-6">
@@ -185,32 +188,24 @@ export default function Sidebar() {
                 <header
                     className="sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40">
                     <div className="w-full flex-1">
-                        <form>
-                            <div className="relative">
-                                <svg
-                                    className=" absolute left-2.5 top-2.5 h-4 w-4 text-zinc-500 dark:text-zinc-400"
-                                    fill="none"
-                                    height="24"
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    viewBox="0 0 24 24"
-                                    width="24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <circle cx="11" cy="11" r="8"/>
-                                    <path d="m21 21-4.3-4.3"/>
-                                </svg>
-                                <Input
-                                    className="w-full appearance-none pl-8 md:w-2/3 lg:w-1/3"
-                                    placeholder="Search resources..."
-                                    type="search"
-                                />
+                        <form className="relative">
+                            <Input
+                                placeholder="Search resources..."
+                                className="pl-10 w-full appearance-none md:w-2/3 lg:w-1/3"
+                            />
+                            <div className="absolute top-1/2 transform -translate-y-1/2 left-3">
+                                <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
                             </div>
                         </form>
                     </div>
                 </header>
+                <div className="flex-1 overflow-auto py-2">
+                    <div className="grid items-start gap-6 px-4 text-sm font-medium">
+                        <div>
+                            <div className="px-3 py-2 text-zinc-500 dark:text-zinc-400">Resources</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )

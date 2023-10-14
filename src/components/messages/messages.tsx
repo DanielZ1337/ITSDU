@@ -168,7 +168,7 @@ export default function Messages() {
                 Text: message
             })
         }
-    }, [message, currentChat, files, startSimulatedProgress, sendFile, sendMessage, messages?.pages, recipientsSelected])
+    }, [message, files, currentChat, startSimulatedProgress, sendFile, sendMessage, messages?.pages, recipientsSelected, queryClient, setRecipientsSelected])
 
 
     useEffect(() => {
