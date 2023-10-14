@@ -29,8 +29,9 @@ export type GETcourseParticipantsParams = {
     courseId: number
     PageIndex?: number
     PageSize?: number
-    courseProfileIds: number[]
-    groupIds: number[]
+    courseProfileIds?: number[]
+    groupIds?: number[]
+    hierarchyIds?: number[]
     searchText?: string
     orderByField?: string
     orderAscending?: boolean

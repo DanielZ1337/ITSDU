@@ -2,6 +2,9 @@ import {
     EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/EntityListOfItslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
 import {apiUrl} from "@/lib/utils.ts";
+import {
+    ItsolutionsItslUtilsConstantsLocationType
+} from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
 
 const GETcourseResourcesBySearchApiEndpoint = "restapi/personal/courses/{locationId}/resources/search/v1?locationType={locationType}&searchText={searchText}"
 
@@ -20,6 +23,6 @@ export type GETcourseResourcesBySearch = {
 
 export type GETcourseResourcesBySearchParams = {
     locationId: number
-    locationType: any,
+    locationType: ItsolutionsItslUtilsConstantsLocationType,
     searchText: string
 }
