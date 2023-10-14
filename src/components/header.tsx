@@ -49,15 +49,15 @@ export default function Header() {
             <nav className={"flex flex-row items-center justify-between px-4 py-2 border-b-1.5"}>
                 <div className={"flex flex-row items-center justify-center gap-4"}>
                     <div className={"flex flex-row items-center justify-center gap-2"}>
-                        <Link to={"/"}>
+                        <Link to={"/"} className={"shrink-0"}>
                             <img src="itsl-itslearning-file://icon.ico" alt="Logo" className={"w-8 h-8 rounded-md"}/>
                         </Link>
-                        <Button onClick={() => {
+                        {/* <Button onClick={() => {
                             window.localStorage.clear()
                             window.location.reload()
                         }} className="px-4 py-2 bg-black text-white line-clamp-1 truncate">
                             CLEAR LOCAL STORAGE
-                        </Button>
+                        </Button>*/}
                     </div>
                     <div className={"flex flex-row items-center justify-center gap-4 px-4"}>
                         {links.map((link) => ((
@@ -90,7 +90,7 @@ export default function Header() {
                                 {data?.FullName.split(" ").map((name) => name[0]).join("")}
                             </AvatarFallback>
                         </Avatar>
-                        <p className={"text-lg font-semibold line-clamp-1"}>{data?.FullName}</p>
+                        <p className={"text-lg font-semibold line-clamp-1 break-all"}>{data?.FullName}</p>
                     </div>
                 </div>
             </nav>

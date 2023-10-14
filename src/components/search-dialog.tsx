@@ -1,28 +1,39 @@
 import {Search} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import {cn} from "@/lib/utils";
+import {cn, isMacOS} from "@/lib/utils";
 import {Skeleton} from "@/components/ui/skeleton";
-import {CommandDialog, CommandEmpty, CommandInput, CommandList} from "@/components/ui/command";
+import {
+    CommandDialog,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList
+} from "@/components/ui/command";
 import {useDebounce} from "@uidotdev/usehooks";
-import {useCallback, useEffect, useState, useTransition} from "react";
+import {useCallback, useEffect, useState} from "react";
+import useGETcourseResourceBySearch from "@/queries/courses/useGETcourseResourceBySearch.ts";
+import {
+    ItsolutionsItslUtilsConstantsLocationType
+} from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
 
-export default function SearchProductsDialog() {
+export default function SearchResourcesDialog({courseId}: {
+    courseId: number
+}) {
     const [isOpen, setIsOpen] = useState(false)
     const [query, setQuery] = useState("")
     const debouncedQuery = useDebounce(query, 300)
-    const [data, setData] = useState<any>(null)
-    const [isPending, startTransition] = useTransition()
 
-    useEffect(() => {
-        if (debouncedQuery.length === 0) setData(null)
-
-        if (debouncedQuery.length > 0) {
-            startTransition(() => {
-                // const data = await filterProductsAction(debouncedQuery)
-                setData(data)
-            })
-        }
-    }, [data, debouncedQuery])
+    const {data: resources, isLoading, isFetching} = useGETcourseResourceBySearch({
+        searchText: debouncedQuery,
+        locationId: courseId,
+        locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
+    }, {
+        suspense: true,
+        enabled: debouncedQuery.length > 0,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+    })
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,59 +60,64 @@ export default function SearchProductsDialog() {
     return (
         <>
             <Button
-                className="inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 relative w-full justify-start text-sm text-muted-foreground sm:pr-12 md:w-40 lg:w-64"
+                size={"sm"}
+                className="h-9 border-0 lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground"
                 onClick={() => setIsOpen(true)}
             >
-                <Search className={"h-4 w-4 xl:mr-2"} />
-                <span className="hidden lg:inline-flex">Search products...</span>
+                <Search className={"h-4 w-4 lg:mr-2 shrink-0 lg:-ml-0.5"}/>
+                <span className="hidden xl:inline-flex">Search resources...</span>
                 <span
-                    className="inline-flex lg:hidden">Search...</span>
+                    className="hidden lg:inline-flex xl:hidden">Search...</span>
                 <kbd
-                    className="pointer-events-none absolute right-1.5 top-1.5 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                    <span className="text-xs">⌘</span>K
+                    className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
+                    <span>
+                        {isMacOS() ? "⌘" : "Ctrl"}
+                    </span>
+                    K
                 </kbd>
                 <span className="sr-only">Search products</span>
             </Button>
             <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
                 <CommandInput
-                    placeholder="Search products..."
+                    placeholder="Search resources..."
                     value={query}
                     onValueChange={setQuery}
                     // className={"border-"}
                 />
-                <CommandList>
+                <CommandList className={"overflow-hidden max-h-[50dvh]"}>
                     <CommandEmpty
-                        className={cn(isPending ? "hidden" : "py-6 text-center text-sm")}
+                        className={cn(isFetching ? "hidden" : "py-6 text-center text-sm")}
                     >
-                        No products found.
+                        No resources found.
                     </CommandEmpty>
-                    {isPending ? (
+                    {isFetching ? (
                         <div className="space-y-1 overflow-hidden px-1 py-2">
                             <Skeleton className="h-4 w-10 rounded"/>
                             <Skeleton className="h-8 rounded-sm"/>
                             <Skeleton className="h-8 rounded-sm"/>
                         </div>
                     ) : (
-                        /*data?.map((group) => (
+                        resources && (
                             <CommandGroup
-                                key={group.category}
-                                className="capitalize"
-                                heading={group.category}
+                                heading={`${resources?.Resources.EntityArray.length
+                                } resources found`}
                             >
-                                {group.products.map((item) => (
-                                    <CommandItem
-                                        key={item.id}
-                                        onSelect={() =>
-                                            handleSelect(() => router.push(`/product/${item.id}`))
-                                        }
-                                    >
-                                        {item.name}
-                                    </CommandItem>
-                                ))}
+                                <div className="my-2 space-y-1 overflow-hidden pr-1 overflow-y-auto max-h-[40dvh]">
+                                    {resources!.Resources.EntityArray.map((resource) => (
+                                        <CommandItem
+                                            key={resource.ElementId}
+                                            className="line-clamp-1 break-all truncate"
+                                            onSelect={() => handleSelect(() => {
+                                                console.log("Selected resource", resource)
+                                                window.app.openExternal(resource.ContentUrl, true)
+                                            })}
+                                        >
+                                            {resource.Title}
+                                        </CommandItem>
+                                    ))}
+                                </div>
                             </CommandGroup>
-                        ))*/
-                        <>
-                        </>
+                        )
                     )}
                 </CommandList>
             </CommandDialog>

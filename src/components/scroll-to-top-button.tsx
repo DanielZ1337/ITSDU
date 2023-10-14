@@ -3,7 +3,9 @@ import {Button} from "@/components/ui/button.tsx";
 import {ChevronUp} from "lucide-react";
 import React, {useEffect, useState} from "react";
 
-export default function ScrollToTopButton({viewportRef}: { viewportRef: React.RefObject<HTMLDivElement> }) {
+export default function ScrollToTopButton({viewportRef}: {
+    viewportRef: React.RefObject<HTMLDivElement>
+}) {
 
     const [showToTopButton, setShowToTopButton] = useState<boolean>(false)
 
