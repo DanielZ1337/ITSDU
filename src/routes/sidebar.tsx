@@ -1,26 +1,98 @@
-import {Link} from "react-router-dom";
-import {Input} from "@/components/ui/input.tsx";
-import {Star} from "lucide-react";
-import {AiOutlineSearch} from "react-icons/ai";
-import SearchProductsDialog from "@/components/search-dialog.tsx";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {Loader2, Star} from "lucide-react";
+import SearchResourcesDialog from "@/components/search-dialog.tsx";
+import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
+import {Button} from "@/components/ui/button.tsx";
+import {Helmet} from "react-helmet";
+import Splitter, {SplitDirection} from "@devbookhq/splitter";
+import {Suspense} from "react";
+import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
+import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
+import Resources from "@/components/resources/resources.tsx";
+import '../styles/splitter-custom.css'
+import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses.ts";
+import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses.ts";
+import {cn} from "@/lib/utils.ts";
+import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 
 export default function Sidebar() {
-    const courseId = 29219
+    const params = useParams();
+    const courseId = Number(params.id)
+    // const courseId = 29219
+    const courseTitle = 'Semester project: Distributed software systems with industrial cyber-physical elements, (E23)'
+    const courseIdentifier = 'T500019101-1-E23'
+    const {data: course} = useGETcourseBasic({
+        courseId: courseId
+    }, {
+        suspense: true,
+    })
+
+    const {data: unstarredCourses} = useGETunstarredCourses({
+        PageIndex: 0,
+        PageSize: 1,
+        searchText: course!.Title
+    }, {
+        suspense: true,
+    })
+
+    const {data: starredCourses} = useGETstarredCourses({
+        PageIndex: 0,
+        PageSize: 1,
+        searchText: course!.Title
+    }, {
+        suspense: true,
+    })
+
+    const unstarredCourse = unstarredCourses!.EntityArray[0]
+    const starredCourse = starredCourses!.EntityArray[0]
+
+    const {mutate: toggleStarred, isLoading: isTogglingStarred} = usePUTcourseFavorite({
+        courseId: courseId,
+    }, {
+        onSuccess: () => {
+            unstarredCourses!.EntityArray.splice(0, 1)
+            starredCourses!.EntityArray.splice(0, 1)
+            if (unstarredCourse) {
+                starredCourses!.EntityArray.push(unstarredCourse)
+            }
+            if (starredCourse) {
+                unstarredCourses!.EntityArray.push(starredCourse)
+            }
+        }
+    })
+
+
+    const navigate = useNavigate()
+
+    if (!courseId) {
+        return (
+            <div className={"m-auto"}>
+                <div className={"flex flex-col gap-4 w-full p-4 items-center"}>
+                    <p className={"text-3xl font-bold text-balance"}>Course not found</p>
+                    <Button variant={"secondary"} size={"lg"} onClick={() => navigate(-1)}>Go back</Button>
+                </div>
+            </div>
+        )
+    }
 
     return (
-        <div className="grid flex-1 w-full overflow-hidden grid-cols-[200px_1fr] xl:grid-cols-[280px_1fr]">
-            <div className="hidden border-r bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
-                <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-[60px] items-center border-b px-6">
-                        <Link className="flex items-center gap-6 font-semibold w-full" to="#">
-                            <Star className="w-6 h-6 text-zinc-500 dark:text-zinc-400 shrink-0"/>
-                            <span className="">Web Technologies</span>
-                        </Link>
-                    </div>
+        <div
+            className="lg:grid flex-1 w-full overflow-hidden flex lg:grid-cols-[200px_1fr] xl:grid-cols-[240px_1fr]">
+            <Helmet>
+                <title>{course!.Title}</title>
+            </Helmet>
+            <div className="order-r bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
+                <div className="flex h-full max-h-screen flex-col gap-2 overflow-hidden border-r">
                     <div className="flex-1 overflow-auto py-2">
                         <nav className="grid items-start gap-6 px-4 text-sm font-medium">
                             <div>
-                                <div className="px-3 py-2 text-zinc-500 dark:text-zinc-400">Overview</div>
+                                <div className={"py-1"}>
+                                    <SearchResourcesDialog/>
+                                </div>
+                                <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
+                                    Overview
+                                </h1>
                                 <Link
                                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
                                     to="#"
@@ -42,7 +114,9 @@ export default function Sidebar() {
                                         <line x1="8" x2="8" y1="2" y2="6"/>
                                         <line x1="3" x2="21" y1="10" y2="10"/>
                                     </svg>
-                                    Schedule
+                                    <p className={"hidden lg:block"}>
+                                        Schedule
+                                    </p>
                                 </Link>
                                 <Link
                                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
@@ -64,7 +138,9 @@ export default function Sidebar() {
                                         <path d="M21 12.1H3"/>
                                         <path d="M15.1 18H3"/>
                                     </svg>
-                                    Announcements (5)
+                                    <p className={"hidden lg:block"}>
+                                        Announcements (5)
+                                    </p>
                                 </Link>
                                 <Link
                                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
@@ -86,7 +162,9 @@ export default function Sidebar() {
                                             d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
                                         <polyline points="14 2 14 8 20 8"/>
                                     </svg>
-                                    Resources (2)
+                                    <p className={"hidden lg:block"}>
+                                        Resources (2)
+                                    </p>
                                 </Link>
                                 <Link
                                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
@@ -110,7 +188,9 @@ export default function Sidebar() {
                                         <path d="M6 12h12"/>
                                         <path d="M9 9l3 3 3-3"/>
                                     </svg>
-                                    Tasks (2)
+                                    <p className={"hidden lg:block"}>
+                                        Tasks (2)
+                                    </p>
                                 </Link>
                                 <Link
                                     className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
@@ -134,10 +214,12 @@ export default function Sidebar() {
                                         <path d="M6 12h12"/>
                                         <path d="M9 9l3 3 3-3"/>
                                     </svg>
-                                    Grades (2)
+                                    <p className={"hidden lg:block"}>
+                                        Grades (2)
+                                    </p>
                                 </Link>
                                 <Link to={"#"}
-                                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
+                                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -156,10 +238,12 @@ export default function Sidebar() {
                                         <path d="M6 12h12"/>
                                         <path d="M9 9l3 3 3-3"/>
                                     </svg>
-                                    People (2)
+                                    <p className={"hidden lg:block"}>
+                                        People (2)
+                                    </p>
                                 </Link>
                                 <Link to={"#"}
-                                        className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
+                                      className="flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50">
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -178,17 +262,19 @@ export default function Sidebar() {
                                         <path d="M6 12h12"/>
                                         <path d="M9 9l3 3 3-3"/>
                                     </svg>
-                                    Course Information
+                                    <p className={"hidden lg:block"}>
+                                        Course Information
+                                    </p>
                                 </Link>
                             </div>
                         </nav>
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col overflow-auto">
+            <div className="flex flex-col overflow-auto w-full">
                 <header
-                    className="sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40">
-                    <div className="w-full flex-1">
+                    className="w-full sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40">
+                    <div className="w-full flex-1 flex justify-between">
                         {/*<form className="relative">
                             <Input
                                 placeholder="Search resources..."
@@ -198,13 +284,60 @@ export default function Sidebar() {
                                 <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
                             </div>
                         </form>*/}
-                        <SearchProductsDialog/>
+                        <div className={"flex flex-row items-center gap-4"}>
+                            <Button variant={"ghost"} size={"icon"}
+                                    className={cn("shrink-0", !isTogglingStarred && 'hover:bg-yellow-400/10')}
+                                    onClick={() => toggleStarred({
+                                        courseId: courseId,
+                                    })}>
+                                {isTogglingStarred ? (
+                                    <Loader2 className={"stroke-foreground shrink-0 m-1 h-6 w-6 animate-spin"}/>
+                                ) : (
+                                    <Star
+                                        className={cn("w-6 h-6 dark:text-yellow-400 text-yellow-600 shrink-0", starredCourse && 'fill-yellow-600 dark:fill-yellow-400')}/>
+                                )}
+                            </Button>
+                            <Link className="flex items-center gap-4 font-semibold my-auto text-balance w-fit text-lg"
+                                  to="#">
+                                {course!.Title}
+                            </Link>
+                        </div>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 text-nowrap my-auto ml-6">
+                            {course!.Code}
+                        </p>
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto py-2">
-                    <div className="grid items-start gap-6 px-4 text-sm font-medium">
-                        <div>
-                            <div className="px-3 py-2 text-zinc-500 dark:text-zinc-400">Resources</div>
+                <div className="flex-1 overflow-auto">
+                    <div className="grid items-start gap-6 px-4 text-sm font-medium h-full">
+                        <div className={"flex gap-4 flex-1 h-full"}>
+                            <Splitter direction={SplitDirection.Horizontal} minWidths={[300, 300]}
+                                      initialSizes={[200, 100]}>
+                                <div className={"flex flex-col flex-1 py-2 pr-2"}>
+                                    <div className={"flex flex-col flex-1 gap-4"}>
+                                        <h2 className={"text-xl font-bold"}>Lightbulletins</h2>
+                                        <Suspense
+                                            fallback={<LightbulletinsForCourseLoader/>}
+                                        >
+                                            <LightbulletinsForCourse courseId={courseId}/>
+                                        </Suspense>
+
+                                    </div>
+                                </div>
+                                <div
+                                    className={"flex flex-col gap-4 overflow pr-4 fixed"}>
+                                    <h2 className={"text-xl font-bold"}>Resources</h2>
+
+                                    <Suspense
+                                        fallback={<div className={"flex flex-col gap-2 w-full"}>
+                                            <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                            <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                            <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                            <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                        </div>}>
+                                        <Resources courseId={courseId}/>
+                                    </Suspense>
+                                </div>
+                            </Splitter>
                         </div>
                     </div>
                 </div>
