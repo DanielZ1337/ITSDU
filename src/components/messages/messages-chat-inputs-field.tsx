@@ -26,6 +26,7 @@ export default function MessagesChatInputsField({
     // eslint-disable-next-line no-unused-vars
     setMessage: (value: string) => void
 }) {
+
     return (
         <div className="p-4 border-t max-h-64 flex flex-col">
             <form className="flex items-center gap-2" onSubmit={handleSubmit}>

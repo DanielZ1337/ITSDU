@@ -16,7 +16,9 @@ import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETEligh
 import {Input} from "@/components/ui/input.tsx";
 import {useToast} from "@/components/ui/use-toast";
 
-export default function LightbulletinComment({comment}: { comment: ItslearningRestApiEntitiesComment }) {
+export default function LightbulletinComment({comment}: {
+    comment: ItslearningRestApiEntitiesComment
+}) {
     const [commentText, setCommentText] = useState(comment.CommentText)
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [showUpdate, setShowUpdate] = useState<boolean>(false)

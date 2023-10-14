@@ -25,10 +25,14 @@ export default function MessagesChatHeader({
     // eslint-disable-next-line no-unused-vars
     setNewThreadName: (value: string) => void,
     // eslint-disable-next-line no-unused-vars
-    editThreadName: (data: { InstantMessageThreadId: number, UpdateName: boolean, Name: string }) => void,
+    editThreadName: (data: {
+        InstantMessageThreadId: number,
+        UpdateName: boolean,
+        Name: string
+    }) => void,
     isPendingThreadName: boolean,
     recipientsSelected: any[],
-    textareaRef: any,
+    textareaRef: React.MutableRefObject<HTMLTextAreaElement | null>
     user: any,
 }) {
 

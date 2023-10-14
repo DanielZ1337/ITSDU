@@ -178,6 +178,8 @@ export default function Messages() {
                 behavior: "instant",
             })
         }
+
+        textareaRef.current?.focus()
     }, [currentChat, messages?.pages]);
 
     useEffect(() => {
@@ -221,7 +223,8 @@ export default function Messages() {
     return (
         <div className="flex w-full h-full overflow-y-hidden flex-1">
             <div className="w-1/4 border-r overflow-y-hidden overflow-x-hidden">
-                <MessagesSidebar>
+                <MessagesSidebar
+                    threadNames={messages!.pages[0]!.EntityArray.map((thread) => thread.Name || thread.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", "))}>
                     {currentChat === -1 && (
                         <div className={"animate-in slide-in-from-left-16"}>
                             <MessagesSidebarChat

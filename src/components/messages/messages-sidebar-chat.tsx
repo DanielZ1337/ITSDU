@@ -35,9 +35,10 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
     })
 
     return (
-        <div
+        <button
+            tabIndex={0}
             onClick={() => setcurrentChatAtomId(id === currentChatAtomId ? undefined : id)}
-            className={cn("group p-4 border-b cursor-pointer flex items-center hover:bg-foreground/10 transition-colors", id === currentChatAtomId && 'bg-foreground/10')}>
+            className={cn("w-full text-left group p-4 border-b cursor-pointer flex items-center hover:bg-foreground/10 transition-colors", id === currentChatAtomId && 'bg-foreground/10')}>
             <div className="mr-3">
                 <Avatar>
                     <AvatarImage src={pictureUrl}
@@ -64,6 +65,6 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
                     <Trash2Icon className={"w-5 h-5 text-destructive hover:text-destructive/80"}/>
                 </Button>
             )}
-        </div>
+        </button>
     )
 }
