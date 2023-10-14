@@ -93,3 +93,7 @@ export function getRelativeTimeString(
     const rtf = new Intl.RelativeTimeFormat(lang, {numeric: "auto"});
     return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
+
+export function isMacOS() {
+    return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+}
