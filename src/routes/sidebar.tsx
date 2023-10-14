@@ -20,8 +20,8 @@ export default function Sidebar() {
     const params = useParams();
     const courseId = Number(params.id)
     // const courseId = 29219
-    const courseTitle = 'Semester project: Distributed software systems with industrial cyber-physical elements, (E23)'
-    const courseIdentifier = 'T500019101-1-E23'
+    // const courseTitle = 'Semester project: Distributed software systems with industrial cyber-physical elements, (E23)'
+    // const courseIdentifier = 'T500019101-1-E23'
     const {data: course} = useGETcourseBasic({
         courseId: courseId
     }, {
@@ -88,7 +88,7 @@ export default function Sidebar() {
                         <nav className="grid items-start gap-6 px-4 text-sm font-medium">
                             <div>
                                 <div className={"py-1"}>
-                                    <SearchResourcesDialog/>
+                                    <SearchResourcesDialog courseId={courseId}/>
                                 </div>
                                 <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
                                     Overview

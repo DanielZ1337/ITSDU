@@ -1,3 +1,4 @@
+// @ts-ignore
 const renderLink = ({attributes, content}) => {
     const {href, ...props} = attributes;
     return <a

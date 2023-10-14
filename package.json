@@ -10,7 +10,8 @@
     "prebuild": "vite build && electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "release": "tsc && vite build && electron-builder -p always"
+    "release": "tsc && vite build && electron-builder -p always",
+    "tsc": "tsc"
   },
   "dependencies": {
     "@devbookhq/splitter": "^1.4.2",

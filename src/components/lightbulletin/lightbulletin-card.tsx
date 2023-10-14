@@ -21,8 +21,6 @@ export default function LightbulletinCard({bulletin}: {
 
     const {mutate, isLoading} = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
-    }, {
-        isSubscribed: !bulletin.IsSubscribed
     })
 
     const {data: Resources} = useGETlightbulletinResources({

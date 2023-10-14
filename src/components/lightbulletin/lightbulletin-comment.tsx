@@ -25,7 +25,7 @@ export default function LightbulletinComment({comment}: {
     const {toast} = useToast()
     const {mutate: updateComment, isLoading: isUpdating} = usePUTlightbulletinUpdateComment({
         commentId: comment.Id,
-    }, {Comment: commentText}, {
+    }, {
         onSuccess: () => {
             setIsEditing(false)
             toast({

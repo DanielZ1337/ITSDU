@@ -6,7 +6,7 @@ import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {useToast} from "@/components/ui/use-toast";
 import {useAtom} from "jotai";
-import {CoursesBulkStarEditAtom, isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
+import {isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
 import {Checkbox} from "@nextui-org/react";
 
 export default function CourseCard({card}: {
@@ -17,8 +17,8 @@ export default function CourseCard({card}: {
     const {mutate, isLoading} = usePUTcourseFavorite({
         courseId: card.CourseId,
     })
-    const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom)
-    const [coursesBulkEdit, setCoursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
+    const [isCoursesBulkEditing, /*setIsCoursesBulkEditing*/] = useAtom(isCoursesBulkStarEditingAtom)
+    // const [coursesBulkEdit, setCoursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
 
     return (
         <button key={card.CourseId}

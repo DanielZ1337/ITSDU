@@ -9,7 +9,7 @@ import CourseSortSelect from "@/components/course/course-sort-select.tsx";
 import CourseCardStarredSelect from "@/components/course/course-card-starred-select.tsx";
 import CourseCards from "@/components/course/course-cards.tsx";
 import {CourseCardsSelectOptions} from "@/types/course-cards-select-options.ts";
-import {CoursesBulkStarEditAtom, isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
+import {isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
 import {useAtom} from "jotai";
 import {Toggle} from "@/components/ui/toggle.tsx";
 
@@ -18,7 +18,7 @@ export default function Index() {
     const debouncedSearchTerm = useDebounce(searchInput, 200);
     const [selectedRankedBy, setSelectedRankedBy] = useState<CourseCardsSortByTypes>("Rank")
     const [selectedStarredOption, setSelectedStarredOption] = useState<CourseCardsSelectOptions>("Starred")
-    const [coursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
+    // const [coursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
     const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom)
 
     useEffect(() => {

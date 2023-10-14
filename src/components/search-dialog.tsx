@@ -24,7 +24,7 @@ export default function SearchResourcesDialog({courseId}: {
     const [query, setQuery] = useState("")
     const debouncedQuery = useDebounce(query, 300)
 
-    const {data: resources, isLoading, isFetching} = useGETcourseResourceBySearch({
+    const {data: resources, isFetching} = useGETcourseResourceBySearch({
         searchText: debouncedQuery,
         locationId: courseId,
         locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
