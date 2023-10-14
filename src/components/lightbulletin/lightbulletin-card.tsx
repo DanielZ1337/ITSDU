@@ -43,7 +43,7 @@ export default function LightbulletinCard({bulletin}: {
     return (
         <div data-marginonpublished={bulletin.Text.split("\n").length > 1} data-readmore={readMore}
              data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
-             className="h-fit group p-4 has data-[hasreadmore=true]:hover:bg-foreground/15 data-[readmore=true]:hover:bg-foreground/15 rounded-md transition-all duration-200 bg-foreground/10 shadow-md hover:shadow-lg overflow-hidden">
+             className="h-fit group p-4 has data-[hasreadmore=true]:hover:bg-foreground/15 data-[readmore=true]:hover:bg-foreground/15 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
             <div className="flex justify-between">
                 <pre ref={textRef} onClick={() => {
                     setReadMore(!readMore)

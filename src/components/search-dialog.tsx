@@ -29,7 +29,6 @@ export default function SearchResourcesDialog({courseId}: {
         locationId: courseId,
         locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
     }, {
-        suspense: true,
         enabled: debouncedQuery.length > 0,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,

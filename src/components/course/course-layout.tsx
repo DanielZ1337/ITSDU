@@ -3,7 +3,8 @@ import SearchResourcesDialog from "@/components/search-dialog.tsx";
 import {Link, NavLink, Outlet, useNavigate, useParams} from "react-router-dom";
 import {Button} from "@/components/ui/button.tsx";
 import {cn} from "@/lib/utils.ts";
-import {CalendarIcon, File, Loader2, Star} from "lucide-react";
+// eslint-disable-next-line no-redeclare
+import {CalendarIcon, File, HomeIcon, Loader2, Star, Users2} from "lucide-react";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses.ts";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses.ts";
@@ -87,19 +88,19 @@ export default function CourseLayout() {
                                 <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
                                     Overview
                                 </h1>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to=""
-                                >
+                                <SideBarNavLink to={"."} end>
+                                    <HomeIcon className={"h-4 w-4"}/>
+                                    <p className={"hidden lg:block"}>
+                                        Overview
+                                    </p>
+                                </SideBarNavLink>
+                                <SideBarNavLink to="schedule">
                                     <CalendarIcon className={"h-4 w-4"}/>
                                     <p className={"hidden lg:block"}>
                                         Schedule
                                     </p>
-                                </NavLink>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to="announcements"
-                                >
+                                </SideBarNavLink>
+                                <SideBarNavLink to="announcements">
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -119,25 +120,19 @@ export default function CourseLayout() {
                                     <p className={"hidden lg:block"}>
                                         Announcements (5)
                                     </p>
-                                </NavLink>
+                                </SideBarNavLink>
                                 {/*<NavLink key={link.name} to={link.href} className={({isActive, isPending}) =>
                                 cn("text-muted-foreground hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)] hover:text-foreground-700 ", isActive && "text-foreground underline underline-offset-2 font-bold drop-shadow-[0_0px_5px_rgba(100,100,100,0.2)]", isPending && " border-b-2 border-blue-500 border-opacity-50 animate-pulse text-opacity-50")
                             }>
                                 {link.name}
                             </NavLink>*/}
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to="resources"
-                                >
+                                <SideBarNavLink to="resources">
                                     <File className={"h-4 w-4"}/>
                                     <p className={"hidden lg:block"}>
                                         Resources (2)
                                     </p>
-                                </NavLink>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to="tasks"
-                                >
+                                </SideBarNavLink>
+                                <SideBarNavLink to="tasks">
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -159,12 +154,8 @@ export default function CourseLayout() {
                                     <p className={"hidden lg:block"}>
                                         Tasks (2)
                                     </p>
-                                </NavLink>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-
-                                    to="grades"
-                                >
+                                </SideBarNavLink>
+                                <SideBarNavLink to="grades">
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -186,37 +177,14 @@ export default function CourseLayout() {
                                     <p className={"hidden lg:block"}>
                                         Grades (2)
                                     </p>
-                                </NavLink>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to="participants"
-                                >
-                                    <svg
-                                        className=" h-4 w-4"
-                                        fill="none"
-                                        height="24"
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        viewBox="0 0 24 24"
-                                        width="24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M21 12.79V21H3v-8.21M21 12.79l-9-7-9 7M21 12.79l-9-7-9 7"/>
-                                        <path d="M3 21h18"/>
-                                        <path d="M6 12h12"/>
-                                        <path d="M9 9l3 3 3-3"/>
-                                    </svg>
+                                </SideBarNavLink>
+                                <SideBarNavLink to="participants">
+                                    <Users2 className={"h-4 w-4"}/>
                                     <p className={"hidden lg:block"}>
                                         Participants
                                     </p>
-                                </NavLink>
-                                <NavLink
-                                    className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
-                                    to="course-information"
-                                >
+                                </SideBarNavLink>
+                                <SideBarNavLink to={'course-information'}>
                                     <svg
                                         className=" h-4 w-4"
                                         fill="none"
@@ -238,7 +206,7 @@ export default function CourseLayout() {
                                     <p className={"hidden lg:block"}>
                                         Course Information
                                     </p>
-                                </NavLink>
+                                </SideBarNavLink>
                             </div>
                         </nav>
                     </div>
@@ -276,7 +244,7 @@ export default function CourseLayout() {
                                 )}
                             </Button>
                             <Link className="flex items-center gap-4 font-semibold my-auto text-balance w-fit text-lg"
-                                  to="#">
+                                  to=".">
                                 {course!.Title}
                             </Link>
                         </div>
@@ -290,5 +258,18 @@ export default function CourseLayout() {
                 </div>
             </div>
         </div>
+    )
+}
+
+function SideBarNavLink({children, to, end = false, ...props}: { children: React.ReactNode, to: string, end?: boolean }) {
+    return (
+        <NavLink
+            to={to}
+            {...props}
+            end={end}
+            className={({isActive, isPending}) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
+        >
+            {children}
+        </NavLink>
     )
 }
