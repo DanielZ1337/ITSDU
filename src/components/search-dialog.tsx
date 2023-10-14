@@ -67,6 +67,7 @@ export default function SearchProductsDialog() {
                     placeholder="Search products..."
                     value={query}
                     onValueChange={setQuery}
+                    // className={"border-"}
                 />
                 <CommandList>
                     <CommandEmpty
