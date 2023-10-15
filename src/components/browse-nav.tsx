@@ -1,8 +1,8 @@
-import {Button, buttonVariants} from '@/components/ui/button'
-import {ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, MoreVertical, RefreshCwIcon} from 'lucide-react'
-import {useCallback, useEffect, useState} from 'react'
-import {Input} from './ui/input'
-import {useLocation, useNavigate, useNavigation, useSearchParams} from 'react-router-dom'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, MoreVertical, RefreshCwIcon } from 'lucide-react'
+import { useCallback, useEffect, useState } from 'react'
+import { Input } from './ui/input'
+import { useLocation, useNavigate, useNavigation, useSearchParams } from 'react-router-dom'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,8 +12,8 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from './ui/dropdown-menu'
-import {useTheme} from "next-themes";
-import {cn} from "@/lib/utils.ts";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils.ts";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 
 export default function BrowserNav() {
@@ -22,7 +22,7 @@ export default function BrowserNav() {
     const pathname = location.pathname
     const [address, setAddress] = useState(pathname)
     const navigation = useNavigation();
-    const {theme, setTheme} = useTheme()
+    const { theme, setTheme } = useTheme()
     // eslint-disable-next-line no-unused-vars
     let [searchParams] = useSearchParams();
     const [version, setVersion] = useState<string>()
@@ -60,6 +60,15 @@ export default function BrowserNav() {
                     console.log(r)
                 })
             }
+
+            // alt left and right arrow
+            if (e.altKey && e.key === 'ArrowLeft') {
+                e.preventDefault()
+                navigate(-1)
+            } else if (e.altKey && e.key === 'ArrowRight') {
+                e.preventDefault()
+                navigate(1)
+            }
         }
 
         window.addEventListener('keydown', handleKeyDown)
@@ -68,7 +77,7 @@ export default function BrowserNav() {
             window.removeEventListener('keydown', handleKeyDown)
         }
     }, [handleDarkModeToggle]);
-    const {data, isLoading} = useGETcurrentUser({
+    const { data, isLoading } = useGETcurrentUser({
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
@@ -80,13 +89,13 @@ export default function BrowserNav() {
         navigation.state === "loading" &&
         navigation.formData == null;
 
-// Are we reloading after an action?
+    // Are we reloading after an action?
     let isReloading =
         navigation.state === "loading" &&
         navigation.formData != null &&
         navigation.formAction === navigation.location.pathname;
 
-// Are we redirecting after an action?
+    // Are we redirecting after an action?
     let isRedirecting =
         navigation.state === "loading" &&
         navigation.formData != null &&
@@ -103,22 +112,22 @@ export default function BrowserNav() {
         <div className='flex w-full py-4 px-2 justify-center items-center gap-1 border-b-foreground-50 border-b-2'>
             {/* Back button */}
             <Button variant={"ghost"} size={"icon"}
-                    onClick={() => navigate(-1)}><ArrowLeftSquareIcon/></Button>
+                onClick={() => navigate(-1)}><ArrowLeftSquareIcon /></Button>
             {/* Forward button */}
             <Button variant={"ghost"} size={"icon"}
-                    onClick={() => navigate(1)}><ArrowRightSquareIcon/></Button>
+                onClick={() => navigate(1)}><ArrowRightSquareIcon /></Button>
             {/* Reload button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon/></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon /></Button>
             {/* Home button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon/></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon /></Button>
             {/* Address bar */}
             <form onSubmit={(e) => {
                 e.preventDefault()
                 navigate(address)
             }} className='w-full px-2'>
                 <Input className='w-full' type="text" value={address}
-                       onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
-                       onChange={(e) => setAddress(e.target.value)}/>
+                    onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
+                    onChange={(e) => setAddress(e.target.value)} />
             </form>
             {/*    more settings dropdown*/}
             <DropdownMenu>
@@ -126,7 +135,7 @@ export default function BrowserNav() {
                     variant: 'ghost',
                     size: 'icon'
                 }))}>
-                    <MoreVertical/>
+                    <MoreVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -141,7 +150,7 @@ export default function BrowserNav() {
                     <DropdownMenuLabel className={"font-normal"}>
                         {isLoading && !data ? 'Loading...' : data!.FullName}
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator/>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleDarkModeToggle}>
                         <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                         <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
@@ -150,7 +159,7 @@ export default function BrowserNav() {
                     {/*<DropdownMenuItem>Billing</DropdownMenuItem>*/}
                     {/*<DropdownMenuItem>Team</DropdownMenuItem>*/}
                     {/*<DropdownMenuItem>Subscription</DropdownMenuItem>*/}
-                    <DropdownMenuSeparator/>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => {
                             window.app.exit().then(r => {

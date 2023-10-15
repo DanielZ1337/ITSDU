@@ -1,20 +1,20 @@
-import {ClipboardList, ListTodo, Loader2, Megaphone, StarIcon, UserSquare2} from "lucide-react";
-import {cn} from "@/lib/utils.ts";
-import {useNavigate} from "react-router-dom";
-import {ItslearningRestApiEntitiesCourseCard} from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
+import { ClipboardList, ListTodo, Loader2, Megaphone, StarIcon, UserSquare2 } from "lucide-react";
+import { cn } from "@/lib/utils.ts";
+import { useNavigate } from "react-router-dom";
+import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
-import {Button} from "@/components/ui/button.tsx";
-import {useToast} from "@/components/ui/use-toast";
-import {useAtom} from "jotai";
-import {isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
-import {Checkbox} from "@nextui-org/react";
+import { Button } from "@/components/ui/button.tsx";
+import { useToast } from "@/components/ui/use-toast";
+import { useAtom } from "jotai";
+import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
+import { Checkbox } from "@nextui-org/react";
 
-export default function CourseCard({card}: {
+export default function CourseCard({ card }: {
     card: ItslearningRestApiEntitiesCourseCard
 }) {
     const navigate = useNavigate()
-    const {toast} = useToast()
-    const {mutate, isLoading} = usePUTcourseFavorite({
+    const { toast } = useToast()
+    const { mutate, isLoading } = usePUTcourseFavorite({
         courseId: card.CourseId,
     })
     const [isCoursesBulkEditing, /*setIsCoursesBulkEditing*/] = useAtom(isCoursesBulkStarEditingAtom)
@@ -22,17 +22,17 @@ export default function CourseCard({card}: {
 
     return (
         <button key={card.CourseId}
-                tabIndex={0}
-                onClick={(e) => {
-                    e.stopPropagation()
-                    navigate(`/course/${card.CourseId}`)
-                }}
-                className={"flex flex-col w-5/6 sm:w-72 h-36 bg-white rounded-md shadow-md focus-visible:outline-0 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-300"}>
+            tabIndex={0}
+            onClick={(e) => {
+                e.stopPropagation()
+                navigate(`/course/${card.CourseId}`)
+            }}
+            className={"flex flex-col w-5/6 sm:w-72 h-36 bg-white rounded-md shadow-md focus-visible:outline-0 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-300"}>
             <div
                 className={"flex flex-col w-full p-4 justify-between h-full hover:outline outline-offset-4 rounded-md outline-foreground/50 hover:cursor-pointer"}>
                 <div className={"flex flex-row justify-between"}>
                     <span
-                        className={"leading-snug tracking-tighter text-black font-semibold"}>{card.Title}</span>
+                        className={"leading-snug tracking-tighter text-black font-semibold text-balance"}>{card.Title}</span>
                     <Button
                         variant={"ghost"}
                         size={"icon"}
@@ -63,10 +63,10 @@ export default function CourseCard({card}: {
                         }}
                         className={"hover:cursor-pointer hover:bg-black/10 w-fit h-fit rounded-full p-1"}>
                         {!isCoursesBulkEditing ? isLoading ? (
-                            <Loader2 className={"stroke-black shrink-0 m-1 h-6 w-6 animate-spin"}/>
+                            <Loader2 className={"stroke-black shrink-0 m-1 h-6 w-6 animate-spin"} />
                         ) : (
                             <StarIcon
-                                className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')}/>
+                                className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')} />
                         ) : undefined}
                     </Button>
                     {isCoursesBulkEditing && (
@@ -76,12 +76,12 @@ export default function CourseCard({card}: {
                                 defaultChecked={card.IsFavouriteCourse}
                                 checked={card.IsFavouriteCourse}
                                 defaultSelected={card.IsFavouriteCourse}
-                                /*onChange={() => {
-                                    setCoursesBulkEdit({
-                                        ...coursesBulkEdit,
-                                        [card.CourseId]: !card.IsFavouriteCourse,
-                                    })
-                                }}*/
+                            /*onChange={() => {
+                                setCoursesBulkEdit({
+                                    ...coursesBulkEdit,
+                                    [card.CourseId]: !card.IsFavouriteCourse,
+                                })
+                            }}*/
                             />
                         </div>
                     )}
@@ -90,25 +90,25 @@ export default function CourseCard({card}: {
                     {card.NumberOfAnnouncements > 0 && (
                         <span
                             className={"text-gray-500 text-sm flex gap-2 items-center justify-center"}>
-                            <Megaphone/> {card.NumberOfAnnouncements}
+                            <Megaphone /> {card.NumberOfAnnouncements}
                         </span>
                     )}
                     {card.NumberOfFollowUpTasks > 0 && (
                         <span
                             className={"text-gray-500 text-sm flex gap-2 items-center justify-center"}>
-                            <ListTodo/>{card.NumberOfFollowUpTasks}
+                            <ListTodo />{card.NumberOfFollowUpTasks}
                         </span>
                     )}
                     {card.NumberOfTasks > 0 && (
                         <span
                             className={"text-gray-500 text-sm flex gap-2 items-center justify-center"}>
-                            <ClipboardList/>{card.NumberOfTasks}
+                            <ClipboardList />{card.NumberOfTasks}
                         </span>
                     )}
                     {card.NumberOfTeachers > 0 && (
                         <span
                             className={"text-gray-500 text-sm flex gap-2 items-center justify-center"}>
-                            <UserSquare2/>{card.NumberOfTeachers}
+                            <UserSquare2 />{card.NumberOfTeachers}
                         </span>
                     )}
                 </div>

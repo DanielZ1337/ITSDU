@@ -1,22 +1,24 @@
-import {Pencil, StarIcon} from "lucide-react";
-import {Suspense, useEffect, useState} from "react";
-import {Input} from "@/components/ui/input.tsx";
-import {useDebounce} from "@uidotdev/usehooks";
-import {Skeleton} from "@/components/ui/skeleton"
-import {CourseCardsSortByTypes} from "@/types/api-types/extra/course-cards-sort-by-types.ts";
-import {Helmet} from "react-helmet";
+import { Pencil, StarIcon } from "lucide-react";
+import { Suspense, useEffect, useState } from "react";
+import { Input } from "@/components/ui/input.tsx";
+import { useDebounce } from "@uidotdev/usehooks";
+import { Skeleton } from "@/components/ui/skeleton"
+import { CourseCardsSortByTypes, CourseCardsSortByTypesLabels } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
+import { Helmet } from "react-helmet";
 import CourseSortSelect from "@/components/course/course-sort-select.tsx";
 import CourseCardStarredSelect from "@/components/course/course-card-starred-select.tsx";
 import CourseCards from "@/components/course/course-cards.tsx";
-import {CourseCardsSelectOptions} from "@/types/course-cards-select-options.ts";
-import {isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
-import {useAtom} from "jotai";
-import {Toggle} from "@/components/ui/toggle.tsx";
+import { CourseCardsSelectOptions } from "@/types/course-cards-select-options.ts";
+import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
+import { useAtom } from "jotai";
+import { Toggle } from "@/components/ui/toggle.tsx";
+import CourseSearchDialog from "@/components/course/course-search-dialog";
+import { isMacOS } from "@/lib/utils";
 
 export default function Index() {
     const [searchInput, setSearchInput] = useState<string>('')
     const debouncedSearchTerm = useDebounce(searchInput, 200);
-    const [selectedRankedBy, setSelectedRankedBy] = useState<CourseCardsSortByTypes>("Rank")
+    const [selectedRankedBy, setSelectedRankedBy] = useState<CourseCardsSortByTypes>(CourseCardsSortByTypesLabels[0])
     const [selectedStarredOption, setSelectedStarredOption] = useState<CourseCardsSelectOptions>("Starred")
     // const [coursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
     const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom)
@@ -37,18 +39,28 @@ export default function Index() {
                             Courses
                         </h1>
                         <div className={"flex flex-row gap-4 w-full justify-end"}>
-                            <Input className={"w-1/3"} placeholder={"Search"} value={searchInput} onChange={(e) => {
-                                setSearchInput(e.target.value)
-                            }} autoFocus
-                            />
+                            <div className={"w-1/3 relative"}>
+                                <Input placeholder={"Search"} value={searchInput} onChange={(e) => {
+                                    setSearchInput(e.target.value)
+                                }} autoFocus
+                                />
+                                <kbd
+                                    className="pointer-events-none absolute right-2 my-auto hidden top-2.5 h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
+                                    <span>
+                                        {isMacOS() ? "⌘" : "Ctrl"}
+                                    </span>
+                                    K
+                                </kbd>
+                                <span className="sr-only">Search products</span>
+                            </div>
                             <CourseSortSelect selectedRankedBy={selectedRankedBy}
-                                              setSelectedRankedBy={setSelectedRankedBy}/>
+                                setSelectedRankedBy={setSelectedRankedBy} />
                             <CourseCardStarredSelect selectedStarredOption={selectedStarredOption}
-                                                     setSelectedStarredOption={setSelectedStarredOption}/>
+                                setSelectedStarredOption={setSelectedStarredOption} />
                             <Toggle aria-label="Toggle bulk edit" onPressedChange={setIsCoursesBulkEditing}
-                                    defaultPressed={isCoursesBulkEditing}
-                                    variant={"outline"} className={"py-2 px-3"}>
-                                <Pencil className={"stroke-foreground shrink-0 m-1 h-6 w-6"}/>
+                                defaultPressed={isCoursesBulkEditing}
+                                variant={"outline"} className={"py-2 px-3"}>
+                                <Pencil className={"stroke-foreground shrink-0 m-1 h-6 w-6"} />
                             </Toggle>
                         </div>
                         {searchInput.length > 0 && (
@@ -60,16 +72,16 @@ export default function Index() {
                     </div>
                     <Suspense fallback={
                         [...Array(12).keys()].map(i => i++).map((i) => (
-                                <div key={i} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
-                                    <div className={"flex flex-col w-full h-1/2 p-4"}>
-                                        <div className={"flex flex-row justify-between items-center"}>
-                                            <Skeleton className={"w-4/5 h-4 bg-gray-200 rounded-md"}/>
-                                            <StarIcon
-                                                className={"stroke-yellow-500 shrink-0 m-1 h-6 w-6"}/>
-                                        </div>
+                            <div key={i} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
+                                <div className={"flex flex-col w-full h-1/2 p-4"}>
+                                    <div className={"flex flex-row justify-between items-center"}>
+                                        <Skeleton className={"w-4/5 h-4 bg-gray-200 rounded-md"} />
+                                        <StarIcon
+                                            className={"stroke-yellow-500 shrink-0 m-1 h-6 w-6"} />
                                     </div>
                                 </div>
-                            )
+                            </div>
+                        )
                         )
                     }>
                         <CourseCards config={{
@@ -83,6 +95,8 @@ export default function Index() {
                     </Suspense>
                 </div>
             </div>
+            <CourseSearchDialog searchInput={debouncedSearchTerm}
+                setSearchInput={setSearchInput} />
         </div>
     )
 }
