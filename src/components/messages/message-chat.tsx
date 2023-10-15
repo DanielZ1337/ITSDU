@@ -87,7 +87,7 @@ export default function MessageChat({
                     {edited && <span className={"text-gray-400"}> (edited)</span>}
                 </p>
                 <div
-                    className={cn("mt-1 p-2 rounded-lg inline-block max-h-[50vh]", me ? 'float-right bg-blue-500 text-white' : 'float-left bg-foreground/10', isImage || isVideo ? 'max-w-[50dvw] max-h-[50dvh] bg-transparent' : 'max-w-[80dvw]')}>
+                    className={cn("mt-1 p-2 rounded-lg inline-block h-fit", me ? 'float-right bg-blue-500 text-white' : 'float-left bg-foreground/10', isImage || isVideo ? 'max-w-[50dvw] max-h-[50dvh] bg-transparent' : 'max-w-[80dvw]')}>
                     <p className={cn("whitespace-pre-wrap break-all")}>
                         <Linkify options={{render: renderLink}}>
                             {he.decode(messageText)}

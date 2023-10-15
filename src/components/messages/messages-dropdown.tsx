@@ -19,9 +19,12 @@ import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.
 import {useInView} from "react-intersection-observer";
 import {useEffect} from "react";
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {currentChatAtom} from "@/atoms/current-chat.ts";
+import {useAtom} from "jotai";
 
 export default function MessagesDropdown() {
+    const navigate = useNavigate()
     const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETinstantMessagesv2({
         maxThreadCount: 15,
         // maxMessages: 1,
@@ -60,6 +63,7 @@ export default function MessagesDropdown() {
     const threads = data?.pages.flatMap((page) => page.EntityArray)
     const total = data?.pages[0].Total
     const unreadMessages = threads?.filter((thread) => thread.LastMessage.MessageId !== thread.LastReadInstantMessageId)
+    const [, setCurrentChat] = useAtom(currentChatAtom)
 
     return (
         <DropdownMenu>
@@ -118,7 +122,7 @@ export default function MessagesDropdown() {
                     )}
                     {threads && (
                         <ScrollShadow
-                            className={"h-72 w-full my-2 px-2 scrollbar hover:scrollbar-thumb-foreground/15 active:scrollbar-thumb-foreground/10 scrollbar-thumb-foreground/20 scrollbar-w-2 scrollbar-thumb-rounded-full"}>
+                            className={"h-72 w-full my-2 px-2 scrollbar overflow-x-hidden hover:scrollbar-thumb-foreground/15 active:scrollbar-thumb-foreground/10 scrollbar-thumb-foreground/20 scrollbar-w-2 scrollbar-thumb-rounded-full"}>
                             {threads.length === 0 && (
                                 <div className="flex flex-col items-center justify-center py-6 h-72 w-full">
                                     <AlertCircle className={"stroke-destructive"}/>
@@ -132,8 +136,13 @@ export default function MessagesDropdown() {
                             )}
                             {threads && threads.length > 0 && (
                                 threads.map((thread, idx) => (
-                                    <div key={idx}>
-                                        <DropdownMenuItem>
+                                    <div key={idx} className={"overflow-x-hidden w-full"}>
+                                        <DropdownMenuItem
+                                            onClick={() => {
+                                                navigate(`/messages`)
+                                                setCurrentChat(thread.InstantMessageThreadId)
+                                            }}
+                                        >
                                             <div className="flex items-center justify-between group pr-2"
                                                  data-read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}>
                                                 <div className="flex items-center gap-3">
@@ -153,7 +162,7 @@ export default function MessagesDropdown() {
                                                                 className={"text-sm font-medium group-data-[read=true]:font-normal text-foreground line-clamp-2"}>{thread.LastMessage.CreatedByName}</span>
                                                         </span>
                                                         <span
-                                                            className={cn("group-data-[read=false]:font-medium text-xs text-muted-foreground w-full line-clamp-3", thread.LastMessage.MessageId !== thread.LastReadInstantMessageId && "font-semibold")}>{thread.LastMessage.Text.substring(0, 300)}</span>
+                                                            className={cn("group-data-[read=false]:font-medium text-xs text-muted-foreground w-full line-clamp-3 overflow-x-hidden break-all", thread.LastMessage.MessageId !== thread.LastReadInstantMessageId && "font-semibold")}>{thread.LastMessage.Text.substring(0, 300)}</span>
                                                         <span
                                                             className="text-xs text-muted-foreground">{thread.LastMessage.CreatedLocalDateStamp}</span>
                                                     </div>
