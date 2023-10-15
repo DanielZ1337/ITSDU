@@ -1,23 +1,15 @@
 import {Link, NavLink} from "react-router-dom"
 import {cn} from "@/lib/utils.ts";
 import {Button} from "@/components/ui/button.tsx";
-import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 import MessagesDropdown from "@/components/messages/messages-dropdown.tsx";
 import {Suspense} from "react";
 import {MessageCircle} from "lucide-react";
 import {AiOutlineNotification} from "react-icons/ai";
 import NotificationsDropdown from "./notifications/notifications-dropdown";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+import HeaderUserFullnameAvatar from "@/header-user-avatar-fullname";
+import {ErrorBoundary} from "react-error-boundary";
 
 export default function Header() {
-
-    const {data} = useGETcurrentUser({
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-    })
 
 
     const links = [
@@ -50,7 +42,8 @@ export default function Header() {
                 <div className={"flex flex-row items-center justify-center gap-4"}>
                     <div className={"flex flex-row items-center justify-center gap-2"}>
                         <Link to={"/"} className={"shrink-0"}>
-                            <img src="itsl-itslearning-file://icon.ico" alt="Logo" className={"w-8 h-8 rounded-md"}/>
+                            <img src="https://cdn.itslearning.com/v3.142.3.446/images/logo-badge.svg" alt="Logo"
+                                 className={"w-8 h-8"}/>
                         </Link>
                         {/* <Button onClick={() => {
                             window.localStorage.clear()
@@ -70,30 +63,42 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={"flex flex-row items-center justify-center gap-4"}>
-                    <Suspense fallback={<Button className={"shrink-0"} variant={"ghost"} size={"icon"}><MessageCircle
-                        className={"animate-pulse"}/></Button>}>
-                        <MessagesDropdown/>
-                    </Suspense>
-                    <Suspense
-                        fallback={<Button variant={"ghost"} size={"icon"} className={"shrink-0"}><AiOutlineNotification
-                            className={"w-6 h-6"}/></Button>}>
-                        <NotificationsDropdown/>
-                    </Suspense>
-
-                    <div className={"flex flex-row items-center justify-center gap-2"}>
-                        <Avatar className={"flex-shrink-0 w-8 h-8"}>
-                            <AvatarImage src={data?.ProfileImageUrl}
-                                         alt={data?.FullName}
-                                         className={"object-cover"}
-                            />
-                            <AvatarFallback className={"bg-foreground/20 text-sm"}>
-                                {data?.FullName.split(" ").map((name) => name[0]).join("")}
-                            </AvatarFallback>
-                        </Avatar>
-                        <p className={"text-lg font-semibold line-clamp-1 break-all"}>{data?.FullName}</p>
-                    </div>
+                    <ErrorBoundary fallback={<MessagesDropDownFallback/>}>
+                        <Suspense fallback={<MessagesDropDownFallback/>}>
+                            <MessagesDropdown/>
+                        </Suspense>
+                    </ErrorBoundary>
+                    <ErrorBoundary fallback={<NotificationsDropDownFallback/>}>
+                        <Suspense
+                            fallback={<NotificationsDropDownFallback/>}>
+                            <NotificationsDropdown/>
+                        </Suspense>
+                    </ErrorBoundary>
+                    <ErrorBoundary fallback={<div className={"animate-pulse"}>Loading...</div>}>
+                        <Suspense fallback={<div className={"animate-pulse"}>Loading...</div>}>
+                            <HeaderUserFullnameAvatar/>
+                        </Suspense>
+                    </ErrorBoundary>
                 </div>
             </nav>
         </header>
+    )
+}
+
+function MessagesDropDownFallback() {
+    return (
+        <div className={"animate-pulse"}>
+            <Button className={"shrink-0"} variant={"ghost"} size={"icon"}><MessageCircle
+                className={"animate-pulse"}/></Button>
+        </div>
+    )
+}
+
+function NotificationsDropDownFallback() {
+    return (
+        <div className={"animate-pulse"}>
+            <Button variant={"ghost"} size={"icon"} className={"shrink-0"}><AiOutlineNotification
+                className={"w-7 h-7 animate-pulse"}/></Button>
+        </div>
     )
 }

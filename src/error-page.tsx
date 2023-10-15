@@ -14,7 +14,7 @@ export default function ErrorPage({children}: {
     }
 
     return (
-        <div className={"flex flex-col items-center justify-center gap-6"}>
+        <div className={"flex flex-col items-center justify-center gap-6 h-full flex-1"}>
             <div className={"flex flex-col items-center justify-center"}>
                 <div className={"text-9xl font-bold text-gray-500"}>500</div>
                 <h1>Oops!</h1>
