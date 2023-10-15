@@ -8,3 +8,18 @@ export const CourseCardsSortByTypesLabels = {
     [CourseCardsSortByTypesConst[2]]: 'Title',
     [CourseCardsSortByTypesConst[3]]: 'Rank',
 } as const
+
+/*
+export enum CourseCardsSortByTypesEnum {
+    LastOnline = 'LastOnline',
+    LastUpdated = 'LastUpdated',
+    Title = 'Title',
+    Rank = 'Rank',
+}
+
+export const CourseCardsSortByTypesLabels = {
+    [CourseCardsSortByTypes.LastOnline]: 'Last online',
+    [CourseCardsSortByTypes.LastUpdated]: 'Last updated',
+    [CourseCardsSortByTypes.Title]: 'Title',
+    [CourseCardsSortByTypes.Rank]: 'Rank',
+}*/

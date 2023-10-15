@@ -1,10 +1,10 @@
 import {Helmet} from "react-helmet";
-import SearchResourcesDialog from "@/components/search-dialog.tsx";
+import SearchResourcesDialog from "@/components/resources/resources-search-dialog";
 import {Link, NavLink, Outlet, useNavigate, useParams} from "react-router-dom";
 import {Button} from "@/components/ui/button.tsx";
 import {cn} from "@/lib/utils.ts";
 // eslint-disable-next-line no-redeclare
-import {CalendarIcon, File, HomeIcon, Loader2, Star, Users2} from "lucide-react";
+import {CalendarIcon, File, HomeIcon, Info, Loader2, Star, Users2} from "lucide-react";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses.ts";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses.ts";
@@ -121,11 +121,6 @@ export default function CourseLayout() {
                                         Announcements (5)
                                     </p>
                                 </SideBarNavLink>
-                                {/*<NavLink key={link.name} to={link.href} className={({isActive, isPending}) =>
-                                cn("text-muted-foreground hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)] hover:text-foreground-700 ", isActive && "text-foreground underline underline-offset-2 font-bold drop-shadow-[0_0px_5px_rgba(100,100,100,0.2)]", isPending && " border-b-2 border-blue-500 border-opacity-50 animate-pulse text-opacity-50")
-                            }>
-                                {link.name}
-                            </NavLink>*/}
                                 <SideBarNavLink to="resources">
                                     <File className={"h-4 w-4"}/>
                                     <p className={"hidden lg:block"}>
@@ -185,24 +180,7 @@ export default function CourseLayout() {
                                     </p>
                                 </SideBarNavLink>
                                 <SideBarNavLink to={'course-information'}>
-                                    <svg
-                                        className=" h-4 w-4"
-                                        fill="none"
-                                        height="24"
-                                        stroke="currentColor"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        viewBox="0 0 24 24"
-                                        width="24"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                    >
-                                        <path
-                                            d="M21 12.79V21H3v-8.21M21 12.79l-9-7-9 7M21 12.79l-9-7-9 7"/>
-                                        <path d="M3 21h18"/>
-                                        <path d="M6 12h12"/>
-                                        <path d="M9 9l3 3 3-3"/>
-                                    </svg>
+                                    <Info className={"h-4 w-4"}/>
                                     <p className={"hidden lg:block"}>
                                         Course Information
                                     </p>
@@ -253,7 +231,7 @@ export default function CourseLayout() {
                         </p>
                     </div>
                 </header>
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto flex flex-col">
                     <Outlet/>
                 </div>
             </div>

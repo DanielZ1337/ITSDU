@@ -34,6 +34,8 @@ import CourseIndex from "@/routes/course/course-index.tsx";
 import CourseParticipants from "@/routes/course/course-participants.tsx";
 import CourseInformation from "@/routes/course/course-information.tsx";
 import NotificationsIndex from "./routes/notifications/notifications-index";
+import CourseResources from "@/routes/course/course-resources";
+import CourseRootResources from "@/routes/course/course-root-resources";
 
 const router = createHashRouter([
     {
@@ -73,12 +75,19 @@ const router = createHashRouter([
                     },
                     {
                         path: "resources",
-                        element: <SuspenseWrapper>
-                            <div>
-                                <h1>Resources</h1>
-                            </div>
-                        </SuspenseWrapper>,
                         errorElement: <ErrorPage/>,
+                        children: [
+                            {
+                                element: <SuspenseWrapper><CourseRootResources/></SuspenseWrapper>,
+                                errorElement: <ErrorPage/>,
+                                index: true,
+                            },
+                            {
+                                path: ":folderId",
+                                element: <SuspenseWrapper><CourseResources/></SuspenseWrapper>,
+                                errorElement: <ErrorPage/>,
+                            }
+                        ]
                     },
                     {
                         path: "announcements",
@@ -199,13 +208,19 @@ setInterval(async () => {
             })
 
             console.log(data)
-            console.log('refreshed token')
-            window.localStorage.setItem('access_token', data.access_token)
-            window.localStorage.setItem('refresh_token', data.refresh_token)
+            if (data.access_token) {
+                window.localStorage.setItem('access_token', data.access_token)
+            }
+
+            if (data.refresh_token) {
+                window.localStorage.setItem('refresh_token', data.refresh_token)
+            }
             window.location.reload()
         } catch (e) {
             console.log(e)
         }
+    } else {
+        console.log('no refresh token')
     }
 }, 1000 * 60 * 30) // 30 minutes
 

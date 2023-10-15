@@ -16,3 +16,5 @@ export enum ItslearningRestApiEntitiesElementType {
     CustomActivity = 524288,
     LearningPath = 1048576,
 }
+
+export type ItslearningRestApiEntitiesElementTypeString = keyof typeof ItslearningRestApiEntitiesElementType;

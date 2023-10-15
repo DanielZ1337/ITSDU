@@ -1,15 +1,15 @@
 import * as React from "react"
-import { DialogProps } from "@radix-ui/react-dialog"
-import { Command as CommandPrimitive } from "cmdk"
-import { Search } from "lucide-react"
+import {DialogProps} from "@radix-ui/react-dialog"
+import {Command as CommandPrimitive} from "cmdk"
+import {Search} from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import {cn} from "@/lib/utils"
+import {Dialog, DialogContent} from "@/components/ui/dialog"
 
 const Command = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive>,
     React.ComponentPropsWithoutRef<typeof CommandPrimitive>
->(({ className, ...props }, ref) => (
+>(({className, ...props}, ref) => (
     <CommandPrimitive
         ref={ref}
         className={cn(
@@ -24,7 +24,7 @@ Command.displayName = CommandPrimitive.displayName
 interface CommandDialogProps extends DialogProps {
 }
 
-const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
+const CommandDialog = ({children, ...props}: CommandDialogProps) => {
     return (
         <Dialog {...props}>
             <DialogContent className="overflow-hidden p-0 shadow-lg">
@@ -39,15 +39,15 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
 
 type CommandInputProps = React.ComponentPropsWithoutRef<
     typeof CommandPrimitive.Input> & {
-        containerClassName?: string
-    }
+    containerClassName?: string
+}
 
 const CommandInput = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive.Input>,
     CommandInputProps
->(({ className, containerClassName, ...props }, ref) => (
+>(({className, containerClassName, ...props}, ref) => (
     <div className={cn("flex items-center border-b px-3", containerClassName)} cmdk-input-wrapper="">
-        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50"/>
         <CommandPrimitive.Input
             ref={ref}
             className={cn(
@@ -64,7 +64,7 @@ CommandInput.displayName = CommandPrimitive.Input.displayName
 const CommandList = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive.List>,
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>
->(({ className, ...props }, ref) => (
+>(({className, ...props}, ref) => (
     <CommandPrimitive.List
         ref={ref}
         className={cn("max-h-[300px] overflow-y-auto overflow-x-hidden", className)}
@@ -90,7 +90,7 @@ CommandEmpty.displayName = CommandPrimitive.Empty.displayName
 const CommandGroup = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive.Group>,
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>
->(({ className, ...props }, ref) => (
+>(({className, ...props}, ref) => (
     <CommandPrimitive.Group
         ref={ref}
         className={cn(
@@ -106,7 +106,7 @@ CommandGroup.displayName = CommandPrimitive.Group.displayName
 const CommandSeparator = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive.Separator>,
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Separator>
->(({ className, ...props }, ref) => (
+>(({className, ...props}, ref) => (
     <CommandPrimitive.Separator
         ref={ref}
         className={cn("-mx-1 h-px bg-border", className)}
@@ -118,7 +118,7 @@ CommandSeparator.displayName = CommandPrimitive.Separator.displayName
 const CommandItem = React.forwardRef<
     React.ElementRef<typeof CommandPrimitive.Item>,
     React.ComponentPropsWithoutRef<typeof CommandPrimitive.Item>
->(({ className, children, ...props }, ref) => (
+>(({className, children, ...props}, ref) => (
     <CommandPrimitive.Item
         ref={ref}
         className={cn(
@@ -134,9 +134,9 @@ const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName
 
 const CommandShortcut = ({
-    className,
-    ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
+                             className,
+                             ...props
+                         }: React.HTMLAttributes<HTMLSpanElement>) => {
     return (
         <span
             className={cn(

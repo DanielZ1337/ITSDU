@@ -1,6 +1,6 @@
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {Loader2, Star} from "lucide-react";
-import SearchResourcesDialog from "@/components/search-dialog.tsx";
+import SearchResourcesDialog from "@/components/resources/resources-search-dialog";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import {Button} from "@/components/ui/button.tsx";
 import {Helmet} from "react-helmet";
