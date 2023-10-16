@@ -15,6 +15,7 @@ import {useEffect, useState} from "react";
 import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETElightbulletinComment.ts";
 import {Input} from "@/components/ui/input.tsx";
 import {useToast} from "@/components/ui/use-toast";
+import {getRelativeTimeString} from "@/lib/utils.ts";
 
 export default function LightbulletinComment({comment}: {
     comment: ItslearningRestApiEntitiesComment
@@ -108,11 +109,12 @@ export default function LightbulletinComment({comment}: {
                         </div>
                     </form>
                 ) : (
-                    <p className={"mt-0.5"}>{comment.CommentText}</p>
+                    <p className={"mt-0.5 font-normal"}>{comment.CommentText}</p>
                 )}
                 <p className="text-gray-500 text-sm">Posted
-                    on {new Date(comment.CreatedDateTime).toLocaleDateString()}</p>
+                    on {getRelativeTimeString(new Date(comment.CreatedDateTime))}</p>
             </div>
+            {/*TODO: this is hardcoded to be me, find a way to use an atom and get the user from that and set it to the user ID*/}
             {comment.Author.PersonId === 467633 && (
                 <>
                     <div className={"flex-grow"}/>
