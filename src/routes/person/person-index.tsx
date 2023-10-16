@@ -43,7 +43,8 @@ export default function PersonIndex() {
 
     return (
         <div className="flex items-center justify-center flex-1 p-4">
-            <div className="bg-foreground/10 shadow-lg shadow-foreground/5 rounded-lg overflow-hidden p-8 flex flex-col">
+            <div
+                className="bg-foreground/10 shadow-lg shadow-foreground/5 rounded-lg overflow-hidden p-8 flex flex-col">
                 <div>
                     <div className="px-4 py-2">
                         <h1 className="font-bold text-3xl text-balance text-center">{person.FullName}</h1>

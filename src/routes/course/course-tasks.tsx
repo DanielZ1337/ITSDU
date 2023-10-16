@@ -1,10 +1,10 @@
 import useGETcourseTasklistDailyWorkflow from "@/queries/courses/useGETcourseTasklistDailyWorkflow.ts";
-import { useParams } from "react-router-dom";
+import {useParams} from "react-router-dom";
 
 export default function CourseTasks() {
     const params = useParams()
     const courseId = Number(params.id)
-    const { data } = useGETcourseTasklistDailyWorkflow({
+    const {data} = useGETcourseTasklistDailyWorkflow({
         courseId,
         PageIndex: 0,
         PageSize: 100,

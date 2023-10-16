@@ -192,7 +192,11 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
     ]
 }
 
-export function ResourcesDataTable({data, isLoading, root = false}: { data?: ItslearningRestApiEntitiesPersonalCourseCourseResource[], isLoading: boolean, root?: boolean }) {
+export function ResourcesDataTable({data, isLoading, root = false}: {
+    data?: ItslearningRestApiEntitiesPersonalCourseCourseResource[],
+    isLoading: boolean,
+    root?: boolean
+}) {
 
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
