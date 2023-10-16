@@ -29,13 +29,15 @@ import Calendar from "@/routes/calendar.tsx"
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 import Messages from "@/components/messages/messages.tsx";
 import Sidebar from "@/routes/sidebar.tsx"
-import CourseLayout from "@/components/course/course-layout.tsx";
+import CourseLayout from "@/components/course/layout/course-layout.tsx";
 import CourseIndex from "@/routes/course/course-index.tsx";
 import CourseParticipants from "@/routes/course/course-participants.tsx";
 import CourseInformation from "@/routes/course/course-information.tsx";
 import NotificationsIndex from "./routes/notifications/notifications-index";
 import CourseResources from "@/routes/course/course-resources";
 import CourseRootResources from "@/routes/course/course-root-resources";
+import CourseTasks from "@/routes/course/course-tasks.tsx";
+import PersonIndex from "@/routes/person/person-index.tsx";
 
 const router = createHashRouter([
     {
@@ -47,6 +49,11 @@ const router = createHashRouter([
                 element: <Index/>,
                 errorElement: <ErrorPage/>,
                 index: true,
+            },
+            {
+                path: "/person/:id",
+                element: <SuspenseWrapper><PersonIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/sidebar",
@@ -103,11 +110,7 @@ const router = createHashRouter([
                     },
                     {
                         path: "tasks",
-                        element: <SuspenseWrapper>
-                            <div>
-                                <h1>Tasks</h1>
-                            </div>
-                        </SuspenseWrapper>,
+                        element: <SuspenseWrapper><CourseTasks/></SuspenseWrapper>,
                     },
                     {
                         path: "participants",

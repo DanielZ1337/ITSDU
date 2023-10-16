@@ -31,6 +31,7 @@ import {
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
 import {cn} from "@/lib/utils.ts";
 import {Link} from "react-router-dom"
+import {LearningToolIdTypes} from "@/types/api-types/extra/learning-tool-id-types.ts";
 
 export function createColumns(isLoading: boolean, root: boolean): ColumnDef<ItslearningRestApiEntitiesPersonalCourseCourseResource>[] {
 
@@ -173,7 +174,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             >
                                 View content
                             </DropdownMenuItem>
-                            {resource.LearningToolId === 5009 && (
+                            {resource.LearningToolId === LearningToolIdTypes.PDF && (
                                 <DropdownMenuItem
                                     onClick={(e) => {
                                         e.stopPropagation()
