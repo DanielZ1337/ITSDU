@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
+import { useInView } from 'framer-motion';
 import Image1 from '@/public/screenshots/course-home.png';
 import Image2 from '@/public/screenshots/course-home.png';
 import Image3 from '@/public/screenshots/course-home.png';
@@ -31,7 +31,7 @@ export default function PicturesSection() {
             </div>
             <div className='translate-x-1/2'>
                 <Image ref={ref3} src={Image3} alt="Course Home" className="flex justify-left w-full h-full object-cover" style={{
-                    transform: ref2InView ? "scale(1)" : "scale(0.95)",
+                    transform: ref3InView ? "scale(1)" : "scale(0.95)",
                     transition: "all 0.9s cubic-bezier(0.17, 0.55, 0.55, 1)"
                 }} />
             </div>
