@@ -8,11 +8,11 @@ export default function LightbulletinsForCourseLoader() {
                     <div className="flex space-x-4">
                         <div className="flex-1 space-y-4 py-1">
                             <div className="space-y-2">
-                                <Skeleton className="h-4 bg-gray-400 rounded w-3/4"/>
+                                <Skeleton className="h-4 bg-foreground/20 rounded w-3/4"/>
                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                    <Skeleton className="h-4 bg-gray-400 rounded w-5/6"/>
-                                    <Skeleton className="h-4 bg-gray-400 rounded w-3/4"/>
+                                    <Skeleton className="h-4 bg-foreground/20 rounded"/>
+                                    <Skeleton className="h-4 bg-foreground/20 rounded w-5/6"/>
+                                    <Skeleton className="h-4 bg-foreground/20 rounded w-3/4"/>
                                 </div>
                             </div>
                         </div>
@@ -24,10 +24,10 @@ export default function LightbulletinsForCourseLoader() {
                             href="#"
                             className="text-blue-500 hover:underline"
                         >
-                            <Skeleton className="animate-pulse h-4 w-24 bg-gray-400 rounded"/>
+                            <Skeleton className="animate-pulse h-4 w-24 bg-foreground/20 rounded"/>
                         </a>{' '}
                         on
-                        <Skeleton className="animate-pulse h-4 w-12 bg-gray-400 rounded"/>
+                        <Skeleton className="animate-pulse h-4 w-12 bg-foreground/20 rounded"/>
                     </span>
                     </div>
                     <div className="mt-2 flex justify-between">

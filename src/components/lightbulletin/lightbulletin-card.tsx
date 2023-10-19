@@ -112,15 +112,15 @@ export default function LightbulletinCard({bulletin}: {
                 {bulletin.Text}
             </pre>
             {showResources && (
-                <div className="mt-4 mb-4 flex flex-col space-y-4 border rounded-lg p-4">
+                <div className="mt-4 mb-4 flex flex-col space-y-4 rounded-lg p-2">
                     {Resources!.EntityArray.map((resource) => (
                         <div
-                            className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-4 rounded-lg group/attachment"}
+                            className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment"}
                             key={resource.ElementId} onClick={() => {
                             window.app.openExternal(resource.ContentUrl, true)
                         }}>
                             <div
-                                className="flex items-center space-x-2 text-blue-500 group-hover/attachment:text-blue-600">
+                                className="flex items-center space-x-2 p-2 text-blue-500 group-hover/attachment:text-blue-600">
                                 <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"}/>
                                 <span className="truncate">{resource.Title}</span>
                             </div>

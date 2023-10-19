@@ -111,8 +111,7 @@ export default function LightbulletinComment({comment}: {
                 ) : (
                     <p className={"mt-0.5 font-normal"}>{comment.CommentText}</p>
                 )}
-                <p className="text-gray-500 text-sm">Posted
-                    on {getRelativeTimeString(new Date(comment.CreatedDateTime))}</p>
+                <p className="text-gray-500 text-sm">Posted {getRelativeTimeString(new Date(comment.CreatedDateTime))}</p>
             </div>
             {/*TODO: this is hardcoded to be me, find a way to use an atom and get the user from that and set it to the user ID*/}
             {comment.Author.PersonId === 467633 && (

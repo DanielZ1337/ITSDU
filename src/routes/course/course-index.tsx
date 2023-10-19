@@ -32,10 +32,10 @@ export default function CourseIndex() {
 
                         <Suspense
                             fallback={<div className={"flex flex-col gap-2 w-full"}>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                <Skeleton className="h-4 bg-foreground/20 rounded"/>
+                                <Skeleton className="h-4 bg-foreground/20 rounded"/>
+                                <Skeleton className="h-4 bg-foreground/20 rounded"/>
+                                <Skeleton className="h-4 bg-foreground/20 rounded"/>
                             </div>}>
                             <Resources courseId={courseId}/>
                         </Suspense>
