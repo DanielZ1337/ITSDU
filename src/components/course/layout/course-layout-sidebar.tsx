@@ -37,7 +37,7 @@ const SideBarNavLinks = [
         to: "tasks",
         end: false
     },
-    {
+    /*{
         name: "Grades (2)",
         icon: <svg
             className=" h-4 w-4"
@@ -59,7 +59,7 @@ const SideBarNavLinks = [
         </svg>,
         to: "grades",
         end: false
-    },
+    },*/
     {
         name: "Participants",
         icon: <Users2 className={"h-4 w-4"}/>,

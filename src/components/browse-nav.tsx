@@ -174,6 +174,17 @@ export default function BrowserNav() {
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem
                         onClick={() => {
+                            localStorage.clear()
+                            window.app.exit().then(r => {
+                                console.log(r)
+                            })
+                        }}
+                        className={"hover:!bg-destructive focus:!bg-destructive"}
+                    >
+                        <span>Sign out</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => {
                             window.app.exit().then(r => {
                                 console.log(r)
                             })
