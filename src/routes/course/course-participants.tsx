@@ -1,7 +1,8 @@
-import CourseParticipantsList from "@/components/course/course-participants-list";
+import CourseParticipantsList from "@/components/course/participants/course-participants-list.tsx";
 import {Input} from "@/components/ui/input";
 import {Suspense, useState} from "react";
 import {useParams} from "react-router-dom";
+import CourseParticipantsRolesSelect from "@/components/course/participants/course-participants-roles-select.tsx";
 
 export default function CourseParticipants() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +20,7 @@ export default function CourseParticipants() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border border-gray-300 rounded-md py-2 px-4 w-full sm:w-1/2 mr-2"
                 />
+                <CourseParticipantsRolesSelect/>
             </div>
             <Suspense fallback={<span className={"px-1"}>Loading participants...</span>}>
                 <CourseParticipantsList searchTerm={searchTerm} courseId={courseId}/>

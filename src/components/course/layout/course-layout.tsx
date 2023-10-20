@@ -35,7 +35,7 @@ export default function CourseLayout() {
             <Helmet>
                 <title>{course!.Title}</title>
             </Helmet>
-            <div className="order-r bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
+            <div className="bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
                 <div className="flex h-full max-h-screen flex-col gap-2 overflow-hidden border-r">
                     <div className="flex-1 overflow-auto py-2">
                         <CourseLayoutSidebar/>

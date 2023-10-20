@@ -51,7 +51,7 @@ export default function CourseHeader({courseTitle, courseCode, courseId}: {
 
     return (
         <header
-            className="w-full sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40">
+            className="w-full sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40 shadow z-10">
             <div className="w-full flex-1 flex justify-between">
                 {/*<form className="relative">
                             <Input

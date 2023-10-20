@@ -72,10 +72,7 @@ export default function CourseCard({card}: {
                         ) : (
                             <StarIcon
                                 className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')}/>
-                        ) : undefined}
-                    </Button>
-                    {isCoursesBulkEditing && (
-                        <div className={"hover:bg-background/10 rounded-full"}>
+                        ) : (
                             <Checkbox
                                 className={"m-0 p-0 w-fit max-h-[20px] max-w-[20px] flex-shrink-0 flex-grow-0"}
                                 defaultChecked={card.IsFavouriteCourse}
@@ -88,8 +85,8 @@ export default function CourseCard({card}: {
                                     })
                                 }}*/
                             />
-                        </div>
-                    )}
+                        )}
+                    </Button>
                 </div>
                 <div className={"flex gap-2"}>
                     {card.NumberOfAnnouncements > 0 && (

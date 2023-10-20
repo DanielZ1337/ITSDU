@@ -12,6 +12,7 @@ import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbul
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {getRelativeTimeString} from "@/lib/utils.ts";
 import {Link} from "react-router-dom";
+import PersonHoverCard from "@/components/person-hover-card.tsx";
 
 export default function LightbulletinCard({bulletin}: {
     bulletin: GETlightbulletinsForCourse['EntityArray'][0]
@@ -58,12 +59,14 @@ export default function LightbulletinCard({bulletin}: {
                             {bulletin.PublishedBy.FullName.split(" ").map((name) => name[0]).join("").slice(0, 3)}
                         </AvatarFallback>
                     </Avatar>
-                    <Link
-                        to={`/person/${bulletin.PublishedBy.PersonId}`}
-                        className="text-blue-500 hover:underline font-semibold"
-                    >
-                        {bulletin.PublishedBy.FullName}
-                    </Link>{' '}
+                    <PersonHoverCard personId={bulletin.PublishedBy.PersonId} showTitle={false}>
+                        <Link
+                            to={`/person/${bulletin.PublishedBy.PersonId}`}
+                            className="text-blue-500 hover:underline font-semibold"
+                        >
+                            {bulletin.PublishedBy.FullName}
+                        </Link>{' '}
+                    </PersonHoverCard>
                     <span className="text-gray-500">
                         {getRelativeTimeString(new Date(bulletin.PublishedDate))}
                     </span>

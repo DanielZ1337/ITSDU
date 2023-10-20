@@ -87,12 +87,14 @@ export default function CourseLayoutSidebar() {
                 <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
                     Overview
                 </h1>
-                {SideBarNavLinks.map((link, i) => (
-                    <SideBarNavLink key={i} to={link.to} end={link.end}>
-                        {link.icon}
-                        <p>{link.name}</p>
-                    </SideBarNavLink>
-                ))}
+                <div className="flex flex-col gap-2">
+                    {SideBarNavLinks.map((link, i) => (
+                        <SideBarNavLink key={i} to={link.to} end={link.end}>
+                            {link.icon}
+                            <p className={"hidden lg:block"}>{link.name}</p>
+                        </SideBarNavLink>
+                    ))}
+                </div>
             </div>
         </nav>
     )
@@ -110,8 +112,8 @@ function SideBarNavLink({children, to, end = false, ...props}: {
             end={end}
             className={({
                             isActive,
-                            isPending
-                        }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "text-zinc-900 dark:text-zinc-50", isPending && "text-opacity-50")}
+                            isPending,
+                        }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
         >
             {children}
         </NavLink>
