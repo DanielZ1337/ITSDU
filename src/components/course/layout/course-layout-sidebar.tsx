@@ -1,6 +1,7 @@
 import {NavLink, useParams} from "react-router-dom";
 import {cn} from "@/lib/utils.ts";
 import SearchResourcesDialog from "@/components/resources/resources-search-dialog.tsx";
+import {motion} from "framer-motion";
 // eslint-disable-next-line no-redeclare
 import {CalendarIcon, ClipboardList, File, HomeIcon, Info, Megaphone, Users2} from "lucide-react";
 import React from "react";
@@ -113,9 +114,19 @@ function SideBarNavLink({children, to, end = false, ...props}: {
             className={({
                             isActive,
                             isPending,
-                        }) => cn("flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
+                        }) => cn("relative flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
         >
-            {children}
+            {({isActive}) => (
+                <>
+                    {isActive && (
+                        <motion.div
+                            layoutId="sidebar-active-indicator"
+                            className={"absolute inset-y-0 -left-7 w-3 rounded-r-lg bg-secondary-500"}
+                        />
+                    )}
+                    {children}
+                </>
+            )}
         </NavLink>
     )
 }

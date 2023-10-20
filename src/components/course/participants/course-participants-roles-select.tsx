@@ -6,11 +6,10 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {ChevronDown} from "lucide-react";
-import {CourseParticipantsRoles, CourseParticipantsRolesMappedToIds} from "@/types/course-participants-roles.ts";
-import {useState} from "react";
+import {CourseParticipantsRoles} from "@/types/course-participants-roles.ts";
 
 export default function CourseParticipantsRolesSelect() {
-    const [selectedRolesIds, setSelectedRolesIds] = useState<CourseParticipantsRolesMappedToIds[]>([]);
+    // const [selectedRolesIds, setSelectedRolesIds] = useState<CourseParticipantsRolesMappedToIds[]>([]);
 
     return (
         <DropdownMenu>

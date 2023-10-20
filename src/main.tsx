@@ -38,6 +38,7 @@ import CourseResources from "@/routes/course/course-resources";
 import CourseRootResources from "@/routes/course/course-root-resources";
 import CourseTasks from "@/routes/course/course-tasks.tsx";
 import PersonIndex from "@/routes/person/person-index.tsx";
+import CoursesIndex from "@/routes/courses.tsx";
 
 const router = createHashRouter([
     {
@@ -53,6 +54,11 @@ const router = createHashRouter([
             {
                 path: "/person/:id",
                 element: <SuspenseWrapper><PersonIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
+            },
+            {
+                path: "/courses",
+                element: <SuspenseWrapper><CoursesIndex/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
             },
             {

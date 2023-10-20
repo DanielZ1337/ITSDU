@@ -19,7 +19,7 @@ export default function Header() {
         },
         {
             name: "Courses",
-            href: "/course-cards"
+            href: "/courses"
         },
         {
             name: "Messages",
@@ -55,9 +55,9 @@ export default function Header() {
                     <div className={"flex flex-row items-center justify-center gap-4 px-4"}>
                         {links.map((link) => ((
                             <NavLink key={link.name} to={link.href} className={({isActive, isPending}) =>
-                                cn("text-muted-foreground hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)] hover:text-foreground-700 ", isActive && "text-foreground underline underline-offset-2 font-bold drop-shadow-[0_0px_5px_rgba(100,100,100,0.2)]", isPending && " border-b-2 border-blue-500 border-opacity-50 animate-pulse text-opacity-50")
+                                cn("relative text-muted-foreground hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)] hover:text-foreground-700 ", isActive && "text-foreground underline underline-offset-2 font-bold drop-shadow-[0_0px_5px_rgba(100,100,100,0.2)]", isPending && " border-b-2 border-blue-500 border-opacity-50 animate-pulse text-opacity-50")
                             }>
-                                {link.name}
+                                <span>{link.name}</span>
                             </NavLink>
                         )))}
                     </div>
