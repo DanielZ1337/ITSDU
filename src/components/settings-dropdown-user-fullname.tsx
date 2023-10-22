@@ -1,18 +1,13 @@
+import { useUser, userAtom } from '@/atoms/user';
 import useGETcurrentUser from '@/queries/person/useGETcurrentUser';
+import { useAtom } from 'jotai';
 
 export default function SettingsDropdownUserFullname() {
-    const {data} = useGETcurrentUser({
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-        suspense: true
-    })
+    const user = useUser()
 
     return (
         <span>
-            {data!.FullName}
+            {user?.FullName}
         </span>
     )
 }

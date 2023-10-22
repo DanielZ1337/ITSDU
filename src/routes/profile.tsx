@@ -1,18 +1,18 @@
 import axios from "axios";
-import {baseUrl} from "@/lib/utils.ts";
-import {Input} from "@/components/ui/input.tsx";
-import {useState} from "react";
-import {Label} from "@radix-ui/react-dropdown-menu";
+import { baseUrl } from "@/lib/utils.ts";
+import { Input } from "@/components/ui/input.tsx";
+import { useState } from "react";
+import { Label } from "@radix-ui/react-dropdown-menu";
 import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
-import {Button} from "@/components/ui/button.tsx";
-import {GETssoUrlApiUrl} from "@/types/api-types/sso/GETssoUrl.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { GETssoUrlApiUrl } from "@/types/api-types/sso/GETssoUrl.ts";
+import { useUser, userAtom } from "@/atoms/user";
+import { useAtom } from "jotai";
 
 export default function Profile() {
     const [requestUrl, setRequestUrl] = useState<string>()
     const [ssoRequestUrl, setSsoRequestUrl] = useState<string>()
-    const {data} = useGETcurrentUser({
-        suspense: true,
-    })
+    const user = useUser()
 
     return (
         <div>
@@ -31,7 +31,7 @@ export default function Profile() {
                 })
             }}>
                 <Label>Make a test request to sdu.itslearning.com</Label>
-                <Input type="text" value={requestUrl} onChange={(e) => setRequestUrl(e.target.value)}/>
+                <Input type="text" value={requestUrl} onChange={(e) => setRequestUrl(e.target.value)} />
             </form>
             <form onSubmit={(event) => {
                 event.preventDefault()
@@ -48,7 +48,7 @@ export default function Profile() {
                     console.log(res)
                     const url = res.data.Url.replace('https://sdu.itslearning.com/', '')
                     console.log(url)
-                    // console.log(apiUrl(res.data.Url.replace('https://sdu.itslearning.com', '')))
+                    // console.log(apiUrl(res.user.Url.replace('https://sdu.itslearning.com', '')))
                     axios.get(`${baseUrl}${url}`, {
                         headers: {
                             Accept: 'text/html'
@@ -62,38 +62,38 @@ export default function Profile() {
                 })
             }}>
                 <Label>Make an SSO request to sdu.itslearning.com</Label>
-                <Input type="text" value={ssoRequestUrl} onChange={(e) => setSsoRequestUrl(e.target.value)}/>
+                <Input type="text" value={ssoRequestUrl} onChange={(e) => setSsoRequestUrl(e.target.value)} />
             </form>
             <div className="border rounded-lg shadow-lg p-6">
                 <h2 className="text-2xl font-bold mb-4">User Profile</h2>
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Name:</span>
-                        <span>{data?.FullName}</span>
+                        <span>{user?.FullName}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">ID:</span>
-                        <span>{data?.PersonId}</span>
+                        <span>{user?.PersonId}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Language:</span>
-                        <span>{data?.Language}</span>
+                        <span>{user?.Language}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Time Zone:</span>
-                        <span>{data?.TimeZoneId}</span>
+                        <span>{user?.TimeZoneId}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Message System:</span>
-                        <span>{data?.CanAccessMessageSystem ? 'Yes' : 'No'}</span>
+                        <span>{user?.CanAccessMessageSystem ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Calendar:</span>
-                        <span>{data?.CanAccessCalendar ? 'Yes' : 'No'}</span>
+                        <span>{user?.CanAccessCalendar ? 'Yes' : 'No'}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="font-semibold">Can Access Personal Settings:</span>
-                        <span>{data?.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
+                        <span>{user?.CanAccessPersonalSettings ? 'Yes' : 'No'}</span>
                     </div>
                 </div>
             </div>

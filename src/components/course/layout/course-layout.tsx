@@ -1,6 +1,5 @@
-import {Helmet} from "react-helmet";
-import {Outlet, useNavigate, useParams} from "react-router-dom";
-import {Button} from "@/components/ui/button.tsx";
+import {Helmet} from "react-helmet-async";
+import {Outlet, useParams} from "react-router-dom";
 // eslint-disable-next-line no-redeclare
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import CourseHeader from "@/components/course/layout/course-header.tsx";
@@ -15,19 +14,6 @@ export default function CourseLayout() {
     }, {
         suspense: true,
     })
-
-    const navigate = useNavigate()
-
-    if (!courseId) {
-        return (
-            <div className={"m-auto"}>
-                <div className={"flex flex-col gap-4 w-full p-4 items-center"}>
-                    <p className={"text-3xl font-bold text-balance"}>Course not found</p>
-                    <Button variant={"secondary"} size={"lg"} onClick={() => navigate(-1)}>Go back</Button>
-                </div>
-            </div>
-        )
-    }
 
     return (
         <div

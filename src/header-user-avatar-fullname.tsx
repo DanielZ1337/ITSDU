@@ -1,27 +1,21 @@
-import useGETcurrentUser from './queries/person/useGETcurrentUser'
-import {Avatar, AvatarFallback, AvatarImage} from './components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
+import { useUser } from './atoms/user'
 
 export default function HeaderUserFullnameAvatar() {
 
-    const {data} = useGETcurrentUser({
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
-    })
+    const user = useUser()
     return (
         <div className={"flex flex-row items-center justify-center gap-2"}>
             <Avatar className={"flex-shrink-0 w-8 h-8"}>
-                <AvatarImage src={data?.ProfileImageUrl}
-                             alt={data?.FullName}
-                             className={"object-cover"}
+                <AvatarImage src={user?.ProfileImageUrl}
+                    alt={user?.FullName}
+                    className={"object-cover"}
                 />
                 <AvatarFallback className={"bg-foreground/20 text-sm"}>
-                    {data?.FullName.split(" ").map((name) => name[0]).join("")}
+                    {user?.FullName.split(" ").map((name) => name[0]).join("").slice(0, 3)}
                 </AvatarFallback>
             </Avatar>
-            <p className={"text-lg font-semibold line-clamp-1 break-all"}>{data?.FullName}</p>
+            <p className={"text-lg font-semibold line-clamp-1 break-all"}>{user?.FullName}</p>
         </div>
     )
 }

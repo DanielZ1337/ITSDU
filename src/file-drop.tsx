@@ -89,7 +89,7 @@ export function FileDrop({files, setFiles, disabled, uploadProgress}: {
                 className={cn("relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 text-foreground/80 hover:text-foreground")}>
                 Choose files or drag and drop
             </h1>
-            {uploadProgress > 0 && disabled && (
+            {uploadProgress > 0 && (
                 <Progress className={"mt-4 w-64"} indicatorClassName={"bg-green-500"} value={uploadProgress}/>
             )}
             {/*<h2 className="m-0 h-[1.25rem] text-xs leading-5 text-foreground/25">

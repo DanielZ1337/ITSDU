@@ -23,6 +23,6 @@ export type POSTinstantMessagev2Body = {
     OriginMessageThreadId?: number
     ToPersonIds?: number[]
     InstantMessageThreadId?: number
-    Text: string
+    Text?: string
     SendAsIndividualMessages?: boolean
 }

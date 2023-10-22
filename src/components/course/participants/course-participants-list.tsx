@@ -1,7 +1,7 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Link} from "react-router-dom";
 import useGETcourseParticipants from "@/queries/courses/useGETcourseParticipants.ts";
-import PersonHoverCard from "@/components/person-hover-card.tsx";
+import PersonHoverCard from "@/components/person/person-hover-card";
 
 export default function CourseParticipantsList({searchTerm, courseId}: {
     searchTerm: string,

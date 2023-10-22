@@ -1,39 +1,39 @@
-import {NavLink, useParams} from "react-router-dom";
-import {cn} from "@/lib/utils.ts";
+import { NavLink, useParams } from "react-router-dom";
+import { cn } from "@/lib/utils.ts";
 import SearchResourcesDialog from "@/components/resources/resources-search-dialog.tsx";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 // eslint-disable-next-line no-redeclare
-import {CalendarIcon, ClipboardList, File, HomeIcon, Info, Megaphone, Users2} from "lucide-react";
+import { CalendarIcon, ClipboardList, File, HomeIcon, Info, Megaphone, Users2 } from "lucide-react";
 import React from "react";
 
 const SideBarNavLinks = [
     {
         name: "Overview",
-        icon: <HomeIcon className={"h-4 w-4"}/>,
+        icon: <HomeIcon className={"h-4 w-4"} />,
         to: ".",
         end: true
     },
     {
         name: "Schedule",
-        icon: <CalendarIcon className={"h-4 w-4"}/>,
+        icon: <CalendarIcon className={"h-4 w-4"} />,
         to: "schedule",
         end: false
     },
     {
-        name: "Announcements (5)",
-        icon: <Megaphone className={"h-4 w-4"}/>,
+        name: "Announcements",
+        icon: <Megaphone className={"h-4 w-4"} />,
         to: "announcements",
         end: false
     },
     {
-        name: "Resources (2)",
-        icon: <File className={"h-4 w-4"}/>,
+        name: "Resources",
+        icon: <File className={"h-4 w-4"} />,
         to: "resources",
         end: false
     },
     {
-        name: "Tasks (2)",
-        icon: <ClipboardList className={"h-4 w-4"}/>,
+        name: "Tasks",
+        icon: <ClipboardList className={"h-4 w-4"} />,
         to: "tasks",
         end: false
     },
@@ -62,13 +62,13 @@ const SideBarNavLinks = [
     },*/
     {
         name: "Participants",
-        icon: <Users2 className={"h-4 w-4"}/>,
+        icon: <Users2 className={"h-4 w-4"} />,
         to: "participants",
         end: false
     },
     {
         name: "Course Information",
-        icon: <Info className={"h-4 w-4"}/>,
+        icon: <Info className={"h-4 w-4"} />,
         to: "course-information",
         end: false
     },
@@ -83,7 +83,7 @@ export default function CourseLayoutSidebar() {
         <nav className="grid items-start gap-6 px-4 text-sm font-medium">
             <div>
                 <div className={"py-1"}>
-                    <SearchResourcesDialog courseId={courseId}/>
+                    <SearchResourcesDialog courseId={courseId} />
                 </div>
                 <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
                     Overview
@@ -101,7 +101,7 @@ export default function CourseLayoutSidebar() {
     )
 }
 
-function SideBarNavLink({children, to, end = false, ...props}: {
+function SideBarNavLink({ children, to, end = false, ...props }: {
     children: React.ReactNode,
     to: string,
     end?: boolean
@@ -112,11 +112,11 @@ function SideBarNavLink({children, to, end = false, ...props}: {
             {...props}
             end={end}
             className={({
-                            isActive,
-                            isPending,
-                        }) => cn("relative flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
+                isActive,
+                isPending,
+            }) => cn("relative flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
         >
-            {({isActive}) => (
+            {({ isActive }) => (
                 <>
                     {isActive && (
                         <motion.div
