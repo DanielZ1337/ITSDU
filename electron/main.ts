@@ -299,40 +299,22 @@ app.whenReady().then(async () => {
     if (VITE_DEV_SERVER_URL) {
         const express = await import('express').then(m => m.default)
         const cors = await import('cors').then(m => m.default)
-        const axios = await import('axios').then(m => m.default)
         const bodyParser = await import('body-parser').then(m => m.default)
+        const { createProxyMiddleware } = await import('http-proxy-middleware')
         const proxy = express()
         proxy.use(bodyParser.urlencoded({ extended: true }));
         proxy.use(cors())
-        proxy.use(express.json())
-        proxy.all('*', async (req, res) => {
-            const url = req.url.replace('/api', '')
-            const params = req.params
-            // const headers = req.headers
-            const method = req.method
-            const body = req.body
+        // proxy.use(express.json())
+        proxy.use('*', createProxyMiddleware({
+            target: 'https://sdu.itslearning.com',
+            changeOrigin: true,
+            secure: false,
+            onProxyReq: (proxyReq, req, res) => {
+                console.log('Sending Request to the Target:', req.method, req.url);
+            }
+        }))
 
-            const { data } = await axios.request({
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                url: `https://sdu.itslearning.com${url}`,
-                data: body,
-                method,
-                params
-            }).then(res => {
-                console.log(res)
-                // console.log(res.data)
-                return res
-            }).catch(err => {
-                console.log(err)
-                return err
-            })
-
-            // manual await for the response to simulate slow network
-            // await new Promise(resolve => setTimeout(resolve, 10000))
-            res.json(data)
-        }).listen(8080, () => {
+        proxy.listen(8080, () => {
             console.log('API Proxy Server with CORS enabled is listening on port 8080')
         })
     }
