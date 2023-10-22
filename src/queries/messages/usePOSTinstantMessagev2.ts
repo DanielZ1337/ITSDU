@@ -1,4 +1,4 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {
     POSTinstantMessagev2,
@@ -8,18 +8,19 @@ import {
 
 export default function usePOSTinstantMessagev2(queryConfig?: UseMutationOptions<POSTinstantMessagev2, Error, POSTinstantMessagev2Body, string[]>) {
 
-    return useMutation({
-        mutationKey: ['POSTmessage'], mutationFn: async (body) => {
-            const res = await axios.post(POSTinstantMessagev2ApiUrl(), body, {
-                params: {
-                    'access_token': localStorage.getItem('access_token'),
-                },
-            });
+    return useMutation(['POSTmessage'], async (body) => {
+        const res = await axios.post(POSTinstantMessagev2ApiUrl(), body, {
+            params: {
+                'access_token': localStorage.getItem('access_token'),
+            }
+        });
 
-            if (res.status !== 200) throw new Error(res.statusText);
+        console.log(res);
 
-            return res.data;
-        },
+        if (res.status !== 200) throw new Error(res.statusText);
+
+        return res.data;
+    }, {
         ...queryConfig
     })
 }

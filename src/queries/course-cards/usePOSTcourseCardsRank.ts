@@ -1,4 +1,4 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {
     POSTcourseCardsRankApiUrl,
@@ -7,20 +7,17 @@ import {
 
 export default function usePOSTcourseCardsRank(queryConfig?: UseMutationOptions<any, Error, POSTcourseCardsRankBody, string[]>) {
 
-    return useMutation({
-        mutationKey: ["courseCardsRank"],
-        mutationFn: async (body: POSTcourseCardsRankBody) => {
-            const res = await axios.post(POSTcourseCardsRankApiUrl, body, {
-                params: {
-                    "access_token": localStorage.getItem('access_token') || '',
-                }
-            });
+    return useMutation(['courseCardsRank'], async (body) => {
+        const res = await axios.post(POSTcourseCardsRankApiUrl, body, {
+            params: {
+                "access_token": localStorage.getItem('access_token') || '',
+            }
+        });
 
-            if (res.status !== 200) throw new Error(res.statusText);
+        if (res.status !== 200) throw new Error(res.statusText);
 
-            return res.data;
-        },
+        return res.data
+    }, {
         ...queryConfig
-
     })
 }
