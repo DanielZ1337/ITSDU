@@ -1,20 +1,22 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {GETcurrentUser, GETcurrentUserApiUrl} from "@/types/api-types/person/GETcurrentUser.ts";
+import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/GETcurrentUser.ts";
 
 export default function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>) {
 
-    return useQuery(['currentUser', window.localStorage.getItem('access_token') || ''], async () => {
-        const res = await axios.get(GETcurrentUserApiUrl(), {
-            params: {
-                "access_token": localStorage.getItem('access_token') || '',
-            },
-        });
+    return useQuery({
+        queryKey: ["currentUser"],
+        queryFn: async () => {
+            const res = await axios.get(GETcurrentUserApiUrl(), {
+                params: {
+                    "access_token": localStorage.getItem('access_token') || '',
+                }
+            });
 
-        if (res.status !== 200) throw new Error(res.statusText);
+            if (res.status !== 200) throw new Error(res.statusText);
 
-        return res.data;
-    }, {
+            return res.data;
+        },
         ...queryConfig
     })
 }
