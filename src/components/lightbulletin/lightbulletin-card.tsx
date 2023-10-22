@@ -23,7 +23,7 @@ export default function LightbulletinCard({ bulletin }: {
     const [showComments, setShowComments] = useState<boolean>(false)
     const [showResources, setShowResources] = useState<boolean>(false)
 
-    const { mutate, isLoading } = usePUTlightbulletinNotifications({
+    const { mutate, isPending } = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     })
 
@@ -72,7 +72,7 @@ export default function LightbulletinCard({ bulletin }: {
                     </span>
                 </div>
                 <Button
-                    disabled={isLoading}
+                    disabled={isPending}
                     onClick={() => {
                         mutate({
                             isSubscribed: !bulletin.IsSubscribed

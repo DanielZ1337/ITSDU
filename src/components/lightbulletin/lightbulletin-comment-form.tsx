@@ -12,7 +12,7 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
     const [comment, setComment] = React.useState<string>("")
     const {toast} = useToast()
 
-    const {mutate, isLoading} = usePOSTlightbulletinAddComment({
+    const {mutate, isPending} = usePOSTlightbulletinAddComment({
         lightBulletinId: lightbulletinId,
     }, {
         onSuccess: () => {
@@ -75,12 +75,12 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
             />
             {comment.length > 0 && (
                 <Button
-                    disabled={isLoading}
+                    disabled={isPending}
                     variant={"outline"}
                     size={"lg"}
                     className="w-full"
                     type="submit">
-                    {isLoading ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
+                    {isPending ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
                         <Loader2 className="animate-spin inline-block mr-2" size={16}/>
                         Adding comment...
                     </span> : "Add comment"}

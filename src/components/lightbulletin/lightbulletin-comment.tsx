@@ -24,7 +24,7 @@ export default function LightbulletinComment({comment}: {
     const [isEditing, setIsEditing] = useState<boolean>(false)
     const [showUpdate, setShowUpdate] = useState<boolean>(false)
     const {toast} = useToast()
-    const {mutate: updateComment, isLoading: isUpdating} = usePUTlightbulletinUpdateComment({
+    const {mutate: updateComment, isPending: isUpdating} = usePUTlightbulletinUpdateComment({
         commentId: comment.Id,
     }, {
         onSuccess: () => {
@@ -47,7 +47,7 @@ export default function LightbulletinComment({comment}: {
         }
     })
 
-    const {mutate: deleteComment, isLoading: isDeleting} = useDELETElightbulletinComment({
+    const {mutate: deleteComment, isPending: isDeleting} = useDELETElightbulletinComment({
         commentId: comment.Id,
     }, {
         onError: (err) => {

@@ -51,7 +51,7 @@ export default function MessagesChatInputsField() {
         return interval
     }, [uploadProgress])
 
-    const {mutate: sendMessage, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
+    const {mutate: sendMessage, isPending: isSendingMessage} = usePOSTinstantMessagev2({
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["messagesv2"]
@@ -72,7 +72,7 @@ export default function MessagesChatInputsField() {
         },
     })
 
-    const {mutate: sendFile, isLoading: isSendingFile} = usePOSTmessageAttachment()
+    const {mutate: sendFile, isPending: isSendingFile} = usePOSTmessageAttachment()
 
     const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement> | KeyboardEvent) => {
         e.preventDefault()
@@ -87,7 +87,7 @@ export default function MessagesChatInputsField() {
 
     }, [message, files])
 
-    async function sendFilesSubmit() {
+    function sendFilesSubmit() {
         if (!files) return
 
         const interval = startSimulatedProgress()
@@ -108,6 +108,7 @@ export default function MessagesChatInputsField() {
                 }, {
                     onSuccess: () => {
                         sendMessageSubmit()
+                        setFiles(null)
                     }
                 })
             }

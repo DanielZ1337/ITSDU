@@ -14,7 +14,7 @@ export default function CourseCard({card}: {
 }) {
     const navigate = useNavigate()
     const {toast} = useToast()
-    const {mutate, isLoading} = usePUTcourseFavorite({
+    const {mutate, isPending} = usePUTcourseFavorite({
         courseId: card.CourseId,
     })
     const [isCoursesBulkEditing, /*setIsCoursesBulkEditing*/] = useAtom(isCoursesBulkStarEditingAtom)
@@ -41,7 +41,7 @@ export default function CourseCard({card}: {
                     <Button
                         variant={"ghost"}
                         size={"icon"}
-                        disabled={isLoading}
+                        disabled={isPending}
                         onClick={(e) => {
                             e.stopPropagation()
                             mutate({
@@ -67,7 +67,7 @@ export default function CourseCard({card}: {
                             })
                         }}
                         className={"hover:cursor-pointer hover:bg-black/10 w-fit h-fit rounded-full p-1"}>
-                        {!isCoursesBulkEditing ? isLoading ? (
+                        {!isCoursesBulkEditing ? isPending ? (
                             <Loader2 className={"stroke-black shrink-0 m-1 h-6 w-6 animate-spin"}/>
                         ) : (
                             <StarIcon

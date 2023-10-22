@@ -34,7 +34,7 @@ export default function CourseHeader({courseTitle, courseCode, courseId}: {
     const unstarredCourse = unstarredCourses!.EntityArray[0]
     const starredCourse = starredCourses!.EntityArray[0]
 
-    const {mutate: toggleStarred, isLoading: isTogglingStarred} = usePUTcourseFavorite({
+    const {mutate: toggleStarred, isPending: isTogglingStarred} = usePUTcourseFavorite({
         courseId,
     }, {
         onSuccess: () => {
