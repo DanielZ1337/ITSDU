@@ -39,10 +39,10 @@ export default function MessagesChatHeader({
     let currentThreadName
 
     if (!isLoading) {
-        currentThreadName = messages?.EntityArray.filter((thread) => thread.InstantMessageThreadId === currentChat)[0]?.Name || messages!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0]?.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")
+        currentThreadName = messages?.pages.map((page) => page.EntityArray).flat().filter((thread) => thread.InstantMessageThreadId === currentChat)[0]?.Name || messages!.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0]?.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")
     }
 
-    const { mutate: editThreadName, isPending: isPendingThreadName } = usePUTinstantMessageThread({
+    const { mutate: editThreadName, isLoading: isLoadingThreadName } = usePUTinstantMessageThread({
         threadId: currentChat!
     }, {
         onSuccess: () => {
@@ -80,8 +80,8 @@ export default function MessagesChatHeader({
                     })
                 }}>
                     <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)} />
-                    <Button disabled={newThreadName === '' || isPendingThreadName}>
-                        {isPendingThreadName ? "Saving..." : "Save"}
+                    <Button disabled={newThreadName === '' || isLoadingThreadName}>
+                        {isLoadingThreadName ? "Saving..." : "Save"}
                     </Button>
                 </form>
             ) : (

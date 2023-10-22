@@ -113,8 +113,8 @@ function SideBarNavLink({ children, to, end = false, ...props }: {
             end={end}
             className={({
                 isActive,
-                isPending,
-            }) => cn("relative flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isPending && "text-opacity-50")}
+                isLoading,
+            }) => cn("relative flex items-center gap-3 rounded-lg px-3 py-2 text-zinc-500 transition-all hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50", isActive && "lg:translate-x-1.5 text-zinc-900 dark:text-zinc-50 bg-foreground/10 shadow", isLoading && "text-opacity-50")}
         >
             {({ isActive }) => (
                 <>

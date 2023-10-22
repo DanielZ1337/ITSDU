@@ -1,18 +1,18 @@
-import {Input} from "@/components/ui/input.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import React, {FormEvent, useCallback, useEffect} from "react";
+import { Input } from "@/components/ui/input.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import React, { FormEvent, useCallback, useEffect } from "react";
 import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
-import {Loader2} from "lucide-react";
-import {useToast} from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-export default function LightbulletinCommentForm({lightbulletinId}: {
+export default function LightbulletinCommentForm({ lightbulletinId }: {
     lightbulletinId: number
 }) {
 
     const [comment, setComment] = React.useState<string>("")
-    const {toast} = useToast()
+    const { toast } = useToast()
 
-    const {mutate, isPending} = usePOSTlightbulletinAddComment({
+    const { mutate, isLoading } = usePOSTlightbulletinAddComment({
         lightBulletinId: lightbulletinId,
     }, {
         onSuccess: () => {
@@ -75,13 +75,13 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
             />
             {comment.length > 0 && (
                 <Button
-                    disabled={isPending}
+                    disabled={isLoading}
                     variant={"outline"}
                     size={"lg"}
                     className="w-full"
                     type="submit">
-                    {isPending ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
-                        <Loader2 className="animate-spin inline-block mr-2" size={16}/>
+                    {isLoading ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
+                        <Loader2 className="animate-spin inline-block mr-2" size={16} />
                         Adding comment...
                     </span> : "Add comment"}
                 </Button>

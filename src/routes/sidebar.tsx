@@ -47,7 +47,7 @@ export default function Sidebar() {
     const unstarredCourse = unstarredCourses!.EntityArray[0]
     const starredCourse = starredCourses!.EntityArray[0]
 
-    const { mutate: toggleStarred, isPending: isTogglingStarred } = usePUTcourseFavorite({
+    const { mutate: toggleStarred, isLoading: isTogglingStarred } = usePUTcourseFavorite({
         courseId: courseId,
     }, {
         onSuccess: () => {
