@@ -1,7 +1,8 @@
-import {contextBridge, ipcRenderer} from 'electron'
-import {sendNotifcation} from "./handlers/notifcation-handler.ts";
+import { contextBridge, ipcRenderer } from 'electron'
+import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import axios from "axios";
 import slugify from "slugify";
+import { apiUrl } from '../src/lib/utils';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -30,30 +31,32 @@ contextBridge.exposeInMainWorld('app', {
 })
 
 contextBridge.exposeInMainWorld('itslearning_file_scraping', {
+
+})
+
+contextBridge.exposeInMainWorld('download', {
+    external: async (url: string, filename: string) => {
+        ipcRenderer.invoke('download:external', {
+            url,
+            filename: slugify(filename),
+        })
+    },
     start: async (elementId: number, filename: string) => {
 
-        const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`, {
+        const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
             params: {
-                'access_token': window.localStorage.getItem('access_token')
+                'access_token': window.localStorage.getItem('access_token'),
+                'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
             }
         })
 
         const downloadLink = data.Url
 
-        const scrapedResourceDownloadLink = await ipcRenderer.invoke('itslearning-file-scraping:start', downloadLink)
+        const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
         ipcRenderer.invoke('itslearning-element:download', {
             url: scrapedResourceDownloadLink,
             resourceLink: downloadLink,
-            filename: slugify(filename),
-        })
-    },
-})
-
-contextBridge.exposeInMainWorld('download', {
-    external: async (url:string, filename: string) => {
-        ipcRenderer.invoke('download:external', {
-            url,
             filename: slugify(filename),
         })
     }
@@ -205,7 +208,7 @@ function useLoading() {
 
 // ----------------------------------------------------------------------
 
-const {appendLoading, removeLoading} = useLoading()
+const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

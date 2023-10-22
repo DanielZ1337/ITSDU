@@ -1,6 +1,6 @@
-import { useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query";
+import {useInfiniteQuery, UseInfiniteQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETinstantMessagesForThread,
     GETinstantMessagesForThreadApiUrl,
@@ -8,7 +8,7 @@ import {
 } from "@/types/api-types/messages/GETinstantMessagesForThread.ts";
 
 export default function useGETinstantMessagesForThread(params: GETinstantMessagesForThreadParams, queryConfig?: UseInfiniteQueryOptions<GETinstantMessagesForThread, Error, GETinstantMessagesForThread, GETinstantMessagesForThread, string[]>) {
-    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.fromId }) => {
+    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.fromId}) => {
         console.log('useGETmessages')
         const res = await axios.get(GETinstantMessagesForThreadApiUrl({
             ...params,

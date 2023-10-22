@@ -3,11 +3,9 @@ import { baseUrl } from "@/lib/utils.ts";
 import { Input } from "@/components/ui/input.tsx";
 import { useState } from "react";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import useGETcurrentUser from "@/queries/person/useGETcurrentUser.ts";
 import { Button } from "@/components/ui/button.tsx";
 import { GETssoUrlApiUrl } from "@/types/api-types/sso/GETssoUrl.ts";
-import { useUser, userAtom } from "@/atoms/user";
-import { useAtom } from "jotai";
+import { useUser } from "@/atoms/user";
 
 export default function Profile() {
     const [requestUrl, setRequestUrl] = useState<string>()

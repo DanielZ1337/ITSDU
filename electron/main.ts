@@ -235,7 +235,7 @@ app.whenReady().then(async () => {
         }
     })
 
-    ipcMain.handle("itslearning-file-scraping:start", async (_, url) => {
+    ipcMain.handle("download:start", async (_, url) => {
         try {
             const scrapeWindow = new BrowserWindow({
                 show: false,

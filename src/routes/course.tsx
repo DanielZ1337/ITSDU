@@ -1,20 +1,20 @@
-import { Suspense } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {Suspense} from "react";
+import {useNavigate, useParams} from "react-router-dom";
 import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
-import { Helmet } from "react-helmet-async";
-import Splitter, { SplitDirection } from '@devbookhq/splitter'
+import {Helmet} from "react-helmet-async";
+import Splitter, {SplitDirection} from '@devbookhq/splitter'
 import '../styles/splitter-custom.css'
 import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
 import Resources from "@/components/resources/resources.tsx";
-import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { ErrorBoundary } from "react-error-boundary";
-import { Button } from "@/components/ui/button.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
+import {ErrorBoundary} from "react-error-boundary";
+import {Button} from "@/components/ui/button.tsx";
 
 export default function Course() {
     const params = useParams();
     const courseId = Number(params.id)
-    const { data } = useGETcourseBasic({
+    const {data} = useGETcourseBasic({
         courseId: courseId
     }, {
         suspense: true,
@@ -50,9 +50,9 @@ export default function Course() {
                             FallbackComponent={Fallback}
                         >
                             <Suspense
-                                fallback={<LightbulletinsForCourseLoader />}
+                                fallback={<LightbulletinsForCourseLoader/>}
                             >
-                                <LightbulletinsForCourse courseId={courseId} />
+                                <LightbulletinsForCourse courseId={courseId}/>
                             </Suspense>
                         </ErrorBoundary>
                     </div>
@@ -65,12 +65,12 @@ export default function Course() {
                     >
                         <Suspense
                             fallback={<div className={"flex flex-col gap-2 w-full"}>
-                                <Skeleton className="h-4 bg-gray-400 rounded" />
-                                <Skeleton className="h-4 bg-gray-400 rounded" />
-                                <Skeleton className="h-4 bg-gray-400 rounded" />
-                                <Skeleton className="h-4 bg-gray-400 rounded" />
+                                <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                <Skeleton className="h-4 bg-gray-400 rounded"/>
                             </div>}>
-                            <Resources courseId={courseId} />
+                            <Resources courseId={courseId}/>
                         </Suspense>
                     </ErrorBoundary>
                 </div>
@@ -80,7 +80,7 @@ export default function Course() {
 }
 
 // @ts-ignore
-function Fallback({ error, resetErrorBoundary }) {
+function Fallback({error, resetErrorBoundary}) {
     // Call resetErrorBoundary() to reset the error boundary and retry the render.
 
     return (

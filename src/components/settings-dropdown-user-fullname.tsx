@@ -1,6 +1,4 @@
-import { useUser, userAtom } from '@/atoms/user';
-import useGETcurrentUser from '@/queries/person/useGETcurrentUser';
-import { useAtom } from 'jotai';
+import { useUser } from '@/atoms/user';
 
 export default function SettingsDropdownUserFullname() {
     const user = useUser()

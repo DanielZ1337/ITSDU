@@ -4,7 +4,7 @@ const renderLink = ({attributes, content}) => {
     return <a
         target={"_blank"}
         rel={"noopener noreferrer"}
-        className={"text-blue-500 hover:underline"}
+        className={"text-blue-500 hover:underline cursor-pointer"}
         onClick={(e) => {
             e.stopPropagation()
             window.app.openExternal(href, false)

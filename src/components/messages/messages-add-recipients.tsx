@@ -7,22 +7,22 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { AiOutlineSearch } from "react-icons/ai";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
-import { useEffect, useState } from "react";
-import { useDebounce } from "@uidotdev/usehooks";
+import {Button} from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {AiOutlineSearch} from "react-icons/ai";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+import {useEffect, useState} from "react";
+import {useDebounce} from "@uidotdev/usehooks";
 import {
     ItslearningRestApiEntitiesInstantMessageRecipient
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
 import useGETinstantMessagesRecipientsSearch from "@/queries/messages/useGETinstantMessagesRecipientsSearch.ts";
-import { useAtom } from "jotai";
-import { currentChatAtom } from "@/atoms/current-chat.ts";
-import { cn } from "@/lib/utils.ts";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients.ts";
-import { currentChatEnum } from '@/atoms/current-chat';
+import {useAtom} from "jotai";
+import {currentChatAtom} from "@/atoms/current-chat.ts";
+import {cn} from "@/lib/utils.ts";
+import {DialogClose} from "@radix-ui/react-dialog";
+import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients.ts";
+import {currentChatEnum} from '@/atoms/current-chat';
 
 export default function MessagesAddRecipients() {
     const [recipientsSearchInput, setRecipientsSearchInput] = useState<string>('')
@@ -31,7 +31,7 @@ export default function MessagesAddRecipients() {
     const [currentChat] = useAtom(currentChatAtom)
     const [filteredRecipients, setFilteredRecipients] = useState<ItslearningRestApiEntitiesInstantMessageRecipient[]>([])
 
-    const { data: recipientsSearch, isLoading: isRecipientsLoading } = useGETinstantMessagesRecipientsSearch({
+    const {data: recipientsSearch, isLoading: isRecipientsLoading} = useGETinstantMessagesRecipientsSearch({
         searchText: debouncedSearchTerm,
     }, {
         enabled: currentChat === currentChatEnum.NEW,
@@ -72,7 +72,7 @@ export default function MessagesAddRecipients() {
                         onChange={(e) => setRecipientsSearchInput(e.target.value)}
                     />
                     <div className="absolute top-1/2 transform -translate-y-1/2 left-7">
-                        <AiOutlineSearch className="w-5 h-5 text-gray-500" />
+                        <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
                     </div>
                 </div>
                 <div className="flex w-full overflow-hidden gap-2">
@@ -94,8 +94,8 @@ export default function MessagesAddRecipients() {
                                         onClick={() => setRecipientsSelected([...recipientsSelected!, recipient])}>
                                         <Avatar className={"flex-shrink-0 w-9 h-9"}>
                                             <AvatarImage src={recipient.ProfileImageUrl}
-                                                alt={recipient.SearchLabel}
-                                                className={"object-cover"}
+                                                         alt={recipient.SearchLabel}
+                                                         className={"object-cover"}
                                             />
                                             <AvatarFallback className={"bg-foreground/20"}>
                                                 {recipient.ShortLabel}
@@ -128,8 +128,8 @@ export default function MessagesAddRecipients() {
                                     onClick={() => setRecipientsSelected(recipientsSelected.filter((r) => r.Id !== recipient.Id))}>
                                     <Avatar className={"flex-shrink-0 w-9 h-9"}>
                                         <AvatarImage src={recipient.ProfileImageUrl}
-                                            alt={recipient.SearchLabel}
-                                            className={"object-cover"}
+                                                     alt={recipient.SearchLabel}
+                                                     className={"object-cover"}
                                         />
                                         <AvatarFallback className={"bg-foreground/20"}>
                                             {recipient.ShortLabel}

@@ -5,7 +5,6 @@ import {baseUrl} from "@/lib/utils.ts";
 export default function TestSuspense() {
 
     const {data} = useQuery(['yeet'], async () => {
-        await new Promise(resolve => setTimeout(resolve, 10000000))
         const res = await axios.get(`${baseUrl}restapi/personal/person/v1`, {
             params: {
                 "access_token": window.localStorage.getItem("access_token")

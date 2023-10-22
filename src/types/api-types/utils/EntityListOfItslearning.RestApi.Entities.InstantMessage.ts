@@ -1,4 +1,4 @@
-import { ItslearningRestApiEntitiesInstantMessage } from "./Itslearning.RestApi.Entities.InstantMessage"
+import {ItslearningRestApiEntitiesInstantMessage} from "./Itslearning.RestApi.Entities.InstantMessage"
 
 export type EntityListOfItslearningRestApiEntitiesInstantMessage = {
     EntityArray: ItslearningRestApiEntitiesInstantMessage[]

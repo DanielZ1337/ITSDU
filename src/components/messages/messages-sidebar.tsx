@@ -1,10 +1,10 @@
-import { Input } from "@/components/ui/input.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Plus } from "lucide-react";
-import { AiOutlineSearch } from "react-icons/ai";
-import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
-import { useAtom } from "jotai";
-import React, { Suspense, useEffect, useState } from "react";
+import {Input} from "@/components/ui/input.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Plus} from "lucide-react";
+import {AiOutlineSearch} from "react-icons/ai";
+import {currentChatAtom, currentChatEnum} from "@/atoms/current-chat";
+import {useAtom} from "jotai";
+import React, {Suspense, useEffect, useState} from "react";
 import MessagesSidebarChat from "./messages-sidebar-chat";
 import MessageSidebarChatLoader from "./message-sidebar-chat-loader";
 import MessagesSidebarChatList from "./messages-sidebar-chat-list";
@@ -43,14 +43,17 @@ export default function MessagesSidebar() {
                         placeholder="Search"
                         className="pl-10"
                         value={search}
-                        onChange={(e) => { setSearch(e.target.value) }}
+                        onChange={(e) => {
+                            setSearch(e.target.value)
+                        }}
                     />
                     <div className="absolute top-1/2 transform -translate-y-1/2 left-3">
-                        <AiOutlineSearch className="w-5 h-5 text-gray-500" />
+                        <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
                     </div>
                 </form>
-                <Button onClick={() => setCurrentChat(currentChatEnum.NEW)} variant={"outline"} size={"icon"} className={"shrink-0"}>
-                    <Plus className={"w-5 h-5 text-gray-500"} />
+                <Button onClick={() => setCurrentChat(currentChatEnum.NEW)} variant={"outline"} size={"icon"}
+                        className={"shrink-0"}>
+                    <Plus className={"w-5 h-5 text-gray-500"}/>
                 </Button>
             </div>
             <div className="overflow-y-auto overflow-x-hidden">
@@ -66,10 +69,10 @@ export default function MessagesSidebar() {
                 )}
                 <Suspense fallback={[...Array(10)].map((_, i) => (
                     <div key={i} className={"animate-in slide-in-from-left-32"}>
-                        <MessageSidebarChatLoader />
+                        <MessageSidebarChatLoader/>
                     </div>
                 ))}>
-                    <MessagesSidebarChatList query={search} />
+                    <MessagesSidebarChatList query={search}/>
                 </Suspense>
             </div>
         </div>

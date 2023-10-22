@@ -7,7 +7,7 @@ import {
 } from "@/types/api-types/messages/PUTinstantMessageThread.ts";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 
-export default function usePUTinstantMessageThread(params: PUTinstantMessageThreadParams, queryConfig?: UseMutationOptions<any, Error, PUTinstantMessageThreadBody, string[]>) {
+export default function usePUTinstantMessageThread(params: PUTinstantMessageThreadParams, queryConfig?: UseMutationOptions<undefined, Error, PUTinstantMessageThreadBody, string[]>) {
 
     return useMutation(['PUTinstantMessageThread', ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.put(PUTinstantMessageThreadApiUrl(params), body, {
