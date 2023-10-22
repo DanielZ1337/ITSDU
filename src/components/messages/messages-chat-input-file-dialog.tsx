@@ -18,6 +18,7 @@ export default function MessagesChatInputFileDialog({
     isSendingFile: boolean
     uploadProgress: number
 }) {
+
     return (
         <Dialog>
             <DialogTrigger asChild className={"absolute bottom-1.5 right-2"}>
@@ -36,7 +37,7 @@ export default function MessagesChatInputFileDialog({
                 <div
                     className={"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] p-1"}>
                     {files?.map((file, idx) => (
-                        <div className={"flex items-center gap-2"}>
+                        <div className={"flex items-center gap-2"} key={idx}>
                             <Button disabled={isSendingFile} onClick={() => {
                                 setFiles(files.filter((_, i) => i !== idx))
                             }}

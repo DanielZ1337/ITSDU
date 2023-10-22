@@ -7,35 +7,34 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {Input} from "@/components/ui/input.tsx";
-import {AiOutlineSearch} from "react-icons/ai";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {useEffect, useState} from "react";
-import {useDebounce} from "@uidotdev/usehooks";
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import { AiOutlineSearch } from "react-icons/ai";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import { useEffect, useState } from "react";
+import { useDebounce } from "@uidotdev/usehooks";
 import {
     ItslearningRestApiEntitiesInstantMessageRecipient
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
 import useGETinstantMessagesRecipientsSearch from "@/queries/messages/useGETinstantMessagesRecipientsSearch.ts";
-import {useAtom} from "jotai";
-import {currentChatAtom} from "@/atoms/current-chat.ts";
-import {cn} from "@/lib/utils.ts";
-import {DialogClose} from "@radix-ui/react-dialog";
-import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients.ts";
+import { useAtom } from "jotai";
+import { currentChatAtom } from "@/atoms/current-chat.ts";
+import { cn } from "@/lib/utils.ts";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients.ts";
+import { currentChatEnum } from '@/atoms/current-chat';
 
-export default function MessagesAddRecipients({textareaRef}: {
-    textareaRef: React.MutableRefObject<HTMLTextAreaElement | null>
-}) {
+export default function MessagesAddRecipients() {
     const [recipientsSearchInput, setRecipientsSearchInput] = useState<string>('')
     const debouncedSearchTerm = useDebounce(recipientsSearchInput, 300);
     const [recipientsSelected, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
     const [currentChat] = useAtom(currentChatAtom)
     const [filteredRecipients, setFilteredRecipients] = useState<ItslearningRestApiEntitiesInstantMessageRecipient[]>([])
 
-    const {data: recipientsSearch, isLoading: isRecipientsLoading} = useGETinstantMessagesRecipientsSearch({
+    const { data: recipientsSearch, isLoading: isRecipientsLoading } = useGETinstantMessagesRecipientsSearch({
         searchText: debouncedSearchTerm,
     }, {
-        enabled: currentChat === -1,
+        enabled: currentChat === currentChatEnum.NEW,
     })
 
     useEffect(() => {
@@ -45,21 +44,16 @@ export default function MessagesAddRecipients({textareaRef}: {
     }, [recipientsSearch, recipientsSelected]);
 
     return (
-        <Dialog onOpenChange={(isOpen) => {
-            setTimeout(() => {
-                if (!isOpen) {
-                    textareaRef.current?.focus()
-                }
-            }, 200)
-        }}>
+        <Dialog>
             <DialogTrigger asChild>
                 <Button variant={"outline"} type="button">
                     Add participants
                 </Button>
             </DialogTrigger>
-            <DialogContent onPointerDownOutside={() => {
+            <DialogContent onEscapeKeyDown={() => {
                 setRecipientsSearchInput('')
-                setRecipientsSelected([])
+            }} onPointerDownOutside={() => {
+                setRecipientsSearchInput('')
             }} className={"min-w-[30rem] max-h-[30rem] flex flex-col"}>
                 <DialogHeader>
                     <DialogTitle>
@@ -71,13 +65,14 @@ export default function MessagesAddRecipients({textareaRef}: {
                 </DialogHeader>
                 <div className="p-4 border-b flex gap-2 relative w-full">
                     <Input
+                        autoFocus
                         placeholder="Search"
                         className="pl-10"
                         value={recipientsSearchInput}
                         onChange={(e) => setRecipientsSearchInput(e.target.value)}
                     />
                     <div className="absolute top-1/2 transform -translate-y-1/2 left-7">
-                        <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
+                        <AiOutlineSearch className="w-5 h-5 text-gray-500" />
                     </div>
                 </div>
                 <div className="flex w-full overflow-hidden gap-2">
@@ -85,10 +80,10 @@ export default function MessagesAddRecipients({textareaRef}: {
                         className={cn("w-full flex flex-col overflow-y-auto overflow-x-hidden gap-2", recipientsSelected.length > 0 && 'border-r-2 -mr-1 pr-2')}>
                         {isRecipientsLoading ? (
                             <div className={"flex flex-col gap-4 w-full justify-center items-center"}>
-                        <span
-                            className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                            Loading...
-                        </span>
+                                <span
+                                    className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                                    Loading...
+                                </span>
                             </div>
                         ) : (
                             <div className="overflow-y-auto overflow-x-hidden gap-2 flex flex-wrap">
@@ -99,8 +94,8 @@ export default function MessagesAddRecipients({textareaRef}: {
                                         onClick={() => setRecipientsSelected([...recipientsSelected!, recipient])}>
                                         <Avatar className={"flex-shrink-0 w-9 h-9"}>
                                             <AvatarImage src={recipient.ProfileImageUrl}
-                                                         alt={recipient.SearchLabel}
-                                                         className={"object-cover"}
+                                                alt={recipient.SearchLabel}
+                                                className={"object-cover"}
                                             />
                                             <AvatarFallback className={"bg-foreground/20"}>
                                                 {recipient.ShortLabel}
@@ -111,10 +106,10 @@ export default function MessagesAddRecipients({textareaRef}: {
                                 ))}
                                 {filteredRecipients.length === 0 && (
                                     <div className={"flex flex-col gap-4 w-full justify-center items-center"}>
-                                <span
-                                    className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                                    No results found
-                                </span>
+                                        <span
+                                            className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                                            No results found
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -133,8 +128,8 @@ export default function MessagesAddRecipients({textareaRef}: {
                                     onClick={() => setRecipientsSelected(recipientsSelected.filter((r) => r.Id !== recipient.Id))}>
                                     <Avatar className={"flex-shrink-0 w-9 h-9"}>
                                         <AvatarImage src={recipient.ProfileImageUrl}
-                                                     alt={recipient.SearchLabel}
-                                                     className={"object-cover"}
+                                            alt={recipient.SearchLabel}
+                                            className={"object-cover"}
                                         />
                                         <AvatarFallback className={"bg-foreground/20"}>
                                             {recipient.ShortLabel}
@@ -153,7 +148,7 @@ export default function MessagesAddRecipients({textareaRef}: {
                     <DialogClose asChild>
                         <Button onClick={() => {
                             setRecipientsSearchInput('')
-                            textareaRef.current?.focus()
+                            // textareaRef.current?.focus()
                         }}>
                             Done
                         </Button>
