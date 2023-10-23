@@ -10,7 +10,6 @@ import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMess
 import { useUser } from "@/atoms/user";
 import { useInView } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 
 
 export default function Messages() {
