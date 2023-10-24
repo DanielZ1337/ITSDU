@@ -2,6 +2,7 @@ import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/G
 import axios from "axios";
 import { atom, useAtom } from "jotai";
 
+//@ts-ignore
 export const userAtom = atom<GETcurrentUser | null>(async () => {
     const res = await axios.get<GETcurrentUser>(GETcurrentUserApiUrl(), {
         params: {

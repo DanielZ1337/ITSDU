@@ -4,18 +4,15 @@
     border-radius: 6px !important;
     border-color: rgb(43, 43, 43) !important;
 
-    /* & > *, .rbc-header, .rbc-day-bg {
-         border-color: rgb(43,43,43) !important;
-     }*/
+    &>*,
+    .rbc-header,
+    .rbc-day-bg {
+        border-color: rgb(43, 43, 43) !important;
+    }
 }
 
 .rbc-off-range-bg {
-    background-color: #111 !important;
-}
-
-.rbc-event {
-    background-color: rgba(0, 0, 0, 0) !important;
-    padding: 0 !important;
+    background-color: hsl(var(--foreground)/0.0325) !important;
 }
 
 .rbc-event-content {
@@ -23,10 +20,15 @@
 }
 
 .rbc-today {
-    background-color: #2a2a2a !important;
+    background-color: hsl(var(--foreground)/0.13) !important;
 }
 
+.rbc-events-container {
+    margin-right: 0 !important;
+}
+
+/*
 .rbc-month-row {
     overflow-y: scroll !important;
     overflow-x: hidden !important;
-}
+}*/

@@ -1,6 +1,6 @@
-import {useInfiniteQuery, UseInfiniteQueryOptions} from "@tanstack/react-query";
+import { useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETinstantMessagesv2,
     GETinstantMessagesv2ApiUrl,
@@ -8,7 +8,7 @@ import {
 } from "@/types/api-types/messages/GETinstantMessagesv2.ts";
 
 export default function useGETinstantMessagesv2(params: GETinstantMessagesv2Params, queryConfig?: UseInfiniteQueryOptions<GETinstantMessagesv2, Error, GETinstantMessagesv2, GETinstantMessagesv2, string[]>) {
-    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.threadPage}) => {
+    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.threadPage }) => {
         console.log('useGETmessages')
         const res = await axios.get(GETinstantMessagesv2ApiUrl({
             ...params,
@@ -24,7 +24,7 @@ export default function useGETinstantMessagesv2(params: GETinstantMessagesv2Para
         return res.data;
     }, {
         ...queryConfig,
-        /*getNextPageParam: (lastPage) => {
+        getNextPageParam: (lastPage) => {
             console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
             if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
                 return lastPage.CurrentPageIndex + 1;
@@ -38,6 +38,6 @@ export default function useGETinstantMessagesv2(params: GETinstantMessagesv2Para
             } else {
                 return undefined;
             }
-        }*/
+        }
     })
 }
