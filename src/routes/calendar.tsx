@@ -1,27 +1,32 @@
-import {Calendar as ReactBigCalendar, momentLocalizer} from 'react-big-calendar';
+import { Calendar as ReactBigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '@/styles/calendar.css';
 import useGETcalendarEvents from '@/queries/calendar/useGETcalendarEvents';
-import {cn} from "@/lib/utils.ts";
-import {Spinner} from "@nextui-org/spinner";
+import { cn } from "@/lib/utils.ts";
+import { Spinner } from "@nextui-org/spinner";
 import {
     ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Calendar.CalendarEventV2.ts";
-import {convert} from "html-to-text";
+import { convert } from "html-to-text";
 import he from "he";
+import { Button } from "@/components/ui/button.tsx";
+import { useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
 
 const localizer = momentLocalizer(moment);
 
 export default function Calendar() {
 
-    const {data, isLoading} = useGETcalendarEvents({
+    const { data, isLoading } = useGETcalendarEvents({
         fromDate: new Date(2021, 1),
     }, {
         keepPreviousData: true,
     })
 
     const events = data?.EntityArray.map((event) => {
+        console.log(new Date(event.FromDate))
+
         return {
             ...event,
             FromDate: new Date(event.FromDate),
@@ -29,6 +34,7 @@ export default function Calendar() {
         }
     })
 
+    const [event, setEvent] = useState(null)
     return (
         <div className={"flex flex-1 flex-col h-full"}>
             {/*<div className={"flex flex-row gap-4 w-full justify-end mt-4 sm:mt-8 md:mt-12 lg:mt-16 xl:mt-20 h-[3vh"}>*/}
@@ -37,28 +43,72 @@ export default function Calendar() {
             <div className={"relative flex flex-1 flex-col h-full"}>
                 {isLoading && (
                     <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "}>
-                        <Spinner size={"lg"}/>
+                        <Spinner size={"lg"} />
                     </div>
                 )}
-
                 <ReactBigCalendar
                     localizer={localizer}
                     events={events}
                     startAccessor="FromDate"
                     endAccessor="ToDate"
-                    titleAccessor="EventTitle"
-                    style={{height: '100%'}}
-                    views={{
-                        month: true,
-                        day: true,
-                        week: true,
-                        agenda: CustomAgendaView,
+                    titleAccessor={"EventTitle"}
+                    style={{ height: "100vh" }}
+                    onSelectEvent={(event) => {
+                        console.log(event)
                     }}
-                    className={cn("flex flex-1 flex-col h-full", isLoading && "opacity-10")}
-                    min={new Date("2023-10-23T06:00:00.000Z")}
-                    max={new Date("2023-10-23T16:00:00.000Z")}
+                    min={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 8)}
+                    max={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 18)}
+                    views={["month", "week", "day", "agenda"]}
+                    // view={"month"}
                     components={{
-                        eventWrapper: EventCard,
+                        eventWrapper: (props: any) => {
+                            return (
+                                <Popover>
+                                    <PopoverTrigger>
+                                        <div
+                                            {...props}
+                                            {...props.children.props}
+                                            className={cn("flex flex-col", props.children.props.className)}
+                                            style={props.children.props.style}
+                                        >
+                                            <span className={"inline-flex flex-col gap-2 text-white font-semibold text-sm"}>
+                                                {props.Label && (
+
+                                                    <span>
+                                                        {props.label}
+                                                    </span>
+                                                )}
+                                                <span>
+                                                    {convert(he.decode(props.event.EventTitle))}
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="max-w-[30vw] break-all overflow-hidden">
+                                        <div className={"flex flex-col gap-2 p-2"}>
+                                            <span className={"text-white font-semibold text-sm"}>
+                                                {convert(he.decode(props.event.EventTitle))}
+                                            </span>
+                                            <span className={"text-white font-semibold text-sm"}>
+                                                {convert(he.decode(props.event.ImportDescription.replace(/\\n/g, ", ")))}
+                                            </span>
+                                            <span className={"text-white font-semibold text-sm"}>
+                                                {convert(he.decode(props.event.LocationTitle))}
+                                            </span>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            )
+                        },
+                        event: (props) => {
+                            return (
+                                <>
+                                    <span className={"text-white font-semibold text-sm"}>
+                                        {convert(he.decode(props.event.EventTitle))}
+                                    </span>
+                                </>
+                            )
+                        },
                         toolbar: CustomToolBar,
                     }}
                 />
@@ -67,31 +117,42 @@ export default function Calendar() {
     );
 }
 
-function CustomToolBar({...props}) {
-    
+function CustomToolBar({ ...props }) {
+
     //{date, view, views, label, onView, onNavigate, localizer}
+
+    const weekNumber = moment(props.date).week()
     return (
         <div className={"flex flex-col"}>
             <div className={"flex flex-row justify-between items-center"}>
                 <span className={"text-xl font-semibold"}>
-                    {props.label}
+                    {props.label} (Week {weekNumber})
                 </span>
+                <div className={"flex flex-row gap-2"}>
+                    <Button onClick={() => props.onNavigate("PREV")}>Prev</Button>
+                    <Button onClick={() => props.onNavigate("NEXT")}>Next</Button>
+                    <Button onClick={() => props.onView("month")}>Month</Button>
+                    <Button onClick={() => props.onView("week")}>Week</Button>
+                    <Button onClick={() => props.onView("day")}>Day</Button>
+                    <Button onClick={() => props.onView("agenda")}>Agenda</Button>
+                    <Button onClick={() => props.onNavigate("TODAY")}>Today</Button>
+                    ps</div>
             </div>
         </div>
     )
 }
 
-function EventCard({event}: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
+function EventCard({ event }: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
     return (
         <div className={"flex flex-col p-2 bg-purple-500 rounded border-2 border-purple-800"}>
-           <span className={"text-white font-semibold text-sm"}>
+            <span className={"text-white font-semibold text-sm"}>
                 {convert(he.decode(event.EventTitle))}
-           </span>
+            </span>
         </div>
     )
 }
 
-function CustomAgendaView({...props}) {
+function CustomAgendaView({ ...props }) {
     console.log(props)
 
     return (
