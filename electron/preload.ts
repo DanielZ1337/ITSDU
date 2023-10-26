@@ -124,7 +124,7 @@ function withPrototype(obj: Record<string, any>) {
 }
 
 // --------- Preload scripts loading ---------
-function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
+/* function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
     return new Promise(resolve => {
         if (condition.includes(document.readyState)) {
             resolve(true)
@@ -149,7 +149,7 @@ const safeDOM = {
             parent.removeChild(child)
         }
     },
-}
+} */
 
 /**
  * https://tobiasahlin.com/spinkit
@@ -157,7 +157,7 @@ const safeDOM = {
  * https://projects.lukehaas.me/css-loaders
  * https://matejkustec.github.io/SpinThatShit
  */
-function useLoading() {
+/* function useLoading() {
     const className = `loaders-css__square-spin`
     const styleContent = `
 @keyframes square-spin {
@@ -204,11 +204,11 @@ function useLoading() {
             safeDOM.remove(document.body, oDiv)
         },
     }
-}
+} */
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading()
+/* const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {
@@ -216,3 +216,4 @@ window.onmessage = ev => {
 }
 
 setTimeout(removeLoading, 4999)
+ */

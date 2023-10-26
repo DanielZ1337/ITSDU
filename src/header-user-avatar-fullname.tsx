@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from './components/ui/avatar'
-import { useUser } from './atoms/user'
+import { useUser } from '@/hooks/user'
 
 export default function HeaderUserFullnameAvatar() {
 

@@ -1,4 +1,4 @@
-import { useUser } from '@/atoms/user';
+import { useUser } from '@/hooks/user'
 
 export default function SettingsDropdownUserFullname() {
     const user = useUser()

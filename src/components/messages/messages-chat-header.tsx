@@ -12,7 +12,7 @@ import {
     ItslearningRestApiEntitiesInstantMessageRecipient
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
-import { useUser } from "@/atoms/user";
+import { useUser } from "@/hooks/user";
 
 export default function MessagesChatHeader({
     recipientsSelected,

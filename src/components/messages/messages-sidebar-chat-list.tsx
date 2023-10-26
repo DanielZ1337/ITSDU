@@ -3,7 +3,8 @@ import { useInView } from 'framer-motion';
 import { useEffect, useRef } from 'react'
 import MessagesSidebarChat from './messages-sidebar-chat';
 import MessageSidebarChatLoader from './message-sidebar-chat-loader';
-import { useUser } from '@/atoms/user';
+import { useUser } from '@/hooks/user'
+import { ItslearningRestApiEntitiesInstantMessageThread } from '@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread';
 
 export default function MessagesSidebarChatList({ query }: { query: string }) {
 
@@ -15,22 +16,6 @@ export default function MessagesSidebarChatList({ query }: { query: string }) {
         maxThreadCount: 10,
     }, {
         suspense: true,
-        getNextPageParam: (lastPage) => {
-            console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
-            if ((lastPage.CurrentPageIndex + 1) * lastPage.PageSize < lastPage.Total) {
-                return lastPage.CurrentPageIndex + 1;
-            } else {
-                return undefined;
-            }
-        },
-        getPreviousPageParam: (firstPage) => {
-            if (firstPage.CurrentPageIndex > 0) {
-                return firstPage.CurrentPageIndex - 1;
-            } else {
-                return undefined;
-            }
-        }
-
     })
 
 
@@ -52,6 +37,10 @@ export default function MessagesSidebarChatList({ query }: { query: string }) {
         }
     }, [isInView, fetchNextPage])
 
+    const isLastMessageRead = (thread: ItslearningRestApiEntitiesInstantMessageThread) => {
+        return thread.LastMessage.MessageId === thread.LastReadInstantMessageId
+    }
+
     return (
         <div>
             {messagesOrdered?.map((thread) => (
@@ -62,6 +51,7 @@ export default function MessagesSidebarChatList({ query }: { query: string }) {
                     pictureUrl={thread.LastMessage.CreatedByAvatar}
                     id={thread.InstantMessageThreadId}
                     canDelete={thread.CanDelete}
+                    isRead={isLastMessageRead(thread)}
                 />
             ))}
 

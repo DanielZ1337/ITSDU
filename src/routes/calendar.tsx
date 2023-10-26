@@ -11,8 +11,8 @@ import {
 import { convert } from "html-to-text";
 import he from "he";
 import { Button } from "@/components/ui/button.tsx";
-import { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from '@nextui-org/react';
+import { useEffect, useRef, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 const localizer = momentLocalizer(moment);
 
@@ -62,38 +62,62 @@ export default function Calendar() {
                     // view={"month"}
                     components={{
                         eventWrapper: (props: any) => {
+
+                            const label = props.label
+                            const event = props.event
+
+                            const [screenHeight, setScreenHeight] = useState(window.innerHeight)
+
+                            useEffect(() => {
+                                const onResize = () => {
+                                    setScreenHeight(window.innerHeight)
+                                }
+
+                                onResize()
+
+                                window.addEventListener("resize", onResize)
+
+                                return () => {
+                                    window.removeEventListener("resize", onResize)
+                                }
+                            }, [])
+
                             return (
                                 <Popover>
-                                    <PopoverTrigger>
+                                    <PopoverTrigger asChild>
                                         <div
                                             {...props}
                                             {...props.children.props}
-                                            className={cn("flex flex-col", props.children.props.className)}
+                                            className={cn(props.children.props.className, "active:!opacity-50 active:scale-95 transition-all !duration-75 ease-in-out cursor-pointer")}
                                             style={props.children.props.style}
                                         >
                                             <span className={"inline-flex flex-col gap-2 text-white font-semibold text-sm"}>
-                                                {props.Label && (
-
+                                                {label && (
                                                     <span>
-                                                        {props.label}
+                                                        {label}
                                                     </span>
                                                 )}
-                                                <span>
-                                                    {convert(he.decode(props.event.EventTitle))}
-                                                </span>
+                                                <div className={"flex flex-col gap-2"}>
+                                                    <span className={cn("text-white font-semibold text-sm")}>
+                                                        {convert(he.decode(event.LocationTitle))}
+                                                    </span>
+                                                    <span className={cn("text-white font-semibold text-sm", screenHeight < 700 && "hidden")}>
+                                                        {convert(he.decode(event.EventTitle))}
+                                                    </span>
+                                                </div>
                                             </span>
                                         </div>
                                     </PopoverTrigger>
                                     <PopoverContent className="max-w-[30vw] break-all overflow-hidden">
                                         <div className={"flex flex-col gap-2 p-2"}>
                                             <span className={"text-white font-semibold text-sm"}>
-                                                {convert(he.decode(props.event.EventTitle))}
+                                                {convert(he.decode(event.EventTitle))}
                                             </span>
                                             <span className={"text-white font-semibold text-sm"}>
-                                                {convert(he.decode(props.event.ImportDescription.replace(/\\n/g, ", ")))}
+                                                {convert(he.decode(event.ImportDescription.replace(/\\n/g, ", ")))}
                                             </span>
                                             <span className={"text-white font-semibold text-sm"}>
-                                                {convert(he.decode(props.event.LocationTitle))}
+                                                {convert(he.decode(event.LocationTitle))}
                                             </span>
                                         </div>
                                     </PopoverContent>
@@ -136,7 +160,7 @@ function CustomToolBar({ ...props }) {
                     <Button onClick={() => props.onView("day")}>Day</Button>
                     <Button onClick={() => props.onView("agenda")}>Agenda</Button>
                     <Button onClick={() => props.onNavigate("TODAY")}>Today</Button>
-                    ps</div>
+                </div>
             </div>
         </div>
     )

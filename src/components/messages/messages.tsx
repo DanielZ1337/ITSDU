@@ -7,7 +7,7 @@ import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipien
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread.ts";
-import { useUser } from "@/atoms/user";
+import { useUser } from "@/hooks/user";
 import { useInView } from "framer-motion";
 import { Loader2 } from "lucide-react";
 
@@ -89,11 +89,11 @@ function MessageChat({ threadId }: {
                 <div className="flex justify-center items-center" ref={ref} />
             )}
 
-            <div className="m-auto w-10 h-10">
-                {isFetchingNextPage && (
+            {isFetchingNextPage && (
+                <div className="m-auto w-10 h-10">
                     <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin m-auto"} />
-                )}
-            </div>
+                </div>
+            )}
         </>
     )
 }

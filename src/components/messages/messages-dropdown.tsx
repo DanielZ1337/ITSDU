@@ -46,7 +46,7 @@ export default function MessagesDropdown() {
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
     const threads = data?.pages.flatMap((page) => page.EntityArray)
-    const total = data?.pages[0].Total
+    const total = data?.pages[data?.pages.length - 1].Total
     const unreadMessages = threads?.filter((thread) => thread.LastMessage.MessageId !== thread.LastReadInstantMessageId)
     const [, setCurrentChat] = useAtom(currentChatAtom)
 
@@ -132,6 +132,7 @@ export default function MessagesDropdown() {
                                                 data-read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}>
                                                 <div className="flex items-center gap-3">
                                                     <UnreadNotificationIndicator
+                                                        ping
                                                         read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId} />
                                                     <div className="flex flex-col gap-2">
                                                         <span

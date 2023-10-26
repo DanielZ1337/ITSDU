@@ -26,7 +26,7 @@ export default function useGETinstantMessagesv2(params: GETinstantMessagesv2Para
         ...queryConfig,
         getNextPageParam: (lastPage) => {
             console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
-            if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+            if ((lastPage.CurrentPageIndex + 1) * lastPage.PageSize < lastPage.Total) {
                 return lastPage.CurrentPageIndex + 1;
             } else {
                 return undefined;

@@ -15,14 +15,6 @@ export const userAtom = atom<GETcurrentUser | null>(async () => {
     return res.data;
 })
 
-
-export const useUser = () => {
-    const [user] = useAtom(userAtom);
-
-    return user;
-}
-
-
 /* export const [userAtom] = atomsWithQuery<GETcurrentUser | null>(() => ({
     queryKey: ['currentUser', window.localStorage.getItem('access_token') || ''],
     queryFn: async () => {
