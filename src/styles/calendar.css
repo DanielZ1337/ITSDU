@@ -23,6 +23,15 @@
     background-color: hsl(var(--foreground)/0.13) !important;
 }
 
+.rbc-time-view .rbc-row {
+    box-sizing: border-box;
+    min-height: 50px;
+}
+
+.rbc-button-link {
+    @apply mt-3.5;
+}
+
 .rbc-event {
     border-radius: 6px !important;
     @apply bg-purple-500;

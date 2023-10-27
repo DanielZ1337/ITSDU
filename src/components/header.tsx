@@ -63,14 +63,14 @@ export default function Header() {
                     </div>
                 </div>
                 <div className={"flex flex-row items-center justify-center gap-4"}>
-                    <ErrorBoundary fallback={<MessagesDropDownFallback />}>
-                        <Suspense fallback={<MessagesDropDownFallback />}>
+                    <ErrorBoundary fallback={<MessagesDropDownSkeleton />}>
+                        <Suspense fallback={<MessagesDropDownSkeleton />}>
                             <MessagesDropdown />
                         </Suspense>
                     </ErrorBoundary>
-                    <ErrorBoundary fallback={<NotificationsDropDownFallback />}>
+                    <ErrorBoundary fallback={<NotificationsDropDownSkeleton />}>
                         <Suspense
-                            fallback={<NotificationsDropDownFallback />}>
+                            fallback={<NotificationsDropDownSkeleton />}>
                             <NotificationsDropdown />
                         </Suspense>
                     </ErrorBoundary>
@@ -85,7 +85,7 @@ export default function Header() {
     )
 }
 
-function MessagesDropDownFallback() {
+function MessagesDropDownSkeleton() {
     return (
         <div className={"animate-pulse"}>
             <Button className={"shrink-0"} variant={"ghost"} size={"icon"}><MessageCircle
@@ -94,7 +94,7 @@ function MessagesDropDownFallback() {
     )
 }
 
-function NotificationsDropDownFallback() {
+function NotificationsDropDownSkeleton() {
     return (
         <div className={"animate-pulse"}>
             <Button variant={"ghost"} size={"icon"} className={"shrink-0"}><AiOutlineNotification

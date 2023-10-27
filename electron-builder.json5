@@ -3,9 +3,9 @@
  */
 {
 	$schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-	appId: 'itslearning-desktop-app',
+	appId: 'itsdu-desktop-app',
 	asar: true,
-	productName: 'itslearning Desktop App',
+	productName: 'ITSDU Desktop App',
 	compression: "maximum",
 	artifactName: '${productName}-${version}.${ext}',
 	/*publish: {

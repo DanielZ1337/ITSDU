@@ -12,7 +12,7 @@ import { Helmet } from "react-helmet-async";
 import CourseSortSelect from "@/components/course/course-sort-select.tsx";
 import CourseCardStarredSelect from "@/components/course/course-card-starred-select.tsx";
 import CourseCards from "@/components/course/course-cards.tsx";
-import { CourseCardsSelectOptions } from "@/types/course-cards-select-options.ts";
+import { CourseCardsSelectOptions, CourseCardsSelectOptionsEnum } from "@/types/course-cards-select-options.ts";
 import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
 import { useAtom } from "jotai";
 import { Toggle } from "@/components/ui/toggle.tsx";
@@ -25,7 +25,7 @@ export default function Index() {
     const [selectedRankedBy, setSelectedRankedBy] = useState<CourseCardsSortByTypes>(
         CourseCardsSortByTypesConst[0]
     );
-    const [selectedStarredOption, setSelectedStarredOption] = useState<CourseCardsSelectOptions>("Starred");
+    const [selectedStarredOption, setSelectedStarredOption] = useState<CourseCardsSelectOptions>(CourseCardsSelectOptionsEnum.Starred);
     const [isCoursesBulkEditing, setIsCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom);
     const [cardsHeight, setCardsHeight] = useState<number>(0);
     const cardsRef = useRef<HTMLDivElement>(null);

@@ -2,7 +2,7 @@
   "name": "itslearning",
   "private": true,
   "version": "0.0.0",
-  "description": "An electron app for itslearning",
+  "description": "An electron app for SDU students to interact with itslearning",
   "author": "Daniel Bermann Schmidt",
   "scripts": {
     "dev": "vite",

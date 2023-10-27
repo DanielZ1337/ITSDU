@@ -61,6 +61,26 @@ export default function Calendar() {
                     views={["month", "week", "day", "agenda"]}
                     // view={"month"}
                     components={{
+                        header: (props) => {
+
+                            const date = props.date
+                            const isCurrentDate = moment(date).isSame(new Date(), "day")
+
+                            // 22 Sun format
+                            // 23 Mon format
+                            const dayOfWeek = moment(date).format("ddd")
+                            const dayOfMonth = moment(date).format("D")
+                            return (
+                                <div>
+                                    <span className={"text-gray-500 text-medium font-semibold "}>
+                                        {dayOfWeek}
+                                    </span>
+                                    <span className={cn("text-sm font-semibold p-2", isCurrentDate && "ml-2 bg-primary text-primary-foreground rounded-full")}>
+                                        {dayOfMonth}
+                                    </span>
+                                </div>
+                            )
+                        },
                         eventWrapper: (props: any) => {
 
                             const label = props.label

@@ -124,7 +124,7 @@ function withPrototype(obj: Record<string, any>) {
 }
 
 // --------- Preload scripts loading ---------
-/* function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
+function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
     return new Promise(resolve => {
         if (condition.includes(document.readyState)) {
             resolve(true)
@@ -149,7 +149,7 @@ const safeDOM = {
             parent.removeChild(child)
         }
     },
-} */
+}
 
 /**
  * https://tobiasahlin.com/spinkit
@@ -217,3 +217,70 @@ window.onmessage = ev => {
 
 setTimeout(removeLoading, 4999)
  */
+
+function useLoading() {
+    const oImg = document.createElement('img')
+    // use the same image as the app icon
+    oImg.src = 'itsl-itslearning-file://icon.ico'
+
+    oImg.style.width = '12vw'
+
+    oImg.style.height = '12vh'
+
+    oImg.style.objectFit = 'contain'
+
+    oImg.style.zIndex = '9999'
+
+    oImg.style.maxHeight = '100px'
+
+    oImg.style.maxWidth = '100px'
+
+    oImg.style.animation = 'spin 2s linear infinite'
+
+    const styleContent = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.app-loading-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: ${localStorage.getItem('theme') === 'dark' ? 'black' : 'white'};
+  z-index: 9;
+}
+    `
+
+    const oStyle = document.createElement('style')
+    const oDiv = document.createElement('div')
+
+    oStyle.id = 'app-loading-style'
+    oStyle.innerHTML = styleContent
+    oDiv.className = 'app-loading-wrap'
+    oDiv.innerHTML = oImg.outerHTML
+
+    return {
+        appendLoading() {
+            safeDOM.append(document.head, oStyle)
+            safeDOM.append(document.body, oDiv)
+        },
+        removeLoading() {
+            safeDOM.remove(document.head, oStyle)
+            safeDOM.remove(document.body, oDiv)
+        },
+    }
+}
+
+const { appendLoading, removeLoading } = useLoading()
+domReady().then(appendLoading)
+
+window.onmessage = ev => {
+    ev.data.payload === 'removeLoading' && removeLoading()
+}
+
+setTimeout(removeLoading, 4999)

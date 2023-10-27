@@ -3,4 +3,4 @@
 - [ ] skal kunne trykke på notifikationer og beskeder fra dropdown
 - [ ] fix 403 når man prøver at sende besked (før den restartes)
 - [ ] notifikation settings
-
+- [ ] måske lave egen database og holde styr på hvilke updates man har set?
