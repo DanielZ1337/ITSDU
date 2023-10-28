@@ -6,10 +6,11 @@ import {
     GETinstantMessagesv3ApiUrl,
     GETinstantMessagesv3Params
 } from "@/types/api-types/messages/GETinstantMessagesv3.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesv3(params: GETinstantMessagesv3Params, queryConfig?: UseQueryOptions<GETinstantMessagesv3, Error, GETinstantMessagesv3, string[]>) {
 
-    return useQuery(['messagesv3', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.Messagesv3, ...getQueryKeysFromParamsObject(params)], async () => {
         console.log('useGETmessages')
         const res = await axios.get(GETinstantMessagesv3ApiUrl(params), {
             params: {

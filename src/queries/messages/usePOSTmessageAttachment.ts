@@ -1,10 +1,11 @@
 import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {POSTmessageAttachment, POSTmessageAttachmentApiUrl} from "@/types/api-types/messages/POSTmessageAttachment.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePOSTmessageAttachment(queryConfig?: UseMutationOptions<POSTmessageAttachment, Error, File[], string[]>) {
 
-    return useMutation(['POSTmessageAttachment'], async (files) => {
+    return useMutation([TanstackKeys.POSTmessageAttachment], async (files) => {
         const formData = new FormData()
         files.forEach(file => {
             formData.append(`${file.name}`, file)

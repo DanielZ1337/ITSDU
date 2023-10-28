@@ -11,7 +11,7 @@ import {
 import { convert } from "html-to-text";
 import he from "he";
 import { Button } from "@/components/ui/button.tsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 const localizer = momentLocalizer(moment);
@@ -75,7 +75,8 @@ export default function Calendar() {
                                     <span className={"text-gray-500 text-medium font-semibold "}>
                                         {dayOfWeek}
                                     </span>
-                                    <span className={cn("text-sm font-semibold p-2", isCurrentDate && "ml-2 bg-primary text-primary-foreground rounded-full")}>
+                                    <span
+                                        className={cn("text-sm font-semibold px-2 py-1.5", isCurrentDate && "ml-2 bg-primary text-primary-foreground rounded-full")}>
                                         {dayOfMonth}
                                     </span>
                                 </div>
@@ -111,7 +112,8 @@ export default function Calendar() {
                                             className={cn(props.children.props.className, "active:!opacity-50 active:scale-95 transition-all !duration-75 ease-in-out cursor-pointer")}
                                             style={props.children.props.style}
                                         >
-                                            <span className={"inline-flex flex-col gap-2 text-white font-semibold text-sm"}>
+                                            <span
+                                                className={"inline-flex flex-col gap-2 text-white font-semibold text-sm"}>
                                                 {label && (
                                                     <span>
                                                         {label}
@@ -121,7 +123,8 @@ export default function Calendar() {
                                                     <span className={cn("text-white font-semibold text-sm")}>
                                                         {convert(he.decode(event.LocationTitle))}
                                                     </span>
-                                                    <span className={cn("text-white font-semibold text-sm", screenHeight < 700 && "hidden")}>
+                                                    <span
+                                                        className={cn("text-white font-semibold text-sm", screenHeight < 700 && "hidden")}>
                                                         {convert(he.decode(event.EventTitle))}
                                                     </span>
                                                 </div>
@@ -142,15 +145,6 @@ export default function Calendar() {
                                         </div>
                                     </PopoverContent>
                                 </Popover>
-                            )
-                        },
-                        event: (props) => {
-                            return (
-                                <>
-                                    <span className={"text-white font-semibold text-sm"}>
-                                        {convert(he.decode(props.event.EventTitle))}
-                                    </span>
-                                </>
                             )
                         },
                         toolbar: CustomToolBar,

@@ -1,9 +1,9 @@
 import useGETnotifications from '@/queries/notifications/useGETnotifications'
-import { useEffect } from 'react'
-import { useInView } from 'react-intersection-observer';
+import {useEffect} from 'react'
+import {useInView} from 'react-intersection-observer';
 
 export default function NotificationsIndex() {
-    const { data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETnotifications({
+    const {data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETnotifications({
         PageIndex: 0,
         PageSize: 10,
         UseNewerThan: true,
@@ -11,7 +11,7 @@ export default function NotificationsIndex() {
         suspense: true,
         keepPreviousData: true,
     })
-    const { ref, inView } = useInView();
+    const {ref, inView} = useInView();
 
     useEffect(() => {
         if (inView && hasNextPage) {

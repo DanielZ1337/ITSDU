@@ -7,13 +7,7 @@ export default function CourseParticipantsList({searchTerm, courseId}: {
     searchTerm: string,
     courseId: number
 }) {
-    const {data: participants} = useGETcourseParticipants({
-            courseId
-        },
-        {
-            suspense: true,
-        }
-    );
+    const {data: participants} = useGETcourseParticipants({courseId}, {suspense: true});
 
     const filteredParticipants = participants!.EntityArray.filter((participant) => participant.FullName.toLowerCase().includes(searchTerm.toLowerCase()))
 

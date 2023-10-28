@@ -6,10 +6,11 @@ import {
     GETcourseCalenderEventsApiUrl,
     GETcourseCalenderEventsParams
 } from "@/types/api-types/courses/GETcourseCalenderEvents.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseCalendarEvents(params: GETcourseCalenderEventsParams, queryConfig?: UseQueryOptions<GETcourseCalenderEvents, Error, GETcourseCalenderEvents, string[]>) {
 
-    return useQuery(['courseCalendarEvents', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseCalendarEvents, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseCalenderEventsApiUrl({
             ...params
         }), {

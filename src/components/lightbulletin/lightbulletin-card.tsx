@@ -137,7 +137,6 @@ export default function LightbulletinCard({bulletin}: {
                         <Suspense fallback={
                             <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
                         }>
-                            <div className="h-0.5 w-full bg-foreground/10"/>
                             <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
                         </Suspense>
                     )}

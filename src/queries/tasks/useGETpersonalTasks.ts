@@ -6,10 +6,11 @@ import {
     GETpersonalTasksApiUrl,
     GETpersonalTasksParams
 } from "@/types/api-types/tasks/GETpersonalTasks.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETpersonalTasks(params: GETpersonalTasksParams, queryConfig?: UseQueryOptions<GETpersonalTasks, Error, GETpersonalTasks, string[]>) {
 
-    return useQuery(['personalTasks', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.PersonalTasks, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETpersonalTasksApiUrl({
             ...params
         }), {

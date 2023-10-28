@@ -6,10 +6,11 @@ import {
     GETcourseResourcesBySearchApiUrl,
     GETcourseResourcesBySearchParams
 } from "@/types/api-types/courses/GETcourseResourcesBySearch.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseResourceBySearch(params: GETcourseResourcesBySearchParams, queryConfig?: UseQueryOptions<GETcourseResourcesBySearch, Error, GETcourseResourcesBySearch, string[]>) {
 
-    return useQuery(['courseResourcesBySearch', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseResourcesBySearch, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseResourcesBySearchApiUrl({
             ...params
         }), {

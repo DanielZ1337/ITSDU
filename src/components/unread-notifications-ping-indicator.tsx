@@ -1,4 +1,4 @@
-export default function UnreadNotificationsPingIndicator({ amount }: {
+export default function UnreadNotificationsPingIndicator({amount}: {
     amount?: number
 }) {
 

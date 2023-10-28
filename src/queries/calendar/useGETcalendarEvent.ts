@@ -6,10 +6,11 @@ import {
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcalendarEvent(params: GETcalenderEventParams, queryConfig?: UseQueryOptions<GETcalenderEvent, Error, GETcalenderEvent, string[]>) {
 
-    return useQuery(['calendarEvent', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CalendarEvent, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcalenderEventApiUrl({
             ...params
         }), {

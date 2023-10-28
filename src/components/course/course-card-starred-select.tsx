@@ -1,10 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
-import { CourseCardsSelectOptions, CourseCardsSelectOptionsEnum } from "@/types/course-cards-select-options.ts";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import {CourseCardsSelectOptions, CourseCardsSelectOptionsEnum} from "@/types/course-cards-select-options.ts";
 
 export default function CourseCardStarredSelect({
-    selectedStarredOption,
-    setSelectedStarredOption,
-}: {
+                                                    selectedStarredOption,
+                                                    setSelectedStarredOption,
+                                                }: {
     selectedStarredOption: CourseCardsSelectOptions
     // eslint-disable-next-line no-unused-vars
     setSelectedStarredOption: (value: CourseCardsSelectOptions) => void

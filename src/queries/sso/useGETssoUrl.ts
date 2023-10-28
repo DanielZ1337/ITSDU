@@ -2,10 +2,11 @@ import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {GETssoUrl, GETssoUrlApiUrl, GETssoUrlParams} from "@/types/api-types/sso/GETssoUrl.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETssoUrl(params: GETssoUrlParams, queryConfig?: UseQueryOptions<GETssoUrl, Error, GETssoUrl, string[]>) {
 
-    return useQuery(['ssoUrl', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.SsoUrl, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETssoUrlApiUrl({
             ...params
         }), {

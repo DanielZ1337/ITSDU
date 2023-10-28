@@ -7,10 +7,11 @@ import {
     POSTcourseCardSettingsBody,
     POSTcourseCardSettingsParams
 } from "@/types/api-types/course-cards/POSTcourseCardSettings.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePOSTcourseCardSettings(params: POSTcourseCardSettingsParams, queryConfig?: UseMutationOptions<POSTcourseCardSettings, Error, POSTcourseCardSettingsBody, string[]>) {
 
-    return useMutation(['courseCardSettings', ...getQueryKeysFromParamsObject(params)], async (body) => {
+    return useMutation([TanstackKeys.CourseCardSettings, ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.post(POSTcourseCardSettingsApiUrl({
             ...params
         }), body, {

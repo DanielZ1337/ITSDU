@@ -6,10 +6,11 @@ import {
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams | undefined, string[]>) {
 
-    return useMutation(['courseFavorite', ...getQueryKeysFromParamsObject(params)], async (variables) => {
+    return useMutation([TanstackKeys.CourseFavorite, ...getQueryKeysFromParamsObject(params)], async (variables) => {
         const res = await axios.put(PUTcourseFavoriteApiUrl({
             ...(variables || params)
         }), undefined, {

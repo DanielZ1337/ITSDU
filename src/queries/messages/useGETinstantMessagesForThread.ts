@@ -6,9 +6,10 @@ import {
     GETinstantMessagesForThreadApiUrl,
     GETinstantMessagesForThreadParams
 } from "@/types/api-types/messages/GETinstantMessagesForThread.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesForThread(params: GETinstantMessagesForThreadParams, queryConfig?: UseInfiniteQueryOptions<GETinstantMessagesForThread, Error, GETinstantMessagesForThread, GETinstantMessagesForThread, string[]>) {
-    return useInfiniteQuery(['messagesv2', ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.fromId}) => {
+    return useInfiniteQuery([TanstackKeys.Messagesv2, ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.fromId}) => {
         console.log('useGETmessages')
         const res = await axios.get(GETinstantMessagesForThreadApiUrl({
             ...params,

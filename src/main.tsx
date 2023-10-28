@@ -42,6 +42,7 @@ import PersonIndex from "@/routes/person/person-index.tsx";
 import CoursesIndex from "@/routes/courses.tsx";
 import React from "react";
 import CourseError from "./routes/course/course-error";
+import TestSuspense from "./components/test";
 
 const router = createHashRouter([
     {
@@ -162,6 +163,11 @@ const router = createHashRouter([
             {
                 path: "/test1",
                 element: <Test1 />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/test2",
+                element: <TestSuspense />,
                 errorElement: <ErrorPage />,
             },
             {

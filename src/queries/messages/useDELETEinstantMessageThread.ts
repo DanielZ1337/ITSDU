@@ -5,10 +5,11 @@ import {
     DELETEinstantMessageThreadApiUrl,
     DELETEinstantMessageThreadParams
 } from "@/types/api-types/messages/DELETEinstantMessageThread.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useDELETEinstantMessageThread(params: DELETEinstantMessageThreadParams, queryConfig?: UseMutationOptions<undefined, Error, DELETEinstantMessageThreadParams, string[]>) {
 
-    return useMutation(['DELETEinstantMessageThread', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useMutation([TanstackKeys.DELETEinstantMessageThread, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.delete(DELETEinstantMessageThreadApiUrl(params), {
             params: {
                 "access_token": localStorage.getItem('access_token') || '',

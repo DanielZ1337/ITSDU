@@ -6,10 +6,11 @@ import {
     DELETElightbulletinCommentApiUrl,
     DELETElightbulletinCommentParams
 } from "@/types/api-types/lightbulletin/DELETElightbulletinComment.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useDELETElightbulletinComment(params: DELETElightbulletinCommentParams, queryConfig?: UseMutationOptions<DELETElightbulletinComment, Error, DELETElightbulletinCommentParams, string[]>) {
 
-    return useMutation(['lightbulletinComment', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useMutation([TanstackKeys.LightbulletinComment, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.delete(DELETElightbulletinCommentApiUrl({
             ...params
         }), {

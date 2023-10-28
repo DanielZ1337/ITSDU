@@ -6,10 +6,11 @@ import {
     GETcourseLastThreeUpdatedResourcesApiUrl,
     GETcourseLastThreeUpdatedResourcesParams
 } from "@/types/api-types/courses/GETcourseLastThreeUpdatedResources.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseLastThreeUpdatedResources(params: GETcourseLastThreeUpdatedResourcesParams, queryConfig?: UseQueryOptions<GETcourseLastThreeUpdatedResources, Error, GETcourseLastThreeUpdatedResources, string[]>) {
 
-    return useQuery(['courseFolderResources', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseFolderResources, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseLastThreeUpdatedResourcesApiUrl({
             ...params
         }), {

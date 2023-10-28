@@ -2,10 +2,11 @@ import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {GETcourseBasic, GETcourseBasicApiUrl, GETcourseBasicParams} from "@/types/api-types/courses/GETcourseBasic.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseBasic(params: GETcourseBasicParams, queryConfig?: UseQueryOptions<GETcourseBasic, Error, GETcourseBasic, string[]>) {
 
-    return useQuery(['courseBasic', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseBasic, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseBasicApiUrl({
             ...params
         }), {

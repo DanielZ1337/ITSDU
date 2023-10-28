@@ -6,10 +6,11 @@ import {
     GETinstantMessagesRecipientsSearchApiUrl,
     GETinstantMessagesRecipientsSearchParams
 } from "@/types/api-types/messages/GETinstantMessagesRecipientsSearch.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesRecipientsSearch(params: GETinstantMessagesRecipientsSearchParams, queryConfig?: UseQueryOptions<GETinstantMessagesRecipientsSearch, Error, GETinstantMessagesRecipientsSearch, string[]>) {
 
-    return useQuery(['messagesRecipientsSearch', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.MessagesRecipientsSearch, ...getQueryKeysFromParamsObject(params)], async () => {
         console.log('useGETinstantMessagesRecipientsSearch')
         const res = await axios.get(GETinstantMessagesRecipientsSearchApiUrl(params), {
             params: {

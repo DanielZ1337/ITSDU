@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import {cn} from "@/lib/utils";
 
 
 interface UnreadNotificationIndicatorProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -7,13 +7,12 @@ interface UnreadNotificationIndicatorProps extends React.HTMLAttributes<HTMLSpan
     ping?: boolean
 }
 
-export const UnreadNotificationIndicator = React.forwardRef<HTMLSpanElement, UnreadNotificationIndicatorProps>((
-    {
-        read,
-        ping,
-        className,
-        ...props
-    }, ref) => {
+export const UnreadNotificationIndicator = React.forwardRef<HTMLSpanElement, UnreadNotificationIndicatorProps>(({
+                                                                                                                    read,
+                                                                                                                    ping,
+                                                                                                                    className,
+                                                                                                                    ...props
+                                                                                                                }, ref) => {
     return (
         <div className="flex my-auto relative">
             <span
@@ -28,7 +27,6 @@ export const UnreadNotificationIndicator = React.forwardRef<HTMLSpanElement, Unr
             )}
         </div>
     )
-}
-)
+})
 
 UnreadNotificationIndicator.displayName = "UnreadNotificationIndicator"

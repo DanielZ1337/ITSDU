@@ -1,7 +1,7 @@
-import { DownloadIcon, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn, isMacOS } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import {DownloadIcon, Search} from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {cn, isMacOS} from "@/lib/utils";
+import {Skeleton} from "@/components/ui/skeleton";
 import {
     CommandDialog,
     CommandEmpty,
@@ -10,23 +10,23 @@ import {
     CommandItem,
     CommandList
 } from "@/components/ui/command";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useCallback, useEffect, useState } from "react";
+import {useDebounce} from "@uidotdev/usehooks";
+import {useCallback, useEffect, useState} from "react";
 import useGETcourseResourceBySearch from "@/queries/courses/useGETcourseResourceBySearch.ts";
 import {
     ItsolutionsItslUtilsConstantsLocationType
 } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
-import { useToast } from "@/components/ui/use-toast";
+import {useToast} from "@/components/ui/use-toast";
 
-export default function SearchResourcesDialog({ courseId }: {
+export default function SearchResourcesDialog({courseId}: {
     courseId: number
 }) {
     const [isOpen, setIsOpen] = useState(false)
     const [query, setQuery] = useState("")
     const debouncedQuery = useDebounce(query, 300)
-    const { toast, dismiss } = useToast()
+    const {toast, dismiss} = useToast()
 
-    const { data: resources, isFetching } = useGETcourseResourceBySearch({
+    const {data: resources, isFetching} = useGETcourseResourceBySearch({
         searchText: debouncedQuery,
         locationId: courseId,
         locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
@@ -72,7 +72,7 @@ export default function SearchResourcesDialog({ courseId }: {
                                         await new Promise<void>((resolve) => {
                                             window.addEventListener('mouseup', () => {
                                                 resolve()
-                                            }, { once: true })
+                                            }, {once: true})
                                         })
 
                                         // if the mouse was pressed for less than 500ms, open the file
@@ -136,7 +136,7 @@ export default function SearchResourcesDialog({ courseId }: {
                 className="h-9 border-0 lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground"
                 onClick={() => setIsOpen(true)}
             >
-                <Search className={"h-4 w-4 lg:mr-2 shrink-0 lg:-ml-0.5"} />
+                <Search className={"h-4 w-4 lg:mr-2 shrink-0 lg:-ml-0.5"}/>
                 <span className="hidden xl:inline-flex">Search resources...</span>
                 <span
                     className="hidden lg:inline-flex xl:hidden">Search...</span>
@@ -154,7 +154,7 @@ export default function SearchResourcesDialog({ courseId }: {
                     placeholder="Search resources..."
                     value={query}
                     onValueChange={setQuery}
-                // className={"border-"}
+                    // className={"border-"}
                 />
                 <CommandList className={"overflow-hidden max-h-[50dvh]"}>
                     <CommandEmpty
@@ -164,15 +164,15 @@ export default function SearchResourcesDialog({ courseId }: {
                     </CommandEmpty>
                     {isFetching ? (
                         <div className="space-y-1 overflow-hidden px-1 py-2">
-                            <Skeleton className="h-4 w-10 rounded" />
-                            <Skeleton className="h-8 rounded-sm" />
-                            <Skeleton className="h-8 rounded-sm" />
+                            <Skeleton className="h-4 w-10 rounded"/>
+                            <Skeleton className="h-8 rounded-sm"/>
+                            <Skeleton className="h-8 rounded-sm"/>
                         </div>
                     ) : (
                         resources && (
                             <CommandGroup
                                 heading={`${resources?.Resources.EntityArray.length
-                                    } resources found`}
+                                } resources found`}
                             >
                                 <div className="my-2 space-y-1 overflow-hidden pr-1 overflow-y-auto max-h-[40dvh]">
                                     {resources!.Resources.EntityArray.map((resource) => (
@@ -217,7 +217,7 @@ export default function SearchResourcesDialog({ courseId }: {
                                                                         await new Promise<void>((resolve) => {
                                                                             window.addEventListener('mouseup', () => {
                                                                                 resolve()
-                                                                            }, { once: true })
+                                                                            }, {once: true})
                                                                         })
 
                                                                         // if the mouse was pressed for less than 500ms, open the file
@@ -242,12 +242,12 @@ export default function SearchResourcesDialog({ courseId }: {
                                                             })
                                                         }}
                                                     >
-                                                        <DownloadIcon className={"w-6 h-6"} />
+                                                        <DownloadIcon className={"w-6 h-6"}/>
                                                     </Button>)}
                                                 <div
                                                     className="flex justify-end cursor-pointer hover:opacity-80 active:opacity-60 p-2 rounded-full bg-background/30 h-fit w-fit active:scale-95 transform transition-all duration-200 ease-in-out hover:shadow-md ml-4 md:ml-6 lg:ml-8 xl:ml-10">
                                                     <img src={resource.IconUrl} alt={resource.Title}
-                                                        className={"w-6 h-6"} />
+                                                         className={"w-6 h-6"}/>
                                                 </div>
                                             </div>
                                         </CommandItem>

@@ -7,10 +7,11 @@ import {
     POSTlightbulletinAddCommentParams
 } from "@/types/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
 import axios from "axios";
+import {TanstackKeys} from '../../types/tanstack-keys';
 
 export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, queryConfig?: UseMutationOptions<POSTlightbulletinAddComment, Error, POSTlightbulletinAddCommentBody, string[]>) {
 
-    return useMutation(['lightbulletinAddComment', ...getQueryKeysFromParamsObject(params)], async (body) => {
+    return useMutation([TanstackKeys.LightbulletinAddComment, ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.post(POSTlightbulletinAddCommentApiUrl({
             ...params
         }), body, {

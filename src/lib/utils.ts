@@ -1,5 +1,7 @@
-import {type ClassValue, clsx} from "clsx"
-import {twMerge} from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import axios, { Method } from "axios";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -8,6 +10,7 @@ export function cn(...inputs: ClassValue[]) {
 export const getQueryKeysFromParamsObject = (params: {
     [key: string]: string | number | Date | undefined | boolean | number[]
 }) => {
+
     // eslint-disable-next-line no-unused-vars
     params = Object.fromEntries(Object.entries(params).filter(([_, value]) => value !== undefined))
 
@@ -90,10 +93,75 @@ export function getRelativeTimeString(
     const divisor = unitIndex ? cutoffs[unitIndex - 1] : 1;
 
     // Intl.RelativeTimeFormat do its magic
-    const rtf = new Intl.RelativeTimeFormat(lang, {numeric: "auto"});
+    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
     return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 
 export function isMacOS() {
     return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+}
+
+// Create a reusable function for making queries
+export function createQueryFunction<Params, Data>(
+    // eslint-disable-next-line no-unused-vars
+    getApiUrl: (params: Params) => string,
+    queryKey: string
+) {
+    return function useQueryFunction(
+        params: Params,
+        queryConfig?: UseQueryOptions<Data, Error, Data, string[]>
+    ) {
+
+        const queryKeys = [queryKey, ...(params ? getQueryKeysFromParamsObject(params) : [])]
+
+        return useQuery(queryKeys, async () => {
+            const res = await axios.get(getApiUrl(params), {
+                params: {
+                    "access_token": localStorage.getItem('access_token') || '',
+                    ...params,
+                },
+            });
+
+            if (res.status !== 200) throw new Error(res.statusText);
+
+            return res.data as Data;
+        }, {
+            ...queryConfig
+        });
+    };
+}
+
+// Create a reusable function for making mutations
+export function createMutationFunction<Params, Body, Data>(
+    method: Method, // Accept the HTTP method as an argument
+    getApiUrl: (params: Params) => string,
+    queryKey: string
+) {
+    return function useMutationFunction(
+        params?: Params,
+        body?: Body,
+        queryConfig?: UseMutationOptions<Data, Error, Body, string[]>
+    ) {
+        const queryKeys = [queryKey, ...(params ? getQueryKeysFromParamsObject(params) : [])]
+
+        return useMutation(queryKeys, async (paramsOrBody) => {
+            const axiosConfig = {
+                method, // Use the specified HTTP method
+                url: getApiUrl(params ?? {} as Params),
+                params: {
+                    "access_token": localStorage.getItem('access_token') || '',
+                    ...params,
+                },
+                data: body ?? paramsOrBody,
+            };
+
+            const res = await axios.request(axiosConfig); // Use axios.request
+
+            if (res.status !== 200) throw new Error(res.statusText);
+
+            return res.data;
+        }, {
+            ...queryConfig
+        });
+    };
 }

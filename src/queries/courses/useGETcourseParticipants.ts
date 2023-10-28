@@ -6,10 +6,11 @@ import {
     GETcourseParticipantsApiUrl,
     GETcourseParticipantsParams
 } from "@/types/api-types/courses/GETcourseParticipants.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseParticipants(params: GETcourseParticipantsParams, queryConfig?: UseQueryOptions<GETcourseParticipants, Error, GETcourseParticipants, string[]>) {
 
-    return useQuery(['courseParticipants', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseParticipants, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseParticipantsApiUrl({
             ...params
         }), {

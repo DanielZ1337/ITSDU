@@ -6,10 +6,11 @@ import {
     GETlightbulletinResourcesApiUrl,
     GETlightbulletinResourcesParams
 } from "@/types/api-types/lightbulletin/GETlightbulletinResources.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETlightbulletinResources(params: GETlightbulletinResourcesParams, queryConfig?: UseQueryOptions<GETlightbulletinResources, Error, GETlightbulletinResources, string[]>) {
 
-    return useQuery(['lightbulletinResources', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.LightbulletinResources, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETlightbulletinResourcesApiUrl({
             ...params
         }), {

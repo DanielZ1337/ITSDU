@@ -11,7 +11,7 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUp, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowLeft, ArrowUp, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -30,7 +30,7 @@ import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
 import { cn } from "@/lib/utils.ts";
-import { Link } from "react-router-dom"
+import { Link, useMatch, useNavigate } from "react-router-dom"
 import { LearningToolIdTypes } from "@/types/api-types/extra/learning-tool-id-types.ts";
 
 export function createColumns(isLoading: boolean, root: boolean): ColumnDef<ItslearningRestApiEntitiesPersonalCourseCourseResource>[] {
@@ -246,54 +246,69 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
         },
     })
 
+    const navigate = useNavigate()
+    const isRoot = !useMatch("/course/:id/resources/:id")
+
+    console.log(window.history)
+
     return (
         <div className="w-full">
-            <div className="flex items-center py-4 gap-4">
-                <Input
-                    disabled={isLoading || !data?.length}
-                    placeholder="Filter resources..."
-                    value={(table.getColumn("Title")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("Title")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-                {/* @ts-ignore */}
-                {table.getFilteredSelectedRowModel().flatRows.filter((row) => row.original.LearningToolId === 5009).length > 0 && (
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            // @ts-ignore
-                            const elements = table.getFilteredSelectedRowModel().flatRows.filter((row) => row.original.LearningToolId === 5009).map((row) => {
-                                return {
-                                    ElementId: row.original.ElementId,
-                                    Title: row.original.Title
-                                }
-                            })
-
-                            elements.forEach((element) => {
-                                window.download.start(element.ElementId, element.Title)
-                            })
-
+            <div className="flex items-center py-4">
+                <div className="flex gap-4 w-full">
+                    <Input
+                        disabled={isLoading || !data?.length}
+                        placeholder="Filter resources..."
+                        value={(table.getColumn("Title")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("Title")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
+                    {!isRoot && (
+                        <Button className="inline-flex gap-2" variant={"secondary"} onClick={() => {
+                            navigate(-1)
                         }}>
-                        Download all
-                    </Button>
-                )}
-                {table.getFilteredSelectedRowModel().flatRows.length > 0 && (
-                    <Button
-                        variant="outline"
-                        onClick={() => {
-                            // @ts-ignore
-                            const elements = table.getFilteredSelectedRowModel().flatRows.map((row) => row.original.ContentUrl)
+                            <ArrowLeft className="h-4 w-4 shrink-0" />
+                            Go Back
+                        </Button>
+                    )}
+                    {/* @ts-ignore */}
+                    {table.getFilteredSelectedRowModel().flatRows.filter((row) => row.original.LearningToolId === 5009).length > 0 && (
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                // @ts-ignore
+                                const elements = table.getFilteredSelectedRowModel().flatRows.filter((row) => row.original.LearningToolId === 5009).map((row) => {
+                                    return {
+                                        ElementId: row.original.ElementId,
+                                        Title: row.original.Title
+                                    }
+                                })
 
-                            elements.forEach((element) => {
-                                window.app.openExternal(element, true)
-                            })
+                                elements.forEach((element) => {
+                                    window.download.start(element.ElementId, element.Title)
+                                })
 
-                        }}>
-                        Open all
-                    </Button>
-                )}
+                            }}>
+                            Download all
+                        </Button>
+                    )}
+                    {table.getFilteredSelectedRowModel().flatRows.length > 0 && (
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                // @ts-ignore
+                                const elements = table.getFilteredSelectedRowModel().flatRows.map((row) => row.original.ContentUrl)
+
+                                elements.forEach((element) => {
+                                    window.app.openExternal(element, true)
+                                })
+
+                            }}>
+                            Open all
+                        </Button>
+                    )}
+                </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto select-none">

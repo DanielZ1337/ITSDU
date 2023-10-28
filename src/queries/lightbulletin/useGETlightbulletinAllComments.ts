@@ -1,6 +1,7 @@
 import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {TanstackKeys} from '../../types/tanstack-keys';
 import {
     GETlightbulletinAllComments,
     GETlightbulletinAllCommentsApiUrl,
@@ -9,7 +10,7 @@ import {
 
 export default function useGETlightbulletinAllComments(params: GETlightbulletinAllCommentsParams, queryConfig?: UseQueryOptions<GETlightbulletinAllComments, Error, GETlightbulletinAllComments, string[]>) {
 
-    return useQuery(['lightbulletinAllComments', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.LightbulletinAllComments, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETlightbulletinAllCommentsApiUrl({
             ...params
         }), {

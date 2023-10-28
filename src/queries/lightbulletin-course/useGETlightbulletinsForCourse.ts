@@ -6,10 +6,11 @@ import {
     GETlightbulletinsForCourseApiUrl,
     GETlightbulletinsForCourseParams
 } from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETlightbulletinsForCourse(params: GETlightbulletinsForCourseParams, queryConfig?: UseQueryOptions<GETlightbulletinsForCourse, Error, GETlightbulletinsForCourse, string[]>) {
 
-    return useQuery(['lightbulletinsForCourse', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.LightbulletinsForCourse, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETlightbulletinsForCourseApiUrl({
             ...params
         }), {

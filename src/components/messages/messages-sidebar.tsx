@@ -6,7 +6,7 @@ import {currentChatAtom, currentChatEnum} from "@/atoms/current-chat";
 import {useAtom} from "jotai";
 import React, {Suspense, useEffect, useState} from "react";
 import MessagesSidebarChat from "./messages-sidebar-chat";
-import MessageSidebarChatLoader from "./message-sidebar-chat-loader";
+import MessageSidebarChatFallback from "./fallbacks/message-sidebar-chat-fallback";
 import MessagesSidebarChatList from "./messages-sidebar-chat-list";
 
 export default function MessagesSidebar() {
@@ -37,7 +37,7 @@ export default function MessagesSidebar() {
     return (
         <div className="h-full flex flex-col">
             <div className="p-4 border-b flex gap-2">
-                <form className="relative w-full">
+                <div className="relative w-full">
                     <Input
                         ref={inputRef}
                         placeholder="Search"
@@ -50,7 +50,7 @@ export default function MessagesSidebar() {
                     <div className="absolute top-1/2 transform -translate-y-1/2 left-3">
                         <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
                     </div>
-                </form>
+                </div>
                 <Button onClick={() => setCurrentChat(currentChatEnum.NEW)} variant={"outline"} size={"icon"}
                         className={"shrink-0"}>
                     <Plus className={"w-5 h-5 text-gray-500"}/>
@@ -69,7 +69,7 @@ export default function MessagesSidebar() {
                 )}
                 <Suspense fallback={[...Array(10)].map((_, i) => (
                     <div key={i} className={"animate-in slide-in-from-left-32"}>
-                        <MessageSidebarChatLoader/>
+                        <MessageSidebarChatFallback/>
                     </div>
                 ))}>
                     <MessagesSidebarChatList query={search}/>

@@ -6,10 +6,11 @@ import {
     GETcourseFeaturesApiUrl,
     GETcourseFeaturesParams
 } from "@/types/api-types/course-features/GETcourseFeatures.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseFeatures(params: GETcourseFeaturesParams, queryConfig?: UseQueryOptions<GETcourseFeatures, Error, GETcourseFeatures, string[]>) {
 
-    return useQuery(['courseFeatures', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseFeatures, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseFeaturesApiUrl({
             ...params
         }), {

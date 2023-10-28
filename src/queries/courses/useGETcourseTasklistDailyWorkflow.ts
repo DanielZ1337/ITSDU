@@ -6,10 +6,11 @@ import {
     GETcourseTasklistDailyWorkflowApiUrl,
     GETcourseTasklistDailyWorkflowParams
 } from "@/types/api-types/courses/GETcourseTasklistDailyWorkflow.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseTasklistDailyWorkflow(params: GETcourseTasklistDailyWorkflowParams, queryConfig?: UseQueryOptions<GETcourseTasklistDailyWorkflow, Error, GETcourseTasklistDailyWorkflow, string[]>) {
 
-    return useQuery(['courseTasklistDailyWorkflow', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseTasklistDailyWorkflow, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseTasklistDailyWorkflowApiUrl({
             ...params
         }), {

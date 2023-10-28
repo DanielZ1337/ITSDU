@@ -7,10 +7,11 @@ import {
     PUTlightbulletinUpdateCommentBody,
     PUTlightbulletinUpdateCommentParams
 } from "@/types/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePUTlightbulletinUpdateComment(params: PUTlightbulletinUpdateCommentParams, queryConfig?: UseMutationOptions<PUTlightbulletinUpdateComment, Error, PUTlightbulletinUpdateCommentBody, string[]>) {
 
-    return useMutation(['lightbulletinUpdateComment', ...getQueryKeysFromParamsObject(params)], async (body) => {
+    return useMutation([TanstackKeys.LightbulletinUpdateComment, ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.put(PUTlightbulletinUpdateCommentApiUrl({
             ...params
         }), body, {

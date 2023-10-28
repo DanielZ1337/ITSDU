@@ -4,7 +4,7 @@
     border-radius: 6px !important;
     border-color: rgb(43, 43, 43) !important;
 
-    &>*,
+    & > *,
     .rbc-header,
     .rbc-day-bg {
         border-color: rgb(43, 43, 43) !important;
@@ -26,6 +26,12 @@
 .rbc-time-view .rbc-row {
     box-sizing: border-box;
     min-height: 50px;
+}
+
+.rbc-current-time-indicator {
+    background-color: indianred !important;
+    height: 2px !important;
+    z-index: 10 !important;
 }
 
 .rbc-button-link {

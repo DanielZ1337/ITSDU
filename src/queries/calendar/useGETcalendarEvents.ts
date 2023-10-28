@@ -6,9 +6,10 @@ import {
     GETcalenderEventsApiUrl
 } from "@/types/api-types/calendar/GETcalendarEvents.ts";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcalendarEvents(params: GETcalendarEventsParams, queryConfig?: UseQueryOptions<GETcalendarEvents, Error, GETcalendarEvents, string[]>) {
-    return useQuery(['calendarEvents', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CalendarEvents, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcalenderEventsApiUrl({
             ...params
         }), {

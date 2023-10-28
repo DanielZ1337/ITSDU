@@ -1,14 +1,13 @@
 /*eslint-disable no-unused-vars*/
 
-export enum CourseParticipantsRolesMappedToIds {
-    TeacherInstructor = 4,
-    STUDENT = 5,
+export enum CourseParticipantRole {
+    TeacherAndInstructor = 4,
+    Student = 5,
     StudySecretary = 212,
 }
 
-//course participants roles to labels
-export enum CourseParticipantsRoles {
-    TeacherInstructor = 'Teacher and Instructor',
-    STUDENT = 'Student',
-    StudySecretary = 'Study Secretary',
-}
+export const CourseParticipantRoleLabels: Record<CourseParticipantRole, string> = {
+    [CourseParticipantRole.TeacherAndInstructor]: 'Teacher and Instructor',
+    [CourseParticipantRole.Student]: 'Student',
+    [CourseParticipantRole.StudySecretary]: 'Study Secretary',
+};

@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import {apiUrl} from "@/lib/utils.ts";
 
 const PUTinstantMessageThreadUpdateIsReadApiEndpoint = 'restapi/personal/instantmessages/messagethreads/{threadId}/updatelastread/{lastReadInstantMessageId}/v1'
 

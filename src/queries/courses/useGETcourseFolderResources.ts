@@ -6,10 +6,11 @@ import {
     GETcourseFolderResourcesApiUrl,
     GETcourseFolderResourcesParams
 } from "@/types/api-types/courses/GETcourseFolderResources.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseFolderResources(params: GETcourseFolderResourcesParams, queryConfig?: UseQueryOptions<GETcourseFolderResources, Error, GETcourseFolderResources, string[]>) {
 
-    return useQuery(['courseFolderResources', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseFolderResources, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseFolderResourcesApiUrl({
             ...params
         }), {

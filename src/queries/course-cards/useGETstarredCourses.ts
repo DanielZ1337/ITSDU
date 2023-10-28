@@ -6,10 +6,11 @@ import {
     GETstarredCoursesApiUrl,
     GETstarredCoursesParams
 } from "@/types/api-types/course-cards/GETstarredCourses.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETstarredCourses(params: GETstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses, Error, GETstarredCourses, string[]>) {
 
-    return useQuery(['starredCourses', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.StarredCourses, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETstarredCoursesApiUrl({
             ...params
         }), {

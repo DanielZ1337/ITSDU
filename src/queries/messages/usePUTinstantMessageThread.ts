@@ -6,10 +6,11 @@ import {
     PUTinstantMessageThreadParams
 } from "@/types/api-types/messages/PUTinstantMessageThread.ts";
 import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePUTinstantMessageThread(params: PUTinstantMessageThreadParams, queryConfig?: UseMutationOptions<undefined, Error, PUTinstantMessageThreadBody, string[]>) {
 
-    return useMutation(['PUTinstantMessageThread', ...getQueryKeysFromParamsObject(params)], async (body) => {
+    return useMutation([TanstackKeys.PUTinstantMessageThread, ...getQueryKeysFromParamsObject(params)], async (body) => {
         const res = await axios.put(PUTinstantMessageThreadApiUrl(params), body, {
             params: {
                 'access_token': localStorage.getItem('access_token'),

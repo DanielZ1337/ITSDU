@@ -1,22 +1,22 @@
-import { Input } from "@/components/ui/input.tsx";
-import { Button } from "@/components/ui/button.tsx";
+import {Input} from "@/components/ui/input.tsx";
+import {Button} from "@/components/ui/button.tsx";
 import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
-import { useAtom } from "jotai";
-import { currentChatAtom, currentChatEnum } from '@/atoms/current-chat.ts';
+import {useAtom} from "jotai";
+import {currentChatAtom, currentChatEnum} from '@/atoms/current-chat.ts';
 import MessagesChatHeaderExistingChat from "@/components/messages/messages-chat-header-existing-chat.tsx";
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread";
-import { useQueryClient } from '@tanstack/react-query';
-import { useToast } from "../ui/use-toast";
-import { useState } from "react";
+import {useQueryClient} from '@tanstack/react-query';
+import {useToast} from "../ui/use-toast";
+import {useState} from "react";
 import {
     ItslearningRestApiEntitiesInstantMessageRecipient
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
-import { useUser } from "@/hooks/user";
+import {useUser} from "@/hooks/user";
 
 export default function MessagesChatHeader({
-    recipientsSelected,
-}: {
+                                               recipientsSelected,
+                                           }: {
     recipientsSelected: ItslearningRestApiEntitiesInstantMessageRecipient[],
 }) {
 
@@ -24,11 +24,11 @@ export default function MessagesChatHeader({
     const isChatUndefined = currentChat === currentChatEnum.NONE
     const isChatNew = currentChat === currentChatEnum.NEW
     const queryClient = useQueryClient()
-    const { toast } = useToast()
+    const {toast} = useToast()
     const [newThreadName, setNewThreadName] = useState<string>('')
     const [isSettingNewThreadName, setIsSettingNewThreadName] = useState<boolean>(false)
 
-    const { data: messages, isLoading } = useGETinstantMessagesv2({
+    const {data: messages, isLoading} = useGETinstantMessagesv2({
         maxMessages: 1,
         threadPage: 0,
         maxThreadCount: 10,
@@ -42,7 +42,7 @@ export default function MessagesChatHeader({
         currentThreadName = messages?.pages.map((page) => page.EntityArray).flat().filter((thread) => thread.InstantMessageThreadId === currentChat)[0]?.Name || messages!.pages[0]!.EntityArray.filter((message) => message.InstantMessageThreadId === currentChat)[0]?.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ")
     }
 
-    const { mutate: editThreadName, isLoading: isLoadingThreadName } = usePUTinstantMessageThread({
+    const {mutate: editThreadName, isLoading: isLoadingThreadName} = usePUTinstantMessageThread({
         threadId: currentChat!
     }, {
         onSuccess: () => {
@@ -79,7 +79,7 @@ export default function MessagesChatHeader({
                         Name: newThreadName,
                     })
                 }}>
-                    <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)} />
+                    <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)}/>
                     <Button disabled={newThreadName === '' || isLoadingThreadName}>
                         {isLoadingThreadName ? "Saving..." : "Save"}
                     </Button>
@@ -99,7 +99,7 @@ export default function MessagesChatHeader({
                 />
             )}
             {isChatNew && (
-                <MessagesAddRecipients />
+                <MessagesAddRecipients/>
             )}
         </div>
     )

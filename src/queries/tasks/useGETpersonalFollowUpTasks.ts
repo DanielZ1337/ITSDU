@@ -6,10 +6,11 @@ import {
     GETpersonalFollowUpTasksApiUrl,
     GETpersonalFollowUpTasksParams
 } from "@/types/api-types/tasks/GETpersonalFollowUpTasks.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETpersonalFollowUpTasks(params: GETpersonalFollowUpTasksParams, queryConfig?: UseQueryOptions<GETpersonalFollowUpTasks, Error, GETpersonalFollowUpTasks, string[]>) {
 
-    return useQuery(['personalFollowUpTasks', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.PersonalFollowUpTasks, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETpersonalFollowUpTasksApiUrl({
             ...params
         }), {

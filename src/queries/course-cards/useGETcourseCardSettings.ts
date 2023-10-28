@@ -6,10 +6,11 @@ import {
     GETcourseCardSettingsApiUrl,
     GETcourseCardSettingsParams
 } from "@/types/api-types/course-cards/GETcourseCardSettings.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseCardSettings(params: GETcourseCardSettingsParams, queryConfig?: UseQueryOptions<GETcourseCardSettings, Error, GETcourseCardSettings, string[]>) {
 
-    return useQuery(['courseCardSettings', ...getQueryKeysFromParamsObject(params)], async () => {
+    return useQuery([TanstackKeys.CourseCardSettings, ...getQueryKeysFromParamsObject(params)], async () => {
         const res = await axios.get(GETcourseCardSettingsApiUrl({
             ...params
         }), {
