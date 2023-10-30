@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import {contextBridge, ipcRenderer} from 'electron'
-import {sendNotifcation} from "./handlers/notifcation-handler.ts";
+import { contextBridge, ipcRenderer } from 'electron'
+import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import {store_keys} from './services/auth/types/store_keys.ts';
+import { store_keys } from './services/auth/types/store_keys.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -49,7 +49,7 @@ contextBridge.exposeInMainWorld('download', {
     },
     start: async (elementId: number, filename: string) => {
 
-        const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId, filename)
+        const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
         const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
         ipcRenderer.invoke('itslearning-element:download', {
@@ -202,7 +202,7 @@ function useLoading() {
     }
 }
 
-const {appendLoading, removeLoading} = useLoading()
+const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

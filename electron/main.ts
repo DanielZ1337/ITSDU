@@ -1,5 +1,4 @@
 import { app, BrowserWindow, Menu, protocol, session, Tray } from "electron"
-// @ts-ignore
 import path from 'path'
 import {
     AuthService,
@@ -99,7 +98,7 @@ async function createMainWindow() {
 
 async function createAuthWindow() {
     authWindow = new BrowserWindow({
-        // icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+        icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         autoHideMenuBar: true,
         resizable: false,
         height: 600,

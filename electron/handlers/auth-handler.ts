@@ -1,9 +1,9 @@
-import {app, BrowserWindow, ipcMain} from "electron";
-import {AuthService} from "../services/auth/auth-service.ts";
-import {store_keys} from '../services/auth/types/store_keys.ts';
-import {download} from "electron-dl";
+import { app, BrowserWindow, ipcMain } from "electron";
+import { AuthService } from "../services/auth/auth-service.ts";
+import { store_keys } from '../services/auth/types/store_keys.ts';
+import { download } from "electron-dl";
 import axios from "axios";
-import {apiUrl} from "../../src/lib/utils.ts";
+import { apiUrl } from "../../src/lib/utils.ts";
 
 const authService = AuthService.getInstance()
 
@@ -35,7 +35,7 @@ function openExternalHandler() {
     ipcMain.handle('app:openExternal', async (_, url, sso) => {
         // open the url with the default browser and get sso url
         if (sso) {
-            const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
                 params: {
                     'access_token': authService.getToken('access_token'),
                 }
@@ -78,10 +78,10 @@ function openItemHandler() {
 }
 
 function getResourceDownloadLinkForElementId() {
-    ipcMain.handle('get-resource-download-link', async (_, elementId, filename) => {
-        const {data} = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
+    ipcMain.handle('get-resource-download-link', async (_, elementId) => {
+        const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
             params: {
-                'access_token': await authService.getToken('access_token'),
+                'access_token': authService.getToken('access_token'),
                 'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
             }
         })
@@ -91,7 +91,7 @@ function getResourceDownloadLinkForElementId() {
 }
 
 function itslearningElementDownload() {
-    ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
+    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
         try { /*const win = BrowserWindow.fromWebContents(event.sender)
         if (!win) return*/
 
@@ -124,7 +124,7 @@ function itslearningElementDownload() {
 }
 
 function downloadExternalHandler() {
-    ipcMain.handle("download:external", async (event, {url, filename}) => {
+    ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
             console.log(url, filename)
 

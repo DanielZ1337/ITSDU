@@ -1,14 +1,39 @@
-import {createMutationFunction, createQueryFunction} from "@/lib/utils";
-import {TanstackKeys} from "@/types/tanstack-keys";
-import {GETstarredCourses, GETstarredCoursesParams} from '../types/api-types/course-cards/GETstarredCourses';
+import { createMutationFunction, createQueryFunction } from "@/lib/utils";
+import { TanstackKeys } from "@/types/tanstack-keys";
+import { GETstarredCourses, GETstarredCoursesParams } from '../types/api-types/course-cards/GETstarredCourses';
 import {
     PUTcourseFavorite,
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams,
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
-import {GETunstarredCoursesApiUrl} from "@/types/api-types/course-cards/GETunstarredCourses";
+import { GETunstarredCoursesApiUrl } from "@/types/api-types/course-cards/GETunstarredCourses";
+
+
+import React from 'react'
+import useGETcourseCardSettings from '../queries/course-cards/useGETcourseCardSettings';
+import useGETcourseFeatures from '../queries/course-features/useGETcourseFeatures';
+import useGETpersonalTasks from "@/queries/tasks/useGETpersonalTasks";
+import { ItslearningRestApiEntitiesTaskDeadlineFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDeadlineFilter";
+import { ItslearningRestApiEntitiesTaskStatusFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter";
 
 export default function TestSuspense() {
+
+    const { data } = useGETpersonalTasks({
+        deadline: ItslearningRestApiEntitiesTaskDeadlineFilter.All,
+        PageIndex: 0,
+        PageSize: 200,
+        status: ItslearningRestApiEntitiesTaskStatusFilter.All
+    })
+    return (
+        <pre>
+            {JSON.stringify(data, null, 2)}
+        </pre>
+    )
+}
+
+
+
+/* export default function TestSuspense() {
 
     const useUnstarredCourses = createQueryFunction<GETstarredCoursesParams, GETstarredCourses>(
         GETunstarredCoursesApiUrl,
@@ -48,4 +73,4 @@ export default function TestSuspense() {
             </div>
         </div>
     )
-}
+} */

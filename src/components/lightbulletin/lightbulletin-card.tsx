@@ -1,20 +1,20 @@
-import {GETlightbulletinsForCourse} from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
-import React, {Suspense, useEffect, useState} from "react";
-import {BsChatSquareTextFill, BsFileEarmarkFill} from "react-icons/bs";
-import {Badge} from "@/components/ui/badge.tsx";
-import {BellOff, BellRing, Loader2} from "lucide-react";
-import {Button} from "@/components/ui/button.tsx";
+import { GETlightbulletinsForCourse } from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
+import React, { Suspense, useEffect, useState } from "react";
+import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
+import { Badge } from "@/components/ui/badge.tsx";
+import { BellOff, BellRing, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button.tsx";
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
-import {useToast} from "@/components/ui/use-toast.ts";
+import { useToast } from "@/components/ui/use-toast.ts";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbulletinResources.ts";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {getRelativeTimeString} from "@/lib/utils.ts";
-import {Link} from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import { getRelativeTimeString } from "@/lib/utils.ts";
+import { Link } from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
 
-export default function LightbulletinCard({bulletin}: {
+export default function LightbulletinCard({ bulletin }: {
     bulletin: GETlightbulletinsForCourse['EntityArray'][0]
 }) {
     const [readMore, setReadMore] = useState(false);
@@ -23,17 +23,17 @@ export default function LightbulletinCard({bulletin}: {
     const [showComments, setShowComments] = useState<boolean>(false)
     const [showResources, setShowResources] = useState<boolean>(false)
 
-    const {mutate, isLoading} = usePUTlightbulletinNotifications({
+    const { mutate, isLoading } = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     })
 
-    const {data: Resources} = useGETlightbulletinResources({
+    const { data: Resources } = useGETlightbulletinResources({
         bulletinId: bulletin.LightBulletinId,
     }, {
         enabled: bulletin.ResourcesCount > 0,
     })
 
-    const {toast} = useToast()
+    const { toast } = useToast()
 
     useEffect(() => {
         setInterval(() => {
@@ -46,14 +46,14 @@ export default function LightbulletinCard({bulletin}: {
 
     return (
         <div data-marginonpublished={bulletin.Text.split("\n").length > 1} data-readmore={readMore}
-             data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
-             className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[readmore=true]:dark:hover:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 data-[readmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
+            data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
+            className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[readmore=true]:dark:hover:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 data-[readmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
             <div className="flex justify-between">
                 <div className="flex items-center space-x-2">
                     <Avatar className={"flex-shrink-0 w-9 h-9"}>
                         <AvatarImage src={bulletin.PublishedBy.ProfileImageUrlSmall}
-                                     alt={bulletin.PublishedBy.FullName}
-                                     className={"object-cover"}
+                            alt={bulletin.PublishedBy.FullName}
+                            className={"object-cover"}
                         />
                         <AvatarFallback className={"bg-foreground/20 font-normal"}>
                             {bulletin.PublishedBy.FullName.split(" ").map((name) => name[0]).join("").slice(0, 3)}
@@ -102,16 +102,16 @@ export default function LightbulletinCard({bulletin}: {
                     variant={"secondary"}
                     className="flex justify-end cursor-pointer hover:opacity-80 active:opacity-60 p-2 rounded-full bg-background/30 h-fit w-fit active:scale-95 transform transition-all duration-200 ease-in-out hover:shadow-md ml-4 md:ml-6 lg:ml-8 xl:ml-10">
                     {bulletin.IsSubscribed ? (
-                        <BellRing className={"stroke-success w-6 h-6"}/>
+                        <BellRing className={"stroke-success w-6 h-6"} />
                     ) : (
-                        <BellOff className={"stroke-destructive w-6 h-6"}/>
+                        <BellOff className={"stroke-destructive w-6 h-6"} />
                     )}
                 </Button>
             </div>
             <pre ref={textRef} onClick={() => {
                 setReadMore(!readMore)
             }}
-                 className={"py-4 text-wrap font-sans font-normal tracking-tight group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
+                className={"py-4 text-wrap font-sans font-normal tracking-tight group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
                 {bulletin.Text}
             </pre>
             {showResources && (
@@ -120,11 +120,11 @@ export default function LightbulletinCard({bulletin}: {
                         <div
                             className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment"}
                             key={resource.ElementId} onClick={() => {
-                            window.app.openExternal(resource.ContentUrl, true)
-                        }}>
+                                window.app.openExternal(resource.ContentUrl, true)
+                            }}>
                             <div
                                 className="flex items-center space-x-2 p-2 text-blue-500 group-hover/attachment:text-blue-600">
-                                <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"}/>
+                                <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
                                 <span className="truncate">{resource.Title}</span>
                             </div>
                         </div>
@@ -135,12 +135,12 @@ export default function LightbulletinCard({bulletin}: {
                 <>
                     {bulletin.CommentsCount > 0 && (
                         <Suspense fallback={
-                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
+                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"} />
                         }>
-                            <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
+                            <LightbulletinComments lightbulletinId={bulletin.LightBulletinId} />
                         </Suspense>
                     )}
-                    <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId}/>
+                    <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId} />
                 </>
             )}
             <div className="mt-2 flex gap-4 truncate text-lg">
@@ -150,7 +150,7 @@ export default function LightbulletinCard({bulletin}: {
                     variant={"outline"}
                     className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
                     {bulletin.CommentsCount}
-                    <BsChatSquareTextFill className={"mt-1"}/>
+                    <BsChatSquareTextFill className={"mt-1"} />
                 </Badge>
                 {/*)}*/}
                 {bulletin.ResourcesCount > 0 && (
@@ -159,7 +159,7 @@ export default function LightbulletinCard({bulletin}: {
                         variant={"outline"}
                         className={"hover:bg-secondary-200 gap-2 px-4 py-1 text-sm"}>
                         {bulletin.ResourcesCount}
-                        <BsFileEarmarkFill/>
+                        <BsFileEarmarkFill />
                     </Badge>
                 )}
             </div>
