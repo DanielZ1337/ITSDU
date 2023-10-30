@@ -1,8 +1,8 @@
-import {Button, buttonVariants} from '@/components/ui/button'
-import {ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, MoreVertical, RefreshCwIcon} from 'lucide-react'
-import {Suspense, useCallback, useEffect, useState} from 'react'
-import {Input} from './ui/input'
-import {useLocation, useNavigate, useNavigation, useSearchParams} from 'react-router-dom'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, MoreVertical, RefreshCwIcon } from 'lucide-react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
+import { Input } from './ui/input'
+import { useLocation, useNavigate, useNavigation, useSearchParams } from 'react-router-dom'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,10 +12,10 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from './ui/dropdown-menu'
-import {useTheme} from "next-themes";
-import {cn} from "@/lib/utils.ts";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils.ts";
 import SettingsDropdownUserFullname from './settings-dropdown-user-fullname'
-import {ErrorBoundary} from 'react-error-boundary'
+import { ErrorBoundary } from 'react-error-boundary'
 
 export default function BrowserNav() {
     const navigate = useNavigate()
@@ -23,7 +23,7 @@ export default function BrowserNav() {
     const pathname = location.pathname
     const [address, setAddress] = useState(pathname)
     const navigation = useNavigation();
-    const {theme, setTheme} = useTheme()
+    const { theme, setTheme } = useTheme()
     // eslint-disable-next-line no-unused-vars
     let [searchParams] = useSearchParams();
     const [version, setVersion] = useState<string>()
@@ -120,22 +120,22 @@ export default function BrowserNav() {
         <div className='flex w-full py-4 px-2 justify-center items-center gap-1 border-b-foreground-50 border-b-2'>
             {/* Back button */}
             <Button variant={"ghost"} size={"icon"}
-                    onClick={() => navigate(-1)}><ArrowLeftSquareIcon/></Button>
+                onClick={() => navigate(-1)}><ArrowLeftSquareIcon /></Button>
             {/* Forward button */}
             <Button variant={"ghost"} size={"icon"}
-                    onClick={() => navigate(1)}><ArrowRightSquareIcon/></Button>
+                onClick={() => navigate(1)}><ArrowRightSquareIcon /></Button>
             {/* Reload button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon/></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon /></Button>
             {/* Home button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon/></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon /></Button>
             {/* Address bar */}
             <form onSubmit={(e) => {
                 e.preventDefault()
                 navigate(address)
             }} className='w-full px-2'>
                 <Input className='w-full' type="text" value={address}
-                       onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
-                       onChange={(e) => setAddress(e.target.value)}/>
+                    onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
+                    onChange={(e) => setAddress(e.target.value)} />
             </form>
             {/*    more settings dropdown*/}
             <DropdownMenu>
@@ -143,7 +143,7 @@ export default function BrowserNav() {
                     variant: 'ghost',
                     size: 'icon'
                 }))}>
-                    <MoreVertical/>
+                    <MoreVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                     <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -158,11 +158,11 @@ export default function BrowserNav() {
                     <DropdownMenuLabel className={"font-normal"}>
                         <ErrorBoundary fallback={<div className={"animate-pulse"}>Loading...</div>}>
                             <Suspense fallback={<div className={"animate-pulse"}>Loading...</div>}>
-                                <SettingsDropdownUserFullname/>
+                                <SettingsDropdownUserFullname />
                             </Suspense>
                         </ErrorBoundary>
                     </DropdownMenuLabel>
-                    <DropdownMenuSeparator/>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleDarkModeToggle}>
                         <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                         <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
@@ -171,12 +171,13 @@ export default function BrowserNav() {
                     {/*<DropdownMenuItem>Billing</DropdownMenuItem>*/}
                     {/*<DropdownMenuItem>Team</DropdownMenuItem>*/}
                     {/*<DropdownMenuItem>Subscription</DropdownMenuItem>*/}
-                    <DropdownMenuSeparator/>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => {
-                            localStorage.clear()
-                            window.app.exit().then(r => {
-                                console.log(r)
+                            window.auth.store.clear().then(() => {
+                                window.app.exit().then(r => {
+                                    console.log(r)
+                                })
                             })
                         }}
                         className={"hover:!bg-destructive focus:!bg-destructive"}

@@ -97,6 +97,10 @@ export function getRelativeTimeString(
     return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 
+export async function getAccessToken() {
+    return window.auth.store.get('access_token')
+}
+
 export function isMacOS() {
     return navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 }
@@ -117,7 +121,7 @@ export function createQueryFunction<Params, Data>(
         return useQuery(queryKeys, async () => {
             const res = await axios.get(getApiUrl(params), {
                 params: {
-                    "access_token": localStorage.getItem('access_token') || '',
+                    "access_token": await getAccessToken() || '',
                     ...params,
                 },
             });
@@ -149,7 +153,7 @@ export function createMutationFunction<Params, Body, Data>(
                 method, // Use the specified HTTP method
                 url: getApiUrl(params ?? {} as Params),
                 params: {
-                    "access_token": localStorage.getItem('access_token') || '',
+                    "access_token": await getAccessToken() || '',
                     ...params,
                 },
                 data: body ?? paramsOrBody,

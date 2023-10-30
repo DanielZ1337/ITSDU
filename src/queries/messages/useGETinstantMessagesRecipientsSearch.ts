@@ -1,12 +1,12 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETinstantMessagesRecipientsSearch,
     GETinstantMessagesRecipientsSearchApiUrl,
     GETinstantMessagesRecipientsSearchParams
 } from "@/types/api-types/messages/GETinstantMessagesRecipientsSearch.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesRecipientsSearch(params: GETinstantMessagesRecipientsSearchParams, queryConfig?: UseQueryOptions<GETinstantMessagesRecipientsSearch, Error, GETinstantMessagesRecipientsSearch, string[]>) {
 
@@ -14,7 +14,7 @@ export default function useGETinstantMessagesRecipientsSearch(params: GETinstant
         console.log('useGETinstantMessagesRecipientsSearch')
         const res = await axios.get(GETinstantMessagesRecipientsSearchApiUrl(params), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
             }
         });
 

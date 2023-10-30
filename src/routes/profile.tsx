@@ -1,5 +1,5 @@
 import axios from "axios";
-import {baseUrl} from "@/lib/utils.ts";
+import {baseUrl, getAccessToken} from "@/lib/utils.ts";
 import {Input} from "@/components/ui/input.tsx";
 import {useState} from "react";
 import {Label} from "@radix-ui/react-dropdown-menu";
@@ -17,12 +17,12 @@ export default function Profile() {
             <Button onClick={() => {
                 window.notification.send("Test Notification", "This is a test notification")
             }}>Test Notification</Button>
-            <form onSubmit={(event) => {
+            <form onSubmit={async (event) => {
                 event.preventDefault()
 
                 axios.get(`${baseUrl}${requestUrl}`, {
                     params: {
-                        "access_token": window.localStorage.getItem("access_token")
+                        "access_token": await getAccessToken
                     }
                 }).then(res => {
                     console.log(res)

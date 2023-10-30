@@ -1,12 +1,12 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import {
     GETcalendarEvents,
     GETcalendarEventsParams,
     GETcalenderEventsApiUrl
 } from "@/types/api-types/calendar/GETcalendarEvents.ts";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETcalendarEvents(params: GETcalendarEventsParams, queryConfig?: UseQueryOptions<GETcalendarEvents, Error, GETcalendarEvents, string[]>) {
     return useQuery([TanstackKeys.CalendarEvents, ...getQueryKeysFromParamsObject(params)], async () => {
@@ -14,7 +14,7 @@ export default function useGETcalendarEvents(params: GETcalendarEventsParams, qu
             ...params
         }), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

@@ -1,15 +1,15 @@
-import {JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal} from "react";
-import {baseUrl} from "@/lib/utils.ts";
-import {useQuery} from "@tanstack/react-query";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
+import { baseUrl, getAccessToken } from "@/lib/utils.ts";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import {Skeleton} from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Test1() {
 
-    const {data, isLoading} = useQuery(['bulletins'], async () => {
+    const { data, isLoading } = useQuery(['bulletins'], async () => {
         const res = await axios.get(`${baseUrl}restapi/personal/courses/29222/bulletins/v1`, {
             params: {
-                'access_token': window.localStorage.getItem('access_token')
+                'access_token': getAccessToken()
             }
         })
 
@@ -47,12 +47,12 @@ export default function Test1() {
                 on {new Date(bulletin.PublishedDate).toLocaleDateString()}
             </p>
             <div className="mt-2 flex justify-between">
-        <span className="text-gray-600">
-          {bulletin.CommentsCount} Comment{bulletin.CommentsCount !== 1 && 's'}
-        </span>
                 <span className="text-gray-600">
-          {bulletin.ResourcesCount} Resource{bulletin.ResourcesCount !== 1 && 's'}
-        </span>
+                    {bulletin.CommentsCount} Comment{bulletin.CommentsCount !== 1 && 's'}
+                </span>
+                <span className="text-gray-600">
+                    {bulletin.ResourcesCount} Resource{bulletin.ResourcesCount !== 1 && 's'}
+                </span>
                 {bulletin.IsSubscribed && (
                     <span className="text-green-500 font-semibold">Subscribed</span>
                 )}
@@ -70,7 +70,7 @@ export default function Test1() {
                             <div className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
                                 <div className={"flex flex-col w-full h-full p-4"}>
                                     <div className={"flex flex-row justify-between items-center"}>
-                                        <Skeleton className={"w-4/5 h-4 bg-gray-200 rounded-md animate-pulse"}/>
+                                        <Skeleton className={"w-4/5 h-4 bg-gray-200 rounded-md animate-pulse"} />
                                     </div>
                                     <div className={"flex flex-col"}>
                                         <span className={"text-gray-500 text-sm"}>Loading...</span>

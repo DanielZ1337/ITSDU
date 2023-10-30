@@ -1,5 +1,5 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     POSTlightbulletinAddComment,
     POSTlightbulletinAddCommentApiUrl,
@@ -7,7 +7,7 @@ import {
     POSTlightbulletinAddCommentParams
 } from "@/types/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
 import axios from "axios";
-import {TanstackKeys} from '../../types/tanstack-keys';
+import { TanstackKeys } from '../../types/tanstack-keys';
 
 export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, queryConfig?: UseMutationOptions<POSTlightbulletinAddComment, Error, POSTlightbulletinAddCommentBody, string[]>) {
 
@@ -16,7 +16,7 @@ export default function usePOSTlightbulletinAddComment(params: POSTlightbulletin
             ...params
         }), body, {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

@@ -1,13 +1,13 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     PUTlightbulletinUpdateComment,
     PUTlightbulletinUpdateCommentApiUrl,
     PUTlightbulletinUpdateCommentBody,
     PUTlightbulletinUpdateCommentParams
 } from "@/types/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function usePUTlightbulletinUpdateComment(params: PUTlightbulletinUpdateCommentParams, queryConfig?: UseMutationOptions<PUTlightbulletinUpdateComment, Error, PUTlightbulletinUpdateCommentBody, string[]>) {
 
@@ -16,7 +16,7 @@ export default function usePUTlightbulletinUpdateComment(params: PUTlightbulleti
             ...params
         }), body, {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

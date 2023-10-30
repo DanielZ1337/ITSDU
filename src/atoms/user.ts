@@ -1,12 +1,13 @@
-import {GETcurrentUser, GETcurrentUserApiUrl} from "@/types/api-types/person/GETcurrentUser.ts";
+import { getAccessToken } from "@/lib/utils";
+import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/GETcurrentUser.ts";
 import axios from "axios";
-import {atom} from "jotai";
+import { atom } from "jotai";
 
 //@ts-ignore
 export const userAtom = atom<GETcurrentUser | null>(async () => {
     const res = await axios.get<GETcurrentUser>(GETcurrentUserApiUrl(), {
         params: {
-            "access_token": localStorage.getItem('access_token') || '',
+            "access_token": await getAccessToken() || '',
         },
     })
 
@@ -16,11 +17,11 @@ export const userAtom = atom<GETcurrentUser | null>(async () => {
 })
 
 /* export const [userAtom] = atomsWithQuery<GETcurrentUser | null>(() => ({
-    queryKey: ['currentUser', window.localStorage.getItem('access_token') || ''],
+    queryKey: ['currentUser', window.getAccessToken || ''],
     queryFn: async () => {
         const res = await axios.get(GETcurrentUserApiUrl(), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
             },
         });
 

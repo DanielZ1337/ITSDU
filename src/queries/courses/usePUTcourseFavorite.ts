@@ -1,12 +1,12 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     PUTcourseFavorite,
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams | undefined, string[]>) {
 
@@ -15,7 +15,7 @@ export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, qu
             ...(variables || params)
         }), undefined, {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...(variables || params)
             }
         })

@@ -1,30 +1,34 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray } from 'electron'
-import path from 'node:path'
-import axios from "axios";
-import darkModeHandlerInitializer from './handlers/dark-mode-handlers'
-import * as fs from "fs";
+import { app, BrowserWindow, protocol, session } from "electron"
+// @ts-ignore
+import RegexEscape from "regex-escape"
+import path from 'path'
+import {
+    getItslearningOAuthUrl, ITSLEARNING_CLIENT_ID, ITSLEARNING_OAUTH_STATE,
+    ITSLEARNING_OAUTH_TOKEN_URL, ITSLEARNING_REDIRECT_URI,
+    ITSLEARNING_URL,
+    refreshAccessToken, setToken
+} from "./services/auth-service"
+import darkModeHandlerInitializer, { themeStore } from "./handlers/dark-mode-handlers.ts";
 import appHandlerInitializer from "./handlers/app-handler.ts";
-import { download } from "electron-dl";
+import initAuthIpcHandlers from "./handlers/auth-handler.ts";
+import axios from "axios";
+import { GrantType } from "./services/grant_type.ts";
+import * as fs from "fs";
 
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.js
-// │
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
-const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
+
 
 let win: BrowserWindow | null
-let deeplinkingUrl: string | null
+let authWindow: BrowserWindow | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+
 darkModeHandlerInitializer()
 appHandlerInitializer()
+initAuthIpcHandlers()
+
+const startUpTheme = themeStore.get('theme')
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'itsl-itslearning-file',
@@ -50,22 +54,9 @@ async function createWindow() {
         alwaysOnTop: false,
         minHeight: 600,
         minWidth: 800,
+        darkTheme: startUpTheme === 'dark',
     })
 
-    /*const deeplink = new Deeplink({
-        app,
-        mainWindow: win,
-        protocol: 'itsl-itslearning',
-        isDev: VITE_DEV_SERVER_URL !== undefined,
-        debugLogging: true,
-    });
-
-    deeplink.on('received', (link) => {
-        console.log('received', link)
-        // handleDeepLink(win, link, [], logEverywhere)
-    })*/
-
-    // deeplink.on()
 
     // Test active push message to Renderer-process.
     win.webContents.on('did-finish-load', () => {
@@ -77,10 +68,27 @@ async function createWindow() {
     } else {
         await win.loadFile(path.join(process.env.DIST, 'index.html'))
     }
-
-    return win
 }
 
+async function createAuthWindow() {
+    authWindow = new BrowserWindow({
+        // icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+        show: false,
+        autoHideMenuBar: true,
+        resizable: false,
+        height: 600,
+        width: 800,
+        // alwaysOnTop: true,
+        darkTheme: startUpTheme === 'dark',
+        focusable: true,
+    })
+
+    await authWindow.loadURL(getItslearningOAuthUrl())
+    await authWindow?.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
+    setTimeout(async () => {
+        await authWindow?.webContents.executeJavaScript(`document.getElementsByClassName('table')[0].click()`)
+    }, 1000)
+}
 
 if (process.platform === 'win32') {
     app.setAppUserModelId('itslearning')
@@ -147,127 +155,45 @@ app.on('will-finish-launching', function () {
     // Protocol handler for osx
     app.on('open-url', function (event, url) {
         event.preventDefault()
-        deeplinkingUrl = url
-        logEverywhere('open-url# ' + deeplinkingUrl)
+        /*deeplinkingUrl = url
+        logEverywhere('open-url# ' + deeplinkingUrl)*/
     })
 })
 
+function logEverywhere(s: string) {
+    console.log(s)
+    win?.webContents.send('main-process-message', s)
+}
+
+function logEverywhereError(s: string) {
+    console.error(s)
+    win?.webContents.send('main-process-error', s)
+}
+
 app.whenReady().then(async () => {
     const ses = session.defaultSession
-    ipcMain.handle('app:openExternal', async (_, url, sso) => {
-        // open the url with the default browser and get sso url
-        if (sso) {
-            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
-                params: {
-                    'access_token': await win.webContents.executeJavaScript(`window.localStorage.getItem('access_token')`)
-                }
-            })
-            url = data.Url
-        }
+    if (VITE_DEV_SERVER_URL) {
+        const express = await import('express').then(m => m.default)
+        const cors = await import('cors').then(m => m.default)
+        const bodyParser = await import('body-parser').then(m => m.default)
+        const { createProxyMiddleware } = await import('http-proxy-middleware')
+        const proxy = express()
+        proxy.use(bodyParser.urlencoded({ extended: true }));
+        proxy.use(cors())
+        // proxy.use(express.json())
+        proxy.use('*', createProxyMiddleware({
+            target: ITSLEARNING_URL,
+            changeOrigin: true,
+            secure: false,
+            onProxyReq: (proxyReq, req, res) => {
+                console.log('Sending Request to the Target:', req.method, req.url);
+            }
+        }))
 
-        // open the url with the default browser
-        const shell = await import('electron').then(m => m.shell)
-        await shell.openExternal(url)
-    })
-    ipcMain.handle('app:getDownloadPath', async () => {
-        console.log(app.getPath('downloads'))
-        return app.getPath('downloads')
-    })
-    ipcMain.handle('app:openShell', async (_, path) => {
-        console.log(path)
-        const shell = await import('electron').then(m => m.shell)
-        await shell.openPath(path)
-    })
-    ipcMain.handle('app:openItem', async (_, path) => {
-        console.log(path)
-        const shell = await import('electron').then(m => m.shell)
-        // shell.showItemInFolder(path)
-        //open the file with the default app
-        await shell.openPath(path)
-    })
-    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
-        try { /*const win = BrowserWindow.fromWebContents(event.sender)
-            if (!win) return*/
-
-            console.log(url, resourceLink, filename)
-
-            const newWin = new BrowserWindow({
-                show: false,
-                webPreferences: {
-                    nodeIntegration: true,
-                    contextIsolation: false,
-                }
-            })
-            await newWin.loadURL(resourceLink)
-            console.log('download# ' + url)
-
-            // download the file
-            const downloadItem = await download(newWin, url, {
-                filename: filename,
-                directory: app.getPath('downloads'),
-                showProgressBar: true,
-                showBadge: true,
-            })
-            logEverywhere('download# ' + downloadItem.getSavePath())
-            event.sender.send("download:complete", downloadItem.getSavePath())
-        } catch (e) {
-            console.error(e)
-            event.sender.send("download:error", null)
-        }
-    })
-
-    ipcMain.handle("download:external", async (event, { url, filename }) => {
-        try {
-            console.log(url, filename)
-
-            // download the file
-            const downloadItem = await download(win, url, {
-                filename: filename,
-                directory: app.getPath('downloads'),
-                showProgressBar: true,
-                showBadge: true,
-            })
-            logEverywhere('download# ' + downloadItem.getSavePath())
-            event.sender.send("download:complete", downloadItem.getSavePath())
-        } catch (e) {
-            console.error(e)
-            event.sender.send("download:error", null)
-        }
-    })
-
-    ipcMain.handle("download:start", async (_, url) => {
-        try {
-            const scrapeWindow = new BrowserWindow({
-                show: false,
-                webPreferences: {
-                    nodeIntegration: true,
-                }
-            })
-            await scrapeWindow.loadURL(url)
-
-            const iframeSrc = await scrapeWindow.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
-            await scrapeWindow.loadURL(iframeSrc)
-            // const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType').getAttribute('href')`)
-            // const fileLink = 'https://resource.itslearning.com' + downloadHref
-            //document.querySelector('#aspnetForm').action
-            const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#aspnetForm').action`)
-            // get LearningObjectId and LearningObjectInstanceId from the action url
-            const regex = /LearningObjectId=([0-9]*)&LearningObjectInstanceId=([0-9]*)/gm;
-            const matches = regex.exec(downloadHref)
-            if (!matches) throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')
-            const LearningObjectId = matches[1]
-            console.log(LearningObjectId)
-            const LearningObjectInstanceId = matches[2]
-            console.log(LearningObjectInstanceId)
-            // https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=365284744&LearningObjectInstanceId=510275481
-            const fileLink = `https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=${LearningObjectId}&LearningObjectInstanceId=${LearningObjectInstanceId}`
-            scrapeWindow.close()
-            return fileLink
-        } catch (e) {
-            console.error(e)
-            return null
-        }
-    })
+        proxy.listen(8080, () => {
+            console.log('API Proxy Server with CORS enabled is listening on port 8080')
+        })
+    }
 
     ses.protocol.registerBufferProtocol('itsl-itslearning-file', (request, callback) => {
         // get image file path
@@ -296,126 +222,19 @@ app.whenReady().then(async () => {
         })
     })
 
-    if (VITE_DEV_SERVER_URL) {
-        const express = await import('express').then(m => m.default)
-        const cors = await import('cors').then(m => m.default)
-        const bodyParser = await import('body-parser').then(m => m.default)
-        const { createProxyMiddleware } = await import('http-proxy-middleware')
-        const proxy = express()
-        proxy.use(bodyParser.urlencoded({ extended: true }));
-        proxy.use(cors())
-        // proxy.use(express.json())
-        proxy.use('*', createProxyMiddleware({
-            target: 'https://sdu.itslearning.com',
-            changeOrigin: true,
-            secure: false,
-            onProxyReq: (proxyReq, req, res) => {
-                console.log('Sending Request to the Target:', req.method, req.url);
-            }
-        }))
-
-        proxy.listen(8080, () => {
-            console.log('API Proxy Server with CORS enabled is listening on port 8080')
-        })
-    }
-    const win = await createWindow()
-
-    win.on('close', (e) => {
-        e.preventDefault()
-        // TODO: have some preferences and follow those
-        require('electron').dialog.showMessageBox(win, {
-            type: 'question',
-            buttons: ['Yes', 'Minimize', 'No'],
-            title: 'Confirm',
-            message: 'Are you sure you want to quit?',
-            icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
-            noLink: true,
-        }).then(result => {
-            if (result.response === 0) {
-                win.close()
-                win.destroy()
-                app.quit()
-            } else if (result.response === 1) {
-                win.hide()
-            } else if (result.response === 2) {
-                e.preventDefault()
-            }
-        }).catch(err => {
-            console.log(err)
-            app.exit(0)
-        })
-    })
-
-    const contextMenu = Menu.buildFromTemplate([
-        {
-            label: 'Show App', click: function () {
-                win.show();
-            }
-        },
-        {
-            label: 'Quit', click: function () {
-                win.close()
-                win.destroy()
-                app.exit(0)
-            }
-        }
-    ]);
-
-    const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
-
-    tray.on('double-click', () => {
-        win.show()
-    })
-
-    tray.setToolTip('itslearning')
-    tray.on('right-click', () => {
-        tray.focus()
-        contextMenu.items[0].enabled = !win.isVisible()
-        tray.setContextMenu(contextMenu)
-        setTimeout(() => {
-            tray.popUpContextMenu(contextMenu)
-        }, 250)
-    })
-
-    const localStorageTheme = await win.webContents.executeJavaScript(`window.localStorage.getItem('theme')`)
-    console.log('localStorageTheme', localStorageTheme)
-    if (localStorageTheme) {
-        const isDarkMode = localStorageTheme === 'dark'
-        nativeTheme.themeSource = isDarkMode ? 'dark' : 'light'
-    }
-    const itslearningWin = new BrowserWindow({
-        parent: win,
-        modal: true,
-        show: false,
-        autoHideMenuBar: true,
-        resizable: false,
-        height: 600,
-        width: 800,
-        // alwaysOnTop: true,
-        darkTheme: false,
-        focusable: true,
-    })
-
-    /*itslearningWin.on('close', (e) => {
-        e.preventDefault()
-        app.exit(0)
-    })*/
-
     // @ts-ignore
     protocol.handle('itsl-itslearning', async (req) => {
-        const regex = /itsl-itslearning:\/\/login\/\?state=damn&code=(.*)/gm;
-        const matches = regex.exec(req.url)
+        // const regex = /itsl-itslearning:\/\/login\/\?state=damn&code=(.*)/gm;
+        const redirectURI = RegexEscape(`${ITSLEARNING_REDIRECT_URI}/?`)
+        const stateCode = RegexEscape(ITSLEARNING_OAUTH_STATE)
+        const states = RegexEscape(`state=${stateCode}&code=`)
+        const escaped = redirectURI + states + '(.*)'
+        const escapedRegex = new RegExp(escaped, 'gm')
+        const matches = escapedRegex.exec(req.url)
         if (matches) {
-            deeplinkingUrl = matches[1]
-            logEverywhere('protocol.handle# setting code to localStorage...')
-            logEverywhere('protocol.handle# ' + 'code ' + deeplinkingUrl)
-            await win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
-
-            logEverywhere('protocol.handle# requesting access_token...')
-            console.log(deeplinkingUrl)
-
-            axios.post('https://sdu.itslearning.com/restapi/oauth2/token', {
-                "grant_type": "authorization_code",
+            const deeplinkingUrl = matches[1]
+            axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+                "grant_type": GrantType.AUTHORIZATION_CODE,
                 "code": deeplinkingUrl,
                 "client_id": ITSLEARNING_CLIENT_ID,
             }, {
@@ -423,105 +242,30 @@ app.whenReady().then(async () => {
                     "Content-Type": "application/x-www-form-urlencoded",
                 }
             }).then(res => {
-                logEverywhere('protocol.handle# setting access_token to localStorage...')
-                logEverywhere('protocol.handle# access_token ' + res.data.access_token)
-                access_token = res.data.access_token
-                win.webContents.executeJavaScript(`window.localStorage.setItem('access_token', '${res.data.access_token}')`)
-                logEverywhere('protocol.handle# setting refresh_token to localStorage...')
-                logEverywhere('protocol.handle# refresh_token ' + res.data.refresh_token)
-                refresh_token = res.data.refresh_token
-                win.webContents.executeJavaScript(`window.localStorage.setItem('refresh_token', '${res.data.refresh_token}')`)
-                win.webContents.executeJavaScript(`window.location.reload()`)
-                itslearningWin.close()
+                const { access_token, refresh_token } = res.data
+                setToken('access_token', access_token)
+                setToken('refresh_token', refresh_token)
+                authWindow?.close()
+                createWindow().then(() => win?.show())
             }).catch(err => {
                 logEverywhereError('protocol.handle# ' + err)
             })
         } else {
-            await itslearningWin.loadURL(req.url)
-            itslearningWin.show()
+            await createAuthWindow()
+            authWindow?.show()
         }
-        win.show()
-        itslearningWin.close()
-        itslearningWin.destroy()
-        // return net.fetch('about:blank')
     })
 
-    let code = await win.webContents.executeJavaScript(`window.localStorage.getItem('code')`) as string || null
-    let access_token = await win.webContents.executeJavaScript(`window.localStorage.getItem('access_token')`) as string || null
-    let refresh_token = await win.webContents.executeJavaScript(`window.localStorage.getItem('refresh_token')`) as string || null
-
-    console.log('code', code)
-    console.log('access_token', access_token)
-    console.log('refresh_token', refresh_token)
-
-    if (access_token && access_token !== 'undefined') {
-        try {
-            await axios.get('https://sdu.itslearning.com/restapi/personal/person/v1', {
-                params: {
-                    'access_token': access_token
-                }
-            })
-        } catch (e) {
-            access_token = null
-            await win.webContents.executeJavaScript(`window.localStorage.removeItem('access_token')`)
-            logEverywhereError('requestValidityOfAccessToken# ' + e)
-        }
-    }
-
-    if (!access_token || access_token === 'undefined') {
-        if (refresh_token && refresh_token !== 'undefined') {
-            try {
-                const { data } = await axios.post('https://sdu.itslearning.com/restapi/oauth2/token', {
-                    "grant_type": "refresh_token",
-                    "refresh_token": refresh_token,
-                    "client_id": ITSLEARNING_CLIENT_ID,
-                }, {
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    }
-                })
-
-                access_token = data.access_token
-                await win.webContents.executeJavaScript(`window.localStorage.setItem('access_token', '${access_token}')`)
-            } catch (e) {
-                access_token = null
-                refresh_token = null
-                logEverywhereError('requestRefreshToken# ' + e)
-            }
-        }
-    }
-
-    if (!access_token || access_token === 'undefined') {
-        itslearningWin.show()
-        itslearningWin.focus()
-        await itslearningWin.loadURL(`https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=${ITSLEARNING_CLIENT_ID}&state=damn&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login`)
-        itslearningWin.webContents.on('did-finish-load', () => {
-            itslearningWin.webContents.send('main-process-message', (new Date).toLocaleString())
-        })
-    } else {
-        await win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${code}')`)
-        await win.webContents.executeJavaScript(`window.localStorage.setItem('access_token', '${access_token}')`)
-        itslearningWin.close()
-        itslearningWin.destroy()
-        win.show()
-    }
-
-    if (itslearningWin) {
-        // redirect to actual login microsoft sso page
-        itslearningWin.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
+    try {
+        await refreshAccessToken()
+        await createWindow()
+        win?.show()
+        // setup interval for refreshing access token
+        setInterval(async () => {
+            await refreshAccessToken()
+        }, 1000 * 60 * 45) // 45 minutes
+    } catch (e) {
+        await createAuthWindow()
+        authWindow?.show()
     }
 })
-
-async function logEverywhere(s: string) {
-    console.log(s)
-    if (win && win.webContents) {
-        await win.webContents.executeJavaScript(`console.log("${s}")`)
-    }
-}
-
-async function logEverywhereError(s: string) {
-    console.error(s)
-    if (win && win.webContents) {
-        await win.webContents.executeJavaScript(`console.error("${s}")`)
-    }
-}

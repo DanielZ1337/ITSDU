@@ -1,8 +1,8 @@
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react"
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
-import {baseUrl} from "@/lib/utils";
-import {Button} from "@/components/ui/button.tsx";
+import { useNavigate } from "react-router-dom";
+import { baseUrl } from "@/lib/utils";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function Root() {
     const [code, setCode] = useState<string>("")
@@ -44,7 +44,7 @@ export default function Root() {
                 lmaoo
             </div>
             <Button data-lmaowtf={count} className={"data-[lmaowtf='10']:bg-pink-800"}
-                    onClick={() => setCount((prev) => prev + 1)}>count: {count}</Button>
+                onClick={() => setCount((prev) => prev + 1)}>count: {count}</Button>
             <button onClick={() => axios.get('http://localhost:8080/api/yes').then(res => {
                 console.log(res)
             })}>
@@ -97,14 +97,14 @@ export default function Root() {
                 <h1>CODE: {code}</h1>
                 <h1>ACCESS_TOKEN: {accessToken}</h1>
             </div>
-            <div className="h-screen"/>
+            <div className="h-screen" />
         </div>
     )
 }
 
 async function refreshAccessToken() {
     const oauthUrl = `${baseUrl}restapi/oauth2/token`
-    const qs = await import ('qs').then(m => m.default)
+    const qs = await import('qs').then(m => m.default)
     const body = qs.stringify({
         "grant_type": "refresh_token",
         "refresh_token": window.localStorage.getItem("refresh_token"),
@@ -116,7 +116,7 @@ async function refreshAccessToken() {
             "Content-Type": "application/x-www-form-urlencoded"
         }
     }).then(res => {
-        const {access_token, refresh_token} = res.data
+        const { access_token, refresh_token } = res.data
         window.localStorage.setItem("access_token", access_token)
         window.localStorage.setItem("refresh_token", refresh_token)
         window.location.reload()
@@ -125,7 +125,7 @@ async function refreshAccessToken() {
 
 async function getAccessToken() {
     const oauthUrl = `${baseUrl}restapi/oauth2/token`
-    const qs = await import ('qs').then(m => m.default)
+    const qs = await import('qs').then(m => m.default)
     const body = qs.stringify({
         "grant_type": "authorization_code",
         "code": window.localStorage.getItem("code"),

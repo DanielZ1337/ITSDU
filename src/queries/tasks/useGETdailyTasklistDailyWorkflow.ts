@@ -1,12 +1,12 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETpersonalTasklistDailyWorkflow,
     GETpersonalTasklistDailyWorkflowApiUrl,
     GETpersonalTasklistDailyWorkflowParams
 } from "@/types/api-types/tasks/GETpersonalTasklistDailyWorkflow";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETpersonalTasklistDailyWorkflow(params: GETpersonalTasklistDailyWorkflowParams, queryConfig?: UseQueryOptions<GETpersonalTasklistDailyWorkflow, Error, GETpersonalTasklistDailyWorkflow, string[]>) {
 
@@ -15,7 +15,7 @@ export default function useGETpersonalTasklistDailyWorkflow(params: GETpersonalT
             ...params
         }), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

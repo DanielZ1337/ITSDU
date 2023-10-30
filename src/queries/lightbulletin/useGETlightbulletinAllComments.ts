@@ -1,7 +1,7 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {TanstackKeys} from '../../types/tanstack-keys';
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import { TanstackKeys } from '../../types/tanstack-keys';
 import {
     GETlightbulletinAllComments,
     GETlightbulletinAllCommentsApiUrl,
@@ -15,7 +15,7 @@ export default function useGETlightbulletinAllComments(params: GETlightbulletinA
             ...params
         }), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

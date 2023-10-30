@@ -1,6 +1,6 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETstarredCourses,
     GETstarredCoursesApiUrl,
@@ -11,7 +11,7 @@ import {
     GETunstarredCoursesApiUrl,
     GETunstarredCoursesParams
 } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All" = "Starred", params: GETstarredCoursesParams | GETunstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses | GETunstarredCourses, Error, GETstarredCourses | GETunstarredCourses, string[]>) {
 
@@ -21,7 +21,7 @@ export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All"
                 ...params
             }), {
                 params: {
-                    "access_token": localStorage.getItem('access_token') || '',
+                    "access_token": await getAccessToken() || '',
                     ...params,
                 }
             });
@@ -32,7 +32,7 @@ export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All"
                 ...params
             }), {
                 params: {
-                    "access_token": localStorage.getItem('access_token') || '',
+                    "access_token": await getAccessToken() || '',
                     ...params,
                 }
             });
@@ -57,7 +57,7 @@ export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All"
                 ...params
             }), {
                 params: {
-                    "access_token": localStorage.getItem('access_token') || '',
+                    "access_token": await getAccessToken() || '',
                     ...params,
                 }
             });

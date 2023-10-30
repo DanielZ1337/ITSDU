@@ -1,8 +1,8 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
-import {GETssoUrl, GETssoUrlApiUrl, GETssoUrlParams} from "@/types/api-types/sso/GETssoUrl.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import { GETssoUrl, GETssoUrlApiUrl, GETssoUrlParams } from "@/types/api-types/sso/GETssoUrl.ts";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETssoUrl(params: GETssoUrlParams, queryConfig?: UseQueryOptions<GETssoUrl, Error, GETssoUrl, string[]>) {
 
@@ -11,7 +11,7 @@ export default function useGETssoUrl(params: GETssoUrlParams, queryConfig?: UseQ
             ...params
         }), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

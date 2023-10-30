@@ -1,7 +1,8 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {POSTmessageAttachment, POSTmessageAttachmentApiUrl} from "@/types/api-types/messages/POSTmessageAttachment.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { POSTmessageAttachment, POSTmessageAttachmentApiUrl } from "@/types/api-types/messages/POSTmessageAttachment.ts";
+import { TanstackKeys } from "@/types/tanstack-keys";
+import { getAccessToken } from "@/lib/utils";
 
 export default function usePOSTmessageAttachment(queryConfig?: UseMutationOptions<POSTmessageAttachment, Error, File[], string[]>) {
 
@@ -12,7 +13,7 @@ export default function usePOSTmessageAttachment(queryConfig?: UseMutationOption
         })
         const res = await axios.post(POSTmessageAttachmentApiUrl(), formData, {
             params: {
-                'access_token': localStorage.getItem('access_token'),
+                'access_token': getAccessToken,
             }
         });
 

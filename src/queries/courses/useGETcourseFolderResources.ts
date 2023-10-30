@@ -1,12 +1,12 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETcourseFolderResources,
     GETcourseFolderResourcesApiUrl,
     GETcourseFolderResourcesParams
 } from "@/types/api-types/courses/GETcourseFolderResources.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETcourseFolderResources(params: GETcourseFolderResourcesParams, queryConfig?: UseQueryOptions<GETcourseFolderResources, Error, GETcourseFolderResources, string[]>) {
 
@@ -15,7 +15,7 @@ export default function useGETcourseFolderResources(params: GETcourseFolderResou
             ...params
         }), {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

@@ -1,13 +1,13 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     PUTlightbulletinNotifications,
     PUTlightbulletinNotificationsApiUrl,
     PUTlightbulletinNotificationsBody,
     PUTlightbulletinNotificationsParams
 } from "@/types/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function usePUTlightbulletinNotifications(params: PUTlightbulletinNotificationsParams, queryConfig?: UseMutationOptions<PUTlightbulletinNotifications, Error, PUTlightbulletinNotificationsBody, string[]>) {
 
@@ -16,7 +16,7 @@ export default function usePUTlightbulletinNotifications(params: PUTlightbulleti
             ...params
         }), body, {
             params: {
-                "access_token": localStorage.getItem('access_token') || '',
+                "access_token": await getAccessToken() || '',
                 ...params,
             }
         });

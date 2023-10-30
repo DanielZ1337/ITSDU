@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import { apiUrl, getAccessToken } from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client'
 import '@/index.css'
 import { createHashRouter, RouterProvider } from 'react-router-dom'
@@ -193,7 +193,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 )
 
 /*setInterval(async () => {
-    const access_token = window.localStorage.getItem('access_token')
+    const access_token = getAccessToken
 
     try {
         axios.post(apiUrl('restApi/keepalive/online/v1'), {
@@ -207,7 +207,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         console.log(e)
     }
 }, 1000 * 60 * 60) // 1 hour*/  // Disabled because it's not working
-
+/* 
 setInterval(async () => {
     // refresh token
     const refresh_token = window.localStorage.getItem('refresh_token')
@@ -239,8 +239,7 @@ setInterval(async () => {
     } else {
         console.log('no refresh token')
     }
-}, 1000 * 60 * 30) // 30 minutes
-
+}, 1000 * 60 * 30) // 30 minutes */
 
 // unread messages notification system
 type UnreadMessages = {
@@ -253,8 +252,8 @@ const unreadMessages: UnreadMessages[] = [
         timestamp: Date.now()
     }
 ]
-setInterval(() => {
-    const access_token = window.localStorage.getItem('access_token')
+setInterval(async () => {
+    const access_token = await getAccessToken()
     axios.get(apiUrl('restapi/personal/instantmessages/messagethreads/unread/count/v1'), {
         params: {
             'access_token': access_token
@@ -286,7 +285,7 @@ setInterval(() => {
     }).catch((err: any) => {
         console.log(err)
     })
-}, 1000 * 15) // 1 minute
+}, 1000 * 15) // 15 seconds
 
 // Remove Preload scripts loading
 postMessage({ payload: 'removeLoading' }, '*')
