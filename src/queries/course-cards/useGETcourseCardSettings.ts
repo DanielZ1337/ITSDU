@@ -1,12 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETcourseCardSettings,
     GETcourseCardSettingsApiUrl,
     GETcourseCardSettingsParams
 } from "@/types/api-types/course-cards/GETcourseCardSettings.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseCardSettings(params: GETcourseCardSettingsParams, queryConfig?: UseQueryOptions<GETcourseCardSettings, Error, GETcourseCardSettings, string[]>) {
 

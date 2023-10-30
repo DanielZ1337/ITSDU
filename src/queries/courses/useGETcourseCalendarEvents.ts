@@ -1,12 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETcourseCalenderEvents,
     GETcourseCalenderEventsApiUrl,
     GETcourseCalenderEventsParams
 } from "@/types/api-types/courses/GETcourseCalenderEvents.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseCalendarEvents(params: GETcourseCalenderEventsParams, queryConfig?: UseQueryOptions<GETcourseCalenderEvents, Error, GETcourseCalenderEvents, string[]>) {
 

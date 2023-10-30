@@ -1,17 +1,15 @@
 /* eslint-disable no-unused-vars */
-import { contextBridge, ipcRenderer } from 'electron'
-import { sendNotifcation } from "./handlers/notifcation-handler.ts";
-import axios from "axios";
+import {contextBridge, ipcRenderer} from 'electron'
+import {sendNotifcation} from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import { apiUrl, getAccessToken } from '../src/lib/utils.ts';
-import { tokenKeys } from './services/auth-service.ts';
+import {store_keys} from './services/auth/types/store_keys.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
 contextBridge.exposeInMainWorld('auth', {
     store: {
-        get: (key: tokenKeys) => ipcRenderer.invoke('itslearning-store:get', key),
-        set: (key: tokenKeys, data: any) => ipcRenderer.invoke('electron-store:set', key, data),
+        get: (key: store_keys) => ipcRenderer.invoke('itslearning-store:get', key),
+        set: (key: store_keys, data: any) => ipcRenderer.invoke('electron-store:set', key, data),
         clear: () => ipcRenderer.invoke('itslearning-store:clear'),
     },
 })
@@ -40,9 +38,7 @@ contextBridge.exposeInMainWorld('app', {
     openExternal: (url: string, sso: boolean = true) => ipcRenderer.invoke('app:openExternal', url, sso),
 })
 
-contextBridge.exposeInMainWorld('itslearning_file_scraping', {
-
-})
+contextBridge.exposeInMainWorld('itslearning_file_scraping', {})
 
 contextBridge.exposeInMainWorld('download', {
     external: async (url: string, filename: string) => {
@@ -96,8 +92,8 @@ declare global {
         },
         auth: {
             store: {
-                get: (key: tokenKeys) => Promise<string>
-                set: (key: tokenKeys, data: any) => Promise<void>
+                get: (key: store_keys) => Promise<string>
+                set: (key: store_keys, data: any) => Promise<void>
                 clear: () => Promise<void>
             }
         }
@@ -206,7 +202,7 @@ function useLoading() {
     }
 }
 
-const { appendLoading, removeLoading } = useLoading()
+const {appendLoading, removeLoading} = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

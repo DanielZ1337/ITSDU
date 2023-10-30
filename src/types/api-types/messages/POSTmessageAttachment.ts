@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import {apiUrl} from "@/lib/utils.ts";
 
 const POSTmessageAttachmentApiEndpoint = 'restapi/personal/instantmessages/attachment/v1'
 

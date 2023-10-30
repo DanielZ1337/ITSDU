@@ -30,7 +30,7 @@ protocol.handle('itsl-itslearning', async (req) => {
                 "Content-Type": "application/x-www-form-urlencoded",
             }
         }).then(res => {
-            const { access_token, refresh_token } = res.data
+            const {access_token, refresh_token} = res.data
             setToken('access_token', access_token)
             setToken('refresh_token', refresh_token)
             authWindow?.close()

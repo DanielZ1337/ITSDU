@@ -1,10 +1,10 @@
-import { apiUrl, getAccessToken } from "@/lib/utils.ts";
+import {apiUrl, getAccessToken} from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client'
 import '@/index.css'
-import { createHashRouter, RouterProvider } from 'react-router-dom'
+import {createHashRouter, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 
 // const Root = React.lazy(() => import("@/routes/root"));
 /*
@@ -46,63 +46,63 @@ import TestSuspense from "./components/test";
 
 const router = createHashRouter([
     {
-        element: <Layout />,
-        errorElement: <ErrorPage />,
+        element: <Layout/>,
+        errorElement: <ErrorPage/>,
         children: [
             {
                 path: "/",
-                element: <Index />,
-                errorElement: <ErrorPage />,
+                element: <Index/>,
+                errorElement: <ErrorPage/>,
                 index: true,
             },
             {
                 path: "/person/:id",
-                element: <SuspenseWrapper><PersonIndex /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><PersonIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/courses",
-                element: <SuspenseWrapper><CoursesIndex /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><CoursesIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/sidebar",
-                element: <Sidebar />,
-                errorElement: <ErrorPage />,
+                element: <Sidebar/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/notifications",
-                element: <SuspenseWrapper><NotificationsIndex /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><NotificationsIndex/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/calendar",
-                element: <SuspenseWrapper><Calendar /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><Calendar/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/course/:id",
-                element: <SuspenseWrapper><CourseLayout /></SuspenseWrapper>,
-                errorElement: <CourseError />,
+                element: <SuspenseWrapper><CourseLayout/></SuspenseWrapper>,
+                errorElement: <CourseError/>,
                 children: [
                     {
-                        element: <SuspenseWrapper><CourseIndex /></SuspenseWrapper>,
+                        element: <SuspenseWrapper><CourseIndex/></SuspenseWrapper>,
                         index: true,
-                        errorElement: <ErrorPage />,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "resources",
-                        errorElement: <ErrorPage />,
+                        errorElement: <ErrorPage/>,
                         children: [
                             {
-                                element: <SuspenseWrapper><CourseRootResources /></SuspenseWrapper>,
-                                errorElement: <ErrorPage />,
+                                element: <SuspenseWrapper><CourseRootResources/></SuspenseWrapper>,
+                                errorElement: <ErrorPage/>,
                                 index: true,
                             },
                             {
                                 path: ":folderId",
-                                element: <SuspenseWrapper><CourseResources /></SuspenseWrapper>,
-                                errorElement: <ErrorPage />,
+                                element: <SuspenseWrapper><CourseResources/></SuspenseWrapper>,
+                                errorElement: <ErrorPage/>,
                             }
                         ]
                     },
@@ -116,64 +116,64 @@ const router = createHashRouter([
                     },
                     {
                         path: "course-information",
-                        element: <SuspenseWrapper><CourseInformation /></SuspenseWrapper>,
+                        element: <SuspenseWrapper><CourseInformation/></SuspenseWrapper>,
                     },
                     {
                         path: "tasks",
-                        element: <SuspenseWrapper><CourseTasks /></SuspenseWrapper>,
+                        element: <SuspenseWrapper><CourseTasks/></SuspenseWrapper>,
                     },
                     {
                         path: "participants",
                         element: <SuspenseWrapper>
-                            <CourseParticipants />
+                            <CourseParticipants/>
                         </SuspenseWrapper>,
                     },
                     {
                         path: "*",
-                        element: <ErrorPage />,
-                        errorElement: <ErrorPage />,
+                        element: <ErrorPage/>,
+                        errorElement: <ErrorPage/>,
                     }
                 ],
             },
             {
                 path: "/querytesting",
-                element: <Querytesting />,
-                errorElement: <ErrorPage />,
+                element: <Querytesting/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/profile",
-                element: <SuspenseWrapper><Profile /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><Profile/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/messages/:id?",
-                element: <SuspenseWrapper><Messages /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
+                element: <SuspenseWrapper><Messages/></SuspenseWrapper>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/contacts/:id",
-                element: <Contact />,
-                errorElement: <ErrorPage />,
+                element: <Contact/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/test",
-                element: <Test />,
-                errorElement: <ErrorPage />,
+                element: <Test/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/test1",
-                element: <Test1 />,
-                errorElement: <ErrorPage />,
+                element: <Test1/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/test2",
-                element: <TestSuspense />,
-                errorElement: <ErrorPage />,
+                element: <TestSuspense/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "*",
-                element: <ErrorPage />,
-                errorElement: <ErrorPage />,
+                element: <ErrorPage/>,
+                errorElement: <ErrorPage/>,
             }
         ]
     },
@@ -183,63 +183,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Providers>
         <SuspenseWrapper max>
             <React.StrictMode>
-                <RouterProvider fallbackElement={<ErrorPage />} future={{
+                <RouterProvider fallbackElement={<ErrorPage/>} future={{
                     v7_startTransition: true,
-                }} router={router} />
-                <ReactQueryDevtools position="left" />
+                }} router={router}/>
+                <ReactQueryDevtools position="left"/>
             </React.StrictMode>
         </SuspenseWrapper>
     </Providers>
 )
-
-/*setInterval(async () => {
-    const access_token = getAccessToken
-
-    try {
-        axios.post(apiUrl('restApi/keepalive/online/v1'), {
-            "access_token": access_token
-        }, {
-            params: {
-                "access_token": access_token
-            }
-        })
-    } catch (e) {
-        console.log(e)
-    }
-}, 1000 * 60 * 60) // 1 hour*/  // Disabled because it's not working
-/* 
-setInterval(async () => {
-    // refresh token
-    const refresh_token = window.localStorage.getItem('refresh_token')
-    if (refresh_token) {
-        try {
-            // @ts-ignore
-            const { data } = await axios.post(apiUrl('restapi/oauth2/token'), {
-                "grant_type": "refresh_token",
-                "refresh_token": refresh_token,
-                "client_id": '10ae9d30-1853-48ff-81cb-47b58a325685',
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-            })
-
-            console.log(data)
-            if (data.access_token) {
-                window.localStorage.setItem('access_token', data.access_token)
-            }
-
-            if (data.refresh_token) {
-                window.localStorage.setItem('refresh_token', data.refresh_token)
-            }
-            window.location.reload()
-        } catch (e) {
-            console.log(e)
-        }
-    } else {
-        console.log('no refresh token')
-    }
-}, 1000 * 60 * 30) // 30 minutes */
 
 // unread messages notification system
 type UnreadMessages = {
@@ -270,8 +221,6 @@ setInterval(async () => {
             unreadMessages.shift()
         }
 
-        console.log(unreadMessages)
-
         // check if there are any unread messages based on the timestamps and the count
         if (unreadMessages[unreadMessages.length - 1].count > 0 && unreadMessages[unreadMessages.length - 1].timestamp - unreadMessages[0].timestamp < 1000 * 60 * 5) {
             if (unreadMessages[unreadMessages.length - 1].count !== unreadMessages[unreadMessages.length - 2].count) {
@@ -288,7 +237,7 @@ setInterval(async () => {
 }, 1000 * 15) // 15 seconds
 
 // Remove Preload scripts loading
-postMessage({ payload: 'removeLoading' }, '*')
+postMessage({payload: 'removeLoading'}, '*')
 
 // Use contextBridge
 window.ipcRenderer.on('main-process-message', (_event, message) => {

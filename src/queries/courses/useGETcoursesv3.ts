@@ -1,8 +1,8 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
-import { GETcoursesv3, GETcoursesv3ApiUrl, GETcoursesv3Params } from "@/types/api-types/courses/GETcoursesv3.ts"
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {GETcoursesv3, GETcoursesv3ApiUrl, GETcoursesv3Params} from "@/types/api-types/courses/GETcoursesv3.ts"
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcoursesv3(params: GETcoursesv3Params, queryConfig?: UseQueryOptions<GETcoursesv3, Error, GETcoursesv3, string[]>) {
 

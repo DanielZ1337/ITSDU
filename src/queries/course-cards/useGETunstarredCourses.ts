@@ -1,12 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETunstarredCourses,
     GETunstarredCoursesApiUrl,
     GETunstarredCoursesParams
 } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETunstarredCourses(params: GETunstarredCoursesParams, queryConfig?: UseQueryOptions<GETunstarredCourses, Error, GETunstarredCourses, string[]>) {
 

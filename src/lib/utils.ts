@@ -1,7 +1,7 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
-import axios, { Method } from "axios";
+import {type ClassValue, clsx} from "clsx"
+import {twMerge} from "tailwind-merge"
+import {useMutation, UseMutationOptions, useQuery, UseQueryOptions} from "@tanstack/react-query";
+import axios, {Method} from "axios";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -93,7 +93,7 @@ export function getRelativeTimeString(
     const divisor = unitIndex ? cutoffs[unitIndex - 1] : 1;
 
     // Intl.RelativeTimeFormat do its magic
-    const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+    const rtf = new Intl.RelativeTimeFormat(lang, {numeric: "auto"});
     return rtf.format(Math.floor(deltaSeconds / divisor), units[unitIndex]);
 }
 

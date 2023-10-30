@@ -1,12 +1,12 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     DELETElightbulletinComment,
     DELETElightbulletinCommentApiUrl,
     DELETElightbulletinCommentParams
 } from "@/types/api-types/lightbulletin/DELETElightbulletinComment.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useDELETElightbulletinComment(params: DELETElightbulletinCommentParams, queryConfig?: UseMutationOptions<DELETElightbulletinComment, Error, DELETElightbulletinCommentParams, string[]>) {
 

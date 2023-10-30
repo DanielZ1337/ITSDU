@@ -1,20 +1,5 @@
-import { ipcMain, nativeTheme } from "electron";
-const Store = require('electron-store');
-
-
-interface ThemeStore {
-    theme: 'light' | 'dark'
-}
-
-// @ts-ignore - gives a wrong type error
-export const themeStore = new Store<ThemeStore>({
-    name: 'itslearning-theme-store',
-    defaults: {
-        theme: nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
-    }
-})
-
-
+import {ipcMain, nativeTheme} from "electron";
+import {themeStore} from "../services/theme/theme-service";
 
 function darkModeToggleHandler() {
     ipcMain.handle('dark-mode:toggle', () => {
@@ -23,6 +8,7 @@ function darkModeToggleHandler() {
         } else {
             nativeTheme.themeSource = 'dark'
         }
+        themeStore.set('theme', nativeTheme.shouldUseDarkColors ? 'dark' : 'light')
         return nativeTheme.shouldUseDarkColors
     })
 }

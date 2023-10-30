@@ -1,12 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETinstantMessagesv3,
     GETinstantMessagesv3ApiUrl,
     GETinstantMessagesv3Params
 } from "@/types/api-types/messages/GETinstantMessagesv3.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesv3(params: GETinstantMessagesv3Params, queryConfig?: UseQueryOptions<GETinstantMessagesv3, Error, GETinstantMessagesv3, string[]>) {
 

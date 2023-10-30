@@ -1,0 +1,1 @@
+export type store_keys = 'access_token' | 'refresh_token'

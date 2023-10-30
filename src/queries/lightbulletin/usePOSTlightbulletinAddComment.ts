@@ -1,5 +1,5 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     POSTlightbulletinAddComment,
     POSTlightbulletinAddCommentApiUrl,
@@ -7,7 +7,7 @@ import {
     POSTlightbulletinAddCommentParams
 } from "@/types/api-types/lightbulletin/POSTlightbulletinAddComment.ts";
 import axios from "axios";
-import { TanstackKeys } from '../../types/tanstack-keys';
+import {TanstackKeys} from '../../types/tanstack-keys';
 
 export default function usePOSTlightbulletinAddComment(params: POSTlightbulletinAddCommentParams, queryConfig?: UseMutationOptions<POSTlightbulletinAddComment, Error, POSTlightbulletinAddCommentBody, string[]>) {
 

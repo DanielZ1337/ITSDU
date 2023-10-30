@@ -1,12 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETcourseLastThreeUpdatedResources,
     GETcourseLastThreeUpdatedResourcesApiUrl,
     GETcourseLastThreeUpdatedResourcesParams
 } from "@/types/api-types/courses/GETcourseLastThreeUpdatedResources.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseLastThreeUpdatedResources(params: GETcourseLastThreeUpdatedResourcesParams, queryConfig?: UseQueryOptions<GETcourseLastThreeUpdatedResources, Error, GETcourseLastThreeUpdatedResources, string[]>) {
 

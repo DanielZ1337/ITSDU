@@ -1,24 +1,24 @@
-import { Calendar as ReactBigCalendar, momentLocalizer } from 'react-big-calendar';
+import {Calendar as ReactBigCalendar, momentLocalizer} from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '@/styles/calendar.css';
 import useGETcalendarEvents from '@/queries/calendar/useGETcalendarEvents';
-import { cn } from "@/lib/utils.ts";
-import { Spinner } from "@nextui-org/spinner";
+import {cn} from "@/lib/utils.ts";
+import {Spinner} from "@nextui-org/spinner";
 import {
     ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Calendar.CalendarEventV2.ts";
-import { convert } from "html-to-text";
+import {convert} from "html-to-text";
 import he from "he";
-import { Button } from "@/components/ui/button.tsx";
-import { useEffect, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {Button} from "@/components/ui/button.tsx";
+import {useEffect, useState} from "react";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
 
 const localizer = momentLocalizer(moment);
 
 export default function Calendar() {
 
-    const { data, isLoading } = useGETcalendarEvents({
+    const {data, isLoading} = useGETcalendarEvents({
         fromDate: new Date(2021, 1),
     }, {
         keepPreviousData: true,
@@ -43,7 +43,7 @@ export default function Calendar() {
             <div className={"relative flex flex-1 flex-col h-full"}>
                 {isLoading && (
                     <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "}>
-                        <Spinner size={"lg"} />
+                        <Spinner size={"lg"}/>
                     </div>
                 )}
                 <ReactBigCalendar
@@ -52,7 +52,7 @@ export default function Calendar() {
                     startAccessor="FromDate"
                     endAccessor="ToDate"
                     titleAccessor={"EventTitle"}
-                    style={{ height: "100vh" }}
+                    style={{height: "100vh"}}
                     onSelectEvent={(event) => {
                         console.log(event)
                     }}
@@ -155,7 +155,7 @@ export default function Calendar() {
     );
 }
 
-function CustomToolBar({ ...props }) {
+function CustomToolBar({...props}) {
 
     //{date, view, views, label, onView, onNavigate, localizer}
 
@@ -180,7 +180,7 @@ function CustomToolBar({ ...props }) {
     )
 }
 
-function EventCard({ event }: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
+function EventCard({event}: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
     return (
         <div className={"flex flex-col p-2 bg-purple-500 rounded border-2 border-purple-800"}>
             <span className={"text-white font-semibold text-sm"}>
@@ -190,7 +190,7 @@ function EventCard({ event }: { event: ItslearningRestApiEntitiesPersonalCalenda
     )
 }
 
-function CustomAgendaView({ ...props }) {
+function CustomAgendaView({...props}) {
     console.log(props)
 
     return (

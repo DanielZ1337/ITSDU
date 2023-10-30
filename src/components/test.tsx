@@ -1,15 +1,12 @@
-import { createMutationFunction, createQueryFunction } from "@/lib/utils";
-import { GETstarredCoursesApiUrl } from "@/types/api-types/course-cards/GETstarredCourses";
-import { GETcurrentUserApiUrl } from "@/types/api-types/person/GETcurrentUser";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import { GETstarredCourses, GETstarredCoursesParams } from '../types/api-types/course-cards/GETstarredCourses';
+import {createMutationFunction, createQueryFunction} from "@/lib/utils";
+import {TanstackKeys} from "@/types/tanstack-keys";
+import {GETstarredCourses, GETstarredCoursesParams} from '../types/api-types/course-cards/GETstarredCourses';
 import {
     PUTcourseFavorite,
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams,
-
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
-import { GETunstarredCoursesApiUrl } from "@/types/api-types/course-cards/GETunstarredCourses";
+import {GETunstarredCoursesApiUrl} from "@/types/api-types/course-cards/GETunstarredCourses";
 
 export default function TestSuspense() {
 
@@ -25,9 +22,9 @@ export default function TestSuspense() {
         TanstackKeys.CourseFavorite
     );
 
-    const { mutate } = usePUTcourseFavorite()
+    const {mutate} = usePUTcourseFavorite()
 
-    const { data, isLoading } = useUnstarredCourses({})
+    const {data, isLoading} = useUnstarredCourses({})
 
     if (isLoading) {
         return <div>Loading...</div>
@@ -44,7 +41,8 @@ export default function TestSuspense() {
                             mutate({
                                 courseId: course.CourseId,
                             })
-                        }}>Favorite</button>
+                        }}>Favorite
+                        </button>
                     </div>
                 ))}
             </div>

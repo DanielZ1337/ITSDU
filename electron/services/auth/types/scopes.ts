@@ -21,7 +21,8 @@ export enum ITSLEARNING_SCOPES_ENUM {
     Tasks = 'Tasks',
     Workload = 'Workload'
 }
-/* 
+
+/*
 
     'Calendar',
     'Children',

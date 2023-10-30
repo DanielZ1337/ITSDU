@@ -1,13 +1,13 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     PUTlightbulletinNotifications,
     PUTlightbulletinNotificationsApiUrl,
     PUTlightbulletinNotificationsBody,
     PUTlightbulletinNotificationsParams
 } from "@/types/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function usePUTlightbulletinNotifications(params: PUTlightbulletinNotificationsParams, queryConfig?: UseMutationOptions<PUTlightbulletinNotifications, Error, PUTlightbulletinNotificationsBody, string[]>) {
 

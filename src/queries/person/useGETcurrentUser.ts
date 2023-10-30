@@ -4,12 +4,13 @@ import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/G
 import { TanstackKeys } from "@/types/tanstack-keys";
 import { getAccessToken } from "@/lib/utils";
 
-export default function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>) {
+export default async function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>) {
+    const access_token = await getAccessToken();
 
-    return useQuery([TanstackKeys.CurrentUser, getAccessToken || ''], async () => {
+    return useQuery([TanstackKeys.CurrentUser, access_token], async () => {
         const res = await axios.get(GETcurrentUserApiUrl(), {
             params: {
-                "access_token": await getAccessToken() || '',
+                "access_token": access_token,
             },
         });
 

@@ -1,7 +1,7 @@
-import { getAccessToken } from "@/lib/utils";
-import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/GETcurrentUser.ts";
+import {getAccessToken} from "@/lib/utils";
+import {GETcurrentUser, GETcurrentUserApiUrl} from "@/types/api-types/person/GETcurrentUser.ts";
 import axios from "axios";
-import { atom } from "jotai";
+import {atom} from "jotai";
 
 //@ts-ignore
 export const userAtom = atom<GETcurrentUser | null>(async () => {

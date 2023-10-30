@@ -1,19 +1,21 @@
-import { app, BrowserWindow, protocol, session } from "electron"
+import { app, BrowserWindow, Menu, protocol, session, Tray } from "electron"
 // @ts-ignore
-import RegexEscape from "regex-escape"
 import path from 'path'
 import {
-    getItslearningOAuthUrl, ITSLEARNING_CLIENT_ID, ITSLEARNING_OAUTH_STATE,
-    ITSLEARNING_OAUTH_TOKEN_URL, ITSLEARNING_REDIRECT_URI,
-    ITSLEARNING_URL,
-    refreshAccessToken, setToken
-} from "./services/auth-service"
-import darkModeHandlerInitializer, { themeStore } from "./handlers/dark-mode-handlers.ts";
+    AuthService,
+    getItslearningOAuthUrl,
+    ITSLEARNING_CLIENT_ID,
+    ITSLEARNING_OAUTH_TOKEN_URL,
+} from "./services/auth/auth-service.ts"
+import darkModeHandlerInitializer from "./handlers/dark-mode-handlers.ts";
 import appHandlerInitializer from "./handlers/app-handler.ts";
 import initAuthIpcHandlers from "./handlers/auth-handler.ts";
 import axios from "axios";
-import { GrantType } from "./services/grant_type.ts";
+import { GrantType } from "./services/auth/types/grant_type.ts";
 import * as fs from "fs";
+import { themeStore } from "./services/theme/theme-service.ts";
+import { WindowOptionsService } from './services/window-options/window-options-service';
+import { startProxyDevServer } from "./utils/proxy-dev-server.ts";
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -27,8 +29,9 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 darkModeHandlerInitializer()
 appHandlerInitializer()
 initAuthIpcHandlers()
-
+const authService = AuthService.getInstance()
 const startUpTheme = themeStore.get('theme')
+
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'itsl-itslearning-file',
@@ -39,7 +42,9 @@ protocol.registerSchemesAsPrivileged([{
 }]);
 
 // to load the application, setup and stuff
-async function createWindow() {
+async function createMainWindow() {
+    const windowService = new WindowOptionsService()
+    const windowOptions = windowService.getWindowOptions()
     win = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         webPreferences: {
@@ -47,14 +52,36 @@ async function createWindow() {
             nodeIntegration: true,
             // devTools: process.env.NODE_ENV === 'development',
         },
-        show: false,
         autoHideMenuBar: true,
-        width: 1280,
-        height: 720,
         alwaysOnTop: false,
         minHeight: 600,
         minWidth: 800,
         darkTheme: startUpTheme === 'dark',
+        ...windowOptions,
+    })
+
+    if (windowOptions.maximized) {
+        win.maximize()
+    }
+
+    win.on('resize', () => {
+        if (!win) return
+        windowService.saveWindowOptions(win)
+    })
+
+    win.on('maximize', () => {
+        if (!win) return
+        windowService.saveWindowOptions(win)
+    })
+
+    win.on('unmaximize', () => {
+        if (!win) return
+        windowService.saveWindowOptions(win)
+    })
+
+    win.on('move', () => {
+        if (!win) return
+        windowService.saveWindowOptions(win)
     })
 
 
@@ -73,7 +100,6 @@ async function createWindow() {
 async function createAuthWindow() {
     authWindow = new BrowserWindow({
         // icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
-        show: false,
         autoHideMenuBar: true,
         resizable: false,
         height: 600,
@@ -113,7 +139,7 @@ app.on('activate', () => {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow()
+        createMainWindow()
     }
 })
 
@@ -171,30 +197,11 @@ function logEverywhereError(s: string) {
 }
 
 app.whenReady().then(async () => {
-    const ses = session.defaultSession
     if (VITE_DEV_SERVER_URL) {
-        const express = await import('express').then(m => m.default)
-        const cors = await import('cors').then(m => m.default)
-        const bodyParser = await import('body-parser').then(m => m.default)
-        const { createProxyMiddleware } = await import('http-proxy-middleware')
-        const proxy = express()
-        proxy.use(bodyParser.urlencoded({ extended: true }));
-        proxy.use(cors())
-        // proxy.use(express.json())
-        proxy.use('*', createProxyMiddleware({
-            target: ITSLEARNING_URL,
-            changeOrigin: true,
-            secure: false,
-            onProxyReq: (proxyReq, req, res) => {
-                console.log('Sending Request to the Target:', req.method, req.url);
-            }
-        }))
-
-        proxy.listen(8080, () => {
-            console.log('API Proxy Server with CORS enabled is listening on port 8080')
-        })
+        await startProxyDevServer()
     }
 
+    const ses = session.defaultSession
     ses.protocol.registerBufferProtocol('itsl-itslearning-file', (request, callback) => {
         // get image file path
         const url = request.url.replace('itsl-itslearning-file://', '')
@@ -224,48 +231,99 @@ app.whenReady().then(async () => {
 
     // @ts-ignore
     protocol.handle('itsl-itslearning', async (req) => {
-        // const regex = /itsl-itslearning:\/\/login\/\?state=damn&code=(.*)/gm;
-        const redirectURI = RegexEscape(`${ITSLEARNING_REDIRECT_URI}/?`)
-        const stateCode = RegexEscape(ITSLEARNING_OAUTH_STATE)
-        const states = RegexEscape(`state=${stateCode}&code=`)
-        const escaped = redirectURI + states + '(.*)'
-        const escapedRegex = new RegExp(escaped, 'gm')
-        const matches = escapedRegex.exec(req.url)
-        if (matches) {
-            const deeplinkingUrl = matches[1]
+        const code = authService.getAuthCodeFromURI(req.url);
+        if (code) {
             axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
                 "grant_type": GrantType.AUTHORIZATION_CODE,
-                "code": deeplinkingUrl,
+                "code": code,
                 "client_id": ITSLEARNING_CLIENT_ID,
             }, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 }
-            }).then(res => {
+            }).then(async res => {
                 const { access_token, refresh_token } = res.data
-                setToken('access_token', access_token)
-                setToken('refresh_token', refresh_token)
+                authService.setToken('access_token', access_token)
+                authService.setToken('refresh_token', refresh_token)
                 authWindow?.close()
-                createWindow().then(() => win?.show())
-            }).catch(err => {
+                await createMainWindow()
+            }).catch(async err => {
+                await createAuthWindow()
                 logEverywhereError('protocol.handle# ' + err)
             })
         } else {
             await createAuthWindow()
-            authWindow?.show()
         }
     })
 
     try {
-        await refreshAccessToken()
-        await createWindow()
-        win?.show()
+        await authService.refreshAccessToken()
+        await createMainWindow()
         // setup interval for refreshing access token
         setInterval(async () => {
-            await refreshAccessToken()
+            await authService.refreshAccessToken()
         }, 1000 * 60 * 45) // 45 minutes
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Show App', click: function (e) {
+                    win?.show();
+                    e.enabled = false
+                }
+            },
+            {
+                label: 'Quit', click: function () {
+                    win?.close()
+                    win?.destroy()
+                    app?.exit(0)
+                }
+            }
+        ]);
+
+        win?.on('close', (e) => {
+            e.preventDefault()
+            if (!win) return
+            // TODO: have some preferences and follow those
+            require('electron').dialog.showMessageBox(win, {
+                type: 'question',
+                buttons: ['Yes', 'Minimize', 'No'],
+                title: 'Confirm',
+                message: 'Are you sure you want to quit?',
+                icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+                noLink: true,
+            }).then(result => {
+                if (result.response === 0) {
+                    win?.close()
+                    win?.destroy()
+                    app.quit()
+                } else if (result.response === 1) {
+                    win?.hide()
+                    contextMenu.items[0].enabled = true
+                } else if (result.response === 2) {
+                    e.preventDefault()
+                }
+            }).catch(err => {
+                console.log(err)
+                app.exit(0)
+            })
+        })
+
+        const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
+
+        tray.on('double-click', () => {
+            win?.show()
+        })
+
+        tray.setToolTip('itslearning')
+        tray.on('right-click', () => {
+            tray.focus()
+            console.log(win?.isVisible())
+            contextMenu.items[0].enabled = !win?.isVisible()
+            tray.setContextMenu(contextMenu)
+            setTimeout(() => {
+                tray.popUpContextMenu(contextMenu)
+            }, 250)
+        })
     } catch (e) {
         await createAuthWindow()
-        authWindow?.show()
     }
 })
