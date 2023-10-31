@@ -3,7 +3,7 @@ import {cn} from "@/lib/utils";
 
 
 interface UnreadNotificationIndicatorProps extends React.HTMLAttributes<HTMLSpanElement> {
-    read: boolean
+    read?: boolean
     ping?: boolean
 }
 

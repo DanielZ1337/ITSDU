@@ -3,7 +3,7 @@ import {ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon} from
 import {useEffect, useState} from 'react'
 import {Input} from './ui/input'
 import {useLocation, useNavigate, useNavigation, useSearchParams} from 'react-router-dom'
-import SettingsDropdown from "@/components/settings-dropdown.tsx";
+import SettingsDropdown from "@/components/settings/settings-dropdown.tsx";
 
 export default function BrowserNav() {
     const navigate = useNavigate()

@@ -8,7 +8,7 @@ import {
     DialogPortal,
     DialogTitle,
     DialogTrigger
-} from "./ui/dialog"
+} from "../ui/dialog.tsx"
 import {useState} from "react";
 
 export default function SettingsModal() {

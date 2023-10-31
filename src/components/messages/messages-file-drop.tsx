@@ -1,65 +1,20 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent} from 'react';
 import {cn} from "@/lib/utils.ts";
 import {UploadIcon} from "lucide-react";
 import {Progress} from "@/components/ui/progress.tsx";
+import useFileDrop from "@/hooks/useFileDrop.ts";
 
-export function FileDrop({files, setFiles, disabled, uploadProgress}: {
+export function MessagesFileDrop({files, setFiles, disabled, uploadProgress}: {
     files: File[] | null,
     // eslint-disable-next-line no-unused-vars
     setFiles: (files: File[]) => void
     disabled?: boolean
     uploadProgress: number
 }) {
-    const [isOver, setIsOver] = useState(false);
-
-    const handleDragOver = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(true);
-    };
-
-    const handleDragLeave = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(false);
-    };
-
-    const handleDrop = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(false);
-
-        handleFiles(event);
-    }
-
-    const handleFiles = (event: ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLButtonElement>) => {
-        let newFiles: File[] = []
-        if (event.type === 'drop') {
-            event = event as React.DragEvent<HTMLButtonElement>;
-            newFiles = Array.from(event.dataTransfer.files);
-        } else if (event.target instanceof HTMLInputElement) {
-            newFiles = Array.from(event.target.files || []);
-        }
-
-        if (files !== null) {
-            setFiles([...files, ...newFiles]);
-        } else {
-            setFiles(newFiles);
-        }
-
-        /*// Use FileReader to read file content
-        files?.forEach((file) => {
-            const reader = new FileReader();
-
-            reader.onloadend = () => {
-                console.log(reader.result);
-            };
-
-            reader.onerror = () => {
-                console.error('There was an issue reading the file.');
-            };
-
-            reader.readAsDataURL(file);
-            return reader;
-        });*/
-    }
+    const {handleDrop, handleFiles, handleDragOver, isOver, handleDragLeave} = useFileDrop({
+        files,
+        setFiles
+    })
 
     return (
         <button

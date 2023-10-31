@@ -12,7 +12,7 @@ import {buttonVariants} from "@/components/ui/button.tsx";
 import {MoreVertical} from "lucide-react";
 import {ErrorBoundary} from "react-error-boundary";
 import {Suspense, useCallback, useEffect, useState} from "react";
-import SettingsDropdownUserFullname from "@/components/settings-dropdown-user-fullname.tsx";
+import SettingsDropdownUserFullname from "@/components/settings/settings-dropdown-user-fullname.tsx";
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "next-themes";
 import SettingsModal from "./settings-modal";

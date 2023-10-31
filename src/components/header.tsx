@@ -1,7 +1,7 @@
 import {Link, NavLink} from "react-router-dom"
 import {cn} from "@/lib/utils.ts";
 import {Button} from "@/components/ui/button.tsx";
-import MessagesDropdown from "@/components/messages/messages-dropdown.tsx";
+import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown.tsx";
 import {Suspense} from "react";
 import {MessageCircle} from "lucide-react";
 import {AiOutlineNotification} from "react-icons/ai";

@@ -1,9 +1,9 @@
 import {Dialog, DialogContent, DialogFooter, DialogTrigger} from "@/components/ui/dialog.tsx";
 import {AiOutlineLink} from "react-icons/ai";
 import {Loader2, X} from "lucide-react";
-import {FileDrop} from "@/file-drop.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {DialogClose} from "@radix-ui/react-dialog";
+import {MessagesFileDrop} from "@/components/messages/messages-file-drop.tsx";
 
 
 export default function MessagesChatInputFileDialog({
@@ -32,8 +32,8 @@ export default function MessagesChatInputFileDialog({
                 </button>
             </DialogTrigger>
             <DialogContent className={"p-10 pb-6 flex flex-col gap-4"}>
-                <FileDrop setFiles={setFiles} files={files} disabled={isSendingFile}
-                          uploadProgress={uploadProgress}/>
+                <MessagesFileDrop setFiles={setFiles} files={files} disabled={isSendingFile}
+                                  uploadProgress={uploadProgress}/>
                 <div
                     className={"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] p-1"}>
                     {files?.map((file, idx) => (

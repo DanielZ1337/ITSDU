@@ -20,16 +20,16 @@ export function PersonRelationships({personId, showTitle = true}: { personId: nu
     return (
         <div className="px-4 py-2">
             {showTitle && <h2 className="font-bold text-2xl text-balance text-foreground">Your relationships</h2>}
-            <span className="text-foreground text-sm mt-1 space-y-4">
+            <ul className="mt-1 space-y-4">
                 {relations.map((relation, idx) => (
-                    <ul key={idx} className={"text-balance"}>
+                    <li key={idx} className={"text-foreground text-sm text-balance"}>
                         {relation.Text}
                         {relation.Items?.map((item, idx) => (
                             <li className={"text-foreground/50 my-1 font-normal"} key={idx}>{item}</li>
                         ))}
-                    </ul>
+                    </li>
                 ))}
-            </span>
+            </ul>
         </div>
     )
 }
