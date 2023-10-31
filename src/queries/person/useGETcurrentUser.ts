@@ -10,7 +10,7 @@ export default async function useGETcurrentUser(queryConfig?: UseQueryOptions<GE
     return useQuery([TanstackKeys.CurrentUser, access_token], async () => {
         const res = await axios.get(GETcurrentUserApiUrl(), {
             params: {
-                "access_token": access_token,
+                "access_token": await getAccessToken(),
             },
         });
 
