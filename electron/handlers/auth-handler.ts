@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import { AuthService } from "../services/auth/auth-service.ts";
 import { store_keys } from '../services/auth/types/store_keys.ts';
 import { download } from "electron-dl";
@@ -44,7 +44,6 @@ function openExternalHandler() {
         }
 
         // open the url with the default browser
-        const shell = await import('electron').then(m => m.shell)
         await shell.openExternal(url)
     })
 }
@@ -64,7 +63,6 @@ function openShellHandler() {
 
     ipcMain.handle('app:openShell', async (_, path) => {
         console.log(path)
-        const shell = await import('electron').then(m => m.shell)
         await shell.openPath(path)
     })
 }
@@ -72,7 +70,6 @@ function openShellHandler() {
 function openItemHandler() {
     ipcMain.handle('app:openItem', async (_, path) => {
         console.log(path)
-        const shell = await import('electron').then(m => m.shell)
         await shell.openPath(path)
     })
 }
