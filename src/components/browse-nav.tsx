@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button'
-import { ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { Input } from './ui/input'
-import { useLocation, useNavigate, useNavigation, useSearchParams } from 'react-router-dom'
+import {Button} from '@/components/ui/button'
+import {ArrowLeftSquareIcon, ArrowRightSquareIcon, HomeIcon, RefreshCwIcon} from 'lucide-react'
+import {useEffect, useState} from 'react'
+import {Input} from './ui/input'
+import {useLocation, useNavigate, useNavigation, useSearchParams} from 'react-router-dom'
 import SettingsDropdown from "@/components/settings-dropdown.tsx";
 
 export default function BrowserNav() {
@@ -83,25 +83,25 @@ export default function BrowserNav() {
         <div className='flex w-full py-4 px-2 justify-center items-center gap-1 border-b-foreground-50 border-b-2'>
             {/* Back button */}
             <Button variant={"ghost"} size={"icon"}
-                onClick={() => navigate(-1)}><ArrowLeftSquareIcon /></Button>
+                    onClick={() => navigate(-1)}><ArrowLeftSquareIcon/></Button>
             {/* Forward button */}
             <Button variant={"ghost"} size={"icon"}
-                onClick={() => navigate(1)}><ArrowRightSquareIcon /></Button>
+                    onClick={() => navigate(1)}><ArrowRightSquareIcon/></Button>
             {/* Reload button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon /></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate(0)}><RefreshCwIcon/></Button>
             {/* Home button */}
-            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon /></Button>
+            <Button variant={"ghost"} size={"icon"} onClick={() => navigate('/')}><HomeIcon/></Button>
             {/* Address bar */}
             <form onSubmit={(e) => {
                 e.preventDefault()
                 navigate(address)
             }} className='w-full px-2'>
                 <Input className='w-full' type="text" value={address}
-                    onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
-                    onChange={(e) => setAddress(e.target.value)} />
+                       onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
+                       onChange={(e) => setAddress(e.target.value)}/>
             </form>
             {/*    more settings dropdown*/}
-            <SettingsDropdown />
+            <SettingsDropdown/>
         </div>
     )
 }

@@ -7,19 +7,19 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { cn } from "@/lib/utils.ts";
-import { buttonVariants } from "@/components/ui/button.tsx";
-import { MoreVertical } from "lucide-react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import {cn} from "@/lib/utils.ts";
+import {buttonVariants} from "@/components/ui/button.tsx";
+import {MoreVertical} from "lucide-react";
+import {ErrorBoundary} from "react-error-boundary";
+import {Suspense, useCallback, useEffect, useState} from "react";
 import SettingsDropdownUserFullname from "@/components/settings-dropdown-user-fullname.tsx";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "next-themes";
+import {useNavigate} from "react-router-dom";
+import {useTheme} from "next-themes";
 import SettingsModal from "./settings-modal";
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
-    const { theme, setTheme } = useTheme()
+    const {theme, setTheme} = useTheme()
     // eslint-disable-next-line no-unused-vars
     const [version, setVersion] = useState<string>()
 
@@ -63,7 +63,7 @@ export default function SettingsDropdown() {
                 variant: 'ghost',
                 size: 'icon'
             }))}>
-                <MoreVertical />
+                <MoreVertical/>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -78,19 +78,19 @@ export default function SettingsDropdown() {
                 <DropdownMenuLabel className={"font-normal"}>
                     <ErrorBoundary fallback={<div className={"animate-pulse"}>Loading...</div>}>
                         <Suspense fallback={<div className={"animate-pulse"}>Loading...</div>}>
-                            <SettingsDropdownUserFullname />
+                            <SettingsDropdownUserFullname/>
                         </Suspense>
                     </ErrorBoundary>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem onClick={handleDarkModeToggle}>
                     <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                     <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                    <SettingsModal />
+                    <SettingsModal/>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem
                     onClick={() => {
                         window.auth.store.clear().then(() => {

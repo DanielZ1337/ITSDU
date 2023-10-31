@@ -5,12 +5,12 @@ import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderRes
 import {ErrorBoundary} from "react-error-boundary";
 import ErrorPage from "@/error-page.tsx";
 import {useToast} from "@/components/ui/use-toast.ts";
-import {LearningToolIdTypes} from "@/types/api-types/extra/learning-tool-id-types.ts";
 import ReactLoading from "react-loading";
 import '@/styles/3-dots-loading.css'
 import {
     ItsolutionsItslUtilsConstantsElementType
 } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
+import {isResourceFile} from "@/types/api-types/extra/learning-tool-id-types";
 
 type NestedItem = {
     [key: string]: boolean
@@ -67,7 +67,7 @@ export default function RecursiveFileExplorer({courseId, folderId, isOpen}: {
                         {/* rendering files */}
                         {/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
                         {isOpen && parent.ElementType !== ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
-                            parent.LearningToolId === LearningToolIdTypes.PDF ? (
+                            isResourceFile(parent) ? (
                                 <button className={"inline-flex gap-2"}
                                         onClick={async () => {
                                             toast({

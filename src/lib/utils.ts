@@ -79,8 +79,9 @@ export function getRelativeTimeString(
     // Get the amount of seconds between the given date and now
     const deltaSeconds = Math.round((timeMs - Date.now()) / 1000);
 
+    const dayInSeconds = 86400;
     // Array reprsenting one minute, hour, day, week, month, etc in seconds
-    const cutoffs = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
+    const cutoffs = [60, dayInSeconds / 24, dayInSeconds, dayInSeconds * 7, dayInSeconds * 30, dayInSeconds * 365, Infinity];
 
     // Array equivalent to the above but in the string representation of the units
     const units: Intl.RelativeTimeFormatUnit[] = ["second", "minute", "hour", "day", "week", "month", "year"];

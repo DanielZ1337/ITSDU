@@ -1,12 +1,12 @@
-import { ITSLEARNING_URL } from '../services/auth/auth-service'
+import {ITSLEARNING_URL} from '../services/auth/auth-service'
 
 export async function startProxyDevServer() {
     const express = await import('express').then(m => m.default)
     const cors = await import('cors').then(m => m.default)
     const bodyParser = await import('body-parser').then(m => m.default)
-    const { createProxyMiddleware } = await import('http-proxy-middleware')
+    const {createProxyMiddleware} = await import('http-proxy-middleware')
     const proxy = express()
-    proxy.use(bodyParser.urlencoded({ extended: true }));
+    proxy.use(bodyParser.urlencoded({extended: true}));
     proxy.use(cors())
     // proxy.use(express.json())
     proxy.use('*', createProxyMiddleware({

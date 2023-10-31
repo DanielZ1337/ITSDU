@@ -31,7 +31,7 @@ import {
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
 import {cn} from "@/lib/utils.ts";
 import {Link, useMatch, useNavigate} from "react-router-dom"
-import {LearningToolIdTypes} from "@/types/api-types/extra/learning-tool-id-types.ts";
+import {isResourceFile} from "@/types/api-types/extra/learning-tool-id-types";
 
 export function createColumns(isLoading: boolean, root: boolean): ColumnDef<ItslearningRestApiEntitiesPersonalCourseCourseResource>[] {
 
@@ -40,6 +40,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
             id: "select",
             header: ({table}) => (
                 <Checkbox
+                    disabled={isLoading}
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
                     aria-label="Select all"
@@ -174,7 +175,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             >
                                 View content
                             </DropdownMenuItem>
-                            {resource.LearningToolId === LearningToolIdTypes.PDF && (
+                            {isResourceFile(resource) && (
                                 <DropdownMenuItem
                                     onClick={(e) => {
                                         e.stopPropagation()

@@ -1,5 +1,15 @@
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { useState } from "react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger
+} from "./ui/dialog"
+import {useState} from "react";
 
 export default function SettingsModal() {
     const [name, setName] = useState("");
@@ -29,9 +39,9 @@ export default function SettingsModal() {
     };
 
     return (
-        <Dialog >
+        <Dialog>
             <DialogTrigger>Open Settings</DialogTrigger>
-            <DialogOverlay />
+            <DialogOverlay/>
             <DialogPortal>
                 <DialogContent>
                     <DialogHeader>
@@ -40,16 +50,17 @@ export default function SettingsModal() {
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="name">Name:</label>
-                        <input type="text" id="name" name="name" value={name} onChange={handleNameChange} />
+                        <input type="text" id="name" name="name" value={name} onChange={handleNameChange}/>
                         <label htmlFor="email">Email:</label>
-                        <input type="email" id="email" name="email" value={email} onChange={handleEmailChange} />
+                        <input type="email" id="email" name="email" value={email} onChange={handleEmailChange}/>
                         <label htmlFor="theme">Theme:</label>
                         <select id="theme" name="theme" value={theme} onChange={handleThemeChange}>
                             <option value="light">Light</option>
                             <option value="dark">Dark</option>
                         </select>
                         <label htmlFor="desktopNotifications">Desktop Notifications:</label>
-                        <input type="checkbox" id="desktopNotifications" name="desktopNotifications" checked={desktopNotifications} onChange={handleDesktopNotificationsChange} />
+                        <input type="checkbox" id="desktopNotifications" name="desktopNotifications"
+                               checked={desktopNotifications} onChange={handleDesktopNotificationsChange}/>
                     </form>
                     <DialogFooter>
                         <button>Cancel</button>

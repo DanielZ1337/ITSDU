@@ -1,6 +1,7 @@
 import {DownloadIcon, Search} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {cn, isMacOS} from "@/lib/utils";
+import {isResourceFile} from "@/types/api-types/extra/learning-tool-id-types";
 import {Skeleton} from "@/components/ui/skeleton";
 import {
     CommandDialog,
@@ -50,7 +51,7 @@ export default function SearchResourcesDialog({courseId}: {
                     const elementId = Number(selected.dataset.elementid)
                     const resource = resources?.Resources.EntityArray.find((resource) => resource.ElementId === elementId)
                     if (resource) {
-                        if (isFile(resource.Title)) {
+                        if (isResourceFile(resource)) {
                             toast({
                                 title: 'Downloading...',
                                 description: resource.Title,
@@ -190,7 +191,7 @@ export default function SearchResourcesDialog({courseId}: {
                                                 className="line-clamp-1 break-all truncate"
                                             >{resource.Title}</span>
                                             <div className="flex">
-                                                {isFile(resource.Title) && (
+                                                {isResourceFile(resource) && (
                                                     <Button
                                                         variant={"outline"}
                                                         size={"icon"}

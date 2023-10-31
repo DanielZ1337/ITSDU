@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import {apiUrl} from "@/lib/utils.ts";
 
 const PATCHrestoreDeletedMessageApiEndpoint = 'restapi/personal/instantmessages/{instantMessageId}/restore/v1'
 

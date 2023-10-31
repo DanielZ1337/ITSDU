@@ -1,11 +1,11 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {useMutation, UseMutationOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {
     PATCHrestoreDeletedMessageApiUrl,
     PATCHrestoreDeletedMessageParams
 } from "@/types/api-types/messages/PATCHrestoreDeletedMessage.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import { getAccessToken } from "@/lib/utils";
+import {TanstackKeys} from "@/types/tanstack-keys";
+import {getAccessToken} from "@/lib/utils";
 
 export default function usePATCHrestoreDeletedMessage(queryConfig?: UseMutationOptions<undefined, Error, PATCHrestoreDeletedMessageParams, string[]>) {
 

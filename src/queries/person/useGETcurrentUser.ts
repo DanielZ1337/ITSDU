@@ -1,8 +1,8 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { GETcurrentUser, GETcurrentUserApiUrl } from "@/types/api-types/person/GETcurrentUser.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import { getAccessToken } from "@/lib/utils";
+import {GETcurrentUser, GETcurrentUserApiUrl} from "@/types/api-types/person/GETcurrentUser.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
+import {getAccessToken} from "@/lib/utils";
 
 export default async function useGETcurrentUser(queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>) {
     const access_token = await getAccessToken();
