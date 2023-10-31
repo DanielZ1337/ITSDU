@@ -44,5 +44,6 @@ export enum TanstackKeys {
     SsoUrl = "ssoUrl",
     PersonalFollowUpTasks = "personalFollowUpTasks",
     PersonalTasks = "personalTasks",
-    PersonalTasklistDailyWorkflow = "personalTasklistDailyWorkflow"
+    PersonalTasklistDailyWorkflow = "personalTasklistDailyWorkflow",
+    PATCHrestoreDeletedMessage = "PATCHrestoreDeletedMessage",
 }
