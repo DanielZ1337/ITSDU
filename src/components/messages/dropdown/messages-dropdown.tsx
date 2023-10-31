@@ -7,22 +7,22 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {MessageCircle} from "lucide-react";
-import {Separator} from "@/components/ui/separator.tsx";
-import {cn} from "@/lib/utils.ts";
-import {ScrollShadow} from "@nextui-org/react";
+import { Button } from "@/components/ui/button.tsx";
+import { ArrowRightIcon, MessageCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator.tsx";
+import { cn } from "@/lib/utils.ts";
+import { ScrollShadow } from "@nextui-org/react";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
-import {useInView} from "react-intersection-observer";
-import {Fragment, useEffect} from "react";
+import { useInView } from "react-intersection-observer";
+import { Fragment, useEffect } from "react";
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
-import {useNavigate} from "react-router-dom";
-import {currentChatAtom} from "@/atoms/current-chat.ts";
-import {useAtom} from "jotai";
+import { Link, useNavigate } from "react-router-dom";
+import { currentChatAtom } from "@/atoms/current-chat.ts";
+import { useAtom } from "jotai";
 import usePUTinstantMessageThreadUpdateIsRead
     from '../../../queries/messages/usePUTinstantMessageThreadUpdateIsRead.ts';
-import {useQueryClient} from "@tanstack/react-query";
-import {TanstackKeys} from "@/types/tanstack-keys.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import { TanstackKeys } from "@/types/tanstack-keys.ts";
 import MessagesDropdownFallback from "./fallbacks/messages-dropdown-fallback.tsx";
 import MessageDropdownItem from "@/components/messages/dropdown/messages-dropdown-item.tsx";
 import MessagesDropdownNoMessages from "@/components/messages/dropdown/messages-dropdown-no-messages.tsx";
@@ -33,15 +33,17 @@ import MessagesDropdownHeader from "@/components/messages/dropdown/messages-drop
 
 export default function MessagesDropdown() {
     const navigate = useNavigate()
-    const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETinstantMessagesv2({
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETinstantMessagesv2({
         maxThreadCount: 15,
         maxMessages: 9,
         threadPage: 0
+    }, {
+        suspense: true
     })
 
-    const {mutate: markAsRead, isLoading} = usePUTinstantMessageThreadUpdateIsRead()
+    const { mutate: markAsRead, isLoading } = usePUTinstantMessageThreadUpdateIsRead()
 
-    const {ref, inView} = useInView();
+    const { ref, inView } = useInView();
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
@@ -63,9 +65,9 @@ export default function MessagesDropdown() {
                     size={"icon"}
                     className={"shrink-0 relative"}
                 >
-                    <MessageCircle/>
+                    <MessageCircle />
                     {unreadMessages && unreadMessages.length > 0 && (
-                        <UnreadNotificationsPingIndicator amount={unreadMessages.length}/>
+                        <UnreadNotificationsPingIndicator amount={unreadMessages.length} />
                     )}
                 </Button>
             </DropdownMenuTrigger>
@@ -80,9 +82,9 @@ export default function MessagesDropdown() {
                         })
 
                         queryClient.invalidateQueries([TanstackKeys.Messagesv2])
-                    }} threads={threads} total={total}/>
+                    }} threads={threads} total={total} />
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     {!threads && (
                         <ScrollShadow
@@ -90,7 +92,7 @@ export default function MessagesDropdown() {
                             <div className="pr-2 pb-2">
                                 {[...Array(10)].map((_, idx) => (
                                     <Fragment key={idx}>
-                                        <MessagesDropdownFallback hideSeparator={idx === 9}/>
+                                        <MessagesDropdownFallback hideSeparator={idx === 9} />
                                     </Fragment>
                                 ))}
                             </div>
@@ -100,7 +102,7 @@ export default function MessagesDropdown() {
                         <ScrollShadow
                             className={"h-72 w-full my-2 px-2 scrollbar overflow-x-hidden hover:scrollbar-thumb-foreground/15 active:scrollbar-thumb-foreground/10 scrollbar-thumb-foreground/20 scrollbar-w-2 scrollbar-thumb-rounded-full"}>
                             {threads.length === 0 && (
-                                <MessagesDropdownNoMessages/>
+                                <MessagesDropdownNoMessages />
                             )}
                             {threads && threads.length > 0 && (
                                 threads.map((thread, idx) => (
@@ -111,20 +113,20 @@ export default function MessagesDropdown() {
                                                 setCurrentChat(thread.InstantMessageThreadId)
                                             }}
                                         >
-                                            <MessageDropdownItem thread={thread}/>
+                                            <MessageDropdownItem thread={thread} />
                                         </DropdownMenuItem>
                                         <Separator
-                                            className={cn("my-2", idx === threads.length - 1 && "hidden")}/>
+                                            className={cn("my-2", idx === threads.length - 1 && "hidden")} />
                                     </div>
                                 ))
                             )}
                             {isFetchingNextPage && (
-                                <MessagesDropdownInfiniteFallback/>
+                                <MessagesDropdownInfiniteFallback />
                             )}
                             {!hasNextPage && (
-                                <MessagesDropdownInfiniteEnd/>
+                                <MessagesDropdownInfiniteEnd />
                             )}
-                            {hasNextPage && <div ref={ref}/>}
+                            {hasNextPage && <div ref={ref} />}
                         </ScrollShadow>
                     )}
                 </DropdownMenuGroup>
