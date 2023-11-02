@@ -1,8 +1,12 @@
-import {app, BrowserWindow, ipcMain, shell} from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
-import {apiUrl} from "../../src/lib/utils.ts";
-import {download} from "electron-dl";
-import {AuthService} from "../services/auth/auth-service.ts";
+import { apiUrl } from "../../src/lib/utils.ts";
+import { download } from "electron-dl";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
+import { getResourceDownloadLink } from "../../electron/services/itslearning/resources/resources.ts";
+import { ITSLEARNING_RESOURCE_URL } from "../../electron/services/itslearning/resources/resources.ts";
+import { VITE_DEV_SERVER_URL } from "../main.ts";
 
 const authService = AuthService.getInstance()
 
@@ -10,7 +14,7 @@ function openExternalHandler() {
     ipcMain.handle('app:openExternal', async (_, url, sso) => {
         // open the url with the default browser and get sso url
         if (sso) {
-            const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
                 params: {
                     'access_token': authService.getToken('access_token'),
                 }
@@ -50,7 +54,7 @@ function openItemHandler() {
 
 function getResourceDownloadLinkForElementId() {
     ipcMain.handle('get-resource-download-link', async (_, elementId) => {
-        const {data} = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
+        const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
             params: {
                 'access_token': authService.getToken('access_token'),
                 'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
@@ -61,8 +65,62 @@ function getResourceDownloadLinkForElementId() {
     })
 }
 
+function uploadDocumentForAI() {
+    ipcMain.handle('uploadfile-for-ai', async (event, { url, elementId }: { url: string, elementId: string | number }) => {
+        console.log('uploadfile-for-ai')
+
+        // make a get request to localhost:3000/api/checkFile/[elementId] to check if the current file exists
+        // if it does then return
+        // else continue
+
+        const baseUrl = VITE_DEV_SERVER_URL ? 'http://localhost:3000' : 'http://itsdu.danielz.dev'
+
+        /* const res = await fetch(`${baseUrl}/api/checkFile/${elementId}`)
+        if (res.status === 200) throw new Error('File already exists for AI') */
+        const win = BrowserWindow.fromWebContents(event.sender)
+
+        if (!win) return
+
+        console.log('Getting cookies for AI')
+
+        const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+
+        const cookiesFormatted = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
+
+        //send cookies to the server so that the server can download the file with the cookies
+        const uploadRes = await axios.post(`${baseUrl}/api/uploadFile/${elementId}`, {
+            cookies: cookiesFormatted,
+            url
+        })
+
+        /* console.log('Getting file for AI')
+
+        // get the file as a file type
+        const data = await getResourceAsFile(url, cookies)
+
+        console.log('Got file for AI')
+        console.log(data)
+
+        // make a formdata and then a post request to localhost:3000/api/uploadFile
+        const formData = new FormData()
+        formData.append('file', new Blob([data.buffer]), data.name)
+        formData.append('elementId', elementId)
+
+        const uploadRes = await axios.post('http://itsdu.danielz.dev/api/uploadFile', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+
+        if (!uploadRes.data.success) throw new Error('Could not upload file for AI')
+
+        console.log('Uploaded file for AI') */
+
+    })
+}
+
 function itslearningElementDownload() {
-    ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
+    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
         try { /*const win = BrowserWindow.fromWebContents(event.sender)
         if (!win) return*/
 
@@ -97,7 +155,7 @@ function itslearningElementDownload() {
 }
 
 function downloadExternalHandler() {
-    ipcMain.handle("download:external", async (event, {url, filename}) => {
+    ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
             console.log(url, filename)
 
@@ -123,31 +181,7 @@ function downloadExternalHandler() {
 function downloadStartHandler() {
     ipcMain.handle("download:start", async (_, url) => {
         try {
-            const scrapeWindow = new BrowserWindow({
-                show: false,
-                webPreferences: {
-                    nodeIntegration: true,
-                }
-            })
-            await scrapeWindow.loadURL(url)
-
-            const iframeSrc = await scrapeWindow.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
-            await scrapeWindow.loadURL(iframeSrc)
-            // const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#ctl00_ctl00_MainFormContent_DownloadLinkForViewType').getAttribute('href')`)
-            // const fileLink = 'https://resource.itslearning.com' + downloadHref
-            //document.querySelector('#aspnetForm').action
-            const downloadHref = await scrapeWindow.webContents.executeJavaScript(`document.querySelector('#aspnetForm').action`)
-            // get LearningObjectId and LearningObjectInstanceId from the action url
-            const regex = /LearningObjectId=([0-9]*)&LearningObjectInstanceId=([0-9]*)/gm;
-            const matches = regex.exec(downloadHref)
-            if (!matches) throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')
-            const LearningObjectId = matches[1]
-            console.log(LearningObjectId)
-            const LearningObjectInstanceId = matches[2]
-            console.log(LearningObjectInstanceId)
-            // https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=365284744&LearningObjectInstanceId=510275481
-            const fileLink = `https://resource.itslearning.com/Proxy/DownloadRedirect.ashx?LearningObjectId=${LearningObjectId}&LearningObjectInstanceId=${LearningObjectInstanceId}`
-            scrapeWindow.close()
+            const fileLink = getResourceDownloadLink(url)
             return fileLink
         } catch (e) {
             console.error(e)
@@ -165,4 +199,5 @@ export default function initDownloadHandlers() {
     itslearningElementDownload()
     downloadExternalHandler()
     downloadStartHandler()
+    uploadDocumentForAI()
 }

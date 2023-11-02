@@ -1,4 +1,3 @@
-import React from 'react'
 import useGETpersonalTasks from "@/queries/tasks/useGETpersonalTasks";
 import {
     ItslearningRestApiEntitiesTaskDeadlineFilter
@@ -6,19 +5,66 @@ import {
 import {
     ItslearningRestApiEntitiesTaskStatusFilter
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter";
+import { useQuery } from '@tanstack/react-query';
+import { PineconeStore } from 'langchain/vectorstores/pinecone'
+import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
+import { embeddings } from "@/lib/openai-embeddings";
+import { pineconeClient } from "@/lib/pinecone";
+import { useEffect, useState } from "react";
+import { pineconeIndex } from '../lib/pinecone';
 
 export default function TestSuspense() {
 
-    const {data} = useGETpersonalTasks({
+    const { data } = useGETpersonalTasks({
         deadline: ItslearningRestApiEntitiesTaskDeadlineFilter.All,
         PageIndex: 0,
         PageSize: 200,
         status: ItslearningRestApiEntitiesTaskStatusFilter.All
     })
+
+    const fileName = 'lec04-server-side.pdf'
+
+    const { data: pageLevelDocs } = useQuery(['testaisomething'], async () => {
+        const response = await fetch(
+            `https://itsdu.danielz.dev/s3/${fileName}`
+        )
+
+        const blob = await response.blob()
+
+        const loader = new PDFLoader(blob!)
+
+        const pageLevelDocs = await loader.load()
+
+        return pageLevelDocs
+    }, {
+        suspense: true,
+    })
+
+    if (!pageLevelDocs) {
+        return <div>Loading...</div>
+    }
+
+    const pinecone = pineconeClient
+    const pineconeIndex = pinecone.Index('itsdu')
+
     return (
-        <pre>
-            {JSON.stringify(data, null, 2)}
-        </pre>
+        <>
+            <pre>
+                {JSON.stringify(data, null, 2)}
+            </pre>
+            <button onClick={async () => {
+                await PineconeStore.fromDocuments(
+                    pageLevelDocs,
+                    embeddings,
+                    {
+                        pineconeIndex,
+                        namespace: fileName
+                    }
+                )
+            }}>
+                test
+            </button>
+        </>
     )
 }
 

@@ -42,7 +42,7 @@ contextBridge.exposeInMainWorld('itslearning_file_scraping', {})
 
 contextBridge.exposeInMainWorld('download', {
     external: async (url: string, filename: string) => {
-        ipcRenderer.invoke('download:external', {
+        await ipcRenderer.invoke('download:external', {
             url,
             filename: slugify(filename),
         })
@@ -52,7 +52,12 @@ contextBridge.exposeInMainWorld('download', {
         const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
         const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
-        ipcRenderer.invoke('itslearning-element:download', {
+        await ipcRenderer.invoke('uploadfile-for-ai', {
+            url: scrapedResourceDownloadLink,
+            elementId,
+        })
+
+        await ipcRenderer.invoke('itslearning-element:download', {
             url: scrapedResourceDownloadLink,
             resourceLink: downloadLink,
             filename: slugify(filename),

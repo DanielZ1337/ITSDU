@@ -1,6 +1,6 @@
 // @ts-ignore
-const renderLink = ({attributes, content}) => {
-    const {href, ...props} = attributes;
+const renderLink = ({ attributes, content }) => {
+    const { href, ...props } = attributes;
     return <a
         target={"_blank"}
         rel={"noopener noreferrer"}

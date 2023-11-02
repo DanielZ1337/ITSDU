@@ -1,6 +1,6 @@
-import {ipcMain} from "electron";
-import {AuthService} from "../services/auth/auth-service.ts";
-import {store_keys} from '../services/auth/types/store_keys.ts';
+import { ipcMain } from "electron";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { store_keys } from '../services/itslearning/auth/types/store_keys.ts';
 
 const authService = AuthService.getInstance()
 

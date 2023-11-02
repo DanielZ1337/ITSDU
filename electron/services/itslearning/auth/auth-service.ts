@@ -2,17 +2,14 @@ import {safeStorage} from "electron";
 import {GrantType} from "./types/grant_type"
 import {ITSLEARNING_SCOPES_ENUM} from "./types/scopes"
 import axios from "axios";
-// import Store from 'electron-store';
 import RegexEscape from 'regex-escape';
 import {store_keys} from "./types/store_keys";
+import {ITSLEARNING_URL} from "../itslearning.ts";
 
 const Store = require('electron-store');
 
 // https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=10ae9d30-1853-48ff-81cb-47b58a325685&state=A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y=&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login
 
-const ITSLEARNING_SUBDOMAIN = 'sdu'
-const ITSLEARNING_DOMAIN = 'itslearning.com'
-export const ITSLEARNING_URL = `https://${ITSLEARNING_SUBDOMAIN}.${ITSLEARNING_DOMAIN}`
 export const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
 export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
 // export const ITSLEARNING_OAUTH_STATE = 'A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y='
