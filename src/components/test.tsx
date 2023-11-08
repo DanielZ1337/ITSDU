@@ -5,17 +5,15 @@ import {
 import {
     ItslearningRestApiEntitiesTaskStatusFilter
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter";
-import { useQuery } from '@tanstack/react-query';
-import { PineconeStore } from 'langchain/vectorstores/pinecone'
-import { PDFLoader } from 'langchain/document_loaders/fs/pdf'
-import { embeddings } from "@/lib/openai-embeddings";
-import { pineconeClient } from "@/lib/pinecone";
-import { useEffect, useState } from "react";
-import { pineconeIndex } from '../lib/pinecone';
+import {useQuery} from '@tanstack/react-query';
+import {PineconeStore} from 'langchain/vectorstores/pinecone'
+import {PDFLoader} from 'langchain/document_loaders/fs/pdf'
+import {embeddings} from "@/lib/openai-embeddings";
+import {pineconeClient} from "@/lib/pinecone";
 
 export default function TestSuspense() {
 
-    const { data } = useGETpersonalTasks({
+    const {data} = useGETpersonalTasks({
         deadline: ItslearningRestApiEntitiesTaskDeadlineFilter.All,
         PageIndex: 0,
         PageSize: 200,
@@ -24,7 +22,7 @@ export default function TestSuspense() {
 
     const fileName = 'lec04-server-side.pdf'
 
-    const { data: pageLevelDocs } = useQuery(['testaisomething'], async () => {
+    const {data: pageLevelDocs} = useQuery(['testaisomething'], async () => {
         const response = await fetch(
             `https://itsdu.danielz.dev/s3/${fileName}`
         )

@@ -15,7 +15,7 @@ import {useEffect, useState} from "react";
 import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETElightbulletinComment.ts";
 import {Input} from "@/components/ui/input.tsx";
 import {useToast} from "@/components/ui/use-toast";
-import {getRelativeTimeString} from "@/lib/utils.ts";
+import {cn, getRelativeTimeString} from "@/lib/utils.ts";
 
 export default function LightbulletinComment({comment}: {
     comment: ItslearningRestApiEntitiesComment
@@ -109,7 +109,7 @@ export default function LightbulletinComment({comment}: {
                         </div>
                     </form>
                 ) : (
-                    <p className={"mt-0.5 font-normal"}>{comment.CommentText}</p>
+                    <p className={cn("mt-0.5 font-normal", isUpdating && 'opacity-50')}>{comment.CommentText}</p>
                 )}
                 <p className="text-gray-500 text-sm">Posted {getRelativeTimeString(new Date(comment.CreatedDateTime))}</p>
             </div>

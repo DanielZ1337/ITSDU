@@ -1,12 +1,15 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import {app, BrowserWindow, ipcMain, shell} from "electron";
 import axios from "axios";
-import { apiUrl } from "../../src/lib/utils.ts";
-import { download } from "electron-dl";
-import { AuthService } from "../services/itslearning/auth/auth-service.ts";
-import { getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
-import { getResourceDownloadLink } from "../../electron/services/itslearning/resources/resources.ts";
-import { ITSLEARNING_RESOURCE_URL } from "../../electron/services/itslearning/resources/resources.ts";
-import { VITE_DEV_SERVER_URL } from "../main.ts";
+import {download} from "electron-dl";
+import {AuthService} from "../services/itslearning/auth/auth-service.ts";
+import {CreateScrapeWindow, getCookiesForDomain} from "../../electron/services/scrape/scraper.ts";
+import {
+    getResourceDownloadLink,
+    getResourceLinkByElementID,
+    ITSLEARNING_RESOURCE_URL
+} from "../../electron/services/itslearning/resources/resources.ts";
+import {VITE_DEV_SERVER_URL} from "../main.ts";
+import {getFormattedCookies} from "../utils/cookies.ts";
 
 const authService = AuthService.getInstance()
 
@@ -14,7 +17,7 @@ function openExternalHandler() {
     ipcMain.handle('app:openExternal', async (_, url, sso) => {
         // open the url with the default browser and get sso url
         if (sso) {
-            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+            const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
                 params: {
                     'access_token': authService.getToken('access_token'),
                 }
@@ -53,20 +56,34 @@ function openItemHandler() {
 }
 
 function getResourceDownloadLinkForElementId() {
-    ipcMain.handle('get-resource-download-link', async (_, elementId) => {
-        const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
-            params: {
-                'access_token': authService.getToken('access_token'),
-                'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
-            }
+    ipcMain.handle('get-resource-download-link', async (_, elementId) => getResourceDownloadLink(elementId))
+}
+
+async function getBlobFromUrl() {
+    ipcMain.handle('get-blob-from-element-id', async (_, elementId: string | number) => {
+        const win = CreateScrapeWindow()
+        const ssoLink = await getResourceLinkByElementID(elementId)
+        await win.loadURL(ssoLink)
+        const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+        const cookiesFormatted = getFormattedCookies(cookies)
+        const resourceLink = await getResourceDownloadLink(ssoLink, win)
+
+        const {data, headers} = await axios.get(resourceLink, {
+            headers: {
+                Cookie: cookiesFormatted,
+            },
+            responseType: 'arraybuffer'
         })
 
-        return data.Url
+        return data
     })
 }
 
 function uploadDocumentForAI() {
-    ipcMain.handle('uploadfile-for-ai', async (event, { url, elementId }: { url: string, elementId: string | number }) => {
+    ipcMain.handle('uploadfile-for-ai', async (event, {url, elementId}: {
+        url: string,
+        elementId: string | number
+    }) => {
         console.log('uploadfile-for-ai')
 
         // make a get request to localhost:3000/api/checkFile/[elementId] to check if the current file exists
@@ -120,7 +137,7 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
+    ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
         try { /*const win = BrowserWindow.fromWebContents(event.sender)
         if (!win) return*/
 
@@ -155,7 +172,7 @@ function itslearningElementDownload() {
 }
 
 function downloadExternalHandler() {
-    ipcMain.handle("download:external", async (event, { url, filename }) => {
+    ipcMain.handle("download:external", async (event, {url, filename}) => {
         try {
             console.log(url, filename)
 
@@ -181,7 +198,7 @@ function downloadExternalHandler() {
 function downloadStartHandler() {
     ipcMain.handle("download:start", async (_, url) => {
         try {
-            const fileLink = getResourceDownloadLink(url)
+            const fileLink = await getResourceDownloadLink(url)
             return fileLink
         } catch (e) {
             console.error(e)
@@ -200,4 +217,5 @@ export default function initDownloadHandlers() {
     downloadExternalHandler()
     downloadStartHandler()
     uploadDocumentForAI()
+    getBlobFromUrl()
 }

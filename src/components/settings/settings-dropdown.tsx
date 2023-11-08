@@ -16,12 +16,14 @@ import SettingsDropdownUserFullname from "@/components/settings/settings-dropdow
 import {useNavigate} from "react-router-dom";
 import {useTheme} from "next-themes";
 import SettingsModal from "./settings-modal";
+import {useAtom} from "jotai";
+import {showBrowseNav as showBrowseNavAtom} from '../../atoms/browse-nav';
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
     const {theme, setTheme} = useTheme()
-    // eslint-disable-next-line no-unused-vars
     const [version, setVersion] = useState<string>()
+    const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom);
 
     useEffect(() => {
         window.app.getVersion().then((version: string) => {
@@ -89,6 +91,16 @@ export default function SettingsDropdown() {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                     <SettingsModal/>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={() => {
+                        setShowBrowseNav(!showBrowseNav)
+                    }}
+                >
+                    Browser Navbar
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                    <span>Keyboard shortcuts</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator/>
                 <DropdownMenuItem

@@ -46,4 +46,5 @@ export enum TanstackKeys {
     PersonalTasks = "personalTasks",
     PersonalTasklistDailyWorkflow = "personalTasklistDailyWorkflow",
     PATCHrestoreDeletedMessage = "PATCHrestoreDeletedMessage",
+    PUTnotificationsMarkAllAsRead = "PUTnotificationsMarkAllAsRead",
 }

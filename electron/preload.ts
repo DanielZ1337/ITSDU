@@ -40,6 +40,18 @@ contextBridge.exposeInMainWorld('app', {
 
 contextBridge.exposeInMainWorld('itslearning_file_scraping', {})
 
+contextBridge.exposeInMainWorld('ai', {
+    upload: async (elementId: number) => {
+        const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
+        const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
+
+        await ipcRenderer.invoke('uploadfile-for-ai', {
+            url: scrapedResourceDownloadLink,
+            elementId,
+        })
+    }
+})
+
 contextBridge.exposeInMainWorld('download', {
     external: async (url: string, filename: string) => {
         await ipcRenderer.invoke('download:external', {
@@ -52,16 +64,25 @@ contextBridge.exposeInMainWorld('download', {
         const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
         const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
-        await ipcRenderer.invoke('uploadfile-for-ai', {
-            url: scrapedResourceDownloadLink,
-            elementId,
-        })
-
         await ipcRenderer.invoke('itslearning-element:download', {
             url: scrapedResourceDownloadLink,
             resourceLink: downloadLink,
             filename: slugify(filename),
         })
+    }
+})
+
+contextBridge.exposeInMainWorld('cookies', {
+    get: async (elementId: number) => {
+        const cookies = await ipcRenderer.invoke('itslearning-store:get-cookies-for-resource', elementId)
+        return cookies
+    }
+})
+
+contextBridge.exposeInMainWorld('blob', {
+    get: async (elementId: number) => {
+        const blob = await ipcRenderer.invoke('get-blob-from-element-id', elementId)
+        return blob
     }
 })
 
@@ -101,6 +122,15 @@ declare global {
                 set: (key: store_keys, data: any) => Promise<void>
                 clear: () => Promise<void>
             }
+        },
+        ai: {
+            upload: (elementId: number) => Promise<void>
+        },
+        cookies: {
+            get: (elementId: number | string) => Promise<string>
+        },
+        blob: {
+            get: (elementId: number | string) => Promise<string>
         }
     }
 }

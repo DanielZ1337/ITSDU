@@ -7,12 +7,12 @@ import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  /* define: {
+  define: {
     // "process.env": process.env,
     // // By default, Vite doesn't include shims for NodeJS/
     // // necessary for segment analytics lib to work
     "global": {},
-  }, */
+  },
   plugins: [
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     electron({

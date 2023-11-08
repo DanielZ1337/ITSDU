@@ -1,4 +1,4 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import {Pinecone} from '@pinecone-database/pinecone';
 
 export const pineconeClient = new Pinecone({
     apiKey: import.meta.env.VITE_PINECONE_API_KEY,

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, protocol, session, Tray } from "electron"
+import {app, BrowserWindow, Menu, protocol, session, Tray} from "electron"
 import path from 'path'
 import {
     AuthService,
@@ -10,11 +10,11 @@ import darkModeHandlerInitializer from "./handlers/dark-mode-handlers.ts";
 import appHandlerInitializer from "./handlers/app-handler.ts";
 import initAuthIpcHandlers from "./handlers/auth-handler.ts";
 import axios from "axios";
-import { GrantType } from "./services/itslearning/auth/types/grant_type.ts";
+import {GrantType} from "./services/itslearning/auth/types/grant_type.ts";
 import * as fs from "fs";
-import { themeStore } from "./services/theme/theme-service.ts";
-import { WindowOptionsService } from './services/window-options/window-options-service';
-import { startProxyDevServer } from "./utils/proxy-dev-server.ts";
+import {themeStore} from "./services/theme/theme-service.ts";
+import {WindowOptionsService} from './services/window-options/window-options-service';
+import {startProxyDevServer} from "./utils/proxy-dev-server.ts";
 import initDownloadHandlers from "./handlers/download-handler.ts";
 
 process.env.DIST = path.join(__dirname, '../dist')
@@ -226,7 +226,7 @@ app.whenReady().then(async () => {
             } else if (extension === '.webp') {
                 mimeType = 'image/webp'
             }
-            callback({ mimeType, data })
+            callback({mimeType, data})
         })
     })
 
@@ -243,7 +243,7 @@ app.whenReady().then(async () => {
                     "Content-Type": "application/x-www-form-urlencoded",
                 }
             }).then(async res => {
-                const { access_token, refresh_token } = res.data
+                const {access_token, refresh_token} = res.data
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
                 authWindow?.close()

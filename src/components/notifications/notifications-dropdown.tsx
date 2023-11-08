@@ -14,6 +14,7 @@ import {UnreadNotificationIndicator} from "@/components/messages/unread-notifica
 import {Link} from "react-router-dom";
 import {ArrowRightIcon} from "lucide-react";
 import {ScrollShadow} from '@nextui-org/react';
+import usePUTnotificationsMarkAllAsRead from '@/queries/notifications/usePUTnotificationsMarkAllAsRead';
 
 export default function NotificationsDropdown() {
 
@@ -23,12 +24,9 @@ export default function NotificationsDropdown() {
         UseNewerThan: true,
     }, {
         suspense: true,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        refetchInterval: false,
-        refetchIntervalInBackground: false,
     })
+
+    const {mutate: markAllAsRead, isLoading: isMarkingAllAsRead} = usePUTnotificationsMarkAllAsRead()
 
     const notificationsFlatMap = notifications!.pages.flatMap(page => page.EntityArray)
 
@@ -57,9 +55,15 @@ export default function NotificationsDropdown() {
                         <ArrowRightIcon
                             className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"}/>
                     </Link>
-                    <span className={"text-xs text-muted-foreground"}>
-                        {unreadNotifications.length} unread
-                    </span>
+                    <div>
+                        <Button variant={"ghost"} size={"sm"} className="h-fit mr-1" disabled={isMarkingAllAsRead}
+                                onClick={() => markAllAsRead(undefined)}>
+                            Mark all as read
+                        </Button>
+                        <span className={"text-xs text-muted-foreground"}>
+                            {unreadNotifications.length} unread
+                        </span>
+                    </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator/>
                 <ScrollShadow

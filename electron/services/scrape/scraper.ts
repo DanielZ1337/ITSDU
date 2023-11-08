@@ -17,3 +17,7 @@ export function CreateScrapeWindow(...options: ConstructorParameters<typeof Brow
 export function getCookiesForDomain(win: BrowserWindow, domain: string) {
     return win.webContents.session.cookies.get({url: domain})
 }
+
+export function scrapePage(win: BrowserWindow, url: string) {
+    return win.loadURL(url)
+}

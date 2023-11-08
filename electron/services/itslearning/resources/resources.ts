@@ -2,6 +2,8 @@ import {BrowserWindow, Cookie} from "electron";
 import axios from "axios";
 import {GET_ITSLEARNING_URL} from "../itslearning.ts";
 import {CreateScrapeWindow} from "../../scrape/scraper.ts";
+import {apiUrl} from "../../../../src/lib/utils.ts";
+import {AuthService} from "../auth/auth-service.ts";
 
 const ITSLEARNING_RESOURCE_SUBDOMAIN = 'resource'
 export const ITSLEARNING_RESOURCE_URL = GET_ITSLEARNING_URL(ITSLEARNING_RESOURCE_SUBDOMAIN)
@@ -33,8 +35,8 @@ export const getResourceFileLinkByIds = (LearningObjectId: string | number, Lear
     return url.toString()
 }
 
-export async function getResourceDownloadLink(url: string) {
-    const win = CreateScrapeWindow()
+export async function getResourceDownloadLink(url: string, customWin?: BrowserWindow) {
+    const win = customWin || CreateScrapeWindow()
     const {LearningObjectId, LearningObjectInstanceId} = await getResourceIdsBySSOLink(win, url);
     win.close()
     return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId);
@@ -64,4 +66,18 @@ export async function getResourceAsFile(url: string, cookies: Cookie[]) {
     }
 
     return file
+}
+
+export async function getResourceLinkByElementID(elementId: string | number) {
+    const authService = AuthService.getInstance()
+    const {data} = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
+        params: {
+            'access_token': authService.getToken('access_token'),
+            'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
+        }
+    })
+
+    if (!data.Url) throw new Error('Could not get resource link')
+
+    return data.Url
 }
