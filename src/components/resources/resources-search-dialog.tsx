@@ -18,6 +18,8 @@ import {
     ItsolutionsItslUtilsConstantsLocationType
 } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
 import {useToast} from "@/components/ui/use-toast";
+import {sidebarActiveAtom} from "@/atoms/sidebar";
+import {useAtom} from "jotai";
 
 export default function SearchResourcesDialog({courseId}: {
     courseId: number
@@ -26,6 +28,7 @@ export default function SearchResourcesDialog({courseId}: {
     const [query, setQuery] = useState("")
     const debouncedQuery = useDebounce(query, 300)
     const {toast, dismiss} = useToast()
+    const [sidebarActive, setSidebarActive] = useAtom(sidebarActiveAtom)
 
     const {data: resources, isFetching} = useGETcourseResourceBySearch({
         searchText: debouncedQuery,
@@ -113,6 +116,7 @@ export default function SearchResourcesDialog({courseId}: {
             if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault()
                 setIsOpen((isOpen) => !isOpen)
+                setSidebarActive(false)
             }
         }
         window.addEventListener("keydown", handleKeyDown)
@@ -134,20 +138,27 @@ export default function SearchResourcesDialog({courseId}: {
         <>
             <Button
                 size={"sm"}
-                className="h-9 border-0 lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground"
-                onClick={() => setIsOpen(true)}
+                className={cn("h-9 border-0 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground", sidebarActive ? 'lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 justify-start' : 'w-full mx-auto justify-center')}
+                onClick={() => {
+                    setIsOpen(true)
+                    setSidebarActive(false)
+                }}
             >
                 <Search className={"h-4 w-4 lg:mr-2 shrink-0 lg:-ml-0.5"}/>
-                <span className="hidden xl:inline-flex">Search resources...</span>
-                <span
-                    className="hidden lg:inline-flex xl:hidden">Search...</span>
-                <kbd
-                    className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
-                    <span>
-                        {isMacOS() ? "⌘" : "Ctrl"}
-                    </span>
-                    K
-                </kbd>
+                {sidebarActive && (
+                    <>
+                        <span className="hidden xl:inline-flex">Search resources...</span>
+                        <span
+                            className="hidden lg:inline-flex xl:hidden">Search...</span>
+                        <kbd
+                            className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
+                            <span>
+                                {isMacOS() ? "⌘" : "Ctrl"}
+                            </span>
+                            K
+                        </kbd>
+                    </>
+                )}
                 <span className="sr-only">Search resources</span>
             </Button>
             <CommandDialog open={isOpen} onOpenChange={setIsOpen}>

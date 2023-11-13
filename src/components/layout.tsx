@@ -6,7 +6,7 @@ import Header from "@/components/header";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import ScrollToTopButton from "@/components/scroll-to-top-button.tsx";
 import {ErrorBoundary} from "react-error-boundary";
-import {showBrowseNav as showBrowseNavAtom} from '../atoms/browse-nav';
+import {browseNavigationAtom as showBrowseNavAtom} from '../atoms/browse-navigation.ts';
 import {useAtom} from "jotai";
 import {AnimatePresence, motion} from 'framer-motion';
 

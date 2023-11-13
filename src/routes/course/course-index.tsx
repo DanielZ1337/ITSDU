@@ -18,7 +18,8 @@ export default function CourseIndex() {
                           initialSizes={[200, 100]}>
                     <div className={"flex flex-col flex-1 py-2 pr-2"}>
                         <div className={"flex flex-col flex-1 gap-4"}>
-                            <h2 className={"text-xl font-bold items-center gap-4 inline-flex"}><Bell/>Announcements</h2>
+                            <h2 className={"text-xl font-bold items-center gap-4 inline-flex"}><Bell/> Announcements
+                            </h2>
                             <Suspense
                                 fallback={<LightbulletinsForCourseLoader/>}
                             >

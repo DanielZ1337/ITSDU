@@ -18,20 +18,23 @@ export default function CourseCard({card}: {
         courseId: card.CourseId,
     })
     const [isCoursesBulkEditing, /*setIsCoursesBulkEditing*/] = useAtom(isCoursesBulkStarEditingAtom)
+
     // const [coursesBulkEdit, setCoursesBulkEdit] = useAtom(CoursesBulkStarEditAtom)
+
+    function navigateToCourse() {
+        navigate(`/courses/${card.CourseId}`)
+    }
 
     return (
         <div
             onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                    navigate(`/course/${card.CourseId}`)
+                    navigateToCourse()
                 }
             }}
             key={card.CourseId}
             tabIndex={0}
-            onClick={() => {
-                navigate(`/course/${card.CourseId}`)
-            }}
+            onClick={navigateToCourse}
             className={"flex flex-col w-5/6 sm:w-72 h-36 bg-white rounded-md shadow-md focus-visible:outline-0 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-300"}>
             <div
                 className={"flex flex-col w-full p-4 justify-between h-full hover:outline outline-offset-4 rounded-md outline-foreground/50 hover:cursor-pointer"}>

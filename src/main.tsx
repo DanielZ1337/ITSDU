@@ -5,7 +5,6 @@ import '@/index.css'
 import {createHashRouter, RouterProvider} from 'react-router-dom'
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 
 // const Root = React.lazy(() => import("@/routes/root"));
 /*
@@ -21,7 +20,6 @@ const Querytesting = React.lazy(() => import("@/routes/querytesting"));
 */
 import ErrorPage from "@/error-page.tsx"
 import Contact from "@/routes/contact.tsx"
-import Layout from "@/components/layout.tsx"
 import Test from "@/routes/test.tsx"
 import Test1 from "@/routes/test1.tsx"
 import Profile from "@/routes/profile.tsx"
@@ -43,13 +41,13 @@ import PersonIndex from "@/routes/person/person-index.tsx";
 import CoursesIndex from "@/routes/courses.tsx";
 import React from "react";
 import CourseError from "./routes/course/course-error";
-import TestSuspense from "./components/test";
 import TestAI from "./routes/test-ai";
 import TestCookies from "./routes/test-cookies";
+import NewUITest2 from "./new-stuff/new-ui-test-2";
 
 const router = createHashRouter([
     {
-        element: <Layout/>,
+        element: <NewUITest2/>,
         errorElement: <ErrorPage/>,
         children: [
             {
@@ -84,7 +82,7 @@ const router = createHashRouter([
                 errorElement: <ErrorPage/>,
             },
             {
-                path: "/course/:id",
+                path: "/courses/:id",
                 element: <SuspenseWrapper><CourseLayout/></SuspenseWrapper>,
                 errorElement: <CourseError/>,
                 children: [
@@ -169,11 +167,6 @@ const router = createHashRouter([
                 errorElement: <ErrorPage/>,
             },
             {
-                path: "/test2",
-                element: <TestSuspense/>,
-                errorElement: <ErrorPage/>,
-            },
-            {
                 path: "/testai/:id?",
                 element: <SuspenseWrapper><TestAI/></SuspenseWrapper>,
                 errorElement: <ErrorPage/>,
@@ -200,7 +193,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 <RouterProvider fallbackElement={<ErrorPage/>} future={{
                     v7_startTransition: true,
                 }} router={router}/>
-                <ReactQueryDevtools position="left"/>
+                {/* <NewUITest2 /> */}
+                {/* <ReactQueryDevtools position="left" /> */}
             </React.StrictMode>
         </SuspenseWrapper>
     </Providers>

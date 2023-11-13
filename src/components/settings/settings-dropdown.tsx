@@ -7,29 +7,25 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import {cn} from "@/lib/utils.ts";
-import {buttonVariants} from "@/components/ui/button.tsx";
-import {MoreVertical} from "lucide-react";
-import {ErrorBoundary} from "react-error-boundary";
-import {Suspense, useCallback, useEffect, useState} from "react";
+import { cn } from "@/lib/utils.ts";
+import { buttonVariants } from "@/components/ui/button.tsx";
+import { MoreVertical } from "lucide-react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Suspense, useCallback, useEffect } from "react";
 import SettingsDropdownUserFullname from "@/components/settings/settings-dropdown-user-fullname.tsx";
-import {useNavigate} from "react-router-dom";
-import {useTheme} from "next-themes";
-import SettingsModal from "./settings-modal";
-import {useAtom} from "jotai";
-import {showBrowseNav as showBrowseNavAtom} from '../../atoms/browse-nav';
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
+import { useAtom } from "jotai";
+import { browseNavigationAtom as showBrowseNavAtom } from '../../atoms/browse-navigation.ts';
+import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
+import { useVersion } from "@/hooks/atoms/useVersion.ts";
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
-    const {theme, setTheme} = useTheme()
-    const [version, setVersion] = useState<string>()
+    const { theme, setTheme } = useTheme()
+    const { version } = useVersion()
     const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom);
-
-    useEffect(() => {
-        window.app.getVersion().then((version: string) => {
-            setVersion(version)
-        })
-    }, [])
+    const { toggleSettingsModal } = useShowSettingsModal()
 
     const handleDarkModeToggle = useCallback(async () => {
         const isDarkMode = await window.darkMode.toggle()
@@ -58,14 +54,27 @@ export default function SettingsDropdown() {
         }
     }, [handleDarkModeToggle, navigate]);
 
+    function dropdownItemOnClick(e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>, callback: () => void) {
+        e.stopPropagation()
+        e.preventDefault()
+        callback()
+    }
+
 
     return (
-        <DropdownMenu>
+        <DropdownMenu
+            modal={false}
+        >
             <DropdownMenuTrigger className={cn(buttonVariants({
                 variant: 'ghost',
                 size: 'icon'
-            }))}>
-                <MoreVertical/>
+            }))} asChild
+                onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                }}
+            >
+                <MoreVertical className="w-8 h-8" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -80,38 +89,54 @@ export default function SettingsDropdown() {
                 <DropdownMenuLabel className={"font-normal"}>
                     <ErrorBoundary fallback={<div className={"animate-pulse"}>Loading...</div>}>
                         <Suspense fallback={<div className={"animate-pulse"}>Loading...</div>}>
-                            <SettingsDropdownUserFullname/>
+                            <SettingsDropdownUserFullname />
                         </Suspense>
                     </ErrorBoundary>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator/>
-                <DropdownMenuItem onClick={handleDarkModeToggle}>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={(e) => dropdownItemOnClick(e, () => {
+                    handleDarkModeToggle()
+                })}>
                     <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
                     <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <SettingsModal/>
+                <DropdownMenuItem
+                    onClick={(e) =>
+                        dropdownItemOnClick(e, () => {
+                            toggleSettingsModal()
+                        })}
+                >
+                    Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                    onClick={() => {
-                        setShowBrowseNav(!showBrowseNav)
-                    }}
+                    onClick={(e) =>
+                        dropdownItemOnClick(e, () => {
+                            setShowBrowseNav(!showBrowseNav)
+                        })}
                 >
                     Browser Navbar
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                     <span>Keyboard shortcuts</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator/>
+                <DropdownMenuItem
+                    onClick={(e) =>
+                        dropdownItemOnClick(e, () => {
+                            navigate('/about')
+                        })}
+                >
+                    <span>About</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                     onClick={() => {
                         window.auth.store.clear().then(() => {
-                            window.app.exit().then(r => {
+                            /* window.app.exit().then(r => {
                                 console.log(r)
-                            })
+                            }) */
                         })
                     }}
-                    className={"hover:!bg-destructive focus:!bg-destructive"}
+                    className={"hover:!bg-destructive focus:!bg-destructive hover:!text-white"}
                 >
                     <span>Sign out</span>
                 </DropdownMenuItem>
@@ -121,7 +146,7 @@ export default function SettingsDropdown() {
                             console.log(r)
                         })
                     }}
-                    className={"hover:!bg-destructive focus:!bg-destructive"}
+                    className={"hover:!bg-destructive focus:!bg-destructive hover:!text-white"}
                 >
                     <span>Exit</span>
                     <DropdownMenuShortcut>⌘Q</DropdownMenuShortcut>

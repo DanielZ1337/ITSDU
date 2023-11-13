@@ -1,5 +1,5 @@
 import {Avatar, AvatarFallback, AvatarImage} from './components/ui/avatar'
-import {useUser} from '@/hooks/user'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 
 export default function HeaderUserFullnameAvatar() {
 

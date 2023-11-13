@@ -2,7 +2,7 @@ import {Loader2} from 'lucide-react'
 import {useEffect, useRef} from 'react'
 import MessageChatMessage from './message-chat-message'
 import {useInView} from 'framer-motion'
-import {useUser} from '@/hooks/user'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 import useGETinstantMessagesForThread from '@/queries/messages/useGETinstantMessagesForThread'
 
 export default function MessageChat({threadId}: {

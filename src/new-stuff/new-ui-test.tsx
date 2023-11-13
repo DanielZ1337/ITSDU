@@ -1,7 +1,7 @@
 import {cn} from '@/lib/utils.ts'
 import {MdCalendarMonth, MdOutlineClass, MdOutlineMessage, MdPerson, MdSettings} from 'react-icons/md'
 import React from 'react'
-import {useUser} from '@/hooks/user.ts'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 import {motion} from 'framer-motion';
 
 const links = [

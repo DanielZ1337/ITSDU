@@ -3,7 +3,7 @@ import {useInView} from 'framer-motion';
 import {useEffect, useRef} from 'react'
 import MessagesSidebarChat from './messages-sidebar-chat';
 import MessageSidebarChatFallback from './fallbacks/message-sidebar-chat-fallback';
-import {useUser} from '@/hooks/user'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 import {
     ItslearningRestApiEntitiesInstantMessageThread
 } from '@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread';

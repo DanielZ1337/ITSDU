@@ -3,7 +3,8 @@ import {Outlet, useParams} from "react-router-dom";
 // eslint-disable-next-line no-redeclare
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import CourseHeader from "@/components/course/layout/course-header.tsx";
-import CourseLayoutSidebar from "@/components/course/layout/course-layout-sidebar.tsx";
+import {courseAtom} from "@/atoms/course";
+import {useAtom} from "jotai";
 
 export default function CourseLayout() {
     const params = useParams();
@@ -15,19 +16,23 @@ export default function CourseLayout() {
         suspense: true,
     })
 
+    const [, setCourse] = useAtom(courseAtom)
+
+    setCourse(courseId)
+
     return (
         <div
-            className="lg:grid flex-1 w-full overflow-hidden flex lg:grid-cols-[200px_1fr] xl:grid-cols-[240px_1fr]">
+            className="flex-1 w-full overflow-hidden flex">
             <Helmet>
                 <title>{course!.Title}</title>
             </Helmet>
-            <div className="bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
+            {/* <div className="bg-zinc-100/40 lg:block dark:bg-zinc-800/40">
                 <div className="flex h-full max-h-screen flex-col gap-2 overflow-hidden border-r">
                     <div className="flex-1 overflow-auto py-2">
-                        <CourseLayoutSidebar/>
+                        <CourseLayoutSidebar />
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="flex flex-col overflow-auto w-full">
                 <CourseHeader courseId={courseId} courseCode={course!.Code} courseTitle={course!.Title}/>
                 <div className="flex-1 overflow-auto flex flex-col">
