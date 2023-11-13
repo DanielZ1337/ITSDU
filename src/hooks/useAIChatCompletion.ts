@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {useUser} from "./user";
+import {useUser} from "./atoms/useUser.ts";
 
 export const useAIChatCompletion = (prompt: string, elementId: string | number, callback: () => void) => {
     const user = useUser();
