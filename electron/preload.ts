@@ -53,7 +53,7 @@ contextBridge.exposeInMainWorld('ai', {
             url: scrapedResourceDownloadLink,
             elementId,
         })
-    }
+    },
 })
 
 contextBridge.exposeInMainWorld('download', {

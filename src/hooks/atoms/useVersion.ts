@@ -1,4 +1,4 @@
-import { useAtom } from "jotai/index";
+import { useAtom } from "jotai";
 import { versionAtom } from "@/atoms/version";
 
 export const useVersion = () => {

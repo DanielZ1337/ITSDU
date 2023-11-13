@@ -1,8 +1,8 @@
-import {atom, useAtom} from "jotai"
-import {ChevronFirst, ChevronLast, MoreVertical} from "lucide-react"
-import {createContext, useContext, useState} from "react"
+import { atom, useAtom } from "jotai"
+import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react"
+import { createContext, useContext, useState } from "react"
 
-const SidebarContext = createContext({expanded: false})
+const SidebarContext = createContext({ expanded: false })
 const overlayAtom = atom(false)
 
 const navlinks = [
@@ -80,12 +80,12 @@ export default function SidebarComponent() {
                 <h1 className="bg-black">test</h1>
             </div>
             <div
-                className={`pointer-events-none absolute top-0 left-0 h-screen w-screen bg-black shadow-sm transition-all ${expanded ? "opacity-100" : "opacity-0"} z-10`}/>
+                className={`pointer-events-none absolute top-0 left-0 h-screen w-screen bg-black shadow-sm transition-all ${expanded ? "opacity-100" : "opacity-0"} z-10`} />
         </div>
     )
 }
 
-function Sidebar({children}: { children?: React.ReactNode }) {
+function Sidebar({ children }: { children?: React.ReactNode }) {
     const [expanded, setExpanded] = useState(false)
     const [expandedAtom, setExpandedAtom] = useAtom(overlayAtom)
 
@@ -96,8 +96,8 @@ function Sidebar({children}: { children?: React.ReactNode }) {
 
     return (
         <aside className={`absolute h-screen overflow-hidden transition-all z-50 ${expanded ? "w-32" : "w-16"}`}
-               onMouseEnter={toggleExpanded}
-               onMouseLeave={toggleExpanded}
+            onMouseEnter={toggleExpanded}
+            onMouseLeave={toggleExpanded}
         >
             <nav className="h-full flex flex-col bg-white border-r shadow-sm">
                 <div className="p-4 pb-2 flex justify-between items-center grow-0">
@@ -105,11 +105,11 @@ function Sidebar({children}: { children?: React.ReactNode }) {
                         onClick={() => setExpanded((curr) => !curr)}
                         className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
                     >
-                        {expanded ? <ChevronFirst className="invert"/> : <ChevronLast className="invert"/>}
+                        {expanded ? <ChevronFirst className="invert" /> : <ChevronLast className="invert" />}
                     </button>
                 </div>
 
-                <SidebarContext.Provider value={{expanded}}>
+                <SidebarContext.Provider value={{ expanded }}>
                     <ul className="flex-1 px-3">{children}</ul>
                 </SidebarContext.Provider>
 
@@ -129,7 +129,7 @@ function Sidebar({children}: { children?: React.ReactNode }) {
                             <h4 className="font-semibold">John Doe</h4>
                             <span className="text-xs text-gray-600">johndoe@gmail.com</span>
                         </div>
-                        <MoreVertical size={20}/>
+                        <MoreVertical size={20} />
                     </div>
                 </div>
             </nav>
@@ -137,13 +137,13 @@ function Sidebar({children}: { children?: React.ReactNode }) {
     )
 }
 
-export function SidebarItem({icon, text, active, alert}: {
+function SidebarItem({ icon, text, active, alert }: {
     icon: React.ReactNode,
     text: string,
     active: boolean,
     alert: boolean
 }) {
-    const {expanded} = useContext(SidebarContext)
+    const { expanded } = useContext(SidebarContext)
 
     return (
         <li
@@ -152,22 +152,22 @@ export function SidebarItem({icon, text, active, alert}: {
         font-medium rounded-md cursor-pointer
         transition-colors group
         ${active
-                ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
-                : "hover:bg-indigo-50 text-gray-600"
-            }
+                    ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+                    : "hover:bg-indigo-50 text-gray-600"
+                }
     `}
         >
             {icon}
             <span
                 className={`overflow-hidden transition-all ${expanded ? "w-52 ml-3" : "ml-3 w-0"
-                }`}
+                    }`}
             >
                 {text}
             </span>
             {alert && (
                 <div
                     className={`absolute right-2 w-2 h-2 rounded bg-indigo-400 ${expanded ? "" : "top-2"
-                    }`}
+                        }`}
                 />
             )}
 

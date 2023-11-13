@@ -1,3 +1,8 @@
-import {atom} from "jotai";
+import { atom } from "jotai";
 
-export const versionAtom = atom<string>(await window.app.getVersion())
+
+export const versionAtom = atom<string>(() => {
+    return (async () => {
+        return await window.app.getVersion();
+    })();
+});

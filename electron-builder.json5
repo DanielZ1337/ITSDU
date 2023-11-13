@@ -8,6 +8,16 @@
 	productName: 'ITSDU Desktop App',
 	compression: "maximum",
 	artifactName: '${productName}-${version}.${ext}',
+	protocols: [
+		{
+			name: "login redirect URI protocol",
+			schemes: ["itsl-itslearning"]
+		},
+		{
+			name: "file protocol",
+			schemes: ["itsl-itslearning-file"]
+		}
+	],
 	/*publish: {
 		private: true,
 		provider: 'github',

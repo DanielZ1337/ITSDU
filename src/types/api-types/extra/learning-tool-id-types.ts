@@ -17,3 +17,18 @@ export function isResourceFile(varToCompare: ItslearningRestApiEntitiesPersonalC
         return varToCompare.LearningToolId === LearningToolIdTypes.FILE
     }
 }
+
+export function isResourcePDFFromUrlOrElementType(varToCompare: number | ItslearningRestApiEntitiesPersonalCourseCourseResource) {
+    const elementTypeId = 131072;
+    if (typeof varToCompare === "number") {
+        return varToCompare === elementTypeId;
+    } else {
+        // @ts-ignore
+        return getElementTypeIdFromUrl(varToCompare.Url) === elementTypeId;
+    }
+}
+
+export function getElementTypeIdFromUrl(url: string) {
+    const urlParams = new URLSearchParams(url);
+    return parseInt(urlParams.get("ElementType") || "");
+}
