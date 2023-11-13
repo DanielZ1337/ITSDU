@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu, protocol, session, Tray} from "electron"
+import {app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray} from "electron"
 import path from 'path'
 import {
     AuthService,
@@ -19,6 +19,7 @@ import initDownloadHandlers from "./handlers/download-handler.ts";
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
+const isDev = !app.isPackaged
 
 
 let win: BrowserWindow | null
@@ -51,13 +52,15 @@ async function createMainWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
-            // devTools: process.env.NODE_ENV === 'development',
+            devTools: isDev,
         },
         autoHideMenuBar: true,
         alwaysOnTop: false,
-        minHeight: 600,
+        minHeight: 640,
         minWidth: 800,
+        // show: false,
         darkTheme: startUpTheme === 'dark',
+        frame: false,
         ...windowOptions,
     })
 
@@ -88,7 +91,13 @@ async function createMainWindow() {
 
     // Test active push message to Renderer-process.
     win.webContents.on('did-finish-load', () => {
+        win?.show()
         win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    })
+
+    nativeTheme.on('updated', () => {
+        const backgroundColor = nativeTheme.shouldUseDarkColors ? 'black' : 'white'
+        win?.setBackgroundColor(backgroundColor)
     })
 
     if (VITE_DEV_SERVER_URL) {

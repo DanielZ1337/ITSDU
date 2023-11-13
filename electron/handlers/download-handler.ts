@@ -1,15 +1,15 @@
-import {app, BrowserWindow, ipcMain, shell} from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
-import {download} from "electron-dl";
-import {AuthService} from "../services/itslearning/auth/auth-service.ts";
-import {CreateScrapeWindow, getCookiesForDomain} from "../../electron/services/scrape/scraper.ts";
+import { download } from "electron-dl";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { CreateScrapeWindow, getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
 import {
     getResourceDownloadLink,
     getResourceLinkByElementID,
     ITSLEARNING_RESOURCE_URL
 } from "../../electron/services/itslearning/resources/resources.ts";
-import {VITE_DEV_SERVER_URL} from "../main.ts";
-import {getFormattedCookies} from "../utils/cookies.ts";
+import { VITE_DEV_SERVER_URL } from "../main.ts";
+import { getFormattedCookies } from "../utils/cookies.ts";
 
 const authService = AuthService.getInstance()
 
@@ -17,7 +17,7 @@ function openExternalHandler() {
     ipcMain.handle('app:openExternal', async (_, url, sso) => {
         // open the url with the default browser and get sso url
         if (sso) {
-            const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
                 params: {
                     'access_token': authService.getToken('access_token'),
                 }
@@ -56,7 +56,7 @@ function openItemHandler() {
 }
 
 function getResourceDownloadLinkForElementId() {
-    ipcMain.handle('get-resource-download-link', async (_, elementId) => getResourceDownloadLink(elementId))
+    ipcMain.handle('get-resource-download-link', async (_, elementId) => await getResourceLinkByElementID(elementId))
 }
 
 async function getBlobFromUrl() {
@@ -68,7 +68,7 @@ async function getBlobFromUrl() {
         const cookiesFormatted = getFormattedCookies(cookies)
         const resourceLink = await getResourceDownloadLink(ssoLink, win)
 
-        const {data, headers} = await axios.get(resourceLink, {
+        const { data, headers } = await axios.get(resourceLink, {
             headers: {
                 Cookie: cookiesFormatted,
             },
@@ -80,7 +80,7 @@ async function getBlobFromUrl() {
 }
 
 function uploadDocumentForAI() {
-    ipcMain.handle('uploadfile-for-ai', async (event, {url, elementId}: {
+    ipcMain.handle('uploadfile-for-ai', async (event, { url, elementId }: {
         url: string,
         elementId: string | number
     }) => {
@@ -137,7 +137,7 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-    ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
+    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
         try { /*const win = BrowserWindow.fromWebContents(event.sender)
         if (!win) return*/
 
@@ -172,7 +172,7 @@ function itslearningElementDownload() {
 }
 
 function downloadExternalHandler() {
-    ipcMain.handle("download:external", async (event, {url, filename}) => {
+    ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
             console.log(url, filename)
 

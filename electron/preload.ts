@@ -2,7 +2,7 @@
 import {contextBridge, ipcRenderer} from 'electron'
 import {sendNotifcation} from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import {store_keys} from './services/auth/types/store_keys.ts';
+import {store_keys} from './services/itslearning/auth/types/store_keys.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -29,6 +29,9 @@ contextBridge.exposeInMainWorld('notification', {
 })
 contextBridge.exposeInMainWorld('app', {
     exit: () => ipcRenderer.invoke('app:exit'),
+    quit: () => ipcRenderer.invoke('app:quit'),
+    minimize: () => ipcRenderer.invoke('app:minimize'),
+    maximize: () => ipcRenderer.invoke('app:maximize'),
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
     getPath: (path: string) => ipcRenderer.invoke('app:getPath', path),
@@ -101,6 +104,9 @@ declare global {
         },
         app: {
             exit: () => Promise<void>
+            quit: () => Promise<void>
+            minimize: () => Promise<void>
+            maximize: () => Promise<void>
             getVersion: () => Promise<string>
             relaunch: () => Promise<void>
             getPath: (path: string) => Promise<string>
