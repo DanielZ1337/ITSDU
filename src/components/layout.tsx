@@ -12,7 +12,7 @@ import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown";
 import NotificationsDropdown from "@/components/notifications/notifications-dropdown";
 import { Toaster } from "@/components/ui/toaster";
 import ScrollToTopButton from "@/components/scroll-to-top-button";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { Spinner } from "@nextui-org/spinner";
 import Titlebar from "@/components/titlebar";
 import SearchResourcesDialog from "@/components/resources/resources-search-dialog";
@@ -38,8 +38,10 @@ export default function Layout() {
         <div className="flex flex-col h-screen max-h-screen min-h-screen overflow-hidden">
             <IsOnlineIndicator />
             <div className="drag flex items-center justify-between px-4 py-2 border-b border-background/40">
-                <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
-                    className="ml-4 mt-2 w-8 h-8 my-auto" />
+                <Link className="no-drag" to={'/'}>
+                    <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
+                        className="ml-4 mt-2 w-8 h-8 my-auto" />
+                </Link>
                 <div className="px-4 w-full max-w-xl">
                     <TitlebarSearch />
                 </div>
