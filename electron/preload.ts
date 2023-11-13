@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import {contextBridge, ipcRenderer} from 'electron'
-import {sendNotifcation} from "./handlers/notifcation-handler.ts";
+import { contextBridge, ipcRenderer } from 'electron'
+import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import {store_keys} from './services/itslearning/auth/types/store_keys.ts';
+import { store_keys } from './services/itslearning/auth/types/store_keys.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -33,6 +33,7 @@ contextBridge.exposeInMainWorld('app', {
     minimize: () => ipcRenderer.invoke('app:minimize'),
     maximize: () => ipcRenderer.invoke('app:maximize'),
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
+    checkForUpdates: () => ipcRenderer.invoke('app:checkForUpdates'),
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
     getPath: (path: string) => ipcRenderer.invoke('app:getPath', path),
     getDownloadPath: () => ipcRenderer.invoke('app:getDownloadPath'),
@@ -107,6 +108,7 @@ declare global {
             quit: () => Promise<void>
             minimize: () => Promise<void>
             maximize: () => Promise<void>
+            checkForUpdates: () => Promise<void>
             getVersion: () => Promise<string>
             relaunch: () => Promise<void>
             getPath: (path: string) => Promise<string>
@@ -243,7 +245,7 @@ function useLoading() {
     }
 }
 
-const {appendLoading, removeLoading} = useLoading()
+const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

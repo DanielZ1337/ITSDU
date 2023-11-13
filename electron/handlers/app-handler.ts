@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain} from "electron";
+import { app, autoUpdater, BrowserWindow, ipcMain } from "electron";
 
 function exitHandler() {
     ipcMain.handle('app:exit', () => {
@@ -47,6 +47,12 @@ function MaximizerHandler() {
     })
 }
 
+function checkForUpdatesHandler() {
+    ipcMain.handle('app:checkForUpdates', () => {
+        autoUpdater.checkForUpdates()
+    })
+}
+
 export default function appHandlerInitializer() {
     exitHandler()
     quitHandler()
@@ -54,4 +60,5 @@ export default function appHandlerInitializer() {
     relaunchHandler()
     MinimizerHandler()
     MaximizerHandler()
+    checkForUpdatesHandler()
 }

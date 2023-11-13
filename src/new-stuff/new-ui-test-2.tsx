@@ -25,6 +25,8 @@ import NotificationsDropDownSkeleton from "@/components/notifications/fallback/n
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation.ts";
+import AboutModal from "@/components/about-modal";
+import IsOnlineIndicator from "@/components/is-online-indicator";
 
 export default function NewUITest2() {
     const { showBrowseNavigation, toggleBrowseNavigation } = useBrowseNavigation()
@@ -48,6 +50,7 @@ export default function NewUITest2() {
 
     return (
         <div className="flex flex-col h-screen max-h-screen min-h-screen overflow-hidden">
+            <IsOnlineIndicator />
             <div className="drag flex items-center justify-between px-4 py-2 border-b border-background/40">
                 <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
                     className="ml-4 mt-2 w-8 h-8 my-auto" />
@@ -104,6 +107,7 @@ export default function NewUITest2() {
                 <ScrollToTopButton viewportRef={ref} />
                 <Toaster />
                 <SettingsModal />
+                <AboutModal />
             </div>
         </div>
     )

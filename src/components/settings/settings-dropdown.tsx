@@ -19,6 +19,7 @@ import { useAtom } from "jotai";
 import { browseNavigationAtom as showBrowseNavAtom } from '../../atoms/browse-navigation.ts';
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion.ts";
+import { useAboutModal } from "@/hooks/atoms/useAboutModal.ts";
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
@@ -26,6 +27,7 @@ export default function SettingsDropdown() {
     const { version } = useVersion()
     const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom);
     const { toggleSettingsModal } = useShowSettingsModal()
+    const { toggleAboutModal } = useAboutModal()
 
     const handleDarkModeToggle = useCallback(async () => {
         const isDarkMode = await window.darkMode.toggle()
@@ -122,7 +124,7 @@ export default function SettingsDropdown() {
                 <DropdownMenuItem
                     onClick={(e) =>
                         dropdownItemOnClick(e, () => {
-                            navigate('/about')
+                            toggleAboutModal()
                         })}
                 >
                     <span>About</span>
