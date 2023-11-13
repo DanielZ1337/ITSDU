@@ -155,6 +155,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
             enableHiding: false,
             cell: ({ row }) => {
                 const resource = row.original
+                const navigate = useNavigate()
 
                 return (
                     <DropdownMenu>
@@ -187,9 +188,11 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                                 </DropdownMenuItem>)}
                             {isResourcePDFFromUrlOrElementType(resource) && (
                                 <DropdownMenuItem
-                                    onClick={(e) => {
+                                    onClick={async (e) => {
                                         e.stopPropagation()
-                                        window.ai.upload(resource.ElementId)
+                                        const proceeded = await window.ai.upload(resource.ElementId)
+                                        if (!proceeded) return
+                                        navigate(`/ai/${resource.ElementId}`)
                                     }}
                                 >
                                     Open With AI

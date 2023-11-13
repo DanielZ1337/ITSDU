@@ -49,7 +49,7 @@ contextBridge.exposeInMainWorld('ai', {
         const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
         const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
-        await ipcRenderer.invoke('uploadfile-for-ai', {
+        return await ipcRenderer.invoke('uploadfile-for-ai', {
             url: scrapedResourceDownloadLink,
             elementId,
         })
@@ -132,7 +132,7 @@ declare global {
             }
         },
         ai: {
-            upload: (elementId: number) => Promise<void>
+            upload: (elementId: number) => Promise<boolean>
         },
         cookies: {
             get: (elementId: number | string) => Promise<string>

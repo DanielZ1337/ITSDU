@@ -104,7 +104,7 @@ const router = createHashRouter([
                                 path: ":folderId",
                                 element: <SuspenseWrapper><CourseResources /></SuspenseWrapper>,
                                 errorElement: <ErrorPage />,
-                            }
+                            },
                         ]
                     },
                     {
@@ -139,6 +139,11 @@ const router = createHashRouter([
             {
                 path: "/querytesting",
                 element: <Querytesting />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/ai/:elementId",
+                element: <TestAI />,
                 errorElement: <ErrorPage />,
             },
             {

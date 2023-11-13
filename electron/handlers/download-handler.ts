@@ -111,6 +111,8 @@ function uploadDocumentForAI() {
             url
         })
 
+        return uploadRes.status === 200
+
         /* console.log('Getting file for AI')
 
         // get the file as a file type
