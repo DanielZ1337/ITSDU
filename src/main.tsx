@@ -44,6 +44,7 @@ import CourseError from "./routes/course/course-error";
 import TestAI from "./routes/test-ai";
 import TestCookies from "./routes/test-cookies";
 import Layout from "./components/layout";
+import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 
 const router = createHashRouter([
     {
@@ -194,11 +195,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Providers>
         <SuspenseWrapper max>
             <React.StrictMode>
-                {/* <NewUITest /> */}
                 <RouterProvider fallbackElement={<ErrorPage />} future={{
                     v7_startTransition: true,
                 }} router={router} />
-                {/* <NewUITest2 /> */}
                 {/* <ReactQueryDevtools position="left" /> */}
             </React.StrictMode>
         </SuspenseWrapper>
@@ -218,7 +217,7 @@ const unreadMessages: UnreadMessages[] = [
 ]
 setInterval(async () => {
     const access_token = await getAccessToken()
-    axios.get(apiUrl('restapi/personal/instantmessages/messagethreads/unread/count/v1'), {
+    axios.get(GETunreadInstantMessagesCountApiUrl(), {
         params: {
             'access_token': access_token
         }

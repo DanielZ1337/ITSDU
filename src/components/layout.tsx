@@ -1,12 +1,10 @@
-import React, { Suspense, useEffect, useRef } from "react"
+import React, { Suspense, useRef } from "react";
 import { cn } from '../lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useUser } from "@/hooks/atoms/useUser.ts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SettingsDropdown from "@/components/settings/settings-dropdown";
 import BrowserNav from "@/components/browse-nav";
-import { useAtom } from "jotai";
-import { showBrowseNav as showBrowseNavAtom } from '../atoms/browse-nav';
 import { ErrorBoundary } from "react-error-boundary";
 import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown";
 import NotificationsDropdown from "@/components/notifications/notifications-dropdown";
@@ -18,17 +16,13 @@ import Titlebar from "@/components/titlebar";
 import SearchResourcesDialog from "@/components/resources/resources-search-dialog";
 import TitlebarSearch from "@/components/titlebar-search";
 import SettingsModal from "@/components/settings/settings-modal";
-import { courseAtom } from "@/atoms/course";
-import { sidebarActiveAtom } from "@/atoms/sidebar";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
-import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation.ts";
 import AboutModal from "@/components/about-modal";
 import IsOnlineIndicator from "@/components/is-online-indicator";
 import { useCourse } from "@/hooks/atoms/useCourse";
-import { CourseNavigationMenu } from "./course-navigation-menu";
 
 export default function Layout() {
     const { sidebarActive } = useSidebar()
@@ -175,7 +169,7 @@ function SidebarItem({ title, icon, href, end = true }: {
     href: string,
     end?: boolean
 }) {
-    const [sidebarActive] = useAtom(sidebarActiveAtom)
+    const { sidebarActive } = useSidebar()
 
     return (
         <NavLink

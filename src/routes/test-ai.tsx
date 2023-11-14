@@ -2,6 +2,8 @@ import renderLink from "@/components/custom-render-link-linkify"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useUser } from "@/hooks/atoms/useUser"
+import usePDFbyElementID from "@/hooks/usePDFbyElementID"
+import { cn } from "@/lib/utils"
 import Linkify from "linkify-react"
 import { useState } from "react"
 import { useParams } from "react-router-dom"
@@ -12,6 +14,7 @@ export default function TestAI() {
     const [loading, setLoading] = useState<boolean>(false)
     const [chatMessages, setChatMessages] = useState<string[]>([])
     const user = useUser()!
+    const { isLoading, src } = usePDFbyElementID(elementId ?? '')
 
     async function chatCompletion() {
         setLoading(true)
@@ -64,7 +67,16 @@ export default function TestAI() {
 
     return (
         <div className="flex p-4 rounded-lg flex-1 max-h-[85vh]">
-            <iframe src="https://itsdu.danielz.dev/s3/lec08-ajax-rest.pdf" className="rounded-lg w-full" />
+            <div className={cn("rounded-lg w-full", isLoading && 'opacity-50')}>
+                {isLoading && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
+                    </div>
+                </div>}
+                <iframe src={src} className="rounded-lg w-full h-full" />
+            </div>
             <div className="flex flex-col space-y-4 p-4 rounded-lg w-full">
                 <div
                     className="overflow-y-auto flex flex-col space-y-4 whitespace-pre-line bg-accent p-4 rounded shadow h-full mb-4 min-w-96 max-w-[100vw] text-foreground">
