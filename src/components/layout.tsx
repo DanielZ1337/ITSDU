@@ -32,7 +32,7 @@ export default function Layout() {
         <div className="flex flex-col h-screen max-h-screen min-h-screen overflow-hidden">
             <IsOnlineIndicator />
             <div className="drag flex items-center justify-between px-4 py-2 border-b border-background/40">
-                <Link className="no-drag" to={'/'}>
+                <Link className="no-drag shrink-0" to={'/'}>
                     <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
                         className="ml-4 mt-2 w-8 h-8 my-auto" />
                 </Link>
@@ -188,7 +188,7 @@ function SidebarItem({ title, icon, href, end = true }: {
                     )}
                     <span className="relative z-10 p-1 ml-2.5">{icon}</span>
                     <span
-                        className={cn('whitespace-nowrap text-left font-semibold z-10 relative overflow-hidden transition-all pl-4', sidebarActive ? 'w-full' : 'w-0')}>
+                        className={cn('whitespace-nowrap text-left z-10 relative overflow-hidden transition-all pl-4', sidebarActive ? 'w-full opacity-100' : 'w-0 opacity-0 ')}>
                         {title}
                     </span>
                 </>
