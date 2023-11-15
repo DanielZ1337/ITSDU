@@ -173,7 +173,7 @@ function SidebarItem({ title, icon, href, end = true }: {
 
     return (
         <NavLink
-            className={({ isActive }) => cn('animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer', isActive ? 'text-foreground' : 'text-foreground/60', 'hover:text-foreground')}
+            className={({ isActive, isPending }) => cn('animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground', isActive ? 'text-foreground' : 'text-foreground/60', isPending && 'opacity-50')}
             to={href}
             end={end}
         >

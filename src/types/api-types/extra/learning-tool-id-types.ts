@@ -18,17 +18,13 @@ export function isResourceFile(varToCompare: ItslearningRestApiEntitiesPersonalC
     }
 }
 
-export function isResourcePDFFromUrlOrElementType(varToCompare: number | ItslearningRestApiEntitiesPersonalCourseCourseResource) {
-    const elementTypeId = 131072;
-    if (typeof varToCompare === "number") {
-        return varToCompare === elementTypeId;
-    } else {
-        // @ts-ignore
-        return getElementTypeIdFromUrl(varToCompare.Url) === elementTypeId;
-    }
+export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource) {
+    // IconTypeId 12 is PDF (this is the only way to find out whether or not a resource is a PDF)
+    const IconTypeId = 12;
+    return getIconTypeIdFromUrl(varToCompare.IconUrl) === IconTypeId;
 }
 
-export function getElementTypeIdFromUrl(url: string) {
+export function getIconTypeIdFromUrl(url: string) {
     const urlParams = new URLSearchParams(url);
-    return parseInt(urlParams.get("ElementType") || "");
+    return parseInt(urlParams.get("IconTypeId") || "");
 }

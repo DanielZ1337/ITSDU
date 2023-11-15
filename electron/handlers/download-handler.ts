@@ -90,7 +90,7 @@ function uploadDocumentForAI() {
         // if it does then return
         // else continue
 
-        const baseUrl = VITE_DEV_SERVER_URL ? 'http://localhost:3000' : 'http://itsdu.danielz.dev'
+        const baseUrl = VITE_DEV_SERVER_URL ? 'http://localhost:3000' : 'https://itsdu.danielz.dev'
 
         const res = await fetch(`${baseUrl}/api/checkFile/${elementId}`)
         if (res.status === 200) throw new Error('File already exists for AI')
