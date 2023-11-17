@@ -1,5 +1,5 @@
-import { aboutModalAtom } from "@/atoms/about-modal";
-import { useAtom } from "jotai";
+import {aboutModalAtom} from "@/atoms/about-modal";
+import {useAtom} from "jotai";
 
 export const useAboutModal = () => {
     const [showAboutModal, setShowAboutModal] = useAtom(aboutModalAtom);
@@ -8,5 +8,5 @@ export const useAboutModal = () => {
         setShowAboutModal(prev => !prev);
     }
 
-    return { showAboutModal, setShowAboutModal, toggleAboutModal };
+    return {showAboutModal, setShowAboutModal, toggleAboutModal};
 }

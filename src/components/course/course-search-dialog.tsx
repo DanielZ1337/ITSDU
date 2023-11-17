@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect } from 'react'
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
-import { Skeleton } from '../ui/skeleton'
 import useGETstarredCourses from '@/queries/course-cards/useGETstarredCourses'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { useDebounce } from '@uidotdev/usehooks'
 import useGETunstarredCourses from '@/queries/course-cards/useGETunstarredCourses'
+import { Skeleton } from '../ui/skeleton'
 
 function CourseCommandList({ starredFetching, unstarredFetching, starredCourses, unstarredCourses, element, element1 }: {
     starredFetching: boolean,

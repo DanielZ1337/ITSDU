@@ -1,9 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
-import { Link } from "react-router-dom";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
+import {Link} from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
-import { GETcourseParticipants } from "@/types/api-types/courses/GETcourseParticipants";
+import {GETcourseParticipants} from "@/types/api-types/courses/GETcourseParticipants";
 
-export default function CourseParticipantsList({ participants }: { participants: GETcourseParticipants["EntityArray"] }) {
+export default function CourseParticipantsList({participants}: { participants: GETcourseParticipants["EntityArray"] }) {
 
 
     if (participants.length === 0) {
@@ -28,7 +28,7 @@ export default function CourseParticipantsList({ participants }: { participants:
                         <Link to={`/person/${participant.PersonId}`} className="flex items-center">
                             <div className="mr-4">
                                 <Avatar className="w-12 h-12">
-                                    <AvatarImage src={participant.PictureUrl} alt={participant.FullName} />
+                                    <AvatarImage src={participant.PictureUrl} alt={participant.FullName}/>
                                     <AvatarFallback>
                                         {participant.FullName.split(" ").map((name) => name[0]).slice(0, 3).join("")}
                                     </AvatarFallback>

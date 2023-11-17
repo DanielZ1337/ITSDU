@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils";
+import {apiUrl} from "@/lib/utils";
 import {
     ItslearningRestApiEntitiesNotification
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Notification";

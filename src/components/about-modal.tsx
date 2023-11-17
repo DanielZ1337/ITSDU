@@ -1,12 +1,22 @@
-import { useAboutModal } from '@/hooks/atoms/useAboutModal'
+import {useAboutModal} from '@/hooks/atoms/useAboutModal'
 import React from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from './ui/dialog'
-import { useVersion } from '@/hooks/atoms/useVersion'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger
+} from './ui/dialog'
+import {useVersion} from '@/hooks/atoms/useVersion'
 
 export default function AboutModal() {
 
-    const { setShowAboutModal, showAboutModal } = useAboutModal()
-    const { version } = useVersion()
+    const {setShowAboutModal, showAboutModal} = useAboutModal()
+    const {version} = useVersion()
     const [isCheckingForUpdate, setIsCheckingForUpdate] = React.useState(false)
 
     async function checkForUpdate() {
@@ -20,7 +30,7 @@ export default function AboutModal() {
             open={showAboutModal}
             onOpenChange={setShowAboutModal}
         >
-            <DialogOverlay />
+            <DialogOverlay/>
             <DialogPortal>
                 <DialogTrigger>
                     <button className="hidden"></button>
@@ -39,22 +49,26 @@ export default function AboutModal() {
                                     {isCheckingForUpdate ? 'Checking for update...' : 'Check for update'}
                                 </button>
                             </p>
-                            <p className="text-sm text-gray-500">ITSDU - SDU itslearning desktop app built for students</p>
+                            <p className="text-sm text-gray-500">ITSDU - SDU itslearning desktop app built for
+                                students</p>
                         </DialogDescription>
                     </DialogHeader>
                     <div className="p-4 flex">
                         <div className='flex flex-col mr-6 shrink-0'>
-                            <img src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo" className="w-20 h-20 mx-auto" />
-                            <hr className="my-6" />
-                            <img src="itsl-itslearning-file://icon.ico" alt="itslearning Logo" className="w-20 h-20 mx-auto" />
+                            <img src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo"
+                                 className="w-20 h-20 mx-auto"/>
+                            <hr className="my-6"/>
+                            <img src="itsl-itslearning-file://icon.ico" alt="itslearning Logo"
+                                 className="w-20 h-20 mx-auto"/>
                         </div>
                         <p className="text-sm text-gray-500">
-                            ITSDU is a desktop app built for students at SDU to access itslearning in a more convenient way.
-                            <br />
-                            <br />
+                            ITSDU is a desktop app built for students at SDU to access itslearning in a more convenient
+                            way.
+                            <br/>
+                            <br/>
                             ITSDU is not affiliated with itslearning or SDU in any way.
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             ITSDU is built by students for students.
                         </p>
                     </div>
@@ -63,6 +77,6 @@ export default function AboutModal() {
                     </DialogFooter>
                 </DialogContent>
             </DialogPortal>
-        </Dialog >
+        </Dialog>
     )
 }

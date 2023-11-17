@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils"
+import {apiUrl} from "@/lib/utils"
 
 const GETunreadInstantMessagesCountApiEndpoint = 'restapi/personal/instantmessages/messagethreads/unread/count/v1'
 

@@ -7,27 +7,27 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { cn } from "@/lib/utils.ts";
-import { buttonVariants } from "@/components/ui/button.tsx";
-import { MoreVertical } from "lucide-react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Suspense, useCallback, useEffect } from "react";
+import {cn} from "@/lib/utils.ts";
+import {buttonVariants} from "@/components/ui/button.tsx";
+import {MoreVertical} from "lucide-react";
+import {ErrorBoundary} from "react-error-boundary";
+import {Suspense, useCallback, useEffect} from "react";
 import SettingsDropdownUserFullname from "@/components/settings/settings-dropdown-user-fullname.tsx";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "next-themes";
-import { useAtom } from "jotai";
-import { browseNavigationAtom as showBrowseNavAtom } from '../../atoms/browse-navigation.ts';
-import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
-import { useVersion } from "@/hooks/atoms/useVersion.ts";
-import { useAboutModal } from "@/hooks/atoms/useAboutModal.ts";
+import {useNavigate} from "react-router-dom";
+import {useTheme} from "next-themes";
+import {useAtom} from "jotai";
+import {browseNavigationAtom as showBrowseNavAtom} from '../../atoms/browse-navigation.ts';
+import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
+import {useVersion} from "@/hooks/atoms/useVersion.ts";
+import {useAboutModal} from "@/hooks/atoms/useAboutModal.ts";
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
-    const { theme, setTheme } = useTheme()
-    const { version } = useVersion()
+    const {theme, setTheme} = useTheme()
+    const {version} = useVersion()
     const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom);
-    const { toggleSettingsModal } = useShowSettingsModal()
-    const { toggleAboutModal } = useAboutModal()
+    const {toggleSettingsModal} = useShowSettingsModal()
+    const {toggleAboutModal} = useAboutModal()
 
     const handleDarkModeToggle = useCallback(async () => {
         const isDarkMode = await window.darkMode.toggle()
@@ -71,12 +71,12 @@ export default function SettingsDropdown() {
                 variant: 'ghost',
                 size: 'icon'
             }))} asChild
-                onClick={(e) => {
-                    e.stopPropagation()
-                    e.preventDefault()
-                }}
+                                 onClick={(e) => {
+                                     e.stopPropagation()
+                                     e.preventDefault()
+                                 }}
             >
-                <MoreVertical className="w-8 h-8" />
+                <MoreVertical className="w-8 h-8"/>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -91,11 +91,11 @@ export default function SettingsDropdown() {
                 <DropdownMenuLabel className={"font-normal"}>
                     <ErrorBoundary fallback={<div className={"animate-pulse"}>Loading...</div>}>
                         <Suspense fallback={<div className={"animate-pulse"}>Loading...</div>}>
-                            <SettingsDropdownUserFullname />
+                            <SettingsDropdownUserFullname/>
                         </Suspense>
                     </ErrorBoundary>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem onClick={(e) => dropdownItemOnClick(e, () => {
                     handleDarkModeToggle()
                 })}>
@@ -129,7 +129,7 @@ export default function SettingsDropdown() {
                 >
                     <span>About</span>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem
                     onClick={() => {
                         window.auth.store.clear().then(() => {

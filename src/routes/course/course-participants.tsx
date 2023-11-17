@@ -1,17 +1,17 @@
 import CourseParticipantsList from "@/components/course/participants/course-participants-list.tsx";
-import { Input } from "@/components/ui/input";
-import { Suspense, useState } from "react";
-import { useParams } from "react-router-dom";
+import {Input} from "@/components/ui/input";
+import {useState} from "react";
+import {useParams} from "react-router-dom";
 import CourseParticipantsRolesSelect from "@/components/course/participants/course-participants-roles-select.tsx";
 import useGETcourseParticipants from "@/queries/courses/useGETcourseParticipants";
-import { CourseParticipantRole } from "@/types/course-participants-roles";
+import {CourseParticipantRole} from "@/types/course-participants-roles";
 
 export default function CourseParticipants() {
     const [searchTerm, setSearchTerm] = useState("");
-    const { id } = useParams();
+    const {id} = useParams();
     const courseId = Number(id);
 
-    const { data: participants } = useGETcourseParticipants({ courseId }, { suspense: true });
+    const {data: participants} = useGETcourseParticipants({courseId}, {suspense: true});
     let filteredParticipants = participants!.EntityArray.filter((participant) => participant.FullName.toLowerCase().includes(searchTerm.toLowerCase()));
     const roleIdsFromFilteredParticipants = [...new Set(filteredParticipants.map((participant) => participant.RoleId))];
     const [selectedRolesIds, setSelectedRolesIds] = useState<CourseParticipantRole[]>(roleIdsFromFilteredParticipants);
@@ -28,9 +28,10 @@ export default function CourseParticipants() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="border border-gray-300 rounded-md py-2 px-4 w-full sm:w-1/2 mr-2"
                 />
-                <CourseParticipantsRolesSelect roleIds={roleIdsFromFilteredParticipants} onChange={setSelectedRolesIds} />
+                <CourseParticipantsRolesSelect roleIds={roleIdsFromFilteredParticipants}
+                                               onChange={setSelectedRolesIds}/>
             </div>
-            <CourseParticipantsList participants={filteredParticipants} />
+            <CourseParticipantsList participants={filteredParticipants}/>
         </div>
     );
 }

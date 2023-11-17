@@ -1,8 +1,8 @@
-import { Divider } from "@nextui-org/divider";
-import { useIntersectionObserver } from "@uidotdev/usehooks"
-import React, { SetStateAction, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Button, DividerProps, ScrollShadow } from "@nextui-org/react";
+import {Divider} from "@nextui-org/divider";
+import {useIntersectionObserver} from "@uidotdev/usehooks"
+import React, {SetStateAction, useEffect, useState} from "react";
+import {cn} from "@/lib/utils";
+import {Button, DividerProps, ScrollShadow} from "@nextui-org/react";
 import {
     AlertTriangle,
     ComputerIcon,
@@ -13,24 +13,24 @@ import {
     SunIcon,
     User as UserIcon
 } from "lucide-react";
-import { useTheme } from "next-themes";
-import { Spinner } from "@nextui-org/spinner";
-import { useUser } from '@/hooks/atoms/useUser.ts'
-import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle } from "../ui/dialog";
-import { Avatar } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import {useTheme} from "next-themes";
+import {Spinner} from "@nextui-org/spinner";
+import {useUser} from '@/hooks/atoms/useUser.ts'
+import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle} from "../ui/dialog";
+import {Avatar} from "@/components/ui/avatar";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
 
 export default function Page() {
 
-    const { showSettingsModal, setShowSettingsModal } = useShowSettingsModal()
+    const {showSettingsModal, setShowSettingsModal} = useShowSettingsModal()
 
     return (
         <Dialog
             open={showSettingsModal}
             onOpenChange={setShowSettingsModal}
         >
-            <DialogOverlay />
+            <DialogOverlay/>
             <DialogContent
                 className="md:w-fit max-w-[90vw] max-h-[90vh]"
             >
@@ -57,7 +57,7 @@ function SettingsCustom() {
     const rootRef = React.useRef<HTMLDivElement>(null)
     const navRef = React.useRef<HTMLDivElement>(null)
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768)
-    const { setTheme, theme } = useTheme()
+    const {setTheme, theme} = useTheme()
     const user = useUser()!
 
     const navDividerSettings = {
@@ -96,28 +96,28 @@ function SettingsCustom() {
                 <nav
                     className={"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 px-2 md:px-0 overflow-x-auto md:overflow-y-auto"}
                     ref={navRef}>
-                    <SettingsNavTitle title={"Profile"} icon={<UserIcon />}  {...SettingsNavTitleSettings} />
+                    <SettingsNavTitle title={"Profile"} icon={<UserIcon/>}  {...SettingsNavTitleSettings} />
                     <Divider {...navDividerSettings} />
                     <SettingsNavTitle title={"Preferences"}
-                        icon={<SettingsIcon />} {...SettingsNavTitleSettings} />
+                                      icon={<SettingsIcon/>} {...SettingsNavTitleSettings} />
                     <Divider {...navDividerSettings} />
                     <SettingsNavTitle title={"Cookie Settings"}
-                        icon={<CookieIcon />} {...SettingsNavTitleSettings} />
+                                      icon={<CookieIcon/>} {...SettingsNavTitleSettings} />
                     <Divider {...navDividerSettings} />
                     <SettingsNavTitle title={"Danger Zone"}
-                        icon={<AlertTriangle />} {...SettingsNavTitleSettings} />
+                                      icon={<AlertTriangle/>} {...SettingsNavTitleSettings} />
                 </nav>
-                <Divider orientation={"vertical"} className={"hidden md:block h-[55vh]"} />
+                <Divider orientation={"vertical"} className={"hidden md:block h-[55vh]"}/>
                 <ScrollShadow hideScrollBar
-                    className={"flex flex-col gap-4 w-full h-[55vh] py-2 overflow-y-auto"}
-                    ref={rootRef}>
+                              className={"flex flex-col gap-4 w-full h-[55vh] py-2 overflow-y-auto"}
+                              ref={rootRef}>
                     <SettingsCardSection title={"Profile"} {...SettingsCardSectionSettings}>
                         <div className={"flex flex-col gap-4 w-full"}>
                             <div className={"flex flex-col gap-2"}>
                                 <h6 className={"text-shdcnmuted-shdcnforeground"}>Profile Picture</h6>
                                 <Avatar src={user.ProfileImageUrl}
-                                    className={"border-[4px] border-secondary h-auto xl:w-[100px] md:w-[100px] w-[80px] lg:w-[100px]"}
-                                    alt={user.FullName} />
+                                        className={"border-[4px] border-secondary h-auto xl:w-[100px] md:w-[100px] w-[80px] lg:w-[100px]"}
+                                        alt={user.FullName}/>
                             </div>
                             <div className={"flex flex-col gap-2"}>
                                 <h6 className={"text-shdcnmuted-shdcnforeground"}>Name</h6>
@@ -126,7 +126,7 @@ function SettingsCustom() {
                                     <h1 className={"text-foreground"}>{user.FullName}</h1>
                                     <div
                                         className={"ml-2 p-2 rounded-full hover:bg-foreground-200 cursor-pointer"}>
-                                        <PencilIcon className={"w-4 h-4"} />
+                                        <PencilIcon className={"w-4 h-4"}/>
                                     </div>
                                 </span>
                             </div>
@@ -137,7 +137,7 @@ function SettingsCustom() {
                                     <h1 className={"text-foreground"}>{user.PersonId}</h1>
                                     <div
                                         className={"ml-2 p-2 rounded-full hover:bg-foreground-200 cursor-pointer"}>
-                                        <PencilIcon className={"w-4 h-4"} />
+                                        <PencilIcon className={"w-4 h-4"}/>
                                     </div>
                                 </span>
                             </div>
@@ -181,7 +181,7 @@ function SettingsCustom() {
                                         radius={"sm"}
                                         size={"lg"}
                                     >
-                                        <SunIcon className={"w-6 h-6 text-foreground"} />
+                                        <SunIcon className={"w-6 h-6 text-foreground"}/>
                                     </Button>
                                     <Button
                                         onClick={() => {
@@ -192,7 +192,7 @@ function SettingsCustom() {
                                         radius={"sm"}
                                         size={"lg"}
                                     >
-                                        <MoonIcon className={"w-6 h-6 text-foreground"} />
+                                        <MoonIcon className={"w-6 h-6 text-foreground"}/>
                                     </Button>
                                     <Button
                                         onClick={() => {
@@ -203,7 +203,7 @@ function SettingsCustom() {
                                         radius={"sm"}
                                         size={"lg"}
                                     >
-                                        <ComputerIcon className={"w-6 h-6 text-foreground"} />
+                                        <ComputerIcon className={"w-6 h-6 text-foreground"}/>
                                     </Button>
                                 </div>
                             </div>
@@ -222,7 +222,7 @@ function SettingsCustom() {
                                         alert('Coming Soon')
                                     }}
                                     className={"w-full md:w-1/2 my-4 md:mb-0"}
-                                    spinner={<Spinner color={"current"} size={"sm"} />}
+                                    spinner={<Spinner color={"current"} size={"sm"}/>}
                                     size={"lg"}
                                     color={"danger"}
                                     variant={"ghost"}
@@ -239,7 +239,7 @@ function SettingsCustom() {
     )
 }
 
-function SettingsCardSection({ title, children, setCurrentSection, root }: {
+function SettingsCardSection({title, children, setCurrentSection, root}: {
     title: string,
     children?: React.ReactNode,
     setCurrentSection?: React.Dispatch<SetStateAction<string>>,
@@ -266,7 +266,7 @@ function SettingsCardSection({ title, children, setCurrentSection, root }: {
     )
 }
 
-function SettingsNavTitle({ currentSection, title, navbarRef, rootRef, isMobile, icon }: {
+function SettingsNavTitle({currentSection, title, navbarRef, rootRef, isMobile, icon}: {
     currentSection: string,
     title: string,
     navbarRef?: React.RefObject<HTMLDivElement>

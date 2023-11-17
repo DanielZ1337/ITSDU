@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { contextBridge, ipcRenderer } from 'electron'
-import { sendNotifcation } from "./handlers/notifcation-handler.ts";
+import {contextBridge, ipcRenderer} from 'electron'
+import {sendNotifcation} from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import { store_keys } from './services/itslearning/auth/types/store_keys.ts';
+import {store_keys} from './services/itslearning/auth/types/store_keys.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -245,7 +245,7 @@ function useLoading() {
     }
 }
 
-const { appendLoading, removeLoading } = useLoading()
+const {appendLoading, removeLoading} = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

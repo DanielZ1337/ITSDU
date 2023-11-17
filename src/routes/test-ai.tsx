@@ -1,20 +1,20 @@
 import renderLink from "@/components/custom-render-link-linkify"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useUser } from "@/hooks/atoms/useUser"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {useUser} from "@/hooks/atoms/useUser"
 import usePDFbyElementID from "@/hooks/usePDFbyElementID"
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 import Linkify from "linkify-react"
-import { useState } from "react"
-import { useParams } from "react-router-dom"
+import {useState} from "react"
+import {useParams} from "react-router-dom"
 
 export default function TestAI() {
-    const { elementId } = useParams()
+    const {elementId} = useParams()
     const [message, setMessage] = useState<string>('')
     const [loading, setLoading] = useState<boolean>(false)
     const [chatMessages, setChatMessages] = useState<string[]>([])
     const user = useUser()!
-    const { isLoading, src } = usePDFbyElementID(elementId ?? '')
+    const {isLoading, src} = usePDFbyElementID(elementId ?? '')
 
     async function chatCompletion() {
         setLoading(true)
@@ -41,7 +41,7 @@ export default function TestAI() {
         while (loop) {
             const chunk = await reader.read()
 
-            const { done, value } = chunk
+            const {done, value} = chunk
 
             if (done) {
                 loop = false
@@ -70,12 +70,12 @@ export default function TestAI() {
             <div className={cn("rounded-lg w-full", isLoading && 'opacity-50')}>
                 {isLoading && <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
-                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
-                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce" />
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"/>
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"/>
+                        <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"/>
                     </div>
                 </div>}
-                <iframe src={src} className="rounded-lg w-full h-full" />
+                <iframe src={src} className="rounded-lg w-full h-full"/>
             </div>
             <div className="flex flex-col space-y-4 p-4 rounded-lg w-full">
                 <div
@@ -97,7 +97,7 @@ export default function TestAI() {
                     }}
                     className="flex justify-between gap-4"
                 >
-                    <Input disabled={loading} value={message} onChange={(e) => setMessage(e.target.value)} />
+                    <Input disabled={loading} value={message} onChange={(e) => setMessage(e.target.value)}/>
                     <Button disabled={loading}>
                         Submit
                     </Button>

@@ -22,7 +22,7 @@ export function PersonRelationships({personId, showTitle = true}: { personId: nu
             {showTitle && <h2 className="font-bold text-2xl text-balance text-foreground">Your relationships</h2>}
             <ul className="mt-1 space-y-4">
                 {relations.map((relation, idx) => (
-                    <li key={idx} className={"text-foreground text-sm text-balance"}>
+                    <li key={idx} className={"text-foreground text-sm text-balance font-semibold"}>
                         {relation.Text}
                         {relation.Items?.map((item, idx) => (
                             <li className={"text-foreground/50 my-1 font-normal"} key={idx}>{item}</li>

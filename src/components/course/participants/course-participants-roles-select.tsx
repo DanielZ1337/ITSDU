@@ -4,12 +4,15 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { ChevronDown } from "lucide-react";
-import { CourseParticipantRole, CourseParticipantRoleLabels } from "@/types/course-participants-roles.ts";
-import { useState } from "react";
+import {Button} from "@/components/ui/button.tsx";
+import {ChevronDown} from "lucide-react";
+import {CourseParticipantRole, CourseParticipantRoleLabels} from "@/types/course-participants-roles.ts";
+import {useState} from "react";
 
-export default function CourseParticipantsRolesSelect({ roleIds, onChange }: { roleIds: CourseParticipantRole[], onChange: (roleIds: CourseParticipantRole[]) => void }) {
+export default function CourseParticipantsRolesSelect({roleIds, onChange}: {
+    roleIds: CourseParticipantRole[],
+    onChange: (roleIds: CourseParticipantRole[]) => void
+}) {
     // @ts-ignore
     const [selectedRolesIds, setSelectedRolesIds] = useState<CourseParticipantRole[]>(roleIds);
 
@@ -19,7 +22,7 @@ export default function CourseParticipantsRolesSelect({ roleIds, onChange }: { r
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto select-none">
-                    Roles <ChevronDown className="ml-2 h-4 w-4" />
+                    Roles <ChevronDown className="ml-2 h-4 w-4"/>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={"w-52"}>

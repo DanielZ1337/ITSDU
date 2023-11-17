@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
-import { Maximize2Icon, Minimize2Icon } from "lucide-react";
-import { MdOutlineClose } from "react-icons/md";
+import {cn} from "@/lib/utils";
+import {Maximize2Icon, Minimize2Icon} from "lucide-react";
+import {MdOutlineClose} from "react-icons/md";
 
 export default function Titlebar() {
 
@@ -22,26 +22,30 @@ export default function Titlebar() {
                 className="hover:bg-yellow-800 text-yellow-500 mr-2"
                 onClick={minimize}
             >
-                <Minimize2Icon className="w-3 h-3" />
+                <Minimize2Icon className="w-3 h-3"/>
             </TitlebarButton>
             <TitlebarButton
                 className="hover:bg-green-800 text-green-500 mr-2"
                 onClick={maximize}
             >
-                <Maximize2Icon className="w-3 h-3" />
+                <Maximize2Icon className="w-3 h-3"/>
             </TitlebarButton>
             <TitlebarButton
                 className="hover:bg-red-800 text-red-500"
                 onClick={close}
             >
-                <MdOutlineClose className="w-5 h-5" />
+                <MdOutlineClose className="w-5 h-5"/>
             </TitlebarButton>
         </div>
     );
 }
 
 
-function TitlebarButton({ children, onClick, className }: { children: React.ReactNode, onClick: () => void, className?: string }) {
+function TitlebarButton({children, onClick, className}: {
+    children: React.ReactNode,
+    onClick: () => void,
+    className?: string
+}) {
     return (
         <button
             className={cn("w-5 h-5 rounded-full bg-foreground/10 inline-flex items-center justify-center p-0.5 hover:scale-110 transition-all hover:text-white", className)}

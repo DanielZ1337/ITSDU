@@ -1,8 +1,5 @@
-import { apiUrl } from "@/lib/utils";
-import {
-    ItslearningRestApiEntitiesNotification
-} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Notification";
-import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import {apiUrl} from "@/lib/utils";
+import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 const GETnotificationElementsApiEndpoint = 'restapi/personal/notifications/{notificationId}/elements/v1?PageIndex={PageIndex}&PageSize={PageSize}';
 
