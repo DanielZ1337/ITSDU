@@ -15,9 +15,10 @@ import { Link } from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
 import Linkify from "linkify-react";
 import renderLink from "../custom-render-link-linkify";
+import { ItslearningRestApiEntitiesLightBulletinsLightBulletinV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 
 export default function LightbulletinCard({ bulletin }: {
-    bulletin: GETlightbulletinsForCourse['EntityArray'][0]
+    bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 }) {
     const [readMore, setReadMore] = useState(false);
     const [hasReadMore, setHasReadMore] = useState<boolean>(false)

@@ -45,6 +45,7 @@ import TestAI from "./routes/test-ai";
 import TestCookies from "./routes/test-cookies";
 import Layout from "./components/layout";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
+import Updates from "./routes/updates";
 
 const router = createHashRouter([
     {
@@ -75,6 +76,11 @@ const router = createHashRouter([
             {
                 path: "/notifications",
                 element: <SuspenseWrapper><NotificationsIndex /></SuspenseWrapper>,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/updates",
+                element: <SuspenseWrapper><Updates /></SuspenseWrapper>,
                 errorElement: <ErrorPage />,
             },
             {

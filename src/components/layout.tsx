@@ -140,7 +140,7 @@ function Sidebar() {
             </div>
             <hr className="mb-3" />
             <NavLink to={'/profile'}
-                className={({ isActive }) => cn("rounded-md flex py-2 px-3 text-left hover:bg-foreground/10", isActive && "bg-foreground/10")}>
+                className={({ isActive }) => cn("rounded-md flex py-2 px-3 text-left hover:bg-foreground/10 transition-all", isActive && "bg-foreground/10")}>
                 <Avatar className={"flex-shrink-0 w-10 h-10"}>
                     <AvatarImage src={user?.ProfileImageUrl}
                         alt={user?.FullName}

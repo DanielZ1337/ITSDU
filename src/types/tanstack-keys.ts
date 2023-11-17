@@ -38,6 +38,8 @@ export enum TanstackKeys {
     PUTinstantMessageThreadUpdateIsRead = "PUTinstantMessageThreadUpdateIsRead",
     NotificationsTopMenu = "notificationsTopMenu",
     Notifications = "notifications",
+    NotificationsStream = "notificationsStream",
+    NotificationElements = "notificationElements",
     CurrentUser = "currentUser",
     Person = "person",
     PersonsRelations = "personsRelations",

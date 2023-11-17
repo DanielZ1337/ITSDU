@@ -18,10 +18,16 @@ export function isResourceFile(varToCompare: ItslearningRestApiEntitiesPersonalC
     }
 }
 
-export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource) {
+export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | string | number) {
     // IconTypeId 12 is PDF (this is the only way to find out whether or not a resource is a PDF)
     const IconTypeId = 12;
-    return getIconTypeIdFromUrl(varToCompare.IconUrl) === IconTypeId;
+    if (typeof varToCompare === "number") {
+        return varToCompare === IconTypeId
+    } else if (typeof varToCompare === "string") {
+        return getIconTypeIdFromUrl(varToCompare) === IconTypeId
+    } else {
+        return getIconTypeIdFromUrl(varToCompare.IconUrl) === IconTypeId;
+    }
 }
 
 export function getIconTypeIdFromUrl(url: string) {
