@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import {apiUrl} from "@/lib/utils.ts";
 
 const GETcheckElementIDApiEndpoint = 'https://itsdu.danielz.dev/api/checkFile/{elementId}'
 

@@ -89,11 +89,13 @@ export default function Index() {
                     </span>
                 )}
             </div>
-            <div className={"items-center w-full h-full flex-wrap flex gap-4 justify-center flex-1"} ref={cardsRef}>
+            <div className={"items-center w-full h-full flex-wrap flex gap-4 lg:gap-6 justify-center flex-1"}
+                 ref={cardsRef}>
                 <Suspense fallback={
                     [...Array(12).keys()].map(i => i++).map((i) => (
-                        <div key={i} className={"flex flex-col w-72 h-36 bg-white rounded-md shadow-md"}>
-                            <div className={"flex flex-col w-full h-1/2 p-4"}>
+                        <div key={i}
+                             className={"flex flex-col bg-white rounded-md shadow-md w-72 h-36 lg:w-80 lg:h-44"}>
+                            <div className={"flex flex-col w-full h-1/2 p-4 lg:p-6"}>
                                 <div className={"flex flex-row justify-between items-center"}>
                                     <Skeleton className={"w-4/5 h-4 bg-gray-200 rounded-md"}/>
                                     <StarIcon

@@ -11,6 +11,8 @@ export default function Providers({children}: {
                 refetchOnWindowFocus: false,
                 refetchOnMount: false,
                 retry: false,
+                refetchInterval: 1000 * 60 * 5, // 5 minutes
+                keepPreviousData: true,
             }
         }
     })

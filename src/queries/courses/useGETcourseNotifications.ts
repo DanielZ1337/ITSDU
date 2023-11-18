@@ -2,16 +2,16 @@ import {useInfiniteQuery, UseInfiniteQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
 import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils";
 import {
-    GETnotificationsStream,
-    GETnotificationsStreamApiUrl,
-    GETnotificationsStreamParams
-} from '@/types/api-types/notifications/GETnotificationsStream';
+    GETcourseNotifications,
+    GETcourseNotificationsApiUrl,
+    GETcourseNotificationsParams
+} from '@/types/api-types/courses/GETcourseNotifications';
 import {TanstackKeys} from "@/types/tanstack-keys";
 
-export default function useGETnotificationsStream(params: GETnotificationsStreamParams, queryConfig?: UseInfiniteQueryOptions<GETnotificationsStream, Error, GETnotificationsStream, GETnotificationsStream, string[]>) {
+export default function useGETcourseNotifications(params: GETcourseNotificationsParams, queryConfig?: UseInfiniteQueryOptions<GETcourseNotifications, Error, GETcourseNotifications, GETcourseNotifications, string[]>) {
 
-    return useInfiniteQuery([TanstackKeys.NotificationsStream, ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.PageIndex}) => {
-        const res = await axios.get(GETnotificationsStreamApiUrl({
+    return useInfiniteQuery([TanstackKeys.CourseNotifications, ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.PageIndex}) => {
+        const res = await axios.get(GETcourseNotificationsApiUrl({
             ...params,
             PageIndex: pageParam
         }), {
@@ -26,6 +26,7 @@ export default function useGETnotificationsStream(params: GETnotificationsStream
     }, {
         ...queryConfig,
         getNextPageParam: (lastPage) => {
+            console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
             if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
                 return lastPage.CurrentPageIndex + 1;
             } else {

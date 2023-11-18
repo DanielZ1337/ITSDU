@@ -16,7 +16,7 @@ import renderLink from "../custom-render-link-linkify";
 import {
     ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
-import LightbulletinDate from "./lightbulletin-date";
+import HoverDate from "../hover-date";
 
 export default function LightbulletinCard({bulletin}: {
     bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
@@ -72,7 +72,7 @@ export default function LightbulletinCard({bulletin}: {
                                 {bulletin.PublishedBy.FullName}{' '}
                             </Link>
                         </PersonHoverCard>
-                        <LightbulletinDate date={bulletin.PublishedDate}/>
+                        <HoverDate date={bulletin.PublishedDate}/>
                     </div>
                 </div>
                 <Button

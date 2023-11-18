@@ -1,12 +1,16 @@
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {getRelativeTimeString} from "@/lib/utils";
+import {cn, getRelativeTimeString} from "@/lib/utils";
 
-export default function LightbulletinDate({date}: { date: Date }) {
+export default function HoverDate({date, children, className}: {
+    date: Date | string,
+    children?: React.ReactNode,
+    className?: string
+}) {
     return (
         <HoverCard>
             <HoverCardTrigger asChild>
-                <span className="text-gray-500">
-                    {getRelativeTimeString(new Date(date))}
+                <span className={cn("text-gray-500", className)}>
+                    {children || getRelativeTimeString(new Date(date))}
                 </span>
             </HoverCardTrigger>
             <HoverCardContent className={"max-w-[60dvw] w-fit break-all py-2 border-0 px-4"}>

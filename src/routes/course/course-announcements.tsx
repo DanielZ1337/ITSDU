@@ -1,16 +1,18 @@
-import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
 import {Suspense, useEffect} from "react";
 import {useInView} from "react-intersection-observer";
 import {Skeleton} from "@nextui-org/react";
 import NotificationCard from "@/components/notifications/notifications-card";
+import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
+import {useParams} from "react-router-dom";
 
 
-export default function Updates() {
-    const {data: updates, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETnotificationsStream({
+export default function CourseAnnouncements() {
+    const {id} = useParams();
+    const {data: updates, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETcourseNotifications({
+        courseId: Number(id),
         showLightBulletins: true,
         PageIndex: 0,
         PageSize: 10,
-        UseNewerThan: true,
     }, {
         suspense: true,
         keepPreviousData: true,
@@ -26,14 +28,15 @@ export default function Updates() {
 
     return (
         <div className="rounded-lg shadow-lg p-6">
-            <h1 className="text-2xl font-bold mb-4">Recent Updates</h1>
+            <h1 className="text-2xl font-bold mb-4">Recent Updates
+                for {updates?.pages[0].EntityArray[0].LocationTitle}</h1>
             <div className="flex flex-col gap-4">
                 {updates && updates.pages.map((page) => (
                     page.EntityArray.map((update) => (
                         <Suspense fallback={
                             <Skeleton className="bg-foreground/10 rounded-md py-8"/>
                         } key={update.NotificationId}>
-                            <NotificationCard key={update.NotificationId} notification={update}/>
+                            <NotificationCard key={update.NotificationId} notification={update} showTitle={false}/>
                         </Suspense>
                     ))
                 ))}

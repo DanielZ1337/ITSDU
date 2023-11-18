@@ -92,8 +92,8 @@ export default function CourseCards({config, courseCardTypes}: {
                 <div className={"flex flex-col w-full gap-4"}>
                     <div className={"flex flex-wrap gap-4 justify-center"}>
                         {starredCourses?.length !== 0 && (
-                            <div className={"flex flex-col w-full gap-4"}>
-                                <h2 className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                            <div className={"flex flex-col w-full gap-4 lg:gap-6"}>
+                                <h2 className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold tracking-tighter"}>
                                     Starred courses
                                 </h2>
                                 <div className={"flex flex-wrap gap-4 justify-center"}>
@@ -104,8 +104,8 @@ export default function CourseCards({config, courseCardTypes}: {
                             </div>
                         )}
                         {unstarredCourses?.length !== 0 && (
-                            <div className={"flex flex-col w-full gap-4"}>
-                                <h2 className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
+                            <div className={"flex flex-col w-full gap-4 lg:gap-6"}>
+                                <h2 className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg lg:text-xl font-semibold tracking-tighter"}>
                                     Unstarred courses
                                 </h2>
                                 <div className={"flex flex-wrap gap-4 justify-center"}>

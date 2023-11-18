@@ -26,7 +26,6 @@ export default function useGETnotifications(params: GETnotificationsParams, quer
     }, {
         ...queryConfig,
         getNextPageParam: (lastPage) => {
-            console.log(lastPage.PageSize, lastPage.Total, lastPage.CurrentPageIndex, lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total)
             if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
                 return lastPage.CurrentPageIndex + 1;
             } else {

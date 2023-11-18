@@ -47,7 +47,7 @@ export default function MessagesDropdown() {
 
     useEffect(() => {
         if (inView && hasNextPage && !isFetchingNextPage) {
-            fetchNextPage().then(r => console.log(r)).catch(e => console.log(e))
+            fetchNextPage()
         }
     }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 

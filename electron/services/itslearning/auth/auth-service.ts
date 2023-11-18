@@ -1,10 +1,10 @@
-import {safeStorage} from "electron";
-import {GrantType} from "./types/grant_type"
-import {ITSLEARNING_SCOPES_ENUM} from "./types/scopes"
+import { safeStorage } from "electron";
+import { GrantType } from "./types/grant_type"
+import { ITSLEARNING_SCOPES_ENUM } from "./types/scopes"
 import axios from "axios";
 import RegexEscape from 'regex-escape';
-import {store_keys} from "./types/store_keys";
-import {ITSLEARNING_URL} from "../itslearning.ts";
+import { store_keys } from "./types/store_keys";
+import { ITSLEARNING_URL } from "../itslearning.ts";
 
 const Store = require('electron-store');
 
@@ -27,6 +27,8 @@ export const getItslearningOAuthUrl = () => {
     url.searchParams.append('redirect_uri', ITSLEARNING_REDIRECT_URI)
     return url.toString()
 }
+
+export const REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45 // 45 minutes
 
 let instance: AuthService | null = null
 
@@ -86,7 +88,7 @@ export class AuthService {
 
         if (!current_refresh_token) throw new Error('No refresh token')
 
-        const {data} = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+        const { data } = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
             "grant_type": GrantType.REFRESH_TOKEN,
             "refresh_token": current_refresh_token,
             "client_id": ITSLEARNING_CLIENT_ID,
@@ -96,7 +98,7 @@ export class AuthService {
             }
         })
 
-        const {access_token, refresh_token} = data
+        const { access_token, refresh_token } = data
         this.setToken('access_token', access_token)
         this.setToken('refresh_token', refresh_token)
     }

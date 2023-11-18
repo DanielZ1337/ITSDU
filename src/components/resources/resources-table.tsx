@@ -268,8 +268,6 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
     const navigate = useNavigate()
     const isRoot = !useMatch("/course/:id/resources/:id")
 
-    console.log(window.history)
-
     return (
         <div className="w-full">
             <div className="flex items-center py-4">

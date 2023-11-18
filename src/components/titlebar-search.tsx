@@ -1,14 +1,36 @@
-import React from 'react'
+import React, {useCallback, useEffect} from 'react'
 import {Button} from '@/components/ui/button'
 import {Search} from 'lucide-react'
 import {cn, isMacOS} from '@/lib/utils'
 import {Skeleton} from '@/components/ui/skeleton'
-import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandList} from './ui/command'
+import {CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandList} from '@/components/ui/command'
 
 export default function TitlebarSearch() {
     const [isOpen, setIsOpen] = React.useState(false)
     const [query, setQuery] = React.useState("")
     const [isFetching, setIsFetching] = React.useState(true)
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "x" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault()
+                setIsOpen((isOpen) => !isOpen)
+            }
+        }
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [])
+
+    const handleSelect = useCallback((callback: () => unknown) => {
+        setIsOpen(false)
+        callback()
+    }, [])
+
+    useEffect(() => {
+        if (!isOpen) {
+            setQuery("")
+        }
+    }, [isOpen])
 
 
     return (
@@ -25,7 +47,7 @@ export default function TitlebarSearch() {
                     <span>
                         {isMacOS() ? "⌘" : "Ctrl"}
                     </span>
-                    K
+                    X
                 </kbd>
                 <span className="sr-only">Search resources</span>
             </Button>

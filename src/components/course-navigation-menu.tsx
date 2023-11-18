@@ -9,7 +9,7 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
 
 export function CourseNavigationMenu({title}: { title: string }) {
@@ -37,7 +37,7 @@ export function CourseNavigationMenu({title}: { title: string }) {
                                 <ListItem
                                     key={course.CourseId}
                                     title={course.Title}
-                                    to={`/courses/${course.CourseId}`}
+                                    courseId={course.CourseId}
                                 >
                                     {getRelativeTimeString(new Date(course.LastOnline))}
                                 </ListItem>
@@ -50,17 +50,21 @@ export function CourseNavigationMenu({title}: { title: string }) {
     )
 }
 
-function ListItem({title, to, children, className, ...props}: {
+function ListItem({title, courseId, children, className, ...props}: {
     title: string,
-    to: string,
+    courseId: string | number,
     children: React.ReactNode,
     className?: string
 }) {
+    const {pathname} = useLocation()
+
+    const updatedTo = `${pathname.replace(/\/courses\/\d+/, `/courses/${courseId}`)}`
+
     return (
         <li>
             <NavigationMenuLink asChild>
                 <Link
-                    to={to}
+                    to={updatedTo}
                     className={cn(
                         "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
                         className
