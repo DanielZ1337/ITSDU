@@ -136,7 +136,7 @@ function NotificationElement({ element }: { element: ItslearningRestApiEntitiesE
     return (
         <button onClick={() => {
             if (isResourcePDFFromUrlOrElementType(element.IconUrl)) {
-                navigate(`/ai/${element.ElementId}`)
+                navigate(`/documents/${element.ElementId}`)
             } else {
                 window.app.openExternal(element.ContentUrl)
             }

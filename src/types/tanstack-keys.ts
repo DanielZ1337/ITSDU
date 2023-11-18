@@ -1,6 +1,7 @@
 /*  eslint-disable no-unused-vars */
 
 export enum TanstackKeys {
+    AICheckElementID = "AICheckElementID",
     CalendarEvent = "calendarEvent",
     CalendarEvents = "calendarEvents",
     CourseCardSettings = "courseCardSettings",
