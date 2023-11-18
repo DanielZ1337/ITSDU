@@ -195,12 +195,10 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                                 <DropdownMenuItem
                                     onClick={async (e) => {
                                         e.stopPropagation()
-                                        const proceeded = await window.ai.upload(resource.ElementId)
-                                        if (!proceeded) return
-                                        navigate(`/ai/${resource.ElementId}`)
+                                        navigate(`/documents/${resource.ElementId}`)
                                     }}
                                 >
-                                    Open With AI
+                                    Open In App
                                 </DropdownMenuItem>
                             )}
                         </DropdownMenuContent>

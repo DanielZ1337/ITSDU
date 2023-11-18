@@ -3,6 +3,7 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
+import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 export enum LearningToolIdTypes {
     LINK = 50010,
@@ -18,7 +19,7 @@ export function isResourceFile(varToCompare: ItslearningRestApiEntitiesPersonalC
     }
 }
 
-export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | string | number) {
+export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
     // IconTypeId 12 is PDF (this is the only way to find out whether or not a resource is a PDF)
     const IconTypeId = 12;
     if (typeof varToCompare === "number") {

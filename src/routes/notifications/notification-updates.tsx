@@ -1,12 +1,12 @@
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
-import {Suspense, useEffect} from "react";
-import {useInView} from "react-intersection-observer";
-import {Skeleton} from "@nextui-org/react";
+import { Suspense, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { Skeleton } from "@nextui-org/react";
 import NotificationCard from "@/components/notifications/notifications-card";
 
 
-export default function Updates() {
-    const {data: updates, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETnotificationsStream({
+export default function NotificationUpdates() {
+    const { data: notifications, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETnotificationsStream({
         showLightBulletins: true,
         PageIndex: 0,
         PageSize: 10,
@@ -16,7 +16,7 @@ export default function Updates() {
         keepPreviousData: true,
     })
 
-    const {ref, inView} = useInView();
+    const { ref, inView } = useInView();
 
     useEffect(() => {
         if (inView && hasNextPage) {
@@ -25,15 +25,15 @@ export default function Updates() {
     }, [inView, hasNextPage, fetchNextPage]);
 
     return (
-        <div className="rounded-lg shadow-lg p-6">
+        <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Recent Updates</h1>
             <div className="flex flex-col gap-4">
-                {updates && updates.pages.map((page) => (
-                    page.EntityArray.map((update) => (
+                {notifications && notifications.pages.map((page) => (
+                    page.EntityArray.map((notification) => (
                         <Suspense fallback={
-                            <Skeleton className="bg-foreground/10 rounded-md py-8"/>
-                        } key={update.NotificationId}>
-                            <NotificationCard key={update.NotificationId} notification={update}/>
+                            <Skeleton className="bg-foreground/10 rounded-md py-8" />
+                        } key={notification.NotificationId}>
+                            <NotificationCard key={notification.NotificationId} notification={notification} />
                         </Suspense>
                     ))
                 ))}
