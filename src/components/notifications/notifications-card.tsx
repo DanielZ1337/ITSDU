@@ -7,7 +7,6 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import LightbulletinCard from "../lightbulletin/lightbulletin-card";
 import { getRelativeTimeString } from "@/lib/utils";
-import HoverDate from "../hover-date";
 
 export default function NotificationCard({ notification, showTitle = true }: {
     notification: ItslearningRestApiEntitiesStreamItemV2,
@@ -44,7 +43,7 @@ export default function NotificationCard({ notification, showTitle = true }: {
                     </>
                 )}
             </h2>
-            <HoverDate date={new Date(notification.PublishedDate)}><h3 className="text-sm text-gray-500">{getRelativeTimeString(new Date(notification.PublishedDate))}</h3></HoverDate>
+            <h3 className="text-sm text-gray-500">{getRelativeTimeString(new Date(notification.PublishedDate))}</h3>
             {notification.LightBulletin &&
                 <button className="mt-1 text-blue-500 hover:text-blue-600 transition-colors hover:underline"
                     onClick={() => setShowLightBulletin(prev => !prev)}>{showLightBulletin ? "Hide" : "Show"} light
