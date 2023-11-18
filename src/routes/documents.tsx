@@ -15,6 +15,7 @@ import { useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import rehypeHighlight from 'rehype-highlight'
 import gfm from 'remark-gfm'
+import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
 
 export default function Documents() {
     const { elementId } = useParams()
@@ -47,10 +48,10 @@ export default function Documents() {
 }
 
 function AISidePanel({ elementId }: { elementId: string | number }) {
-    const [sidebarOpen, setSidebarOpen] = useState(false)
+    const { aiSidepanel, setAISidepanel } = useAISidepanel()
     const user = useUser()!
     const toggleSidebar = () => {
-        setSidebarOpen(prev => !prev)
+        setAISidepanel(prev => !prev)
     }
 
     const [message, setMessage] = useState<string>('')
@@ -62,7 +63,7 @@ function AISidePanel({ elementId }: { elementId: string | number }) {
     const [error, setError] = useState<string | null>(null)
 
     const { data: elementExists, isLoading: elementExistsLoading, refetch } = useGETcheckElementID(elementId, {
-        enabled: sidebarOpen,
+        enabled: aiSidepanel,
     })
 
     useEffect(() => {
@@ -172,14 +173,14 @@ function AISidePanel({ elementId }: { elementId: string | number }) {
     return (
         <div className="flex flex-1 w-full h-full">
             <div className="flex flex-row items-center justify-between p-4 h-full my-auto">
-                <Button className="relative group px-6" data-active={sidebarOpen} onClick={toggleSidebar}>
+                <Button className="relative group px-6" data-active={aiSidepanel} onClick={toggleSidebar}>
                     <ArrowRightToLine size={24} className='absolute group-data-[active=false]:opacity-0 transition-all' />
                     <ArrowLeftToLine size={24} className='absolute animate-in group-data-[active=true]:opacity-0 transition-all' />
                 </Button>
             </div>
             <motion.div className="flex flex-row flex-1 h-full max-h-full overflow-hidden"
-                initial={{ width: 0 }}
-                animate={{ width: sidebarOpen ? '33vw' : 0 }}
+                initial={false}
+                animate={{ width: aiSidepanel ? '33vw' : 0 }}
                 transition={{ duration: 0.2 }}
             >
                 <div className={cn("flex flex-col transition-all overflow-hidden max-h-full shrink-0 w-[33vw] border-l-4")}>
