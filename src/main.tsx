@@ -46,6 +46,7 @@ import NotificationUpdates from "./routes/notifications/notification-updates";
 import Documents from "./routes/documents";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
+import TestPdf from "./routes/test-pdf";
 
 const router = createHashRouter([
     {
@@ -193,6 +194,11 @@ const router = createHashRouter([
             {
                 path: "/test-cookies",
                 element: <SuspenseWrapper><TestCookies /></SuspenseWrapper>,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/pdf",
+                element: <SuspenseWrapper><TestPdf /></SuspenseWrapper>,
                 errorElement: <ErrorPage />,
             },
             {
