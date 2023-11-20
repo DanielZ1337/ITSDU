@@ -2,10 +2,9 @@ import renderLink from '@/components/custom-render-link-linkify'
 import PersonHoverCard from '@/components/person/person-hover-card'
 import useGETnotificationsStream from '@/queries/notifications/useGETnotificationsStream'
 import Linkify from 'linkify-react'
-import React, { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import useGETnotificationElements from '../../queries/notifications/useGETnotificationElements';
+import { useNavigate, useParams } from 'react-router-dom'
+import useGETnotificationElements from '../../queries/notifications/useGETnotificationElements'
 import { isResourcePDFFromUrlOrElementType } from '@/types/api-types/extra/learning-tool-id-types'
 
 export default function NotificationID() {
@@ -58,13 +57,16 @@ export default function NotificationID() {
                             {resources?.EntityArray.map((resource) => (
                                 <div key={resource.ElementId} className="flex items-center mb-2">
                                     <img src={resource.IconUrl} alt="Resource Icon" className="w-6 h-6 mr-2" />
-                                    <button onClick={async () => {
-                                        if (isResourcePDFFromUrlOrElementType(resource)) {
-                                            navigate(`/documents/${resource.ElementId}`)
-                                        } else {
-                                            await window.app.openExternal(resource.ContentUrl)
-                                        }
-                                    }} className="text-sm text-foreground/80 hover:underline">{resource.Title}</button>
+                                    <button
+                                        onClick={async () => {
+                                            if (isResourcePDFFromUrlOrElementType(resource)) {
+                                                navigate(`/documents/${resource.ElementId}`)
+                                            } else {
+                                                await window.app.openExternal(resource.ContentUrl)
+                                            }
+                                        }} className="text-sm text-foreground/80 hover:underline">
+                                        {resource.Title}
+                                    </button>
                                 </div>
                             ))}
                         </div>
