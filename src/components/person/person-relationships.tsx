@@ -1,7 +1,7 @@
 import useGETpersonsRelations from "@/queries/person/useGETpersonsRelations.ts";
 
-export function PersonRelationships({personId, showTitle = true}: { personId: number, showTitle?: boolean }) {
-    const {data: relations} = useGETpersonsRelations({
+export function PersonRelationships({ personId, showTitle = true }: { personId: number, showTitle?: boolean }) {
+    const { data: relations } = useGETpersonsRelations({
         personId
     }, {
         suspense: true,
@@ -24,9 +24,11 @@ export function PersonRelationships({personId, showTitle = true}: { personId: nu
                 {relations.map((relation, idx) => (
                     <li key={idx} className={"text-foreground text-sm text-balance font-semibold"}>
                         {relation.Text}
-                        {relation.Items?.map((item, idx) => (
-                            <li className={"text-foreground/50 my-1 font-normal"} key={idx}>{item}</li>
-                        ))}
+                        <ul>
+                            {relation.Items?.map((item, idx) => (
+                                <li className={"text-foreground/50 my-1 font-normal"} key={idx}>{item}</li>
+                            ))}
+                        </ul>
                     </li>
                 ))}
             </ul>

@@ -1,16 +1,16 @@
-import {useInfiniteQuery, UseInfiniteQueryOptions} from "@tanstack/react-query";
+import { useInfiniteQuery, UseInfiniteQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils";
 import {
     GETnotifications,
     GETnotificationsApiUrl,
     GETnotificationsParams
 } from '@/types/api-types/notifications/GETnotifications';
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETnotifications(params: GETnotificationsParams, queryConfig?: UseInfiniteQueryOptions<GETnotifications, Error, GETnotifications, GETnotifications, string[]>) {
 
-    return useInfiniteQuery([TanstackKeys.Notifications, ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.PageIndex}) => {
+    return useInfiniteQuery([TanstackKeys.Notifications, ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.PageIndex }) => {
         const res = await axios.get(GETnotificationsApiUrl({
             ...params,
             PageIndex: pageParam

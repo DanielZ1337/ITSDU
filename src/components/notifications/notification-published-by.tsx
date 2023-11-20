@@ -6,6 +6,7 @@ export default function NotificationPublishedBy({ personId, name }: { personId: 
         <PersonHoverCard
             personId={personId}
             showTitle={false}
+            asChild
         >
             <Link className="text-blue-500 hover:text-blue-600 transition-colors hover:underline"
                 to={`/person/${personId}`}>
