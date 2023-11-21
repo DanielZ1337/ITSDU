@@ -1,33 +1,16 @@
 import { getAccessToken } from "@/lib/utils.ts";
-import ReactDOM from 'react-dom/client'
-import '@/index.css'
-import { createHashRouter, RouterProvider } from 'react-router-dom'
+import ReactDOM from 'react-dom/client';
+import '@/index.css';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
 
-// const Root = React.lazy(() => import("@/routes/root"));
-/*
-const ErrorPage = React.lazy(() => import("@/error-page"));
-const Contact = React.lazy(() => import("@/routes/contact"));
-const Layout = React.lazy(() => import("@/components/layout"));
-const Test = React.lazy(() => import("@/routes/test"));
-const Test1 = React.lazy(() => import("@/routes/test1"));
-const Profile = React.lazy(() => import("@/routes/profile.tsx"));
-const Index = React.lazy(() => import("@/routes/index"));
-const Course = React.lazy(() => import("@/routes/course"));
-const Querytesting = React.lazy(() => import("@/routes/querytesting"));
-*/
-import ErrorPage from "@/error-page.tsx"
-import Contact from "@/routes/contact.tsx"
-import Test from "@/routes/test.tsx"
-import Test1 from "@/routes/test1.tsx"
-import Profile from "@/routes/profile.tsx"
-import Index from "@/routes/index.tsx"
-import Querytesting from "@/routes/querytesting.tsx"
-import Calendar from "@/routes/calendar.tsx"
+import ErrorPage from "@/error-page.tsx";
+import Profile from "@/routes/profile.tsx";
+import Index from "@/routes/index.tsx";
+import Calendar from "@/routes/calendar.tsx";
 import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
 import Messages from "@/components/messages/messages.tsx";
-import Sidebar from "@/routes/sidebar.tsx"
 import CourseLayout from "@/components/course/layout/course-layout.tsx";
 import CourseIndex from "@/routes/course/course-index.tsx";
 import CourseParticipants from "@/routes/course/course-participants.tsx";
@@ -38,15 +21,13 @@ import CourseTasks from "@/routes/course/course-tasks.tsx";
 import PersonIndex from "@/routes/person/person-index.tsx";
 import CoursesIndex from "@/routes/courses.tsx";
 import CourseError from "./routes/course/course-error";
-import TestAI from "./routes/test-ai";
-import TestCookies from "./routes/test-cookies";
 import Layout from "./components/layout";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 import NotificationUpdates from "./routes/notifications/notification-updates";
-import Documents from "./routes/documents";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
-import TestPdf from "./routes/test-pdf";
+import Test2 from "./routes/test2";
+import Documents from "./routes/documents";
 
 const router = createHashRouter([
     {
@@ -67,11 +48,6 @@ const router = createHashRouter([
             {
                 path: "/courses",
                 element: <SuspenseWrapper><CoursesIndex /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/sidebar",
-                element: <Sidebar />,
                 errorElement: <ErrorPage />,
             },
             {
@@ -147,17 +123,7 @@ const router = createHashRouter([
                 ],
             },
             {
-                path: "/querytesting",
-                element: <Querytesting />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/ai/:elementId",
-                element: <TestAI />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/documents/:elementId",
+                path: "/documents/:elementId?",
                 element: <Documents />,
                 errorElement: <ErrorPage />,
             },
@@ -172,33 +138,8 @@ const router = createHashRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: "/contacts/:id",
-                element: <Contact />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/test",
-                element: <Test />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/test1",
-                element: <Test1 />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/testai/:id?",
-                element: <SuspenseWrapper><TestAI /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/test-cookies",
-                element: <SuspenseWrapper><TestCookies /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/pdf",
-                element: <SuspenseWrapper><TestPdf /></SuspenseWrapper>,
+                path: "/test2/:elementId?",
+                element: <Test2 />,
                 errorElement: <ErrorPage />,
             },
             {
