@@ -3,7 +3,7 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 export enum LearningToolIdTypes {
     LINK = 50010,

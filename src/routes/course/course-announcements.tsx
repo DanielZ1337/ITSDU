@@ -4,6 +4,9 @@ import { Skeleton } from "@nextui-org/react";
 import NotificationCard from "@/components/notifications/notifications-card";
 import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
 import { useParams } from "react-router-dom";
+import UpdatesTypeSelect, {
+    useUpdatesTypeSelect
+} from "@/components/notifications/notifications-updates-type-select";
 
 
 export default function CourseAnnouncements() {
@@ -18,6 +21,8 @@ export default function CourseAnnouncements() {
         keepPreviousData: true,
     })
 
+    const { selectedUpdatesType, setSelectedUpdatesType, filteredNotifications } = useUpdatesTypeSelect(updates)
+
     const { ref, inView } = useInView();
 
     useEffect(() => {
@@ -27,23 +32,29 @@ export default function CourseAnnouncements() {
     }, [inView, hasNextPage, fetchNextPage]);
 
     return (
-        <div className="p-6">
-            <h1 className="text-2xl font-bold mb-4">Recent Updates
-                for {updates?.pages[0].EntityArray[0].LocationTitle}</h1>
-            <div className="flex flex-col gap-4">
-                {updates && updates.pages.map((page) => (
-                    page.EntityArray.map((update) => (
-                        <Suspense fallback={
-                            <Skeleton className="bg-foreground/10 rounded-md py-8" />
-                        } key={update.NotificationId}>
-                            <NotificationCard key={update.NotificationId} notification={update} showLocation={false} />
-                        </Suspense>
-                    ))
-                ))}
+        <>
+            <div
+                className="py-5 sticky top-0 flex items-center gap-4 border-b px-6 bg-zinc-100/40 dark:bg-zinc-800/40 backdrop-blur-md shadow justify-between">
+                <h1 className="text-xl font-bold">Recent Updates
+                    for {updates?.pages[0].EntityArray[0].LocationTitle}</h1>
+                <UpdatesTypeSelect update={selectedUpdatesType} onChange={setSelectedUpdatesType} />
             </div>
-            <div ref={ref} className="text-center mt-4 text-gray-600 text-sm">
-                {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
+            <div className="p-6">
+                <div className="flex flex-col gap-4">
+                    {filteredNotifications && filteredNotifications.map((page) => (
+                        page.map((update) => (
+                            <Suspense fallback={
+                                <Skeleton className="bg-foreground/10 rounded-md py-8" />
+                            } key={update.NotificationId}>
+                                <NotificationCard key={update.NotificationId} notification={update} showLocation={false} />
+                            </Suspense>
+                        ))
+                    ))}
+                </div>
+                <div ref={ref} className="text-center mt-4 text-gray-600 text-sm">
+                    {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
+                </div>
             </div>
-        </div>
+        </>
     )
 }

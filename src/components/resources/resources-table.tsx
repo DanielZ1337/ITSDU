@@ -11,10 +11,10 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowLeft, ArrowUp, ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import {ArrowLeft, ArrowUp, ArrowUpDown, ChevronDown, MoreHorizontal} from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
+import {Button} from "@/components/ui/button"
+import {Checkbox} from "@/components/ui/checkbox"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -24,21 +24,21 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
+import {Input} from "@/components/ui/input"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
-import { cn } from "@/lib/utils.ts";
-import { Link, useMatch, useNavigate } from "react-router-dom"
-import { isResourceFile, isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
+import {cn} from "@/lib/utils.ts";
+import {Link, useMatch, useNavigate} from "react-router-dom"
+import {isResourceFile, isResourcePDFFromUrlOrElementType} from "@/types/api-types/extra/learning-tool-id-types";
 
 export function createColumns(isLoading: boolean, root: boolean): ColumnDef<ItslearningRestApiEntitiesPersonalCourseCourseResource>[] {
 
     return [
         {
             id: "select",
-            header: ({ table }) => (
+            header: ({table}) => (
                 <Checkbox
                     disabled={isLoading}
                     checked={table.getIsAllPageRowsSelected()}
@@ -46,7 +46,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                     aria-label="Select all"
                 />
             ),
-            cell: ({ row }) => (
+            cell: ({row}) => (
                 <Checkbox
                     checked={row.getIsSelected()}
                     onClick={(event) => event.stopPropagation()}
@@ -60,7 +60,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
         {
             id: "type",
             accessorKey: "LearningToolId",
-            header: ({ column }) => {
+            header: ({column}) => {
                 return (
                     <div className="flex items-center justify-center">
                         <Button
@@ -72,19 +72,19 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             Type
                             <div className="relative h-4 w-4 ml-2">
                                 <ArrowUp
-                                    className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
+                                    className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")}/>
                                 <ArrowUpDown
-                                    className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")} />
+                                    className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")}/>
                             </div>
                         </Button>
                     </div>
                 )
             },
-            cell: ({ row }) => <img src={row.original.IconUrl} alt={row.getValue('Title')} className="w-8 h-8 mx-auto" />,
+            cell: ({row}) => <img src={row.original.IconUrl} alt={row.getValue('Title')} className="w-8 h-8 mx-auto"/>,
         },
         {
             accessorKey: "Title",
-            header: ({ column }) => {
+            header: ({column}) => {
                 return (
                     <Button
                         disabled={isLoading}
@@ -95,14 +95,14 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                         Title
                         <div className="relative h-4 w-4 ml-2">
                             <ArrowUp
-                                className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
+                                className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")}/>
                             <ArrowUpDown
-                                className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")} />
+                                className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")}/>
                         </div>
                     </Button>
                 )
             },
-            cell: ({ row }) => {
+            cell: ({row}) => {
                 const original = row.original
                 const navigate = useNavigate()
                 return (
@@ -124,7 +124,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
         {
             id: "published",
             accessorKey: "ElementId",
-            header: ({ column }) => {
+            header: ({column}) => {
                 return (
                     <div className="flex items-center justify-center">
                         <Button
@@ -136,15 +136,15 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             Published (ElementId)
                             <div className="relative h-4 w-4 ml-2">
                                 <ArrowUp
-                                    className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
+                                    className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")}/>
                                 <ArrowUpDown
-                                    className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")} />
+                                    className={cn("absolute h-4 w-4 transform transition-all opacity-0 duration-200 ", column.getIsSorted() === "asc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-100")}/>
                             </div>
                         </Button>
                     </div>
                 )
             },
-            cell: ({ row }) => {
+            cell: ({row}) => {
                 const original = row.original
                 return (
                     <div className="flex items-center justify-center">
@@ -158,7 +158,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
         {
             id: "actions",
             enableHiding: false,
-            cell: ({ row }) => {
+            cell: ({row}) => {
                 const resource = row.original
                 const navigate = useNavigate()
 
@@ -167,12 +167,12 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="h-8 w-8 p-0">
                                 <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
+                                <MoreHorizontal className="h-4 w-4"/>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator/>
                             <DropdownMenuItem
                                 onClick={(e) => {
                                     e.stopPropagation()
@@ -209,7 +209,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
     ]
 }
 
-export function ResourcesDataTable({ data, isLoading, root = false }: {
+export function ResourcesDataTable({data, isLoading, root = false}: {
     data?: ItslearningRestApiEntitiesPersonalCourseCourseResource[],
     isLoading: boolean,
     root?: boolean
@@ -283,7 +283,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
                         <Button className="inline-flex gap-2" variant={"secondary"} onClick={() => {
                             navigate(-1)
                         }}>
-                            <ArrowLeft className="h-4 w-4 shrink-0" />
+                            <ArrowLeft className="h-4 w-4 shrink-0"/>
                             Go Back
                         </Button>
                     )}
@@ -327,7 +327,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto select-none">
-                            Columns <ChevronDown className="ml-2 h-4 w-4" />
+                            Columns <ChevronDown className="ml-2 h-4 w-4"/>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">

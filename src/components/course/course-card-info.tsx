@@ -1,7 +1,12 @@
-import { cn } from "@/lib/utils"
-import { useNavigate } from "react-router-dom"
+import {cn} from "@/lib/utils"
+import {useNavigate} from "react-router-dom"
 
-export default function CourseCardInfo({ icon, count, className, href }: { icon: React.ReactNode, count: number, className?: string, href?: string }) {
+export default function CourseCardInfo({icon, count, className, href}: {
+    icon: React.ReactNode,
+    count: number,
+    className?: string,
+    href?: string
+}) {
 
     const navigate = useNavigate()
 

@@ -1,8 +1,8 @@
 import useGETcoursesv3 from "@/queries/courses/useGETcoursesv3.ts";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 export default function CoursesIndex() {
-    const { data: courses } = useGETcoursesv3({}, {
+    const {data: courses} = useGETcoursesv3({}, {
         suspense: true,
     });
 
@@ -10,7 +10,7 @@ export default function CoursesIndex() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 p-6">
             {courses!.EntityArray.map((course) => (
                 <div key={course.CourseId}
-                    className="bg-foreground/10 shadow overflow-hidden sm:rounded-lg flex flex-col justify-between">
+                     className="bg-foreground/10 shadow overflow-hidden sm:rounded-lg flex flex-col justify-between">
                     <div className="px-4 py-5 sm:px-6">
                         <Link to={`/courses/${course.CourseId}`}>
                             <h3 className="text-lg leading-6 font-medium">{course.Title}</h3>
@@ -25,11 +25,11 @@ export default function CoursesIndex() {
                                     {course.TeachersInCourse.map((teacher, idx) => (
                                         <div key={teacher.PersonId} className="flex flex-col">
                                             <a href={teacher.ProfileUrl}
-                                                className="text-indigo-600 hover:text-indigo-900">{teacher.FullName}</a>
+                                               className="text-indigo-600 hover:text-indigo-900">{teacher.FullName}</a>
                                             {/* @ts-ignore */}
                                             <p className="text-sm text-gray-500">{teacher.AdditionalInfo}</p>
                                             {idx !== course.TeachersInCourse.length - 1 && <div
-                                                className={"shrink-0 grow-0 my-4 h-[1px] w-full rounded-full bg-foreground/50"} />}
+                                                className={"shrink-0 grow-0 my-4 h-[1px] w-full rounded-full bg-foreground/50"}/>}
                                         </div>
                                     ))}
                                 </dd>

@@ -1,12 +1,12 @@
-import { useCallback, useState } from "react"
+import {useCallback, useState} from "react"
 import copy from "copy-to-clipboard"
-import { AnimatePresence, motion, MotionConfig } from "framer-motion"
+import {AnimatePresence, motion, MotionConfig} from "framer-motion"
 
 export default function CopyButton({
-    value,
-    copyable = true,
-    isBlockHovered,
-}: {
+                                       value,
+                                       copyable = true,
+                                       isBlockHovered,
+                                   }: {
     value: string
     copyable?: boolean
     isBlockHovered?: boolean
@@ -23,17 +23,17 @@ export default function CopyButton({
     }, [value])
 
     const variants = {
-        visible: { opacity: 1, scale: 1 },
-        hidden: { opacity: 0, scale: 0.5 },
+        visible: {opacity: 1, scale: 1},
+        hidden: {opacity: 0, scale: 0.5},
     }
     return (
         <button
             onClick={onCopy}
             aria-label="Copy code"
             className={`copy-button ${isBlockHovered ? "opacity-100" : copying ? "opacity-100" : "opacity-0"
-                } absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`}
+            } absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`}
         >
-            <MotionConfig transition={{ duration: 0.15 }}>
+            <MotionConfig transition={{duration: 0.15}}>
                 <AnimatePresence initial={false} mode="wait">
                     {copying ? (
                         <motion.div

@@ -27,6 +27,7 @@ import NotificationUpdates from "./routes/notifications/notification-updates";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
 import Documents from "./routes/documents";
+import CourseAnnouncementError from "./routes/course/errors-pages/course-announcement-error";
 
 const router = createHashRouter([
     {
@@ -99,6 +100,7 @@ const router = createHashRouter([
                     {
                         path: "announcements",
                         element: <SuspenseWrapper><CourseAnnouncements /></SuspenseWrapper>,
+                        errorElement: <CourseAnnouncementError />,
                     },
                     {
                         path: "course-information",
@@ -122,7 +124,7 @@ const router = createHashRouter([
                 ],
             },
             {
-                path: "/documents/:elementId?",
+                path: "/documents/:elementId",
                 element: <Documents />,
                 errorElement: <ErrorPage />,
             },

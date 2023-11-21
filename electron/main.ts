@@ -274,6 +274,9 @@ app.whenReady().then(async () => {
         setInterval(async () => {
             await authService.refreshAccessToken()
         }, REFRESH_ACCESS_TOKEN_INTERVAL) // 45 minutes
+    } catch (e) {
+        await createAuthWindow()
+    } finally {
         const contextMenu = Menu.buildFromTemplate([
             {
                 label: 'Show App', click: function (e) {
@@ -334,7 +337,5 @@ app.whenReady().then(async () => {
                 tray.popUpContextMenu(contextMenu)
             }, 250)
         })
-    } catch (e) {
-        await createAuthWindow()
     }
 })

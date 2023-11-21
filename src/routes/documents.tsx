@@ -60,5 +60,5 @@ export default function Documents() {
                 </motion.div>
             </div>
         </div>
-    );
+    )
 }

@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import PersonHoverCard from "../person/person-hover-card";
 
-export default function NotificationPublishedBy({ personId, name }: { personId: number, name: string }) {
+export default function NotificationPublishedBy({personId, name}: { personId: number, name: string }) {
     return (
         <PersonHoverCard
             personId={personId}
@@ -9,7 +9,7 @@ export default function NotificationPublishedBy({ personId, name }: { personId: 
             asChild
         >
             <Link className="text-blue-500 hover:text-blue-600 transition-colors hover:underline"
-                to={`/person/${personId}`}>
+                  to={`/person/${personId}`}>
                 {name}
             </Link>
         </PersonHoverCard>
