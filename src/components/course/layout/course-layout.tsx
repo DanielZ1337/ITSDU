@@ -3,7 +3,8 @@ import { Outlet, useParams } from "react-router-dom";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import CourseHeader from "@/components/course/layout/course-header.tsx";
 import { useCourse } from "@/hooks/atoms/useCourse";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
+import CourseHeaderFallback from "./course-header-fallback";
 
 export default function CourseLayout() {
     const { id } = useParams();
@@ -27,7 +28,9 @@ export default function CourseLayout() {
                 <title>{course!.Title}</title>
             </Helmet>
             <div className="flex flex-col overflow-auto w-full">
-                <CourseHeader courseId={courseId} courseCode={course!.Code} courseTitle={course!.Title} />
+                <Suspense fallback={<CourseHeaderFallback />}>
+                    <CourseHeader courseId={courseId} courseCode={course!.Code} courseTitle={course!.Title} />
+                </Suspense>
                 <div className="flex-1 overflow-auto flex flex-col">
                     <Outlet />
                 </div>
