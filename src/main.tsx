@@ -26,7 +26,6 @@ import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/
 import NotificationUpdates from "./routes/notifications/notification-updates";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
-import Test2 from "./routes/test2";
 import Documents from "./routes/documents";
 
 const router = createHashRouter([
@@ -135,11 +134,6 @@ const router = createHashRouter([
             {
                 path: "/messages/:id?",
                 element: <SuspenseWrapper><Messages /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: "/test2/:elementId?",
-                element: <Test2 />,
                 errorElement: <ErrorPage />,
             },
             {
