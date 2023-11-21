@@ -50,7 +50,7 @@
 		deleteAppDataOnUninstall: true
 	},
 	linux: {
-		target: ['AppImage'],
+		target: ['deb'],
 		artifactName: '${productName}-Linux-${version}.${ext}',
 		icon: 'build/icon.png',
 		category: 'Education'
