@@ -1,33 +1,28 @@
-import React, { Suspense, useRef } from "react";
+import { Suspense, useRef } from "react";
 import { cn } from '../lib/utils';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useUser } from "@/hooks/atoms/useUser.ts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import SettingsDropdown from "@/components/settings/settings-dropdown";
 import BrowserNav from "@/components/browse-nav";
 import { ErrorBoundary } from "react-error-boundary";
 import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown";
 import NotificationsDropdown from "@/components/notifications/notifications-dropdown";
 import { Toaster } from "@/components/ui/toaster";
 import ScrollToTopButton from "@/components/scroll-to-top-button";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { Spinner } from "@nextui-org/spinner";
 import Titlebar from "@/components/titlebar";
-import SearchResourcesDialog from "@/components/resources/resources-search-dialog";
 import TitlebarSearch from "@/components/titlebar-search";
 import SettingsModal from "@/components/settings/settings-modal";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
-import { courseNavLinks, navlinks } from "@/lib/routes";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import AboutModal from "@/components/about-modal";
 import IsOnlineIndicator from "@/components/is-online-indicator";
-import { useCourse } from "@/hooks/atoms/useCourse";
 import Sidebar from "./layout/sidebar";
 
 export default function Layout() {
     const { sidebarActive } = useSidebar()
     const ref = useRef<HTMLDivElement>(null);
+
+    const { pathname } = useLocation()
 
     return (
         <div className="flex flex-col h-screen max-h-screen min-h-screen overflow-hidden">
@@ -68,7 +63,9 @@ export default function Layout() {
                                 /*style={{
                                     scrollbarGutter: "stable both-edges"
                                 }}*/
-                                ref={ref}>
+                                ref={ref}
+                                key={pathname}
+                            >
                                 <Outlet />
                             </div>
                         </Suspense>
