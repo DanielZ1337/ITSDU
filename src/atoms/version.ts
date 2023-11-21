@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import {atom} from "jotai";
 
 // @ts-ignore
 export const versionAtom = atom<string>(() => {

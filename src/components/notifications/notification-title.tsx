@@ -1,10 +1,10 @@
-import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
-import { ItslearningRestApiEntitiesStreamItemV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2"
+import {ItslearningRestApiEntitiesElementLink} from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
+import {ItslearningRestApiEntitiesStreamItemV2} from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2"
 import NotificationPublishedBy from "./notification-published-by"
 import NotificationElement from "./notification-element"
 import NotificationLocation from "./notification-location"
 
-export default function NotificationTitle({ notification, showLocation, setShowElements, element }: {
+export default function NotificationTitle({notification, showLocation, setShowElements, element}: {
     notification: ItslearningRestApiEntitiesStreamItemV2,
     showLocation: boolean,
     showElements: boolean,
@@ -13,9 +13,10 @@ export default function NotificationTitle({ notification, showLocation, setShowE
 }) {
     return (
         <>
-            <NotificationPublishedBy personId={notification.PublishedBy.PersonId} name={notification.PublishedBy.FullName} />
+            <NotificationPublishedBy personId={notification.PublishedBy.PersonId}
+                                     name={notification.PublishedBy.FullName}/>
             {notification.ElementsCount === 0 ? " made a new announcement " : " added "}
-            {notification.ElementsCount !== 0 && element && <NotificationElement element={element} />}
+            {notification.ElementsCount !== 0 && element && <NotificationElement element={element}/>}
             {notification.ElementsCount > 1 && (
                 <> and {" "}
                     <button
@@ -26,7 +27,8 @@ export default function NotificationTitle({ notification, showLocation, setShowE
                     </button>
                 </>
             )}
-            {showLocation && <> in <NotificationLocation locationId={notification.LocationId} locationTitle={notification.LocationTitle} /></>}
+            {showLocation && <> in <NotificationLocation locationId={notification.LocationId}
+                                                         locationTitle={notification.LocationTitle}/></>}
         </>
     )
 }

@@ -5,24 +5,24 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { AiOutlineNotification } from 'react-icons/ai';
-import { Button } from '@/components/ui/button';
+import {AiOutlineNotification} from 'react-icons/ai';
+import {Button} from '@/components/ui/button';
 import useGETnotifications from '@/queries/notifications/useGETnotifications';
-import { getRelativeTimeString } from '@/lib/utils';
+import {getRelativeTimeString} from '@/lib/utils';
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
-import { UnreadNotificationIndicator } from "@/components/messages/unread-notification-indicator.tsx";
-import { Link } from "react-router-dom";
-import { ArrowRightIcon } from "lucide-react";
-import { ScrollShadow } from '@nextui-org/react';
+import {UnreadNotificationIndicator} from "@/components/messages/unread-notification-indicator.tsx";
+import {Link} from "react-router-dom";
+import {ArrowRightIcon} from "lucide-react";
+import {ScrollShadow} from '@nextui-org/react';
 import usePUTnotificationsMarkAllAsRead from '@/queries/notifications/usePUTnotificationsMarkAllAsRead';
-import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
+import {useInView} from 'react-intersection-observer';
+import {useEffect} from 'react';
 import NotificationsDropdownInfiniteFallback from './fallback/notifications-dropdown-infinite-fallback';
 import NotificationsDropdownInfiniteEnd from './notifications-dropdown-infinite-end';
 
 export default function NotificationsDropdown() {
 
-    const { data: notifications, fetchNextPage, isFetchingNextPage, hasNextPage } = useGETnotifications({
+    const {data: notifications, fetchNextPage, isFetchingNextPage, hasNextPage} = useGETnotifications({
         FromId: 0,
         PageSize: 10,
         UseNewerThan: true,
@@ -30,9 +30,9 @@ export default function NotificationsDropdown() {
         suspense: true,
     })
 
-    const { ref, inView } = useInView()
+    const {ref, inView} = useInView()
 
-    const { mutate: markAllAsRead, isLoading: isMarkingAllAsRead } = usePUTnotificationsMarkAllAsRead()
+    const {mutate: markAllAsRead, isLoading: isMarkingAllAsRead} = usePUTnotificationsMarkAllAsRead()
 
     const notificationsFlatMap = notifications!.pages.flatMap(page => page.EntityArray)
 
@@ -52,9 +52,9 @@ export default function NotificationsDropdown() {
                     size={"icon"}
                     className={"shrink-0 relative"}
                 >
-                    <AiOutlineNotification className={"w-7 h-7"} />
+                    <AiOutlineNotification className={"w-7 h-7"}/>
                     {unreadNotifications.length > 0 && (
-                        <UnreadNotificationsPingIndicator amount={unreadNotifications.length} />
+                        <UnreadNotificationsPingIndicator amount={unreadNotifications.length}/>
                     )}
                 </Button>
             </DropdownMenuTrigger>
@@ -65,11 +65,11 @@ export default function NotificationsDropdown() {
                             Notifications
                         </span>
                         <ArrowRightIcon
-                            className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"} />
+                            className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"}/>
                     </Link>
                     <div>
                         <Button variant={"ghost"} size={"sm"} className="h-fit mr-1" disabled={isMarkingAllAsRead}
-                            onClick={() => markAllAsRead(undefined)}>
+                                onClick={() => markAllAsRead(undefined)}>
                             Mark all as read
                         </Button>
                         <span className={"text-xs text-muted-foreground"}>
@@ -77,7 +77,7 @@ export default function NotificationsDropdown() {
                         </span>
                     </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <ScrollShadow
                     className={"max-h-96 overflow-y-auto p-2 flex-1 w-full my-2 px-2 scrollbar overflow-x-hidden hover:scrollbar-thumb-foreground/15 active:scrollbar-thumb-foreground/10 scrollbar-thumb-foreground/20 scrollbar-w-2 scrollbar-thumb-rounded-full"}>
                     {notifications?.pages.map((page) => (
@@ -91,7 +91,7 @@ export default function NotificationsDropdown() {
                                     className={"ml-2"}
                                 />
                                 <div className={"flex flex-col gap-1 p-4"}
-                                    key={notification.NotificationId}>
+                                     key={notification.NotificationId}>
                                     <div className={"flex flex-row gap-1"}>
                                         <div className={"flex flex-col"}>
                                             <span
@@ -111,12 +111,12 @@ export default function NotificationsDropdown() {
                         ))
                     ))}
                     {isFetchingNextPage && (
-                        <NotificationsDropdownInfiniteFallback />
+                        <NotificationsDropdownInfiniteFallback/>
                     )}
                     {!hasNextPage && (
-                        <NotificationsDropdownInfiniteEnd />
+                        <NotificationsDropdownInfiniteEnd/>
                     )}
-                    {hasNextPage && <div ref={ref} />}
+                    {hasNextPage && <div ref={ref}/>}
                 </ScrollShadow>
             </DropdownMenuContent>
         </DropdownMenu>

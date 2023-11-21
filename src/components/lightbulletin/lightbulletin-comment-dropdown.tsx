@@ -6,19 +6,19 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ItslearningRestApiEntitiesComment } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Comment'
-import { Button } from '@/components/ui/button'
-import { ChevronDown } from 'lucide-react'
-import { useToast } from '@/components/ui/use-toast'
+import {ItslearningRestApiEntitiesComment} from '@/types/api-types/utils/Itslearning.RestApi.Entities.Comment'
+import {Button} from '@/components/ui/button'
+import {ChevronDown} from 'lucide-react'
+import {useToast} from '@/components/ui/use-toast'
 import useDELETElightbulletinComment from '@/queries/lightbulletin/useDELETElightbulletinComment'
 
-export default function LightbulletinCommentDropdown({ comment, setIsEditing }: {
+export default function LightbulletinCommentDropdown({comment, setIsEditing}: {
     comment: ItslearningRestApiEntitiesComment,
     setIsEditing: (isEditing: boolean) => void,
 }) {
-    const { toast } = useToast()
+    const {toast} = useToast()
 
-    const { mutate: deleteComment, isLoading: isDeleting } = useDELETElightbulletinComment({
+    const {mutate: deleteComment, isLoading: isDeleting} = useDELETElightbulletinComment({
         commentId: comment.Id,
     }, {
         onError: (err) => {
@@ -35,12 +35,12 @@ export default function LightbulletinCommentDropdown({ comment, setIsEditing }: 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant={"ghost"} size={"icon"} className={"rounded-full hover:shadow"}>
-                    <ChevronDown />
+                    <ChevronDown/>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 {comment.AllowEditComment && (
                     <DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
                 )}
@@ -67,7 +67,7 @@ export default function LightbulletinCommentDropdown({ comment, setIsEditing }: 
                             }
                         })
                     }}
-                        className="hover:!bg-destructive"
+                                      className="hover:!bg-destructive"
                     >Delete</DropdownMenuItem>
                 )}
             </DropdownMenuContent>
