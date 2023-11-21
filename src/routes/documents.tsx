@@ -16,15 +16,15 @@ import ParseMarkdown from '@/components/parse-markdown'
 
 export default function Documents() {
     const { elementId } = useParams()
-    const { isLoading, src } = usePDFbyElementID(elementId ?? '')
+    const { isLoading, data } = usePDFbyElementID(elementId ?? '')
 
     return (
         <div className="flex flex-1 w-full h-full">
-            {isLoading || !src ? (
+            {isLoading || !data ? (
                 <Spinner size="lg" color="primary" label="Loading..." className={"m-auto w-full"} />
             ) : (
                 <iframe
-                    src={src}
+                    src={data}
                     className="w-full h-full"
                     title="PDF"
                 />
