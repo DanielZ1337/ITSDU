@@ -1,23 +1,21 @@
-import { useAISidepanel } from '@/hooks/atoms/useAISidepanel';
-import { useUser } from '@/hooks/atoms/useUser';
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import {useAISidepanel} from '@/hooks/atoms/useAISidepanel';
+import {useUser} from '@/hooks/atoms/useUser';
+import {cn} from '@/lib/utils';
+import {Loader2} from 'lucide-react';
+import {useEffect, useMemo, useState} from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 import Message from './message';
-import { Spinner } from '@nextui-org/spinner';
-import { BsStopCircleFill } from 'react-icons/bs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {Spinner} from '@nextui-org/spinner';
+import {BsStopCircleFill} from 'react-icons/bs';
+import {Button} from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
 import useGETcheckElementID from '@/queries/AI/useGETcheckElementID';
 import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
-import { MessageType } from '@/types/ai-message';
-import { useQueryClient } from '@tanstack/react-query';
-import { TanstackKeys } from '@/types/tanstack-keys';
-import { useInView } from 'react-intersection-observer';
+import {MessageType} from '@/types/ai-message';
+import {useInView} from 'react-intersection-observer';
 
-export default function AISidePanel({ elementId }: { elementId: string | number }) {
-    const { aiSidepanel } = useAISidepanel()
+export default function AISidePanel({elementId}: { elementId: string | number }) {
+    const {aiSidepanel} = useAISidepanel()
     const user = useUser()!
 
     const [message, setMessage] = useState<string>('')
@@ -28,17 +26,23 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const [refetchCount, setRefetchCount] = useState<number>(0)
     const [error, setError] = useState<string | null>(null)
 
-    const { data: elementExists, isLoading: elementExistsLoading, refetch } = useGETcheckElementID(elementId, {
+    const {data: elementExists, isLoading: elementExistsLoading, refetch} = useGETcheckElementID(elementId, {
         enabled: aiSidepanel,
     })
 
-    const { data: previousMessages, isLoading: isPreviousMessagesLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useGETpreviousMessages({
+    const {
+        data: previousMessages,
+        isLoading: isPreviousMessagesLoading,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage
+    } = useGETpreviousMessages({
         elementId: Number(elementId),
     }, {
         enabled: aiSidepanel,
     })
 
-    const { ref, inView } = useInView()
+    const {ref, inView} = useInView()
 
 
     useEffect(() => {
@@ -47,7 +51,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         }
     }, [inView, hasNextPage, fetchNextPage]);
 
-    const reversedPreviousMessages = useMemo(() => previousMessages?.pages.map((page) => page.previousMessages).flat().sort((a, b) => {
+    const reversedPreviousMessages = useMemo(() => previousMessages?.pages?.map((page) => page.previousMessages).flat().sort((a, b) => {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     }), [previousMessages])
 
@@ -71,7 +75,8 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (message.trim() === '' || messageIsLoading || !elementExists) return
-        setChatMessages(prev => [{ content: message, role: 'user', timestamp: new Date() }, ...prev])
+        const newMessage = {content: message, role: 'user', timestamp: new Date()} as MessageType;
+        setChatMessages(prev => [newMessage, ...prev])
         await chatCompletion()
     }
 
@@ -93,7 +98,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         const abortController = new AbortController();
         setAbortController(abortController);
         const signal = abortController.signal;
-        setChatMessages(prev => [{ content: '', role: 'system' }, ...prev])
+        setChatMessages(prev => [{content: '', role: 'system'}, ...prev])
 
         try {
             const url = `https://itsdu.danielz.dev/api/message/${elementId}`
@@ -122,7 +127,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             while (loop) {
                 const chunk = await reader.read()
 
-                const { done, value } = chunk
+                const {done, value} = chunk
 
                 if (done) {
                     loop = false
@@ -132,19 +137,19 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                 const decodedChunk = decoder.decode(value)
                 // the incoming messsage should be in the first index of the array¨
                 setChatMessages(prev => {
-                    const newMessage = { content: decodedChunk, role: "system" } as MessageType;
+                    const newMessage = {content: decodedChunk, role: "system"} as MessageType;
                     if (prev.length > 0 && prev[0].role === 'system') {
                         const lastMessage = prev[0];
-                        const updatedMessage = { ...lastMessage, content: lastMessage.content + decodedChunk } as MessageType;
+                        const updatedMessage = {
+                            ...lastMessage,
+                            content: lastMessage.content + decodedChunk
+                        } as MessageType;
                         return [updatedMessage, ...prev.slice(1)];
                     } else {
                         return [newMessage, ...prev];
                     }
                 });
             }
-            const queryClient = useQueryClient()
-            queryClient.setQueryData([TanstackKeys.AIpreviousMessages, elementId], chatMessages)
-            setMessage('')
         } catch (err) {
             if (signal.aborted) {
                 if (chatMessages[0].content.trim() === '') {
@@ -159,6 +164,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             setAbortController(null);
             // Set the loading state to false
             setMessageIsLoading(false);
+            setMessage('')
         }
     }
 
@@ -168,7 +174,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             <div className="flex flex-col flex-1 p-4 overflow-hidden max-h-full">
                 <div className="flex flex-col flex-1 p-4 rounded-md bg-foreground/10 max-h-full">
                     <div className="flex flex-col items-center justify-center p-4">
-                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="w-8 h-8" />
+                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="w-8 h-8"/>
                         <h1 className="text-2xl font-bold mt-2">ITSDU AI</h1>
                     </div>
                     <div
@@ -182,42 +188,44 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                             {chatMessages.map((message, i) => (
                                 <motion.div
                                     key={chatMessages.length - i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2 }}
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.2}}
                                 >
                                     {i === 0 && messageIsLoading && chatMessages[0].role === 'system' && chatMessages[0].content === '' ? (
                                         <Message key={chatMessages.length - i} role={message.role}>
-                                            <Spinner size="sm" color="primary" className={"m-auto w-full h-full"} />
+                                            <Spinner size="sm" color="primary" className={"m-auto w-full h-full"}/>
                                         </Message>
                                     ) : (
-                                        <Message key={chatMessages.length - i} role={message.role} message={message.content} />
+                                        <Message key={chatMessages.length - i} role={message.role}
+                                                 message={message.content}/>
                                     )}
                                 </motion.div>
                             ))}
                             {reversedPreviousMessages && reversedPreviousMessages.map((message, i) => (
                                 <motion.div
                                     key={reversedPreviousMessages.length - i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2, delay: 0.1 * i }}
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.2, delay: 0.1 * i}}
                                 >
-                                    <Message key={reversedPreviousMessages.length - i} role={message.role} message={message.content} />
+                                    <Message key={reversedPreviousMessages.length - i} role={message.role}
+                                             message={message.content}/>
                                 </motion.div>
                             ))}
                             {elementExistsLoading || uploadingDocument || isPreviousMessagesLoading ? (
-                                <Loader2 className={"animate-spin text-white m-auto"} />
+                                <Loader2 className={"animate-spin text-white m-auto"}/>
                             ) : (
                                 <div ref={ref}>
                                     <AnimatePresence>
                                         {isFetchingNextPage && (
                                             <motion.div className="flex flex-row items-center justify-center"
-                                                initial={{ opacity: 0, y: -20, height: 0 }}
-                                                animate={{ opacity: 1, y: 0, height: 20 }}
-                                                transition={{ duration: 0.2 }}
-                                                exit={{ opacity: 0, y: -20, height: 0 }}
+                                                        initial={{opacity: 0, y: -20, height: 0}}
+                                                        animate={{opacity: 1, y: 0, height: 20}}
+                                                        transition={{duration: 0.2}}
+                                                        exit={{opacity: 0, y: -20, height: 0}}
                                             >
-                                                <Loader2 className={"animate-spin text-white m-auto"} />
+                                                <Loader2 className={"animate-spin text-white m-auto"}/>
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
@@ -226,17 +234,17 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                         </div>
                         {messageIsLoading && (
                             <Button className="flex-shrink-0" onClick={abortResponse}>
-                                <BsStopCircleFill size={24} className="text-red-500/80 mr-2" />
+                                <BsStopCircleFill size={24} className="text-red-500/80 mr-2"/>
                                 Stop Generating...
                             </Button>
                         )}
                         <form onSubmit={handleSubmit}
-                            className="flex flex-row items-center justify-between space-x-2 rounded-md shrink-0">
+                              className="flex flex-row items-center justify-between space-x-2 rounded-md shrink-0">
                             <Input onChange={(e) => setMessage(e.target.value)} value={message}
-                                disabled={messageIsLoading}
-                                placeholder="Type your message here..." />
+                                   disabled={messageIsLoading}
+                                   placeholder="Type your message here..."/>
                             <Button disabled={!elementExists || messageIsLoading || message.trim() === ''}
-                                type="submit" className="flex-shrink-0 ml-2">
+                                    type="submit" className="flex-shrink-0 ml-2">
                                 Send
                             </Button>
                         </form>

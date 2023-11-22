@@ -14,6 +14,7 @@
     "mac": "vite build && electron-builder --mac",
     "win": "vite build && electron-builder --win",
     "linux": "vite build && electron-builder --linux",
+    "wl": "vite build && electron-builder -wl",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "release": "tsc && vite build && electron-builder -p always",

@@ -18,9 +18,6 @@ import {
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import HoverDate from "../hover-date";
 import {isResourcePDFFromUrlOrElementType} from "@/types/api-types/extra/learning-tool-id-types";
-import {
-    ItsolutionsItslUtilsConstantsLocationType
-} from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType";
 import {ItslearningRestApiEntitiesElementType} from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
 import {useCourse} from "@/hooks/atoms/useCourse";
 
