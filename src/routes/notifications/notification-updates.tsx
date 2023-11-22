@@ -17,6 +17,7 @@ import UpdatesTypeSelect, {
     getFilteredUpdates,
     useUpdatesTypeSelect
 } from "@/components/notifications/notifications-updates-type-select";
+import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 
 
 export default function NotificationUpdates() {
@@ -32,13 +33,7 @@ export default function NotificationUpdates() {
 
     const { selectedUpdatesType, setSelectedUpdatesType, filteredNotifications } = useUpdatesTypeSelect(notifications)
 
-    const { ref, inView } = useInView();
-
-    useEffect(() => {
-        if (inView && hasNextPage) {
-            fetchNextPage();
-        }
-    }, [inView, hasNextPage, fetchNextPage]);
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
 
     return (
         <>

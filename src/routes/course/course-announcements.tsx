@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import UpdatesTypeSelect, {
     useUpdatesTypeSelect
 } from "@/components/notifications/notifications-updates-type-select";
+import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 
 
 export default function CourseAnnouncements() {
@@ -23,13 +24,7 @@ export default function CourseAnnouncements() {
 
     const { selectedUpdatesType, setSelectedUpdatesType, filteredNotifications } = useUpdatesTypeSelect(updates)
 
-    const { ref, inView } = useInView();
-
-    useEffect(() => {
-        if (inView && hasNextPage) {
-            fetchNextPage();
-        }
-    }, [inView, hasNextPage, fetchNextPage]);
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
 
     return (
         <>
