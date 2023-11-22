@@ -2,8 +2,8 @@ import { useAISidepanel } from '@/hooks/atoms/useAISidepanel';
 import { useUser } from '@/hooks/atoms/useUser';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Message from './message';
 import { Spinner } from '@nextui-org/spinner';
 import { BsStopCircleFill } from 'react-icons/bs';
@@ -14,6 +14,7 @@ import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
 import { MessageType } from '@/types/ai-message';
 import { useQueryClient } from '@tanstack/react-query';
 import { TanstackKeys } from '@/types/tanstack-keys';
+import { useInView } from 'react-intersection-observer';
 
 export default function AISidePanel({ elementId }: { elementId: string | number }) {
     const { aiSidepanel } = useAISidepanel()
@@ -31,11 +32,24 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         enabled: aiSidepanel,
     })
 
-    const { data: previousMessages, isLoading: isPreviousMessagesLoading } = useGETpreviousMessages(elementId, {
+    const { data: previousMessages, isLoading: isPreviousMessagesLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useGETpreviousMessages({
+        elementId: Number(elementId),
+    }, {
         enabled: aiSidepanel,
     })
 
-    const reversedPreviousMessages = previousMessages?.slice().reverse()
+    const { ref, inView } = useInView()
+
+
+    useEffect(() => {
+        if (inView && hasNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, fetchNextPage]);
+
+    const reversedPreviousMessages = useMemo(() => previousMessages?.pages.map((page) => page.previousMessages).flat().sort((a, b) => {
+        return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    }), [previousMessages])
 
     useEffect(() => {
         const uploadDocumentForAI = async () => {
@@ -128,8 +142,8 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                     }
                 });
             }
-            /* const queryClient = useQueryClient()
-            queryClient.invalidateQueries([TanstackKeys.AIpreviousMessages, elementId]) */
+            const queryClient = useQueryClient()
+            queryClient.setQueryData([TanstackKeys.AIpreviousMessages, elementId], chatMessages)
             setMessage('')
         } catch (err) {
             if (signal.aborted) {
@@ -160,9 +174,6 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                     <div
                         className="flex flex-col flex-1 p-4 rounded-md bg-foreground/10 overflow-hidden space-y-4 max-h-full">
                         <div className="flex flex-1 px-2 overflow-y-auto max-h-full flex-col-reverse -ml-2">
-                            {elementExistsLoading || uploadingDocument || isPreviousMessagesLoading && (
-                                <Loader2 className={"animate-spin text-white m-auto"} />
-                            )}
                             {error && (
                                 <div className="flex flex-row items-center justify-center">
                                     <span className="text-red-500">{error}</span>
@@ -194,6 +205,24 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                                     <Message key={reversedPreviousMessages.length - i} role={message.role} message={message.content} />
                                 </motion.div>
                             ))}
+                            {elementExistsLoading || uploadingDocument || isPreviousMessagesLoading ? (
+                                <Loader2 className={"animate-spin text-white m-auto"} />
+                            ) : (
+                                <div ref={ref}>
+                                    <AnimatePresence>
+                                        {isFetchingNextPage && (
+                                            <motion.div className="flex flex-row items-center justify-center"
+                                                initial={{ opacity: 0, y: -20, height: 0 }}
+                                                animate={{ opacity: 1, y: 0, height: 20 }}
+                                                transition={{ duration: 0.2 }}
+                                                exit={{ opacity: 0, y: -20, height: 0 }}
+                                            >
+                                                <Loader2 className={"animate-spin text-white m-auto"} />
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )}
                         </div>
                         {messageIsLoading && (
                             <Button className="flex-shrink-0" onClick={abortResponse}>

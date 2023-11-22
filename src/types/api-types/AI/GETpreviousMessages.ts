@@ -1,20 +1,31 @@
 import { apiUrl } from "@/lib/utils.ts";
 
-const GETpreviousMessagesApiEndpoint = 'https://itsdu.danielz.dev/api/messages/{elementId}/{userId}'
+const GETpreviousMessagesApiEndpoint = 'https://itsdu.danielz.dev/api/messages/{elementId}/{userId}?pageIndex={pageIndex}&pageSize=${pageSize}'
 
 export const GETpreviousMessagesApiUrl = (params: GETpreviousMessagesParams) => {
     return apiUrl(GETpreviousMessagesApiEndpoint, {
         elementId: params.elementId,
-        userId: params.userId
+        userId: params.userId,
+        pageIndex: params.pageIndex
     })
 }
 
 export type GETpreviousMessagesParams = {
     elementId: number
     userId: number
+    pageIndex?: number
+    pageSize?: number
 }
 
-export type GETpreviousMessagesResponse = MessageDatabaseType[]
+export type GETpreviousMessagesResponse = {
+    previousMessages: MessageDatabaseType[]
+} & MessagesInfiniteOptions
+
+export type MessagesInfiniteOptions = {
+    totalMessages: number;
+    pageSize: number;
+    pageIndex: number;
+}
 
 export type MessageRole = "user" | "system"
 
