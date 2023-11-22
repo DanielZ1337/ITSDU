@@ -1,4 +1,4 @@
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl } from "@/lib/utils.ts";
 
 const GETpreviousMessagesApiEndpoint = 'https://itsdu.danielz.dev/api/messages/{elementId}/{userId}?pageIndex={pageIndex}&pageSize={pageSize}'
 
@@ -6,7 +6,8 @@ export const GETpreviousMessagesApiUrl = (params: GETpreviousMessagesParams) => 
     return apiUrl(GETpreviousMessagesApiEndpoint, {
         elementId: params.elementId,
         userId: params.userId,
-        pageIndex: params.pageIndex
+        pageIndex: params.pageIndex,
+        pageSize: params.pageSize
     })
 }
 
