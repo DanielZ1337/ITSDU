@@ -1,11 +1,12 @@
 import { useUser } from "@/hooks/atoms/useUser"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar"
+import { MessageRole } from "@/types/api-types/AI/GETpreviousMessages"
 
-export default function MessageAvatar({ from }: { from: "You" | "ITSDU AI" }) {
+export default function MessageAvatar({ role }: { role: MessageRole }) {
     const user = useUser()!
 
-    const src = from === "You" ? user?.ProfileImageUrl : "itsl-itslearning-file://icon.ico"
-    const alt = from === "You" ? user?.FullName : "Logo"
+    const src = role === "user" ? user?.ProfileImageUrl : "itsl-itslearning-file://icon.ico"
+    const alt = role === "user" ? user?.FullName : "Logo"
 
     return (
         <div className="flex flex-row items-start justify-start py-3">
@@ -16,7 +17,7 @@ export default function MessageAvatar({ from }: { from: "You" | "ITSDU AI" }) {
                         className={"object-cover"}
                     />
                     <AvatarFallback className={"bg-foreground/20 text-xs"}>
-                        {from === "You" ? (
+                        {role === "user" ? (
                             user?.FullName.split(" ").map((name) => name[0]).join("").slice(0, 3)
                         ) : (
                             "ITSDU AI"

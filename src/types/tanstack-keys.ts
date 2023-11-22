@@ -2,6 +2,7 @@
 
 export enum TanstackKeys {
     AICheckElementID = "AICheckElementID",
+    AIpreviousMessages = "AIpreviousMessages",
     Bulletin = "bulletin",
     CalendarEvent = "calendarEvent",
     CalendarEvents = "calendarEvents",

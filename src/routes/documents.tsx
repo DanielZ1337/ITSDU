@@ -6,6 +6,7 @@ import { motion } from 'framer-motion'
 import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
 import { useResizeDetector } from 'react-resize-detector'
 import AISidePanel from '@/components/ai-chat/ai-sidepanel'
+import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages'
 
 export default function Documents() {
     const { elementId } = useParams();

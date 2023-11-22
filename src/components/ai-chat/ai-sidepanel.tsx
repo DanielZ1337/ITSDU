@@ -10,15 +10,18 @@ import { BsStopCircleFill } from 'react-icons/bs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import useGETcheckElementID from '@/queries/AI/useGETcheckElementID';
+import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
+import { MessageType } from '@/types/ai-message';
+import { useQueryClient } from '@tanstack/react-query';
+import { TanstackKeys } from '@/types/tanstack-keys';
 
 export default function AISidePanel({ elementId }: { elementId: string | number }) {
     const { aiSidepanel } = useAISidepanel()
     const user = useUser()!
 
-
     const [message, setMessage] = useState<string>('')
     const [messageIsLoading, setMessageIsLoading] = useState<boolean>(false)
-    const [chatMessages, setChatMessages] = useState<{ message: string, from: "You" | "ITSDU AI" }[]>([])
+    const [chatMessages, setChatMessages] = useState<MessageType[]>([])
     const [abortController, setAbortController] = useState<AbortController | null>(null)
     const [uploadingDocument, setUploadingDocument] = useState<boolean>(false)
     const [refetchCount, setRefetchCount] = useState<number>(0)
@@ -27,6 +30,12 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const { data: elementExists, isLoading: elementExistsLoading, refetch } = useGETcheckElementID(elementId, {
         enabled: aiSidepanel,
     })
+
+    const { data: previousMessages, isLoading: isPreviousMessagesLoading } = useGETpreviousMessages(elementId, {
+        enabled: aiSidepanel,
+    })
+
+    const reversedPreviousMessages = previousMessages?.slice().reverse()
 
     useEffect(() => {
         const uploadDocumentForAI = async () => {
@@ -48,7 +57,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (message.trim() === '' || messageIsLoading || !elementExists) return
-        setChatMessages(prev => [{ message, from: 'You' }, ...prev])
+        setChatMessages(prev => [{ content: message, role: 'user', timestamp: new Date() }, ...prev])
         await chatCompletion()
     }
 
@@ -70,10 +79,12 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         const abortController = new AbortController();
         setAbortController(abortController);
         const signal = abortController.signal;
-        setChatMessages(prev => [{ message: '', from: 'ITSDU AI' }, ...prev])
+        setChatMessages(prev => [{ content: '', role: 'system' }, ...prev])
 
         try {
-            const res = await fetch(`https://itsdu.danielz.dev/api/message/${elementId}`, {
+            const url = `https://itsdu.danielz.dev/api/message/${elementId}`
+            // const url = `http://localhost:3000/api/message/${elementId}`
+            const res = await fetch(url, {
                 method: 'POST',
                 body: JSON.stringify({
                     message,
@@ -107,20 +118,22 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                 const decodedChunk = decoder.decode(value)
                 // the incoming messsage should be in the first index of the array¨
                 setChatMessages(prev => {
-                    const newMessage = { message: decodedChunk, from: 'ITSDU AI' };
-                    if (prev.length > 0 && prev[0].from === 'ITSDU AI') {
+                    const newMessage = { content: decodedChunk, role: "system" } as MessageType;
+                    if (prev.length > 0 && prev[0].role === 'system') {
                         const lastMessage = prev[0];
-                        const updatedMessage = { ...lastMessage, message: lastMessage.message + decodedChunk };
+                        const updatedMessage = { ...lastMessage, content: lastMessage.content + decodedChunk } as MessageType;
                         return [updatedMessage, ...prev.slice(1)];
                     } else {
                         return [newMessage, ...prev];
                     }
                 });
             }
+            /* const queryClient = useQueryClient()
+            queryClient.invalidateQueries([TanstackKeys.AIpreviousMessages, elementId]) */
             setMessage('')
         } catch (err) {
             if (signal.aborted) {
-                if (chatMessages[0].message.trim() === '') {
+                if (chatMessages[0].content.trim() === '') {
                     setChatMessages(prev => prev.slice(1))
                 }
                 console.error(`Request aborted`, err);
@@ -147,7 +160,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                     <div
                         className="flex flex-col flex-1 p-4 rounded-md bg-foreground/10 overflow-hidden space-y-4 max-h-full">
                         <div className="flex flex-1 px-2 overflow-y-auto max-h-full flex-col-reverse -ml-2">
-                            {elementExistsLoading || uploadingDocument && (
+                            {elementExistsLoading || uploadingDocument || isPreviousMessagesLoading && (
                                 <Loader2 className={"animate-spin text-white m-auto"} />
                             )}
                             {error && (
@@ -162,15 +175,23 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.2 }}
                                 >
-                                    {i === 0 && messageIsLoading && chatMessages[0].from === 'ITSDU AI' && chatMessages[0].message === '' ? (
-                                        <Message key={chatMessages.length - i} from={message.from}>
-                                            <Spinner size="sm" color="primary"
-                                                className={"m-auto w-full h-full"} />
+                                    {i === 0 && messageIsLoading && chatMessages[0].role === 'system' && chatMessages[0].content === '' ? (
+                                        <Message key={chatMessages.length - i} role={message.role}>
+                                            <Spinner size="sm" color="primary" className={"m-auto w-full h-full"} />
                                         </Message>
                                     ) : (
-                                        <Message key={chatMessages.length - i} from={message.from}
-                                            message={message.message} />
+                                        <Message key={chatMessages.length - i} role={message.role} message={message.content} />
                                     )}
+                                </motion.div>
+                            ))}
+                            {reversedPreviousMessages && reversedPreviousMessages.map((message, i) => (
+                                <motion.div
+                                    key={reversedPreviousMessages.length - i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.2, delay: 0.1 * i }}
+                                >
+                                    <Message key={reversedPreviousMessages.length - i} role={message.role} message={message.content} />
                                 </motion.div>
                             ))}
                         </div>
