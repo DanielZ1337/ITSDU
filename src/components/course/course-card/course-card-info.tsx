@@ -1,4 +1,4 @@
-import {cn} from "@/lib/utils"
+import {cn} from "@/lib/utils.ts"
 import {useNavigate} from "react-router-dom"
 
 export default function CourseCardInfo({icon, count, className, href}: {
