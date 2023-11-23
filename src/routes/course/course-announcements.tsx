@@ -41,7 +41,8 @@ export default function CourseAnnouncements() {
                             <Suspense fallback={
                                 <Skeleton className="bg-foreground/10 rounded-md py-8" />
                             } key={update.NotificationId}>
-                                <NotificationCard key={update.NotificationId} notification={update} showLocation={false} />
+                                <NotificationCard key={update.NotificationId} notification={update}
+                                    showLocation={false} />
                             </Suspense>
                         ))
                     ))}

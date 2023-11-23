@@ -18,8 +18,6 @@ import {
     ItsolutionsItslUtilsConstantsLocationType
 } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
 import {useToast} from "@/components/ui/use-toast";
-import {sidebarActiveAtom} from "@/atoms/sidebar";
-import {useAtom} from "jotai";
 import {useSidebar} from "@/hooks/atoms/useSidebar";
 
 export default function SearchResourcesDialog({courseId}: {

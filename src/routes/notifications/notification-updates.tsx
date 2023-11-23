@@ -1,20 +1,8 @@
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
-import { Suspense, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
+import { Suspense } from "react";
 import { Skeleton } from "@nextui-org/react";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 import NotificationCard from "@/components/notifications/notifications-card";
 import UpdatesTypeSelect, {
-    UpdatesType,
-    getFilteredUpdates,
     useUpdatesTypeSelect
 } from "@/components/notifications/notifications-updates-type-select";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";

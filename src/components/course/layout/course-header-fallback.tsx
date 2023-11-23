@@ -16,10 +16,10 @@ export default function CourseHeaderFallback() {
                     {/* course title */}
                     <Skeleton className="w-96 h-7 rounded-md"/>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-nowrap my-auto ml-6">
+                <span className="text-sm text-gray-500 dark:text-gray-400 text-nowrap my-auto ml-6">
                     {/* course code */}
                     <Skeleton className="w-32 h-5 rounded-md"/>
-                </p>
+                </span>
             </div>
         </header>
     )
