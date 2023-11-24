@@ -4,12 +4,12 @@ import {
     DropdownMenuContent,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {Button} from "@/components/ui/button"
-import {ChevronDown} from "lucide-react"
-import {useState} from "react"
-import {InfiniteData} from "@tanstack/react-query"
-import {GETcourseNotifications} from "@/types/api-types/courses/GETcourseNotifications"
-import {GETnotificationsStream} from "@/types/api-types/notifications/GETnotificationsStream"
+import { Button } from "@/components/ui/button"
+import { ChevronDown } from "lucide-react"
+import { useState } from "react"
+import { InfiniteData } from "@tanstack/react-query"
+import { GETcourseNotifications } from "@/types/api-types/courses/GETcourseNotifications"
+import { GETnotificationsStream } from "@/types/api-types/notifications/GETnotificationsStream"
 
 export type UpdatesType = "update" | "announcement" | "all"
 
@@ -40,11 +40,10 @@ export function getFilteredUpdates<T extends GETcourseNotifications | GETnotific
 }
 
 
-export default function UpdatesTypeSelect({update, onChange}: {
+export default function UpdatesTypeSelect({ update, onChange }: {
     update: UpdatesType
     onChange: (updateType: UpdatesType) => void
 }) {
-    // @ts-ignore
     const [selectedUpdatesType, setSelectedUpdatesType] = useState<UpdatesType>(update)
 
     return (
@@ -52,7 +51,7 @@ export default function UpdatesTypeSelect({update, onChange}: {
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto select-none">
                     {selectedUpdatesType === "update" ? "Updates" : selectedUpdatesType === "announcement" ? "Announcements" : "All"}
-                    <ChevronDown className="ml-2 h-4 w-4"/>
+                    <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={"w-52"}>

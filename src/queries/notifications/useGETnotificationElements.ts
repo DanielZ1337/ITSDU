@@ -1,12 +1,12 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETnotificationElements,
     GETnotificationElementsApiUrl,
     GETnotificationElementsParams
 } from "@/types/api-types/notifications/GETnotificationElements";
-import {TanstackKeys} from '../../types/tanstack-keys';
+import { TanstackKeys } from '../../types/tanstack-keys';
 
 export default function useGETnotificationElements(params: GETnotificationElementsParams, queryConfig?: UseQueryOptions<GETnotificationElements, Error, GETnotificationElements, string[]>) {
 

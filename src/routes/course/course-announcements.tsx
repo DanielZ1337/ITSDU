@@ -8,48 +8,58 @@ import UpdatesTypeSelect, {
     useUpdatesTypeSelect
 } from "@/components/notifications/notifications-updates-type-select";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
+import { AnimatePresence, motion } from 'framer-motion';
+import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
+import { RenderFetchMoreNotifications, RenderNotificationCards, RenderSkeletons } from "../notifications/notification-updates";
+import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
+import NotificationCards from "@/components/notifications/notifications-cards";
+import { NotificationsCardsFetchMoreInView } from "@/components/notifications/notifications-cards-fetch-more-in-view";
 
 
 export default function CourseAnnouncements() {
     const { id } = useParams();
-    const { data: updates, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETcourseNotifications({
+    const { data: updates, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETcourseNotifications({
         courseId: Number(id),
         showLightBulletins: true,
         PageIndex: 0,
         PageSize: 10,
     }, {
-        suspense: true,
         keepPreviousData: true,
+    })
+
+    const { data: course, isLoading: courseInfoIsLoading } = useGETcourseBasic({
+        courseId: Number(id)
     })
 
     const { selectedUpdatesType, setSelectedUpdatesType, filteredNotifications } = useUpdatesTypeSelect(updates)
 
-    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
+    const titleComponent = () => {
+        if (courseInfoIsLoading) {
+            return <Skeleton className="ml-2 w-[500px] bg-foreground/20 rounded-md" />
+        } else {
+            return course!.Title
+        }
+    }
 
     return (
         <>
             <div
                 className="py-5 sticky top-0 flex items-center gap-4 border-b px-6 bg-zinc-100/40 dark:bg-zinc-800/40 backdrop-blur-md shadow justify-between">
-                <h1 className="text-xl font-bold">Recent Updates
-                    for {updates?.pages[0].EntityArray[0].LocationTitle}</h1>
+                <h1 className="text-xl font-bold flex">Recent Updates
+                    for {titleComponent()}</h1>
                 <UpdatesTypeSelect update={selectedUpdatesType} onChange={setSelectedUpdatesType} />
             </div>
             <div className="p-6">
                 <div className="flex flex-col gap-4">
-                    {filteredNotifications && filteredNotifications.map((page) => (
-                        page.map((update) => (
-                            <Suspense fallback={
-                                <Skeleton className="bg-foreground/10 rounded-md py-8" />
-                            } key={update.NotificationId}>
-                                <NotificationCard key={update.NotificationId} notification={update}
-                                    showLocation={false} />
-                            </Suspense>
-                        ))
-                    ))}
+                    {isLoading ? <NotificationsCardsFallback /> : <NotificationCards filteredNotifications={filteredNotifications} />}
                 </div>
-                <div ref={ref} className="text-center mt-4 text-gray-600 text-sm">
-                    {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
-                </div>
+                {!isLoading && (
+                    <NotificationsCardsFetchMoreInView
+                        hasNextPage={hasNextPage}
+                        fetchNextPage={fetchNextPage}
+                        isFetchingNextPage={isFetchingNextPage}
+                    />
+                )}
             </div>
         </>
     )
