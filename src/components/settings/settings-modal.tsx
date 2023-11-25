@@ -1,8 +1,8 @@
-import {Divider} from "@nextui-org/divider";
-import {useIntersectionObserver} from "@uidotdev/usehooks"
-import React, {SetStateAction, useEffect, useState} from "react";
-import {cn} from "@/lib/utils";
-import {Button, DividerProps, ScrollShadow} from "@nextui-org/react";
+import { Divider } from "@nextui-org/divider";
+import { useIntersectionObserver } from "@uidotdev/usehooks"
+import React, { SetStateAction, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { DividerProps, ScrollShadow } from "@nextui-org/react";
 import {
     AlertTriangle,
     ComputerIcon,
@@ -11,58 +11,190 @@ import {
     PencilIcon,
     SettingsIcon,
     SunIcon,
-    User as UserIcon
+    User as UserIcon,
+    X
 } from "lucide-react";
-import {useTheme} from "next-themes";
-import {Spinner} from "@nextui-org/spinner";
-import {useUser} from '@/hooks/atoms/useUser.ts'
-import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
-import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle} from "../ui/dialog";
-import {Avatar} from "@/components/ui/avatar";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "../ui/tabs";
+import { useTheme } from "next-themes";
+import { Spinner } from "@nextui-org/spinner";
+import { useUser } from '@/hooks/atoms/useUser.ts'
+import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle } from "../ui/dialog";
+import { Avatar } from "@/components/ui/avatar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import * as DialogPrimitive from "@radix-ui/react-dialog"
+import { Button } from "../ui/button";
+import { LanguageCombobox } from "../language-combobox";
+import { AnimatePresence, motion } from 'framer-motion';
 
-export default function Page() {
+export default function SettingsModal() {
 
-    const {showSettingsModal, setShowSettingsModal} = useShowSettingsModal()
+    const { showSettingsModal, setShowSettingsModal } = useShowSettingsModal()
 
     return (
         <Dialog
             open={showSettingsModal}
             onOpenChange={setShowSettingsModal}
         >
-            <DialogOverlay/>
+            <DialogOverlay className="data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-none data-[state=open]:!duration-500" />
             <DialogContent
-                className="md:w-fit max-w-[90vw] max-h-[90vh]"
+                customClose={<CustomCloseButton />}
+                className="h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0 flex flex-col"
             >
-                <DialogHeader>
-                    <DialogTitle>Settings</DialogTitle>
-                    <DialogDescription>Configure your preferences</DialogDescription>
-                </DialogHeader>
-                <Tabs defaultValue="account" className="w-[400px]">
-                    <TabsList>
-                        <TabsTrigger value="account">Account</TabsTrigger>
-                        <TabsTrigger value="password">Password</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="account">Make changes to your account here.</TabsContent>
-                    <TabsContent value="password">Change your password here.</TabsContent>
-                </Tabs>
-
+                <div className="drag w-full h-14" />
+                <div className="px-10 h-full w-full flex flex-col gap-4 items-center justify-center pb-14 pt-10" >
+                    <SettingsCustom />
+                </div>
             </DialogContent>
         </Dialog>
     )
 }
 
+function CustomCloseButton() {
+    return (
+        <DialogPrimitive.Close
+            className={cn('border-2 border-transparent', "no-drag absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground")}>
+            <X className="h-6 w-6" />
+            <span className="sr-only">Close</span>
+        </DialogPrimitive.Close>
+    )
+}
+
+function ActiveSettingsPill() {
+    return (
+        <motion.div
+            layoutId="active-settings-pill"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+            className={cn("flex items-center justify-center h-full top-0 right-0 absolute")}
+        >
+            <div className="rounded-full bg-purple-500 w-3 h-3 absolute right-2 " />
+        </motion.div>
+    )
+}
+
+function SettingsButton({ currentSection, value, label, currentHover, setCurrentHover }: { currentSection: string, value: string, label: string, currentHover: string | null, setCurrentHover: React.Dispatch<SetStateAction<string | null>> }) {
+    return (
+        <TabsTrigger className="w-full relative" value={value} asChild>
+            <Button
+                onMouseEnter={() => setCurrentHover(value)}
+                onMouseLeave={() => setCurrentHover(null)}
+                className={cn(
+                    "w-full",
+                    currentSection === value
+                        ? "bg-foreground-100 text-foreground border-2 border-purple-500"
+                        : "bg-foreground-200 text-foreground-600"
+                )}
+                variant={"ghost"}
+                size={"lg"}
+            >
+                {label}
+                {currentSection === value && <ActiveSettingsPill />}
+                {currentHover === value && !currentSection === value && <ActiveSettingsPill />}
+            </Button>
+        </TabsTrigger>
+    );
+}
+
 function SettingsCustom() {
-    const [currentSection, setCurrentSection] = useState<string>('')
+    const [currentSection, setCurrentSection] = useState<string>('account')
+    const [currentHover, setCurrentHover] = useState<string | null>('account')
     const rootRef = React.useRef<HTMLDivElement>(null)
+
+    const SettingsCardSectionSettings = {
+        root: rootRef,
+        setCurrentSection: setCurrentSection
+    }
+
+    return (
+        <div
+            className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8 bg-foreground-50 rounded-xl"}>
+            {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
+            <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection} orientation="vertical" className="flex md:flex-row flex-col gap-4 w-full h-full">
+                <TabsList className="justify-start h-full flex md:flex-col flex-row gap-4 md:gap-2 p-2 min-w-[20vw] max-w-[30vw] overflow-x-auto md:overflow-y-auto">
+                    <h1 className="text-foreground text-xl font-bold my-2 text-neutral-400">Settings</h1>
+                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
+                    <SettingsButton
+                        currentSection={currentSection}
+                        value="Preferences"
+                        label="Preferences"
+                        currentHover={currentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                    <SettingsButton
+                        currentSection={currentSection}
+                        value="account"
+                        label="Account"
+                        currentHover={currentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                    <SettingsButton
+                        currentSection={currentSection}
+                        value="password"
+                        label="Password"
+                        currentHover={currentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                </TabsList>
+                <Divider orientation={"vertical"} className={"hidden md:block h-full"} />
+                <ScrollShadow hideScrollBar
+                    className={"flex flex-col gap-4 w-full h-full py-2 overflow-y-auto"}
+                    ref={rootRef}>
+                    <SettingsCardSection title={"Preferences"} {...SettingsCardSectionSettings}>
+                        <div className={"flex flex-col gap-4 w-full"}>
+                            <div className={"flex flex-col gap-2"}>
+                                <h6 className={"text-foreground"}>Dark Mode</h6>
+                                <div className={"flex flex-row gap-2 w-full justify-between md:justify-start"}>
+                                    <ThemeChangeButton theme={"light"} />
+                                    <ThemeChangeButton theme={"dark"} />
+                                    <ThemeChangeButton theme={"system"} />
+                                </div>
+                            </div>
+                            <div className={"flex flex-col gap-2"}>
+                                <h6 className={"text-foreground"}>Language</h6>
+                                <LanguageCombobox disabled />
+                            </div>
+                            <AnimatePresence>
+                                {currentSection === 'account' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 100 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 100, position: 'absolute' }}
+                                    >
+                                        <TabsContent value="account">
+                                            hi
+                                        </TabsContent>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                            <AnimatePresence>
+                                {currentSection === 'password' && (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 100 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 100, position: 'absolute' }}
+                                    >
+                                        <TabsContent value="password">
+                                            here
+                                        </TabsContent>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </SettingsCardSection>
+                </ScrollShadow>
+            </Tabs>
+        </div>
+    )
+}
+
+function SettingsSidebar({ currentSection, rootRef }: { currentSection: string, rootRef: React.RefObject<HTMLDivElement> }) {
     const navRef = React.useRef<HTMLDivElement>(null)
     const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768)
-    const {setTheme, theme} = useTheme()
-    const user = useUser()!
 
     const navDividerSettings = {
         orientation: isMobile ? 'vertical' : 'horizontal',
-        className: cn(isMobile ? 'h-6' : '')
+        className: isMobile ? 'h-6' : ''
     } satisfies DividerProps
 
     const SettingsNavTitleSettings = {
@@ -70,12 +202,7 @@ function SettingsCustom() {
         navbarRef: navRef,
         rootRef: rootRef,
         isMobile: isMobile
-    }
-
-    const SettingsCardSectionSettings = {
-        root: rootRef,
-        setCurrentSection: setCurrentSection
-    }
+    } satisfies Omit<SettingsNavTitleProps, 'title' | 'icon'>
 
     useEffect(() => {
         window.addEventListener('resize', () => {
@@ -88,158 +215,38 @@ function SettingsCustom() {
             })
         }
     }, [])
-
     return (
-        <div
-            className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8 bg-foreground-50 rounded-xl"}>
-            <div className={"flex md:flex-row flex-col gap-4 w-full"}>
-                <nav
-                    className={"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 px-2 md:px-0 overflow-x-auto md:overflow-y-auto"}
-                    ref={navRef}>
-                    <SettingsNavTitle title={"Profile"} icon={<UserIcon/>}  {...SettingsNavTitleSettings} />
-                    <Divider {...navDividerSettings} />
-                    <SettingsNavTitle title={"Preferences"}
-                                      icon={<SettingsIcon/>} {...SettingsNavTitleSettings} />
-                    <Divider {...navDividerSettings} />
-                    <SettingsNavTitle title={"Cookie Settings"}
-                                      icon={<CookieIcon/>} {...SettingsNavTitleSettings} />
-                    <Divider {...navDividerSettings} />
-                    <SettingsNavTitle title={"Danger Zone"}
-                                      icon={<AlertTriangle/>} {...SettingsNavTitleSettings} />
-                </nav>
-                <Divider orientation={"vertical"} className={"hidden md:block h-[55vh]"}/>
-                <ScrollShadow hideScrollBar
-                              className={"flex flex-col gap-4 w-full h-[55vh] py-2 overflow-y-auto"}
-                              ref={rootRef}>
-                    <SettingsCardSection title={"Profile"} {...SettingsCardSectionSettings}>
-                        <div className={"flex flex-col gap-4 w-full"}>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Profile Picture</h6>
-                                <Avatar src={user.ProfileImageUrl}
-                                        className={"border-[4px] border-secondary h-auto xl:w-[100px] md:w-[100px] w-[80px] lg:w-[100px]"}
-                                        alt={user.FullName}/>
-                            </div>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Name</h6>
-                                <span
-                                    className={"inline-flex items-center py-1 rounded-md text-sm font-medium bg-foreground-100 text-foreground"}>
-                                    <h1 className={"text-foreground"}>{user.FullName}</h1>
-                                    <div
-                                        className={"ml-2 p-2 rounded-full hover:bg-foreground-200 cursor-pointer"}>
-                                        <PencilIcon className={"w-4 h-4"}/>
-                                    </div>
-                                </span>
-                            </div>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Person ID</h6>
-                                <span
-                                    className={"inline-flex items-center py-1 rounded-md text-sm font-medium bg-foreground-100 text-foreground"}>
-                                    <h1 className={"text-foreground"}>{user.PersonId}</h1>
-                                    <div
-                                        className={"ml-2 p-2 rounded-full hover:bg-foreground-200 cursor-pointer"}>
-                                        <PencilIcon className={"w-4 h-4"}/>
-                                    </div>
-                                </span>
-                            </div>
-                            {/* <UploadDropzone
-                                    className={"cursor-pointer border-dashed border-2 border-foreground-600"}
-                                    appearance={{
-                                        button: "bg-foreground-100 text-foreground hover:bg-foreground-200 hover:text-foreground px-4 py-2 rounded-md transition-all duration-200",
-                                    }}
-                                    endpoint="imageUploader"
-                                    onClientUploadComplete={(res) => {
-                                                // Do something with the response
-                                        console.log("Files: ", res);
-                                        alert("Upload Completed");
-                                        update({image: res?.[0].fileUrl}).then(() => {
-                                            update().then(() => {
-                                                alert('Profile picture updated! You will be logged out to refresh the changes for you.')
-                                                signOut().then(() => {
-                                                    signIn()
-                                                })
-                                            })
-                                        })
-                                    }}
-                                    onUploadError={(error: Error) => {
-                                        // Do something with the error.
-                                        alert(`ERROR! ${error.message}`);
-                                    }}
-                                /> */}
-                        </div>
-                    </SettingsCardSection>
-                    <SettingsCardSection title={"Preferences"} {...SettingsCardSectionSettings}>
-                        <div className={"flex flex-col gap-4 w-full"}>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Dark Mode</h6>
-                                <div className={"flex flex-row gap-2 w-full justify-between md:justify-start"}>
-                                    <Button
-                                        onClick={() => {
-                                            setTheme('light')
-                                        }}
-                                        className={cn(theme === 'light' ? 'bg-foreground-100 text-foreground border-2 border-secondary-600' : 'bg-foreground-200 text-foreground-200', isMobile && 'w-full')}
-                                        variant={"flat"}
-                                        radius={"sm"}
-                                        size={"lg"}
-                                    >
-                                        <SunIcon className={"w-6 h-6 text-foreground"}/>
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setTheme('dark')
-                                        }}
-                                        className={cn(theme === 'dark' ? 'bg-foreground-100 text-foreground border-2 border-secondary-600' : 'bg-foreground-200 text-foreground-200', isMobile && 'w-full')}
-                                        variant={"flat"}
-                                        radius={"sm"}
-                                        size={"lg"}
-                                    >
-                                        <MoonIcon className={"w-6 h-6 text-foreground"}/>
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setTheme('system')
-                                        }}
-                                        className={cn(theme === 'system' ? 'bg-foreground-100 text-foreground border-2 border-secondary-600' : 'bg-foreground-200 text-foreground-200', isMobile && 'w-full')}
-                                        variant={"flat"}
-                                        radius={"sm"}
-                                        size={"lg"}
-                                    >
-                                        <ComputerIcon className={"w-6 h-6 text-foreground"}/>
-                                    </Button>
-                                </div>
-                            </div>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Language</h6>
-                                <h1 className={"text-foreground"}>Coming Soon</h1>
-                            </div>
-                        </div>
-                    </SettingsCardSection>
-                    <SettingsCardSection title={"Danger Zone"} {...SettingsCardSectionSettings}>
-                        <div className={"flex flex-col gap-4 w-full"}>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-shdcnmuted-shdcnforeground"}>Delete Account</h6>
-                                <Button
-                                    onClick={() => {
-                                        alert('Coming Soon')
-                                    }}
-                                    className={"w-full md:w-1/2 my-4 md:mb-0"}
-                                    spinner={<Spinner color={"current"} size={"sm"}/>}
-                                    size={"lg"}
-                                    color={"danger"}
-                                    variant={"ghost"}
-                                    isDisabled
-                                >
-                                    Delete Account
-                                </Button>
-                            </div>
-                        </div>
-                    </SettingsCardSection>
-                </ScrollShadow>
-            </div>
-        </div>
+        <nav
+            className={"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 p-2 min-w-[20vw] overflow-x-auto md:overflow-y-auto"}
+            ref={navRef}>
+            <SettingsNavTitle title={"Preferences"}
+                icon={<SettingsIcon />} {...SettingsNavTitleSettings} />
+            <Divider {...navDividerSettings} />
+        </nav>
     )
 }
 
-function SettingsCardSection({title, children, setCurrentSection, root}: {
+function ThemeChangeButton({ theme }: { theme: string }) {
+    const { setTheme, theme: currentTheme } = useTheme()
+
+    const ThemeIconClassName = 'w-6 h-6 text-foreground'
+    return (
+        <Button
+            onClick={() => {
+                setTheme(theme)
+            }}
+            className={cn('w-full md:w-auto border-2 border-transparent', currentTheme === theme ? 'bg-foreground-100 text-foreground border-2 border-purple-500' : 'bg-foreground-200 text-foreground-200')}
+            variant={"ghost"}
+            size={"lg"}
+        >
+            {theme === 'light' && <SunIcon className={ThemeIconClassName} />}
+            {theme === 'dark' && <MoonIcon className={ThemeIconClassName} />}
+            {theme === 'system' && <ComputerIcon className={ThemeIconClassName} />}
+        </Button>
+    )
+}
+
+function SettingsCardSection({ title, children, setCurrentSection, root }: {
     title: string,
     children?: React.ReactNode,
     setCurrentSection?: React.Dispatch<SetStateAction<string>>,
@@ -266,14 +273,16 @@ function SettingsCardSection({title, children, setCurrentSection, root}: {
     )
 }
 
-function SettingsNavTitle({currentSection, title, navbarRef, rootRef, isMobile, icon}: {
+interface SettingsNavTitleProps {
     currentSection: string,
     title: string,
     navbarRef?: React.RefObject<HTMLDivElement>
     rootRef?: React.RefObject<HTMLDivElement>
     isMobile?: boolean
     icon?: React.ReactNode
-}) {
+}
+
+function SettingsNavTitle({ currentSection, title, navbarRef, rootRef, isMobile, icon }: SettingsNavTitleProps) {
     const ref = React.useRef<HTMLHeadingElement>(null)
 
     useEffect(() => {
@@ -302,10 +311,10 @@ function SettingsNavTitle({currentSection, title, navbarRef, rootRef, isMobile, 
                 }
             }}
             ref={ref}
-            className={"inline-flex gap-2 text-shdcnmuted-shdcnforeground data-[active=true]:text-foreground data-[active=true]:font-bold hover:text-foreground cursor-pointer hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)]"}
+            className={"overflow-hidden inline-flex gap-2 text-foreground data-[active=true]:text-foreground data-[active=true]:font-bold hover:text-foreground cursor-pointer hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)]"}
             data-active={currentSection === title}
         >
-            {!isMobile && icon} {title}
+            <span className="shrink-0">{!isMobile && icon} {title}</span>
         </h6>
     )
 }

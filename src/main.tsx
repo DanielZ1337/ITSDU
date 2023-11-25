@@ -4,6 +4,7 @@ import '@/index.css';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
+import { lazy, Suspense } from "react";
 
 import ErrorPage from "@/error-page.tsx";
 import Profile from "@/routes/profile.tsx";
@@ -26,7 +27,7 @@ import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/
 import NotificationUpdates from "./routes/notifications/notification-updates";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
-import Documents from "./routes/documents";
+const Documents = lazy(() => import("./routes/documents"));
 import CourseAnnouncementError from "./routes/course/errors-pages/course-announcement-error";
 import CourseSchedule from "./routes/course/course-schedule";
 
@@ -131,7 +132,7 @@ const router = createHashRouter([
             },
             {
                 path: "/documents/:elementId",
-                element: <Documents />,
+                element: <SuspenseWrapper><Documents /></SuspenseWrapper>,
                 errorElement: <ErrorPage />,
             },
             {
