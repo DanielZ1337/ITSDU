@@ -25,6 +25,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { Button } from "../ui/button";
 import { LanguageCombobox } from "../language-combobox";
 import { AnimatePresence, motion } from 'framer-motion';
+import { Input } from "../ui/input";
 
 export default function SettingsModal() {
 
@@ -41,7 +42,7 @@ export default function SettingsModal() {
                 className="h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0 flex flex-col"
             >
                 <div className="drag w-full h-14" />
-                <div className="px-10 h-full w-full flex flex-col gap-4 items-center justify-center pb-14 pt-10" >
+                <div className="px-10 h-full w-full flex flex-col gap-4 items-center justify-center py-14" >
                     <SettingsCustom />
                 </div>
             </DialogContent>
@@ -71,9 +72,10 @@ function ActiveSettingsPill() {
             <div className="rounded-full bg-purple-500 w-3 h-3 absolute right-2 " />
         </motion.div>
     )
-}
+} function SettingsButton({ currentSection, value, label, currentHover, setCurrentHover }: { currentSection: string, value: string, label: string, currentHover: string | null, setCurrentHover: React.Dispatch<SetStateAction<string | null>> }) {
+    const isActive = currentSection === value;
+    const isHoverActive = currentHover === value;
 
-function SettingsButton({ currentSection, value, label, currentHover, setCurrentHover }: { currentSection: string, value: string, label: string, currentHover: string | null, setCurrentHover: React.Dispatch<SetStateAction<string | null>> }) {
     return (
         <TabsTrigger className="w-full relative" value={value} asChild>
             <Button
@@ -81,7 +83,7 @@ function SettingsButton({ currentSection, value, label, currentHover, setCurrent
                 onMouseLeave={() => setCurrentHover(null)}
                 className={cn(
                     "w-full",
-                    currentSection === value
+                    isActive && (isHoverActive || !currentHover)
                         ? "bg-foreground-100 text-foreground border-2 border-purple-500"
                         : "bg-foreground-200 text-foreground-600"
                 )}
@@ -89,16 +91,18 @@ function SettingsButton({ currentSection, value, label, currentHover, setCurrent
                 size={"lg"}
             >
                 {label}
-                {currentSection === value && <ActiveSettingsPill />}
-                {currentHover === value && !currentSection === value && <ActiveSettingsPill />}
+                {isHoverActive ? <ActiveSettingsPill /> : isActive && <ActiveSettingsPill />}
             </Button>
         </TabsTrigger>
     );
 }
 
 function SettingsCustom() {
-    const [currentSection, setCurrentSection] = useState<string>('account')
-    const [currentHover, setCurrentHover] = useState<string | null>('account')
+    const [currentSection, setCurrentSection] = React.useState<string>('account');
+    const [currentHover, setCurrentHover] = React.useState<string | null>(null);
+
+    const memoizedCurrentSection = React.useMemo(() => currentSection, [currentSection]);
+    const memoizedCurrentHover = React.useMemo(() => currentHover, [currentHover]);
     const rootRef = React.useRef<HTMLDivElement>(null)
 
     const SettingsCardSectionSettings = {
@@ -115,24 +119,24 @@ function SettingsCustom() {
                     <h1 className="text-foreground text-xl font-bold my-2 text-neutral-400">Settings</h1>
                     <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
                     <SettingsButton
-                        currentSection={currentSection}
+                        currentSection={memoizedCurrentSection}
                         value="Preferences"
                         label="Preferences"
-                        currentHover={currentHover}
+                        currentHover={memoizedCurrentHover}
                         setCurrentHover={setCurrentHover}
                     />
                     <SettingsButton
-                        currentSection={currentSection}
+                        currentSection={memoizedCurrentSection}
                         value="account"
                         label="Account"
-                        currentHover={currentHover}
+                        currentHover={memoizedCurrentHover}
                         setCurrentHover={setCurrentHover}
                     />
                     <SettingsButton
-                        currentSection={currentSection}
+                        currentSection={memoizedCurrentSection}
                         value="password"
                         label="Password"
-                        currentHover={currentHover}
+                        currentHover={memoizedCurrentHover}
                         setCurrentHover={setCurrentHover}
                     />
                 </TabsList>
@@ -140,50 +144,221 @@ function SettingsCustom() {
                 <ScrollShadow hideScrollBar
                     className={"flex flex-col gap-4 w-full h-full py-2 overflow-y-auto"}
                     ref={rootRef}>
-                    <SettingsCardSection title={"Preferences"} {...SettingsCardSectionSettings}>
-                        <div className={"flex flex-col gap-4 w-full"}>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-foreground"}>Dark Mode</h6>
-                                <div className={"flex flex-row gap-2 w-full justify-between md:justify-start"}>
-                                    <ThemeChangeButton theme={"light"} />
-                                    <ThemeChangeButton theme={"dark"} />
-                                    <ThemeChangeButton theme={"system"} />
-                                </div>
+                    <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
+                        <div className="flex flex-col gap-4 w-full">
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Dark Mode</h6>
+                                <DarkModeSetting />
                             </div>
-                            <div className={"flex flex-col gap-2"}>
-                                <h6 className={"text-foreground"}>Language</h6>
-                                <LanguageCombobox disabled />
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Language</h6>
+                                <LanguageSetting />
                             </div>
-                            <AnimatePresence>
-                                {currentSection === 'account' && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 100 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 100, position: 'absolute' }}
-                                    >
-                                        <TabsContent value="account">
-                                            hi
-                                        </TabsContent>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                            <AnimatePresence>
-                                {currentSection === 'password' && (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 100 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        exit={{ opacity: 0, x: 100, position: 'absolute' }}
-                                    >
-                                        <TabsContent value="password">
-                                            here
-                                        </TabsContent>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default Home Page</h6>
+                                <DefaultHomePageSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Use Custom PDF Renderer</h6>
+                                <CustomPDFRendererSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Enable/Disable Uploading AI Chats</h6>
+                                <UploadAIChatsSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default Sort Type for Course Cards</h6>
+                                <DefaultSortTypeSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default AI Chat Sidepanel</h6>
+                                <DefaultChatSidepanelSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default Sort Type for Updates</h6>
+                                <DefaultSortTypeUpdatesSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Interval for Refreshing Access Tokens (in ms)</h6>
+                                <RefreshAccessTokenIntervalSetting />
+                            </div>
                         </div>
                     </SettingsCardSection>
                 </ScrollShadow>
             </Tabs>
+        </div>
+    )
+}
+
+function DarkModeSetting() {
+    const { theme } = useTheme()
+
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2">
+                <ThemeChangeButton theme={"light"} />
+                <ThemeChangeButton theme={"dark"} />
+                <ThemeChangeButton theme={"system"} />
+            </div>
+            <div className="flex flex-row gap-2">
+                <span className="text-foreground">Current Theme: {theme}</span>
+            </div>
+        </div>
+    )
+}
+
+function LanguageSetting() {
+    const user = useUser()!
+    const [language, setLanguage] = useState<string>(user.Language)
+
+    useEffect(() => {
+        setLanguage(user.Language)
+    }, [user.Language])
+
+    return (
+        <LanguageCombobox
+        />
+    )
+}
+
+function DefaultHomePageSetting() {
+    const user = useUser()!
+    const [defaultHomePage, setDefaultHomePage] = useState<string>("index")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={defaultHomePage}
+                onChange={(e) => {
+                    setDefaultHomePage(e.target.value)
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="index">Index</option>
+                <option value="dashboard">Dashboard</option>
+                <option value="courses">Courses</option>
+                <option value="calendar">Calendar</option>
+                <option value="messages">Messages</option>
+                <option value="settings">Settings</option>
+            </select>
+        </div>
+    )
+}
+
+function CustomPDFRendererSetting() {
+    const user = useUser()!
+    const [customPDFRenderer, setCustomPDFRenderer] = useState<string>("true")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={customPDFRenderer}
+                onChange={(e) => {
+                    setCustomPDFRenderer(e.target.value)
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+            </select>
+        </div>
+    )
+}
+
+function UploadAIChatsSetting() {
+    const user = useUser()!
+    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={uploadAIChats}
+                onChange={(e) => {
+                    setUploadAIChats(e.target.value)
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+            </select>
+        </div>
+    )
+}
+
+function DefaultSortTypeSetting() {
+    const user = useUser()!
+    const [defaultSortType, setDefaultSortType] = useState<"starred" | "unstarred" | "all">("starred")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={defaultSortType}
+                onChange={(e) => {
+                    setDefaultSortType(e.target.value as "starred" | "unstarred" | "all")
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="starred">Starred</option>
+                <option value="unstarred">Unstarred</option>
+                <option value="all">All</option>
+            </select>
+        </div>
+    )
+}
+
+function DefaultChatSidepanelSetting() {
+    const user = useUser()!
+    const [defaultChatSidepanel, setDefaultChatSidepanel] = useState<string>("false")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={defaultChatSidepanel}
+                onChange={(e) => {
+                    setDefaultChatSidepanel(e.target.value === 'true')
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+            </select>
+        </div>
+    )
+}
+
+function DefaultSortTypeUpdatesSetting() {
+    const user = useUser()!
+    const [defaultSortTypeUpdates, setDefaultSortTypeUpdates] = useState<string>("recent")
+
+    return (
+        <div className="flex flex-col gap-2">
+            <select
+                value={defaultSortTypeUpdates}
+                onChange={(e) => {
+                    setDefaultSortTypeUpdates(e.target.value)
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            >
+                <option value="recent">Recent</option>
+                <option value="alphabetical">Alphabetical</option>
+            </select>
+        </div>
+    )
+}
+
+function RefreshAccessTokenIntervalSetting() {
+    const [refreshAccessTokenInterval, setRefreshAccessTokenInterval] = useState<number>(1000 * 60 * 45)
+
+    return (
+        <div className="flex flex-col gap-2">
+            <Input
+                value={refreshAccessTokenInterval}
+                onChange={(e) => {
+                    setRefreshAccessTokenInterval(parseInt(e.target.value))
+                    // updateUser({ RefreshAccessTokenInterval: parseInt(e.target.value) })
+                }}
+                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+            />
         </div>
     )
 }
