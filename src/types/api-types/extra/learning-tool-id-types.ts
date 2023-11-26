@@ -65,7 +65,7 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
                     navigate(`/files/${elementId}`)
                     break;
             } */
-            navigate(`/documents/text/${elementId}`)
+            navigate(`/documents/other/${elementId}`)
         }
     }
 
