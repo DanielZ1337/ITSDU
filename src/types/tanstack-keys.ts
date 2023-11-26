@@ -47,6 +47,7 @@ export enum TanstackKeys {
     PersonalTasklistDailyWorkflow = "personalTasklistDailyWorkflow",
     PersonalTasks = "personalTasks",
     ResourceByElementID = "resourceByElementID",
+    ResourceOfficeDocumentByElementID = "resourceOfficeDocumentByElementID",
     SsoUrl = "ssoUrl",
     StarredCourses = "starrredCourses",
     UnstarredCourses = "unstarredCourses",

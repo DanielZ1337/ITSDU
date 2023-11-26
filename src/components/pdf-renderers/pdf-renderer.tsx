@@ -67,13 +67,13 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
             if (ratio > availableRatio) {
                 return availableWidth
             } else {
-                return Math.floor(Math.min(availableHeight) * Math.min(ratio)) - 0.5
+                return Math.floor(Math.min(availableHeight) * Math.min(ratio)) - 1
             }
         } else {
             if (containerHeight && containerWidth && toolbarHeight) {
                 const availableHeight = containerHeight - toolbarHeight
                 const availableWidth = containerWidth - aiSidepanelWidth
-                return Math.floor(Math.min(availableHeight, availableWidth)) - 0.5
+                return Math.floor(Math.min(availableHeight, availableWidth)) - 1
             } else {
                 return null
             }

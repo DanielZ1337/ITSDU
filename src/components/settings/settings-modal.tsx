@@ -143,6 +143,18 @@ function SettingsCustom() {
                                 <h6 className="text-foreground">Interval for Refreshing Access Tokens (in ms)</h6>
                                 <RefreshAccessTokenIntervalSetting />
                             </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Custom Titlebar Buttons</h6>
+                                <CustomTitlebarButtons />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Custom Titlebar</h6>
+                                <CustomTitlebarSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default Resource Open Type</h6>
+                                <DefaultResourceOpenTypeSetting />
+                            </div>
                         </div>
                     </SettingsCardSection>
                     <Shadow position={shadowPosition} />
@@ -244,6 +256,44 @@ function UploadAIChatsSetting() {
     )
 }
 
+function CustomTitlebarButtons() {
+    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+
+    return (
+        <Select
+            value={uploadAIChats}
+            onValueChange={setUploadAIChats}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+            </SelectContent>
+        </Select>
+    )
+}
+
+function CustomTitlebarSetting() {
+    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+
+    return (
+        <Select
+            value={uploadAIChats}
+            onValueChange={setUploadAIChats}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+            </SelectContent>
+        </Select>
+    )
+}
+
 function DefaultSortTypeSetting() {
     const [defaultSortType, setDefaultSortType] = useState<"starred" | "unstarred" | "all">("starred")
 
@@ -307,8 +357,78 @@ function DefaultSortTypeUpdatesSetting() {
     )
 }
 
+function DefaultResourceOpenTypeSetting() {
+    type DefaultResourceOpenType = "external" | "internal"
+    const [defaultResourceOpenType, setDefaultResourceOpenType] = useState<DefaultResourceOpenType>("external")
+
+    return (
+        <Select
+            value={defaultResourceOpenType}
+            onValueChange={(e) => {
+                setDefaultResourceOpenType(e as DefaultResourceOpenType)
+            }}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="external">External</SelectItem>
+                <SelectItem value="internal">Internal</SelectItem>
+            </SelectContent>
+        </Select>
+    )
+}
+
+function DefaultResourceTableColumnsSetting() {
+    // columns are type, title and published. They can all be toggled on and off at the same time
+    type DefaultResourceTableColumns = {
+        type: boolean,
+        title: boolean,
+        published: boolean
+    }
+
+    const [defaultResourceTableColumns, setDefaultResourceTableColumns] = useState<DefaultResourceTableColumns>({
+        type: true,
+        title: true,
+        published: true
+    })
+
+    /**
+     * <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
+                            Columns <ChevronDown className="ml-2 h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        {table
+                            .getAllColumns()
+                            .filter((column) => column.getCanHide())
+                            .map((column) => {
+                                return (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="capitalize"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value) =>
+                                            column.toggleVisibility(!!value)
+                                        }
+                                    >
+                                        {column.id}
+                                    </DropdownMenuCheckboxItem>
+                                )
+                            })}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+     */
+    return (
+        <div></div>
+    )
+}
+
 function RefreshAccessTokenIntervalSetting() {
-    const [refreshAccessTokenInterval, setRefreshAccessTokenInterval] = useState<number>(1000 * 60 * 45)
+    const DEFAULT_REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45 // 5 minutes
+    const [refreshAccessTokenInterval, setRefreshAccessTokenInterval] = useState<number>(DEFAULT_REFRESH_ACCESS_TOKEN_INTERVAL / 60 / 1000)
 
 
     /**
@@ -320,8 +440,10 @@ function RefreshAccessTokenIntervalSetting() {
                 className="border-2 border-transparent border-purple-500 text-white ring-offset-0 text-foreground bg-foreground-200 focus-visible:border-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:hover:border-none"
                 value={refreshAccessTokenInterval}
                 onChange={(e) => {
-                    setRefreshAccessTokenInterval(parseInt(e.target.value))
+                    setRefreshAccessTokenInterval(Number(e.target.value))
                 }}
+                min={5}
+                max={55}
                 type="number"
                 placeholder="Refresh Access Token Interval"
             />

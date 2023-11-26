@@ -71,6 +71,36 @@ async function createMainWindow() {
         ...windowOptions,
     })
 
+    win.webContents.setWindowOpenHandler((handler) => {
+        console.log(handler)
+        // handles office download links
+        const origin = new URL(handler.url)
+        const referrer = new URL(handler.referrer.url)
+        if (origin.hostname === 'eu1wopi.itslearning.com' || referrer.hostname.includes('officeapps.live.com')) {
+            if (!win) return { action: 'deny' }
+
+            console.log(handler)
+
+            return {
+                action: 'allow',
+                overrideBrowserWindowOptions: {
+                    modal: true,
+                    parent: win,
+                    autoHideMenuBar: true,
+                    alwaysOnTop: true,
+                    minHeight: 640,
+                    minWidth: 800,
+                    show: false,
+                    darkTheme: startUpTheme === 'dark',
+                    backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
+                    frame: false,
+                }
+            }
+        } else {
+            return { action: 'deny' }
+        }
+    });
+
     if (windowOptions.maximized) {
         win.maximize()
     }

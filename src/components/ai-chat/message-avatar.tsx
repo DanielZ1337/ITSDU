@@ -17,6 +17,7 @@ export default function MessageAvatar({ role }: { role: MessageRole }) {
                 name={alt}
                 className={"w-8 h-8 border-2 border-foreground/40"}
                 classNameFallback={"bg-foreground/20 text-xs"}
+                classNameFallbackAvatar="w-8 h-8 border-2 border-foreground/40"
             >
                 {role === "user" ? getPersonInitials(user?.FullName) : "ITSDU AI"}
             </ProfileAvatar>

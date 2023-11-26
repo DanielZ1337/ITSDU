@@ -1,19 +1,20 @@
-import {isResourcePDFFromUrlOrElementType} from "@/types/api-types/extra/learning-tool-id-types"
-import {ItslearningRestApiEntitiesElementLink} from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
-import {useNavigate} from "react-router-dom"
+import { isResourcePDFFromUrlOrElementType, isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types"
+import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
+import { useNavigate } from "react-router-dom"
 
-export default function NotificationElement({element}: { element: ItslearningRestApiEntitiesElementLink }) {
+export default function NotificationElement({ element }: { element: ItslearningRestApiEntitiesElementLink }) {
     const navigate = useNavigate()
+    const navigateToResource = useNavigateToResource()
 
     return (
         <button onClick={() => {
-            if (isResourcePDFFromUrlOrElementType(element.IconUrl)) {
-                navigate(`/documents/${element.ElementId}`)
+            if (isSupportedResourceInApp(element)) {
+                navigateToResource(element)
             } else {
                 window.app.openExternal(element.ContentUrl)
             }
         }}
-                className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
+            className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
         >
             {element.Title}
         </button>
