@@ -81,7 +81,7 @@ export default function SettingsDropdown() {
                     e.preventDefault()
                 }}
             >
-                <MoreVertical className="w-8 h-8" />
+                <MoreVertical className="h-8 w-8" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
                 <DropdownMenuLabel className={"flex justify-between items-center"}>
@@ -114,6 +114,7 @@ export default function SettingsDropdown() {
                         })}
                 >
                     Settings
+                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={(e) =>
@@ -137,10 +138,8 @@ export default function SettingsDropdown() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                     onClick={() => {
-                        window.auth.store.clear().then(() => {
-                            /* window.app.exit().then(r => {
-                                console.log(r)
-                            }) */
+                        window.auth.logout().then(() => {
+                            console.log('logged out')
                         })
                     }}
                     className={"hover:!bg-destructive focus:!bg-destructive hover:!text-white"}

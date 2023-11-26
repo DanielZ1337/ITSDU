@@ -14,7 +14,7 @@ export const UnreadNotificationIndicator = React.forwardRef<HTMLSpanElement, Unr
                                                                                                                     ...props
                                                                                                                 }, ref) => {
     return (
-        <div className="flex my-auto relative">
+        <div className="relative my-auto flex">
             <span
                 className={cn("m-auto shrink-0 grow-0 w-1.5 h-2.5 rounded-full", read ? "bg-transparent" : "bg-secondary-500", className)}
                 ref={ref}

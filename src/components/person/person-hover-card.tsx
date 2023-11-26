@@ -15,7 +15,7 @@ export default function PersonHoverCard({children, personId, showTitle, asChild}
                 {children}
             </HoverCardTrigger>
             <HoverCardContent className={"min-w-[20rem] max-w-[60dvw] w-fit break-all"}>
-                <Suspense fallback={<div className="font-semibold text-base">Loading...</div>}>
+                <Suspense fallback={<div className="text-base font-semibold">Loading...</div>}>
                     <ScrollArea className={"max-h-[33vh] overflow-y-auto"}>
                         <PersonRelationships personId={personId} showTitle={showTitle}/>
                     </ScrollArea>

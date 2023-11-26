@@ -3,9 +3,9 @@ export default function UnreadNotificationsPingIndicator({amount}: {
 }) {
 
     return (
-        <span className="flex h-[20px] w-[20px] absolute top-0 right-0">
+        <span className="absolute top-0 right-0 flex h-[20px] w-[20px]">
             <span
-                className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-500 opacity-75"></span>
+                className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75 bg-secondary-500"></span>
             <span
                 className="relative inline-flex rounded-full h-[20px] w-[20px] bg-secondary-500">
                 <span className={"text-center m-auto text-xs text-white font-semibold"}>

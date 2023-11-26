@@ -1,31 +1,30 @@
 import { Divider } from "@nextui-org/divider";
-import { useIntersectionObserver } from "@uidotdev/usehooks"
-import React, { SetStateAction, useEffect, useState } from "react";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
+import React, { SetStateAction, useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DividerProps, ScrollShadow } from "@nextui-org/react";
 import {
-    AlertTriangle,
-    ComputerIcon,
-    CookieIcon,
-    MoonIcon,
-    PencilIcon,
-    SettingsIcon,
-    SunIcon,
-    User as UserIcon,
-    X
+    ComputerIcon, MoonIcon, SettingsIcon,
+    SunIcon, X
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { Spinner } from "@nextui-org/spinner";
-import { useUser } from '@/hooks/atoms/useUser.ts'
+import { useUser } from '@/hooks/atoms/useUser.ts';
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogOverlay, DialogTitle } from "../ui/dialog";
-import { Avatar } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Button } from "@/components/ui/button";
 import { LanguageCombobox } from "../language-combobox";
-import { AnimatePresence, motion } from 'framer-motion';
-import { Input } from "../ui/input";
+import { AnimatePresence, Variants, motion } from 'framer-motion';
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { ScrollArea } from "../ui/scroll-area";
+import { useAtom } from "jotai";
+import { customPDFrendererAtom } from "@/atoms/default-pdf-renderer";
+import { Shadow, ShadowPosition, calculateShadowPosition } from "../scroll-shadow";
+import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
+import SettingsSidebarButton from "./settings-sidebar-button";
+import SettingsCloseButton from "./settings-close-button";
 
 export default function SettingsModal() {
 
@@ -38,63 +37,16 @@ export default function SettingsModal() {
         >
             <DialogOverlay className="data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-none data-[state=open]:!duration-500" />
             <DialogContent
-                customClose={<CustomCloseButton />}
-                className="h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0 flex flex-col"
+                customClose={<SettingsCloseButton />}
+                className="flex flex-1 flex-col h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0"
             >
-                <div className="drag w-full h-14" />
-                <div className="px-10 h-full w-full flex flex-col gap-4 items-center justify-center py-14" >
+                <div className="absolute h-14 w-full bg-transparent drag" />
+                <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-10 py-14" >
                     <SettingsCustom />
                 </div>
             </DialogContent>
         </Dialog>
     )
-}
-
-function CustomCloseButton() {
-    return (
-        <DialogPrimitive.Close
-            className={cn('border-2 border-transparent', "no-drag absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground")}>
-            <X className="h-6 w-6" />
-            <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
-    )
-}
-
-function ActiveSettingsPill() {
-    return (
-        <motion.div
-            layoutId="active-settings-pill"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
-            className={cn("flex items-center justify-center h-full top-0 right-0 absolute")}
-        >
-            <div className="rounded-full bg-purple-500 w-3 h-3 absolute right-2 " />
-        </motion.div>
-    )
-} function SettingsButton({ currentSection, value, label, currentHover, setCurrentHover }: { currentSection: string, value: string, label: string, currentHover: string | null, setCurrentHover: React.Dispatch<SetStateAction<string | null>> }) {
-    const isActive = currentSection === value;
-    const isHoverActive = currentHover === value;
-
-    return (
-        <TabsTrigger className="w-full relative" value={value} asChild>
-            <Button
-                onMouseEnter={() => setCurrentHover(value)}
-                onMouseLeave={() => setCurrentHover(null)}
-                className={cn(
-                    "w-full",
-                    isActive && (isHoverActive || !currentHover)
-                        ? "bg-foreground-100 text-foreground border-2 border-purple-500"
-                        : "bg-foreground-200 text-foreground-600"
-                )}
-                variant={"ghost"}
-                size={"lg"}
-            >
-                {label}
-                {isHoverActive ? <ActiveSettingsPill /> : isActive && <ActiveSettingsPill />}
-            </Button>
-        </TabsTrigger>
-    );
 }
 
 function SettingsCustom() {
@@ -104,35 +56,39 @@ function SettingsCustom() {
     const memoizedCurrentSection = React.useMemo(() => currentSection, [currentSection]);
     const memoizedCurrentHover = React.useMemo(() => currentHover, [currentHover]);
     const rootRef = React.useRef<HTMLDivElement>(null)
+    const viewportRef = React.useRef<HTMLDivElement>(null)
 
     const SettingsCardSectionSettings = {
         root: rootRef,
         setCurrentSection: setCurrentSection
     }
 
+    const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(calculateShadowPosition(viewportRef));
+    useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
+
     return (
         <div
-            className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8 bg-foreground-50 rounded-xl"}>
+            className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
             {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
-            <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection} orientation="vertical" className="flex md:flex-row flex-col gap-4 w-full h-full">
-                <TabsList className="justify-start h-full flex md:flex-col flex-row gap-4 md:gap-2 p-2 min-w-[20vw] max-w-[30vw] overflow-x-auto md:overflow-y-auto">
-                    <h1 className="text-foreground text-xl font-bold my-2 text-neutral-400">Settings</h1>
+            <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection} orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
+                <TabsList className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
+                    <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
                     <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
-                    <SettingsButton
+                    <SettingsSidebarButton
                         currentSection={memoizedCurrentSection}
                         value="Preferences"
                         label="Preferences"
                         currentHover={memoizedCurrentHover}
                         setCurrentHover={setCurrentHover}
                     />
-                    <SettingsButton
+                    <SettingsSidebarButton
                         currentSection={memoizedCurrentSection}
                         value="account"
                         label="Account"
                         currentHover={memoizedCurrentHover}
                         setCurrentHover={setCurrentHover}
                     />
-                    <SettingsButton
+                    <SettingsSidebarButton
                         currentSection={memoizedCurrentSection}
                         value="password"
                         label="Password"
@@ -141,11 +97,16 @@ function SettingsCustom() {
                     />
                 </TabsList>
                 <Divider orientation={"vertical"} className={"hidden md:block h-full"} />
-                <ScrollShadow hideScrollBar
-                    className={"flex flex-col gap-4 w-full h-full py-2 overflow-y-auto"}
-                    ref={rootRef}>
+                <ScrollArea
+                    className={"w-full overflow-y-auto relative rounded-l-md transition-all duration-75"}
+                    // scrollbarClassName="absolute"
+                    thumbClassName="bg-neutral-200 dark:bg-neutral-700"
+                    ref={rootRef}
+                    viewportRef={viewportRef}
+                    style={{ borderTopRightRadius: shadowPosition === "bottom" ? 5 : 10, borderBottomRightRadius: shadowPosition === "top" ? 5 : 10 }}
+                >
                     <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
-                        <div className="flex flex-col gap-4 w-full">
+                        <div className="flex w-full flex-col gap-4">
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Dark Mode</h6>
                                 <DarkModeSetting />
@@ -184,7 +145,8 @@ function SettingsCustom() {
                             </div>
                         </div>
                     </SettingsCardSection>
-                </ScrollShadow>
+                    <Shadow position={shadowPosition} />
+                </ScrollArea>
             </Tabs>
         </div>
     )
@@ -222,142 +184,146 @@ function LanguageSetting() {
 }
 
 function DefaultHomePageSetting() {
-    const user = useUser()!
     const [defaultHomePage, setDefaultHomePage] = useState<string>("index")
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={defaultHomePage}
-                onChange={(e) => {
-                    setDefaultHomePage(e.target.value)
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="index">Index</option>
-                <option value="dashboard">Dashboard</option>
-                <option value="courses">Courses</option>
-                <option value="calendar">Calendar</option>
-                <option value="messages">Messages</option>
-                <option value="settings">Settings</option>
-            </select>
-        </div>
+        <Select
+            value={defaultHomePage}
+            onValueChange={setDefaultHomePage}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="index">Index</SelectItem>
+                <SelectItem value="dashboard">Dashboard</SelectItem>
+                <SelectItem value="courses">Courses</SelectItem>
+                <SelectItem value="calendar">Calendar</SelectItem>
+                <SelectItem value="messages">Messages</SelectItem>
+                <SelectItem value="settings">Settings</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function CustomPDFRendererSetting() {
-    const user = useUser()!
-    const [customPDFRenderer, setCustomPDFRenderer] = useState<string>("true")
+    const [customPDFRenderer, setCustomPDFRenderer] = useAtom(customPDFrendererAtom)
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={customPDFRenderer}
-                onChange={(e) => {
-                    setCustomPDFRenderer(e.target.value)
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
-            </select>
-        </div>
+        <Select
+            value={(customPDFRenderer).toString()}
+            onValueChange={(e) => setCustomPDFRenderer(e === 'true')}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function UploadAIChatsSetting() {
-    const user = useUser()!
     const [uploadAIChats, setUploadAIChats] = useState<string>("true")
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={uploadAIChats}
-                onChange={(e) => {
-                    setUploadAIChats(e.target.value)
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
-            </select>
-        </div>
+        <Select
+            value={uploadAIChats}
+            onValueChange={setUploadAIChats}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function DefaultSortTypeSetting() {
-    const user = useUser()!
     const [defaultSortType, setDefaultSortType] = useState<"starred" | "unstarred" | "all">("starred")
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={defaultSortType}
-                onChange={(e) => {
-                    setDefaultSortType(e.target.value as "starred" | "unstarred" | "all")
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="starred">Starred</option>
-                <option value="unstarred">Unstarred</option>
-                <option value="all">All</option>
-            </select>
-        </div>
+        <Select
+            value={defaultSortType}
+            onValueChange={(e) => {
+                setDefaultSortType(e as "starred" | "unstarred" | "all")
+            }}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="starred">Starred</SelectItem>
+                <SelectItem value="unstarred">Unstarred</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function DefaultChatSidepanelSetting() {
-    const user = useUser()!
     const [defaultChatSidepanel, setDefaultChatSidepanel] = useState<string>("false")
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={defaultChatSidepanel}
-                onChange={(e) => {
-                    setDefaultChatSidepanel(e.target.value === 'true')
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="true">Enabled</option>
-                <option value="false">Disabled</option>
-            </select>
-        </div>
+        <Select
+            value={defaultChatSidepanel}
+            onValueChange={setDefaultChatSidepanel}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="true">Enabled</SelectItem>
+                <SelectItem value="false">Disabled</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function DefaultSortTypeUpdatesSetting() {
-    const user = useUser()!
-    const [defaultSortTypeUpdates, setDefaultSortTypeUpdates] = useState<string>("recent")
+    const [defaultSortTypeUpdates, setDefaultSortTypeUpdates] = useState<"all" | "updates" | "announcements">("all")
 
     return (
-        <div className="flex flex-col gap-2">
-            <select
-                value={defaultSortTypeUpdates}
-                onChange={(e) => {
-                    setDefaultSortTypeUpdates(e.target.value)
-                }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
-            >
-                <option value="recent">Recent</option>
-                <option value="alphabetical">Alphabetical</option>
-            </select>
-        </div>
+        <Select
+            value={defaultSortTypeUpdates}
+            onValueChange={(e) => {
+                setDefaultSortTypeUpdates(e as "all" | "updates" | "announcements")
+            }}
+        >
+            <SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
+                <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="updates">Updates</SelectItem>
+                <SelectItem value="announcements">Announcements</SelectItem>
+            </SelectContent>
+        </Select>
     )
 }
 
 function RefreshAccessTokenIntervalSetting() {
     const [refreshAccessTokenInterval, setRefreshAccessTokenInterval] = useState<number>(1000 * 60 * 45)
 
+
+    /**
+     * hover:border-foreground/50 focus-visible:hover:border-border flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
+     */
     return (
         <div className="flex flex-col gap-2">
             <Input
+                className="border-2 border-transparent border-purple-500 text-white ring-offset-0 text-foreground bg-foreground-200 focus-visible:border-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:hover:border-none"
                 value={refreshAccessTokenInterval}
                 onChange={(e) => {
                     setRefreshAccessTokenInterval(parseInt(e.target.value))
-                    // updateUser({ RefreshAccessTokenInterval: parseInt(e.target.value) })
                 }}
-                className="w-full h-10 rounded-md border-2 border-foreground-200 bg-foreground-100 text-foreground-600 focus:outline-none focus:border-purple-500"
+                type="number"
+                placeholder="Refresh Access Token Interval"
             />
         </div>
     )
@@ -439,7 +405,7 @@ function SettingsCardSection({ title, children, setCurrentSection, root }: {
     }, [entry, setCurrentSection, title]);
 
     return (
-        <div className={"p-4 md:p-8 bg-foreground-100 rounded-xl shadow-md w-full h-max"}>
+        <div className={"p-4 md:p-8 bg-neutral-100 dark:bg-neutral-800 rounded-xl shadow-md w-full h-max"}>
             <h1 data-title={title} ref={ref} className={"py-2 text-2xl font-bold text-foreground"}>{title}</h1>
             <div className={"flex flex-col gap-4 w-full h-full"}>
                 {children}

@@ -54,7 +54,7 @@ export function LanguageCombobox({ disabled }: { disabled?: boolean }) {
                     variant="outline"
                     role="combobox"
                     className={cn(
-                        "w-[200px] justify-between",
+                        "w-[200px] active:scale-100 scale-100 justify-between border-2 border-transparent text-foreground border-purple-500 bg-foreground-200 text-white",
                         !field.value && "text-muted-foreground"
                     )}
                     disabled={disabled}
@@ -67,8 +67,10 @@ export function LanguageCombobox({ disabled }: { disabled?: boolean }) {
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-                <Command>
+            <PopoverContent className="p-0 w-[200px]">
+                <Command
+                    className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200"
+                >
                     <CommandInput placeholder="Search language..." />
                     <CommandEmpty>No language found.</CommandEmpty>
                     <CommandGroup>
@@ -77,6 +79,7 @@ export function LanguageCombobox({ disabled }: { disabled?: boolean }) {
                                 value={language.label}
                                 key={language.value}
                                 onSelect={() => {
+                                    if (language.value === field.value) return
                                     setField(language)
                                     toast({
                                         title: "Language changed",

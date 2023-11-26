@@ -40,7 +40,7 @@ const SideBarNavLinks = [
     /*{
         name: "Grades (2)",
         icon: <svg
-            className=" h-4 w-4"
+            className="h-4 w-4"
             fill="none"
             height="24"
             stroke="currentColor"
@@ -85,7 +85,7 @@ export default function CourseLayoutSidebar() {
                 <div className={"py-1"}>
                     <SearchResourcesDialog courseId={courseId}/>
                 </div>
-                <h1 className="hidden lg:block px-3 py-2 text-zinc-500 dark:text-zinc-400">
+                <h1 className="hidden px-3 py-2 text-zinc-500 dark:text-zinc-400 lg:block">
                     Overview
                 </h1>
                 <div className="flex flex-col gap-2">

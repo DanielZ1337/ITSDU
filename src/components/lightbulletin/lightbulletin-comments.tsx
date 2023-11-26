@@ -23,8 +23,8 @@ export default function LightbulletinComments({lightbulletinId}: {
 
     return (
         <>
-            <div className="h-0.5 w-full bg-foreground/10"/>
-            <div className="pt-4 flex flex-col gap-4">
+            <div className="w-full h-0.5 bg-foreground/10"/>
+            <div className="flex flex-col gap-4 pt-4">
                 {data!.EntityArray.map((comment) => (
                     <LightbulletinComment comment={comment} key={comment.Id}/>
                 ))}

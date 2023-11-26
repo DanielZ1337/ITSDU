@@ -20,17 +20,17 @@ export function CourseNavigationMenu({ title }: { title: string }) {
 
     return (
         <NavigationMenu
-            className="no-drag z-30"
+            className="z-30 no-drag"
         >
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger
-                        className="bg-transparent font-semibold text-balance text-lg px-4"
+                        className="bg-transparent px-4 text-lg font-semibold text-balance"
                     >
                         <span className="max-w-sm truncate lg:max-w-[40rem] xl:max-w-full">{title}</span>
                     </NavigationMenuTrigger>
                     <NavigationMenuContent
-                        className="bg-foreground/10 z-[1000] rounded-md md:w-96"
+                        className="rounded-md bg-foreground/10 z-[1000] md:w-96"
                     >
                         <ul className="space-y-1">
                             {starredCourses?.EntityArray.map(course => (
@@ -72,7 +72,7 @@ function ListItem({ title, courseId, children, className, ...props }: {
                     {...props}
                 >
                     <div className="text-sm font-medium leading-none">{title}</div>
-                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                    <p className="text-sm leading-snug line-clamp-2 text-muted-foreground">
                         {children}
                     </p>
                 </Link>

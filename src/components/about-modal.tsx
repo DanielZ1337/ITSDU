@@ -53,13 +53,13 @@ export default function AboutModal() {
                                 students</p>
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="p-4 flex">
-                        <div className='flex flex-col mr-6 shrink-0'>
+                    <div className="flex p-4">
+                        <div className='mr-6 flex shrink-0 flex-col'>
                             <img src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo"
-                                 className="w-20 h-20 mx-auto"/>
+                                 className="mx-auto h-20 w-20"/>
                             <hr className="my-6"/>
                             <img src="itsl-itslearning-file://icon.ico" alt="itslearning Logo"
-                                 className="w-20 h-20 mx-auto"/>
+                                 className="mx-auto h-20 w-20"/>
                         </div>
                         <p className="text-sm text-gray-500">
                             ITSDU is a desktop app built for students at SDU to access itslearning in a more convenient

@@ -31,7 +31,7 @@ export default function ScrollToTopButton({viewportRef}: {
                     <Button
                         variant={"outline"}
                         size={"icon"}
-                        className="fixed bottom-4 right-8 z-50 inline-flex items-center justify-center w-12 h-12 text-white transition-all duration-200 rounded-full shadow-md hover:shadow-lg"
+                        className="fixed right-8 bottom-4 z-50 inline-flex h-12 w-12 items-center justify-center rounded-full text-white shadow-md transition-all duration-200 hover:shadow-lg"
                         onClick={() => {
                             viewportRef.current?.scrollTo({
                                 top: 0,
@@ -39,7 +39,7 @@ export default function ScrollToTopButton({viewportRef}: {
                             })
                         }}
                     >
-                        <ChevronUp className="w-7 h-7 stroke-foreground"/>
+                        <ChevronUp className="h-7 w-7 stroke-foreground"/>
                     </Button>
                 </motion.div>
             )}

@@ -37,7 +37,7 @@ export default function NotificationsDropdown() {
 
     const unreadNotifications = notificationsFlatMap?.filter(notification => !notification.IsRead)
 
-    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage, isFetchingNextPage)
 
     return (
         <DropdownMenu>
@@ -63,7 +63,7 @@ export default function NotificationsDropdown() {
                             className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"} />
                     </Link>
                     <div>
-                        <Button variant={"ghost"} size={"sm"} className="h-fit mr-1" disabled={isMarkingAllAsRead}
+                        <Button variant={"ghost"} size={"sm"} className="mr-1 h-fit" disabled={isMarkingAllAsRead}
                             onClick={() => markAllAsRead(undefined)}>
                             Mark all as read
                         </Button>

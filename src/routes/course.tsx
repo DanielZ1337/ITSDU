@@ -65,10 +65,10 @@ export default function Course() {
                     >
                         <Suspense
                             fallback={<div className={"flex flex-col gap-2 w-full"}>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
-                                <Skeleton className="h-4 bg-gray-400 rounded"/>
+                                <Skeleton className="h-4 rounded bg-gray-400"/>
+                                <Skeleton className="h-4 rounded bg-gray-400"/>
+                                <Skeleton className="h-4 rounded bg-gray-400"/>
+                                <Skeleton className="h-4 rounded bg-gray-400"/>
                             </div>}>
                             <Resources courseId={courseId}/>
                         </Suspense>

@@ -22,7 +22,7 @@ function CourseCommandList({starredFetching, unstarredFetching, starredCourses, 
             No courses found.
         </CommandEmpty>
         {starredFetching || unstarredFetching ? (
-            <div className="space-y-1 overflow-hidden px-1 py-2">
+            <div className="overflow-hidden px-1 py-2 space-y-1">
                 <Skeleton className="h-4 w-10 rounded"/>
                 <Skeleton className="h-8 rounded-sm"/>
                 <Skeleton className="h-8 rounded-sm"/>
@@ -33,14 +33,14 @@ function CourseCommandList({starredFetching, unstarredFetching, starredCourses, 
                     <CommandGroup
                         heading={`${starredCourses.EntityArray.length} starred courses found`}
                     >
-                        <div className="my-2 space-y-1 overflow-hidden pr-1">
+                        <div className="my-2 overflow-hidden pr-1 space-y-1">
                             {starredCourses.EntityArray.map(element)}
                         </div>
                     </CommandGroup>
                     <CommandGroup
                         heading={`${unstarredCourses.EntityArray.length} unstarred courses found`}
                     >
-                        <div className="my-2 space-y-1 overflow-hidden pr-1">
+                        <div className="my-2 overflow-hidden pr-1 space-y-1">
                             {unstarredCourses.EntityArray.map(element1)}
                         </div>
                     </CommandGroup>
@@ -118,7 +118,7 @@ export default function CourseSearchDialog({setSearchInput}: {
                                            <CommandItem
                                                key={resource.CourseId}
                                                value={resource.Title}
-                                               className="line-clamp-1 break-all truncate"
+                                               className="truncate break-all line-clamp-1"
                                                onSelect={() => handleSelect(() => {
                                                    console.log("Selected resource", resource)
                                                    navigate(`/courses/${resource.CourseId}`)
@@ -130,7 +130,7 @@ export default function CourseSearchDialog({setSearchInput}: {
                         <CommandItem
                             key={resource.CourseId}
                             value={resource.Title}
-                            className="line-clamp-1 break-all truncate"
+                            className="truncate break-all line-clamp-1"
 
                             onSelect={() => handleSelect(() => {
                                 console.log("Selected resource", resource)

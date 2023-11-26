@@ -11,9 +11,9 @@ export default function PersonIndex() {
     const personId = Number(params.id)
 
     return (
-        <div className="flex items-center justify-center flex-1 p-4">
+        <div className="flex flex-1 items-center justify-center p-4">
             <div
-                className="bg-foreground/10 shadow-lg shadow-foreground/5 rounded-lg overflow-hidden p-8 flex flex-col">
+                className="flex flex-col overflow-hidden rounded-lg p-8 shadow-lg bg-foreground/10 shadow-foreground/5">
                 <Suspense fallback={<PersonRelationshipsPersonInfoFallback/>}>
                     <PersonInfo personId={personId}/>
                 </Suspense>

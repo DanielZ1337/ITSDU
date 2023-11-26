@@ -7,7 +7,7 @@ import {
 
 export default function MessageDropdownItem({thread}: { thread: ItslearningRestApiEntitiesInstantMessageThread }) {
     return (
-        <div className="flex items-center justify-between group pr-2"
+        <div className="flex items-center justify-between pr-2 group"
              data-read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}>
             <div className="flex items-center gap-3">
                 <UnreadNotificationIndicator
@@ -15,7 +15,7 @@ export default function MessageDropdownItem({thread}: { thread: ItslearningRestA
                     read={thread.LastMessage.MessageId === thread.LastReadInstantMessageId}/>
                 <div className="flex flex-col gap-2">
                     <span
-                        className="flex gap-2 items-center justify-start">
+                        className="flex items-center justify-start gap-2">
                         <Avatar>
                             <AvatarImage
                                 src={thread.LastMessage.CreatedByAvatar}

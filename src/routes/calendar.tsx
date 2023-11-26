@@ -148,7 +148,7 @@ export function Calendar({ events, isLoading }: { events?: CalendarEvent[] | Its
                                         </span>
                                     </div>
                                 </PopoverTrigger>
-                                <PopoverContent className="max-w-[30vw] break-all overflow-hidden">
+                                <PopoverContent className="overflow-hidden break-all max-w-[30vw]">
                                     <div className={"flex flex-col gap-2 p-2"}>
                                         <span className={"text-white font-semibold text-sm"}>
                                             {convert(he.decode(event.EventTitle))}

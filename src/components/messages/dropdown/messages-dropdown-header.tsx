@@ -21,7 +21,7 @@ export default function MessagesDropdownHeader({disabled, onClick, threads, tota
                     className={"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"}/>
             </Link>
             <div>
-                <Button variant={"ghost"} size={"sm"} className="h-fit mr-1" disabled={disabled} onClick={onClick}>
+                <Button variant={"ghost"} size={"sm"} className="mr-1 h-fit" disabled={disabled} onClick={onClick}>
                     Mark all as read
                 </Button>
                 <span className={"text-xs text-muted-foreground"}>

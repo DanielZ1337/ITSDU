@@ -155,13 +155,13 @@ export default function TitlebarSearch() {
         <>
             <Button
                 size={"sm"}
-                className="active:scale-100 no-drag h-9 border w-full inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground"
+                className="relative inline-flex h-9 w-full items-center justify-start rounded-md border bg-transparent text-sm font-medium shadow-sm transition-colors no-drag border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1 active:scale-100 disabled:pointer-events-none disabled:opacity-50"
                 onClick={() => setIsOpen(true)}
             >
                 <Search className={"h-4 w-4 shrink-0"}/>
                 <span className="ml-2">Search...</span>
                 <kbd
-                    className="pointer-events-none absolute right-2 my-auto flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100">
+                    className="pointer-events-none absolute right-2 my-auto flex h-5 select-none items-center gap-1 rounded border font-mono font-medium opacity-100 bg-muted px-1.5 text-[10px]">
                     <span>
                         {isMacOS() ? "⌘" : "Ctrl"}
                     </span>
@@ -181,9 +181,9 @@ export default function TitlebarSearch() {
                     >
                         No courses found.
                     </CommandEmpty>
-                    <div className="my-2 space-y-1 overflow-hidden pr-1 overflow-y-auto max-h-[40dvh]">
+                    <div className="my-2 overflow-hidden overflow-y-auto pr-1 space-y-1 max-h-[40dvh]">
                         {isStarredFetching || isUnstarredFetching ? (
-                            <div className="space-y-1 overflow-hidden px-1 py-2">
+                            <div className="overflow-hidden px-1 py-2 space-y-1">
                                 <Skeleton className="h-4 w-10 rounded"/>
                                 <Skeleton className="h-8 rounded-sm"/>
                                 <Skeleton className="h-8 rounded-sm"/>
@@ -194,7 +194,7 @@ export default function TitlebarSearch() {
                                     <CommandGroup
                                         heading={`${starredCourses.EntityArray.length} starred courses found`}
                                     >
-                                        <div className="my-2 space-y-1 overflow-hidden pr-1">
+                                        <div className="my-2 overflow-hidden pr-1 space-y-1">
                                             {starredCourses.EntityArray.map(element => (
                                                 <CommandItem
                                                     key={element.CourseId}
@@ -205,7 +205,7 @@ export default function TitlebarSearch() {
                                                     })}
                                                 >
                                                     <span
-                                                        className="line-clamp-1 break-all truncate"
+                                                        className="truncate break-all line-clamp-1"
                                                     >{element.Title}</span>
                                                 </CommandItem>
                                             ))}
@@ -214,7 +214,7 @@ export default function TitlebarSearch() {
                                     <CommandGroup
                                         heading={`${unstarredCourses.EntityArray.length} unstarred courses found`}
                                     >
-                                        <div className="my-2 space-y-1 overflow-hidden pr-1">
+                                        <div className="my-2 overflow-hidden pr-1 space-y-1">
                                             {unstarredCourses.EntityArray.map(element => (
                                                 <CommandItem
                                                     key={element.CourseId}
@@ -225,7 +225,7 @@ export default function TitlebarSearch() {
                                                     })}
                                                 >
                                                     <span
-                                                        className="line-clamp-1 break-all truncate"
+                                                        className="truncate break-all line-clamp-1"
                                                     >{element.Title}</span>
                                                 </CommandItem>
                                             ))}
@@ -240,7 +240,7 @@ export default function TitlebarSearch() {
                             No resources found.
                         </CommandEmpty>
                         {isResourcesFetching ? (
-                            <div className="space-y-1 overflow-hidden px-1 py-2">
+                            <div className="overflow-hidden px-1 py-2 space-y-1">
                                 <Skeleton className="h-4 w-10 rounded"/>
                                 <Skeleton className="h-8 rounded-sm"/>
                                 <Skeleton className="h-8 rounded-sm"/>
@@ -268,7 +268,7 @@ export default function TitlebarSearch() {
                                                 })}
                                             >
                                                 <span
-                                                    className="line-clamp-1 break-all truncate"
+                                                    className="truncate break-all line-clamp-1"
                                                 >{resource.Title}</span>
                                                 <div className="flex">
                                                     {isResourceFile(resource) && (
@@ -326,7 +326,7 @@ export default function TitlebarSearch() {
                                                             <DownloadIcon className={"w-6 h-6"}/>
                                                         </Button>)}
                                                     <div
-                                                        className="flex justify-end cursor-pointer hover:opacity-80 active:opacity-60 p-2 rounded-full bg-background/30 h-fit w-fit active:scale-95 transform transition-all duration-200 ease-in-out hover:shadow-md ml-4 md:ml-6 lg:ml-8 xl:ml-10">
+                                                        className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                                                         <img src={resource.IconUrl} alt={resource.Title}
                                                              className={"w-6 h-6"}/>
                                                     </div>

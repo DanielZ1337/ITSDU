@@ -1,9 +1,10 @@
-import {ipcMain} from "electron";
-import {AuthService} from "../services/itslearning/auth/auth-service.ts";
-import {store_keys} from '../services/itslearning/auth/types/store_keys.ts';
-import {CreateScrapeWindow, getCookiesForDomain} from '../services/scrape/scraper';
-import {getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL} from "../services/itslearning/resources/resources.ts";
-import {getFormattedCookies} from "../utils/cookies.ts";
+import { BrowserWindow, ipcMain } from "electron";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { store_keys } from '../services/itslearning/auth/types/store_keys.ts';
+import { CreateScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
+import { getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL } from "../services/itslearning/resources/resources.ts";
+import { getFormattedCookies } from "../utils/cookies.ts";
+import { createAuthWindow } from "../../electron/main.ts";
 
 const authService = AuthService.getInstance()
 
@@ -47,10 +48,21 @@ function getCookies() {
     });
 }
 
+function logoutHandler() {
+    ipcMain.handle('itslearning-store:logout', async () => {
+        authService.clearTokens()
+        const wins = BrowserWindow.getAllWindows()
+        const newWin = await createAuthWindow()
+        wins.forEach(win => win.destroy())
+        newWin.setTitle('itslearning - Sign in')
+    });
+}
+
 export default function initAuthIpcHandlers() {
     getTokenHandler()
     setTokenHandler()
     deleteTokenHandler()
     clearTokensHandler()
     getCookies()
+    logoutHandler()
 }

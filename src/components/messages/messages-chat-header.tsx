@@ -69,7 +69,7 @@ export default function MessagesChatHeader({
     })
 
     return (
-        <div className="p-4 border-b flex items-center justify-between min-h-[5rem] w-full">
+        <div className="flex w-full items-center justify-between border-b p-4 min-h-[5rem]">
             {!isChatNew && !isChatUndefined && isSettingNewThreadName ? (
                 <form className={"flex items-center space-x-2"} onSubmit={(e) => {
                     e.preventDefault()
@@ -85,7 +85,7 @@ export default function MessagesChatHeader({
                     </Button>
                 </form>
             ) : (
-                <h2 className="font-semibold text-lg">
+                <h2 className="text-lg font-semibold">
                     {isChatNew && !recipientsSelected && "New chat"}
                     {isChatNew && recipientsSelected && "New chat with " + recipientsSelected.map((recipient) => recipient.Label).join(", ")}
                     {!isChatNew && !isChatUndefined && isLoading ? "Loading..." : currentThreadName}

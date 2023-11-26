@@ -151,10 +151,10 @@ export default function MessagesChatInputsField() {
     }, [handleSubmit])
 
     return (
-        <div className="p-4 border-t max-h-64 flex flex-col">
+        <div className="flex max-h-64 flex-col border-t p-4">
             <form className="flex items-center gap-2" onSubmit={handleSubmit}>
                 <div className={"flex-1 relative"}>
-                    <Textarea rows={1} className="w-full min-h-[2.5rem] max-h-48 overflow-hidden"
+                    <Textarea rows={1} className="max-h-48 w-full overflow-hidden min-h-[2.5rem]"
                               ref={textareaRef}
                               autoFocus
                               onInput={(e) => {

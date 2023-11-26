@@ -1,23 +1,24 @@
-import {ArrowLeftToLine, ArrowRightToLine, ChevronDown, ChevronUp, Loader2, RotateCw, Search,} from 'lucide-react'
-import {Document, Page, pdfjs} from 'react-pdf'
+import { ArrowLeftToLine, ArrowRightToLine, ChevronDown, ChevronUp, DownloadIcon, Loader2, RotateCw, Search, } from 'lucide-react'
+import { Document, Page, pdfjs } from 'react-pdf'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
-import {useToast} from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/use-toast'
 
-import {useResizeDetector} from 'react-resize-detector'
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {useEffect, useMemo, useRef, useState} from 'react'
+import { useResizeDetector } from 'react-resize-detector'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
-import {useForm} from 'react-hook-form'
-import {z} from 'zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-import {zodResolver} from '@hookform/resolvers/zod'
-import {cn} from '@/lib/utils'
-import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { cn } from '@/lib/utils'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from '@/components/ui/dropdown-menu'
 import PdfFullscreen from './pdf-fullscreen'
-import {useAISidepanel} from '@/hooks/atoms/useAISidepanel'
+import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
+import AISidepanelButton from '../ai-chat/ai-sidepanel-button'
 
 // import SimpleBar from 'simplebar-react'
 // import PdfFullscreen from './PdfFullscreen'
@@ -32,13 +33,10 @@ interface PdfRendererProps {
     containerHeight?: number | null
 }
 
-const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, containerHeight}: PdfRendererProps) => {
-    const {toast} = useToast()
+export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, containerWidth, containerHeight }: PdfRendererProps) {
+    const { toast } = useToast()
 
-    const {aiSidepanel, setAISidepanel} = useAISidepanel()
-    const toggleSidebar = () => {
-        setAISidepanel(prev => !prev)
-    }
+    const { aiSidepanel, toggleSidebar } = useAISidepanel()
     const [numPages, setNumPages] = useState<number>()
     const [currPage, setCurrPage] = useState<number>(1)
     const [scale, setScale] = useState<number>(1)
@@ -49,7 +47,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
 
     const [pageHeight, setPageHeight] = useState<number | null>(null)
     const [pageWidth, setPageWidth] = useState<number | null>(null)
-    const {height: toolbarHeight, ref: toolbarRef} = useResizeDetector()
+    const { height: toolbarHeight, ref: toolbarRef } = useResizeDetector()
 
     console.log('containerHeight', containerHeight)
     console.log('containerWidth', containerWidth)
@@ -69,13 +67,13 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
             if (ratio > availableRatio) {
                 return availableWidth
             } else {
-                return availableHeight * ratio
+                return Math.floor(Math.min(availableHeight) * Math.min(ratio)) - 0.5
             }
         } else {
             if (containerHeight && containerWidth && toolbarHeight) {
                 const availableHeight = containerHeight - toolbarHeight
                 const availableWidth = containerWidth - aiSidepanelWidth
-                return Math.min(availableHeight, availableWidth)
+                return Math.floor(Math.min(availableHeight, availableWidth)) - 0.5
             } else {
                 return null
             }
@@ -101,7 +99,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
     const {
         register,
         handleSubmit,
-        formState: {errors},
+        formState: { errors },
         setValue,
     } = useForm<TCustomPageValidator>({
         defaultValues: {
@@ -115,8 +113,8 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
     console.log(errors)
 
     const handlePageSubmit = ({
-                                  page,
-                              }: TCustomPageValidator) => {
+        page,
+    }: TCustomPageValidator) => {
         setCurrPage(Number(page))
         setValue('page', String(page))
     }
@@ -179,11 +177,11 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
     }, [isPageFocused, currPage, numPages]);
 
     return (
-        <div className='w-full bg-background shadow flex flex-col items-center h-full'
-             ref={ref}
+        <div className='flex h-full w-full flex-col items-center shadow bg-background'
+            ref={ref}
         >
-            <div className='h-14 w-full border-b flex items-center justify-between px-2'
-                 ref={toolbarRef}
+            <div className='flex h-14 w-full items-center justify-between border-b px-2'
+                ref={toolbarRef}
             >
                 <div className='flex items-center gap-1.5'>
                     <Button
@@ -191,7 +189,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                         onClick={handlePageDecrease}
                         variant='ghost'
                         aria-label='previous page'>
-                        <ChevronDown className='h-4 w-4'/>
+                        <ChevronDown className='h-4 w-4' />
                     </Button>
 
                     <div className='flex items-center gap-1.5'>
@@ -207,7 +205,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                                 }
                             }}
                         />
-                        <p className='text-zinc-700 text-sm space-x-1'>
+                        <p className='text-sm text-zinc-700 space-x-1'>
                             <span>/</span>
                             <span>{numPages ?? 'x'}</span>
                         </p>
@@ -221,7 +219,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                         onClick={handlePageIncrease}
                         variant='ghost'
                         aria-label='next page'>
-                        <ChevronUp className='h-4 w-4'/>
+                        <ChevronUp className='h-4 w-4' />
                     </Button>
                 </div>
 
@@ -232,9 +230,9 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                                 className='gap-1.5'
                                 aria-label='zoom'
                                 variant='ghost'>
-                                <Search className='h-4 w-4'/>
+                                <Search className='h-4 w-4' />
                                 {scale * 100}%
-                                <ChevronDown className='h-3 w-3 opacity-50'/>
+                                <ChevronDown className='h-3 w-3 opacity-50' />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -261,32 +259,34 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                         onClick={() => setRotation((prev) => prev + 90)}
                         variant='ghost'
                         aria-label='rotate 90 degrees'>
-                        <RotateCw className='h-4 w-4'/>
+                        <RotateCw className='h-4 w-4' />
                     </Button>
-
-                    <PdfFullscreen fileUrl={url}/>
-                    <Button className="group" variant='ghost' data-active={aiSidepanel} onClick={toggleSidebar}>
-                        <span className='w-4 h-4 relative'>
-                            <ArrowRightToLine
-                                className='w-4 h-4 absolute group-data-[active=false]:opacity-0 transition-all'/>
-                            <ArrowLeftToLine
-                                className='w-4 h-4 absolute animate-in group-data-[active=true]:opacity-0 transition-all'/>
-                        </span>
+                    <Button asChild variant={'ghost'}>
+                        <a
+                            href={url}
+                            download='document.pdf'
+                            className='flex items-center gap-1.5'
+                            aria-label='download'
+                        >
+                            <DownloadIcon className='h-4 w-4' />
+                        </a>
                     </Button>
+                    <PdfFullscreen fileUrl={url} />
+                    <AISidepanelButton />
                 </div>
             </div>
 
             <div
-                className='flex-1 w-full overflow-hidden h-full'
+                className='h-full w-full flex-1 overflow-hidden'
                 onClick={handleFocus}
             >
                 {externalIsLoading ? (
-                    <div className='flex justify-center h-full w-full'>
-                        <Loader2 className='m-auto h-8 w-8 animate-spin'/>
+                    <div className='flex h-full w-full justify-center'>
+                        <Loader2 className='m-auto h-8 w-8 animate-spin' />
                     </div>
                 ) : (
                     <Document
-                        loading={<Loader2 className='m-auto h-8 w-8 animate-spin'/>}
+                        loading={<Loader2 className='m-auto h-8 w-8 animate-spin' />}
                         onLoadError={() => {
                             toast({
                                 title: 'Error loading PDF',
@@ -294,9 +294,9 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                                 variant: 'destructive',
                             })
                         }}
-                        onLoadSuccess={({numPages}) => setNumPages(numPages)}
+                        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                         file={url}
-                        className='w-full h-full flex justify-center items-center max-h-full'>
+                        className={cn('w-full h-full flex flex-col overflow-y-auto overflow-x-hidden items-center max-h-full', isLoading && 'justify-center')}>
                         {isLoading && renderedScale ? (
                             <Page
                                 width={width ? width : 1}
@@ -316,7 +316,7 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
                                 key={'@' + scale}
                                 loading={
                                     <div className='flex justify-center'>
-                                        <Loader2 className='my-24 h-8 w-8 animate-spin'/>
+                                        <Loader2 className='my-24 h-8 w-8 animate-spin' />
                                     </div>
                                 }
                                 onRenderSuccess={(page) => {
@@ -332,5 +332,3 @@ const PdfRenderer = ({url, externalIsLoading, aiSidepanelWidth, containerWidth, 
         </div>
     )
 }
-
-export default PdfRenderer

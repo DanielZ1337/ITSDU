@@ -15,7 +15,7 @@ export default function MessagesOtherActionsDropdown() {
     return (
         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger className="group" asChild>
-                <Button variant="outline" className="capitalize ml-auto select-none">
+                <Button variant="outline" className="ml-auto select-none capitalize">
                     Other Actions <ChevronDown
                     className="ml-2 h-4 w-4 transform transition-all group-data-[state=open]:rotate-180"/>
                 </Button>

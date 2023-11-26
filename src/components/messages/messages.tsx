@@ -18,13 +18,13 @@ export default function Messages() {
     // const filteredMessages = messages?.pages.map((page) => page.EntityArray).flat().filter((thread) => thread.InstantMessageThreadId === currentChat)
 
     return (
-        <div className="flex w-full h-full overflow-y-hidden flex-1">
-            <div className="w-1/4 border-r overflow-y-hidden overflow-x-hidden">
+        <div className="flex h-full w-full flex-1 overflow-y-hidden">
+            <div className="w-1/4 overflow-x-hidden overflow-y-hidden border-r">
                 <MessagesSidebar/>
             </div>
-            <div className="flex flex-col w-3/4">
+            <div className="flex w-3/4 flex-col">
                 <MessagesChatHeader recipientsSelected={recipientsSelected}/>
-                <div className="flex-1 p-4 overflow-x-hidden overflow-y-auto flex flex-col-reverse gap-4">
+                <div className="flex flex-1 flex-col-reverse gap-4 overflow-y-auto overflow-x-hidden p-4">
                     {isExistingChat && (
                         <Suspense fallback={<MessagesChatFallback/>}>
                             <MessageChat threadId={currentChat}/>

@@ -19,7 +19,7 @@ export function PersonRelationships({personId, showTitle = true}: { personId: nu
 
     return (
         <div className="px-4 py-2">
-            {showTitle && <h2 className="font-bold text-2xl text-balance text-foreground">Your relationships</h2>}
+            {showTitle && <h2 className="text-2xl font-bold text-balance text-foreground">Your relationships</h2>}
             <ul className="mt-1 space-y-4">
                 {relations.map((relation, idx) => (
                     <li key={idx} className={"text-foreground text-sm text-balance font-semibold"}>

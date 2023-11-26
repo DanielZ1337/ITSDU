@@ -81,7 +81,7 @@ export default function LightbulletinCommentForm({lightbulletinId}: {
                     className="w-full"
                     type="submit">
                     {isLoading ? <span className={"inline-flex shrink-0 text-center justify-center items-center"}>
-                        <Loader2 className="animate-spin inline-block mr-2" size={16}/>
+                        <Loader2 className="mr-2 inline-block animate-spin" size={16}/>
                         Adding comment...
                     </span> : "Add comment"}
                 </Button>

@@ -1,20 +1,24 @@
-import PdfRenderer from '@/components/pdf-renderer'
+import PdfRenderer from '@/components/pdf-renderers/pdf-renderer'
 import useResourceByElementID from '@/hooks/usePDFbyElementID'
-import {useEffect, useRef, useState} from 'react'
-import {useParams} from 'react-router-dom'
-import {motion} from 'framer-motion'
-import {useAISidepanel} from '@/hooks/atoms/useAISidepanel'
-import {useResizeDetector} from 'react-resize-detector'
+import { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
+import { useResizeDetector } from 'react-resize-detector'
 import AISidePanel from '@/components/ai-chat/ai-sidepanel'
+import { useAtom } from 'jotai'
+import { customPDFrendererAtom } from '@/atoms/default-pdf-renderer'
+import { ArrowLeftToLine, ArrowRightToLine, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export default function Documents() {
-    const {elementId} = useParams();
+    const { elementId } = useParams();
 
     if (!elementId) return <div>Element ID not found</div>
 
-    const {isLoading, data} = useResourceByElementID(elementId);
-    const {aiSidepanel} = useAISidepanel()
-    const {ref: aiSidepanelRef, width: aiSidepanelWidth} = useResizeDetector()
+    const { isLoading, data } = useResourceByElementID(elementId);
+    const { aiSidepanel, toggleSidebar } = useAISidepanel()
+    const { ref: aiSidepanelRef, width: aiSidepanelWidth } = useResizeDetector()
 
     const containerRef = useRef<HTMLDivElement>(null);
     const [containerWidth, setContainerWidth] = useState<number | null>(null);
@@ -38,25 +42,57 @@ export default function Documents() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    return (
-        <div className="flex-1 w-full h-full flex max-h-full overflow-hidden" ref={containerRef}>
-            <PdfRenderer
-                url={data}
-                aiSidepanelWidth={aiSidepanelWidth ?? 0}
-                externalIsLoading={isLoading}
-                containerWidth={containerWidth}
-                containerHeight={containerHeight}
-            />
+    const [useCustomPDFRenderer] = useAtom(customPDFrendererAtom)
 
-            <div className="flex flex-1 w-full h-full"
-                 ref={aiSidepanelRef}
+    const DefaultPdfRenderer = () => {
+        if (isLoading) {
+            return (
+                <div className="flex h-full w-full items-center justify-center">
+                    <div className="h-10 w-10">
+                        <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin m-auto"} />
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div className="relative flex h-full w-full items-center justify-center">
+                    <iframe src={data} className="h-full w-full" />
+                    <Button className="absolute inset-y-0 right-4 my-auto mr-4 group" variant='secondary' data-active={aiSidepanel} onClick={toggleSidebar}>
+                        <span className='relative h-4 w-4'>
+                            <ArrowRightToLine
+                                className='w-4 h-4 absolute group-data-[active=false]:opacity-0 transition-all' />
+                            <ArrowLeftToLine
+                                className='w-4 h-4 absolute animate-in group-data-[active=true]:opacity-0 transition-all' />
+                        </span>
+                    </Button>
+                </div>
+            )
+        }
+    }
+
+    return (
+        <div className="flex h-full max-h-full w-full flex-1 overflow-hidden" ref={containerRef}>
+            {useCustomPDFRenderer ? (
+                <PdfRenderer
+                    url={data}
+                    aiSidepanelWidth={aiSidepanelWidth ?? 0}
+                    externalIsLoading={isLoading}
+                    containerWidth={containerWidth}
+                    containerHeight={containerHeight}
+                />
+            ) : (
+                <DefaultPdfRenderer />
+            )}
+
+            <div className="flex h-full w-full flex-1"
+                ref={aiSidepanelRef}
             >
-                <motion.div className="flex flex-row flex-1 h-full max-h-full overflow-hidden"
-                            initial={false}
-                            animate={{width: aiSidepanel ? '33vw' : 0}}
-                            transition={{duration: 0.2}}
+                <motion.div className="flex h-full max-h-full flex-1 flex-row overflow-hidden"
+                    initial={false}
+                    animate={{ width: aiSidepanel ? '33vw' : 0 }}
+                    transition={{ duration: 0.2 }}
                 >
-                    <AISidePanel elementId={elementId}/>
+                    <AISidePanel elementId={elementId} />
                 </motion.div>
             </div>
         </div>

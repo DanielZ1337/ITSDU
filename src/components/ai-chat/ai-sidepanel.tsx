@@ -13,6 +13,7 @@ import useGETcheckElementID from '@/queries/AI/useGETcheckElementID';
 import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
 import { MessageType } from '@/types/ai-message';
 import { useInView } from 'react-intersection-observer';
+import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView';
 
 export default function AISidePanel({ elementId }: { elementId: string | number }) {
     const { aiSidepanel } = useAISidepanel()
@@ -42,13 +43,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         enabled: aiSidepanel,
     })
 
-    const { ref, inView } = useInView()
-
-    useEffect(() => {
-        if (inView && hasNextPage) {
-            fetchNextPage();
-        }
-    }, [inView, hasNextPage, fetchNextPage]);
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
 
     const reversedPreviousMessages = useMemo(() => previousMessages?.pages?.map((page) => page.previousMessages).flat().sort((a, b) => {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -170,15 +165,15 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     return (
         <div
             className={cn("flex flex-col transition-all overflow-hidden max-h-full shrink-0 w-[33vw] border-l-4")}>
-            <div className="flex flex-col flex-1 p-4 overflow-hidden max-h-full">
-                <div className="flex flex-col flex-1 p-4 rounded-md bg-foreground/10 max-h-full">
+            <div className="flex max-h-full flex-1 flex-col overflow-hidden p-4">
+                <div className="flex max-h-full flex-1 flex-col rounded-md p-4 bg-foreground/10">
                     <div className="flex flex-col items-center justify-center p-4">
-                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="w-8 h-8" />
-                        <h1 className="text-2xl font-bold mt-2">ITSDU AI</h1>
+                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="h-8 w-8" />
+                        <h1 className="mt-2 text-2xl font-bold">ITSDU AI</h1>
                     </div>
                     <div
-                        className="flex flex-col flex-1 p-4 rounded-md bg-foreground/10 overflow-hidden space-y-4 max-h-full">
-                        <div className="flex flex-1 px-2 overflow-y-auto max-h-full flex-col-reverse -ml-2">
+                        className="flex max-h-full flex-1 flex-col overflow-hidden rounded-md p-4 bg-foreground/10 space-y-4">
+                        <div className="-ml-2 flex max-h-full flex-1 flex-col-reverse overflow-y-auto px-2">
                             {error && (
                                 <div className="flex flex-row items-center justify-center">
                                     <span className="text-red-500">{error}</span>
@@ -224,17 +219,17 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                         </div>
                         {messageIsLoading && (
                             <Button className="flex-shrink-0" onClick={abortResponse}>
-                                <BsStopCircleFill size={24} className="text-red-500/80 mr-2" />
+                                <BsStopCircleFill size={24} className="mr-2 text-red-500/80" />
                                 Stop Generating...
                             </Button>
                         )}
                         <form onSubmit={handleSubmit}
-                            className="flex flex-row items-center justify-between space-x-2 rounded-md shrink-0">
+                            className="flex shrink-0 flex-row items-center justify-between rounded-md space-x-2">
                             <Input onChange={(e) => setMessage(e.target.value)} value={message}
                                 disabled={messageIsLoading}
                                 placeholder="Type your message here..." />
                             <Button disabled={!elementExists || messageIsLoading || message.trim() === ''}
-                                type="submit" className="flex-shrink-0 ml-2">
+                                type="submit" className="ml-2 flex-shrink-0">
                                 Send
                             </Button>
                         </form>

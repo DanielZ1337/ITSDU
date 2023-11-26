@@ -6,19 +6,19 @@ export default function LightbulletinsForCourseLoader() {
     return (
         <div className={"gap-4 flex flex-col"}>
             {[...Array(4).keys()].map(i => i + 1).map((i) => (
-                <div key={i} className="p-4 rounded-md bg-foreground/10 shadow-md hover:shadow-lg overflow-hidden">
+                <div key={i} className="overflow-hidden rounded-md p-4 shadow-md bg-foreground/10 hover:shadow-lg">
                     <div className="flex items-center space-x-2">
-                        <Skeleton className="shrink-0 w-10 h-10 bg-foreground/10 rounded-full" />
-                        <Skeleton className="h-6 bg-foreground/20 rounded w-2/4" />
+                        <Skeleton className="h-10 w-10 shrink-0 rounded-full bg-foreground/10" />
+                        <Skeleton className="h-6 w-2/4 rounded bg-foreground/20" />
                     </div>
-                    <div className="flex space-x-4 mt-2 py-4">
-                        <div className="flex-1 space-y-4 py-1">
+                    <div className="mt-2 flex py-4 space-x-4">
+                        <div className="flex-1 py-1 space-y-4">
                             <div className="space-y-2">
-                                <Skeleton className="h-4 bg-foreground/20 rounded w-3/4" />
+                                <Skeleton className="h-4 w-3/4 rounded bg-foreground/20" />
                                 <div className="space-y-2">
-                                    <Skeleton className="h-4 bg-foreground/20 rounded" />
-                                    <Skeleton className="h-4 bg-foreground/20 rounded w-5/6" />
-                                    <Skeleton className="h-4 bg-foreground/20 rounded w-3/4" />
+                                    <Skeleton className="h-4 rounded bg-foreground/20" />
+                                    <Skeleton className="h-4 w-5/6 rounded bg-foreground/20" />
+                                    <Skeleton className="h-4 w-3/4 rounded bg-foreground/20" />
                                 </div>
                             </div>
                         </div>

@@ -19,7 +19,7 @@ export default function Sidebar() {
             onMouseEnter={() => setSidebarActive(true)}
             onMouseLeave={() => setSidebarActive(false)}
             className={cn('overflow-hidden no-drag top-0 absolute transition-all h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between', sidebarActive ? 'w-64' : 'w-24')}>
-            <div className="overflow-x-hidden scrollbar-hide flex flex-col gap-1 h-full">
+            <div className="flex h-full flex-col gap-1 overflow-x-hidden scrollbar-hide">
                 <SidebarGroupTitle title="General"/>
                 {navlinks.map((link) => (
                     <SidebarItem
@@ -36,7 +36,7 @@ export default function Sidebar() {
                             initial={{opacity: 0, height: 0}}
                             animate={{opacity: 1, height: 'auto'}}
                             exit={{opacity: 0, height: 0}}
-                            className="flex flex-col gap-1 mb-3"
+                            className="mb-3 flex flex-col gap-1"
                         >
                             <hr className="my-3"/>
                             <SidebarGroupTitle title="Course"/>

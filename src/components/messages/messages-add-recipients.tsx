@@ -63,7 +63,7 @@ export default function MessagesAddRecipients() {
                         Select the people you want to chat with
                     </DialogDescription>
                 </DialogHeader>
-                <div className="p-4 border-b flex gap-2 relative w-full">
+                <div className="relative flex w-full gap-2 border-b p-4">
                     <Input
                         autoFocus
                         placeholder="Search"
@@ -71,11 +71,11 @@ export default function MessagesAddRecipients() {
                         value={recipientsSearchInput}
                         onChange={(e) => setRecipientsSearchInput(e.target.value)}
                     />
-                    <div className="absolute top-1/2 transform -translate-y-1/2 left-7">
-                        <AiOutlineSearch className="w-5 h-5 text-gray-500"/>
+                    <div className="absolute top-1/2 left-7 -translate-y-1/2 transform">
+                        <AiOutlineSearch className="h-5 w-5 text-gray-500"/>
                     </div>
                 </div>
-                <div className="flex w-full overflow-hidden gap-2">
+                <div className="flex w-full gap-2 overflow-hidden">
                     <div
                         className={cn("w-full flex flex-col overflow-y-auto overflow-x-hidden gap-2", recipientsSelected.length > 0 && 'border-r-2 -mr-1 pr-2')}>
                         {isRecipientsLoading ? (
@@ -86,7 +86,7 @@ export default function MessagesAddRecipients() {
                                 </span>
                             </div>
                         ) : (
-                            <div className="overflow-y-auto overflow-x-hidden gap-2 flex flex-wrap">
+                            <div className="flex flex-wrap gap-2 overflow-y-auto overflow-x-hidden">
                                 {filteredRecipients.map((recipient) => (
                                     <Button
                                         className={"shrink-0 animate-in slide-in-from-left-16 fade-in-5 py-6 inline-flex gap-3"}
@@ -120,7 +120,7 @@ export default function MessagesAddRecipients() {
                             style={{
                                 scrollbarGutter: "stable"
                             }}
-                            className="px-2 flex flex-col flex-1 gap-2 min-w-[15rem] max-h-[30rem] overflow-y-auto overflow-x-hidden">
+                            className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 min-w-[15rem] max-h-[30rem]">
                             {recipientsSelected.map((recipient) => (
                                 <Button
                                     className={"shrink-0 animate-in slide-in-from-left-16 fade-in-5 py-7 inline-flex gap-3 bg-success/5 hover:bg-destructive/20"}

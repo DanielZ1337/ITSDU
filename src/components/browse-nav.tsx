@@ -68,7 +68,7 @@ export default function BrowserNav() {
                     className="shrink-0"
                 >
                     <div
-                        className='drag flex w-full py-4 px-2 justify-center items-center gap-1 mb-4 mt-2 border-foreground-50 border-y-2'>
+                        className='mt-2 mb-4 flex w-full items-center justify-center gap-1 border-y-2 px-2 py-4 drag border-foreground-50'>
                         {/* Back button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
                                 onClick={() => navigate(-1)}><ArrowLeftCircleIcon/></Button>
@@ -85,7 +85,7 @@ export default function BrowserNav() {
                         <form onSubmit={(e) => {
                             e.preventDefault()
                             navigate(address)
-                        }} className='no-drag w-full px-2'>
+                        }} className='w-full px-2 no-drag'>
                             <Input className='w-full' type="text" value={address}
                                    onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
                                    onChange={(e) => setAddress(e.target.value)}/>

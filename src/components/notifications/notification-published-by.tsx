@@ -8,7 +8,7 @@ export default function NotificationPublishedBy({personId, name}: { personId: nu
             showTitle={false}
             asChild
         >
-            <Link className="text-blue-500 hover:text-blue-600 transition-colors hover:underline"
+            <Link className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
                   to={`/person/${personId}`}>
                 {name}
             </Link>

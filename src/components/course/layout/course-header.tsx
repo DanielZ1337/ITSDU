@@ -62,11 +62,11 @@ export default function CourseHeader({ courseId }: {
 
     return (
         <header
-            className="w-full sticky top-0 flex h-[60px] items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40 shadow z-10">
+            className="sticky top-0 z-10 flex w-full items-center gap-4 border-b bg-zinc-100/40 px-6 shadow h-[60px] dark:bg-zinc-800/40">
             <Helmet>
                 <title>{course!.Title}</title>
             </Helmet>
-            <div className="w-full flex-1 flex justify-between">
+            <div className="flex w-full flex-1 justify-between">
                 <div className={"flex flex-row items-center gap-2"}>
                     <Button variant={"ghost"} size={"icon"}
                         className={cn("shrink-0", !isTogglingStarred && 'hover:bg-yellow-400/10')}
@@ -85,12 +85,12 @@ export default function CourseHeader({ courseId }: {
                                 className={cn("w-6 h-6 dark:text-yellow-400 text-yellow-600 shrink-0", starredCourse && 'fill-yellow-600 dark:fill-yellow-400')} />
                         )}
                     </Button>
-                    <Link className="flex items-center font-semibold my-auto text-balance w-fit text-lg"
+                    <Link className="my-auto flex w-fit items-center text-lg font-semibold text-balance"
                         to=".">
                         <CourseNavigationMenu title={courseTitle} />
                     </Link>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-nowrap my-auto ml-6">
+                <p className="my-auto ml-6 text-sm text-gray-500 text-nowrap dark:text-gray-400">
                     {courseCode}
                 </p>
             </div>

@@ -29,7 +29,7 @@ function IsOnline({title, className}: { title: string, className?: string }) {
             exit={{opacity: 0, height: 0}}
             className={cn("text-white items-center flex justify-center leading-tight tracking-tight font-semibold", className)}
         >
-            <span className="py-2 block">
+            <span className="block py-2">
                 {title}
             </span>
         </motion.div>

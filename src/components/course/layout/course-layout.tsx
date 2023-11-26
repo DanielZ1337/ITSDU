@@ -17,12 +17,12 @@ export default function CourseLayout() {
 
     return (
         <div
-            className="flex-1 w-full overflow-hidden flex">
-            <div className="flex flex-col overflow-auto w-full">
+            className="flex w-full flex-1 overflow-hidden">
+            <div className="flex w-full flex-col overflow-auto">
                 <Suspense fallback={<CourseHeaderFallback />}>
                     <CourseHeader courseId={courseId} />
                 </Suspense>
-                <div className="flex-1 overflow-auto flex flex-col">
+                <div className="flex flex-1 flex-col overflow-auto">
                     <Outlet />
                 </div>
             </div>

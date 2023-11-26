@@ -8,11 +8,11 @@ export default function MessagesDropdownFallback({hideSeparator}: { hideSeparato
         <>
             <div className={"flex gap-2 items-center justify-center w-full"}>
                 {/* <span
-                    className="-ml-1 bg-primary shrink-0 grow-0 w-1.5 h-2.5 rounded-full"></span> */}
+                    className="-ml-1 shrink-0 grow-0 rounded-full bg-primary w-1.5 h-2.5"></span> */}
                 <UnreadNotificationIndicator/>
-                <div className="space-y-2 w-full">
+                <div className="w-full space-y-2">
                     <div
-                        className="h-8 w-full flex justify-center items-center gap-2">
+                        className="flex h-8 w-full items-center justify-center gap-2">
                         <Skeleton className="h-8 w-8 rounded-full"/>
                         <Skeleton className="h-4 w-full"/>
                     </div>

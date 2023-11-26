@@ -56,7 +56,7 @@ export default function Index() {
                             autoFocus
                         />
                         <kbd
-                            className="pointer-events-none absolute right-2 my-auto hidden top-2.5 h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex"
+                            className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border font-mono font-medium opacity-100 top-2.5 bg-muted px-1.5 text-[10px] lg:flex"
                         >
                             <span>{isMacOS() ? "⌘" : "Ctrl"}</span>K
                         </kbd>

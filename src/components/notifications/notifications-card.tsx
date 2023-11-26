@@ -24,7 +24,7 @@ export default function NotificationCard({ notification, showLocation = true }: 
     const [showLightBulletin, setShowLightBulletin] = useState(false)
 
     return (
-        <div className="bg-foreground/10 rounded-md p-4">
+        <div className="rounded-md p-4 bg-foreground/10">
             <h2 className="text-lg font-bold">
                 <NotificationTitle
                     notification={notification}
@@ -37,7 +37,7 @@ export default function NotificationCard({ notification, showLocation = true }: 
             <h3 className="text-sm text-gray-500">{getRelativeTimeString(new Date(notification.PublishedDate))}</h3>
             {notification.LightBulletin && (
                 <button
-                    className="mt-1 text-blue-500 hover:text-blue-600 transition-colors hover:underline"
+                    className="mt-1 text-blue-500 transition-colors hover:text-blue-600 hover:underline"
                     onClick={() => setShowLightBulletin(prev => !prev)}
                 >
                     {showLightBulletin ? "Hide" : "Show"} announcement

@@ -20,6 +20,8 @@ import HoverDate from "../hover-date";
 import { isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesElementType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
 import { useCourse } from "@/hooks/atoms/useCourse";
+import { getPersonInitials } from "@/lib/utils";
+import LightbulletinAvatar from "./lightbulletin-avatar";
 
 export default function LightbulletinCard({ bulletin }: {
     bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
@@ -58,20 +60,15 @@ export default function LightbulletinCard({ bulletin }: {
             className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[readmore=true]:dark:hover:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 data-[readmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
             <div className="flex justify-between">
                 <div className="flex items-center space-x-2">
-                    <Avatar className={"flex-shrink-0 w-10 h-10 border-2 border-primary/20"}>
-                        <AvatarImage src={bulletin.PublishedBy.ProfileImageUrlSmall}
-                            alt={bulletin.PublishedBy.FullName}
-                            className={"object-cover"}
-                        />
-                        <AvatarFallback className={"bg-foreground/10 font-normal"}>
-                            {bulletin.PublishedBy.FullName.split(" ").map((name) => name[0]).join("").slice(0, 3)}
-                        </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col space-y-0.5 truncate">
+                    <LightbulletinAvatar
+                        src={bulletin.PublishedBy.ProfileImageUrlSmall}
+                        name={bulletin.PublishedBy.FullName}
+                    />
+                    <div className="flex flex-col truncate space-y-0.5">
                         <PersonHoverCard personId={bulletin.PublishedBy.PersonId} asChild showTitle={false}>
                             <Link
                                 to={`/person/${bulletin.PublishedBy.PersonId}`}
-                                className="text-blue-500 hover:underline font-semibold"
+                                className="font-semibold text-blue-500 hover:underline"
                             >
                                 {bulletin.PublishedBy.FullName}{' '}
                             </Link>
@@ -108,7 +105,7 @@ export default function LightbulletinCard({ bulletin }: {
                     }}
                     size={"icon"}
                     variant={"secondary"}
-                    className="flex justify-end cursor-pointer hover:opacity-80 active:opacity-60 p-2 rounded-full bg-background/30 h-fit w-fit active:scale-95 transform transition-all duration-200 ease-in-out hover:shadow-md ml-4 md:ml-6 lg:ml-8 xl:ml-10">
+                    className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                     {bulletin.IsSubscribed ? (
                         <BellRing className={"stroke-success w-6 h-6"} />
                     ) : (
@@ -125,7 +122,7 @@ export default function LightbulletinCard({ bulletin }: {
                 </Linkify>
             </pre>
             {showResources && (
-                <div className="mt-4 mb-4 flex flex-col space-y-4 rounded-lg p-2">
+                <div className="mt-4 mb-4 flex flex-col rounded-lg p-2 space-y-4">
                     {Resources!.EntityArray.map((resource) => (
                         <div
                             className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment"}
@@ -140,7 +137,7 @@ export default function LightbulletinCard({ bulletin }: {
                                 }
                             }}>
                             <div
-                                className="flex items-center space-x-2 p-2 text-blue-500 group-hover/attachment:text-blue-600">
+                                className="flex items-center p-2 text-blue-500 group-hover/attachment:text-blue-600 space-x-2">
                                 <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
                                 <span className="truncate">{resource.Title}</span>
                             </div>

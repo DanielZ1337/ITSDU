@@ -61,7 +61,7 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
                 </Avatar>
             </div>
             <div className={"w-5/6"}>
-                <h2 className="font-semibold text-base">{author}</h2>
+                <h2 className="text-base font-semibold">{author}</h2>
                 <p className={cn("text-sm text-gray-500 line-clamp-1 break-all", !isRead && 'font-semibold')}>
                     {convert(he.decode(titleSliced))}
                 </p>

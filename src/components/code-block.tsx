@@ -61,7 +61,7 @@ function CodeBlock({
             </AnimatePresence>
 
             <div
-                className="absolute -right-4 top-0 h-full w-12 blur bg-gradient-to-l from-black/50 to-transparent"></div>
+                className="absolute top-0 -right-4 h-full w-12 bg-gradient-to-l from-black/50 to-transparent blur"></div>
             <SyntaxHighlighter
                 language={language}
                 className={cn(

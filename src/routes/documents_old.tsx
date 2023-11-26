@@ -9,20 +9,20 @@ export default function DocumentsOld() {
     const {isLoading, data} = useResourceByElementID(elementId ?? '')
 
     return (
-        <div className="flex flex-1 w-full h-full">
+        <div className="flex h-full w-full flex-1">
             {isLoading || !data ? (
                 <Spinner size="lg" color="primary" label="Loading..." className={"m-auto w-full"}/>
             ) : (
                 <iframe
                     src={data}
-                    className="w-full h-full"
+                    className="h-full w-full"
                     title="PDF"
                 />
             )}
             <Suspense
                 fallback={
-                    <div className="flex flex-col flex-1 w-full h-full">
-                        <div className="flex flex-row items-center justify-center flex-1 w-full h-full">
+                    <div className="flex h-full w-full flex-1 flex-col">
+                        <div className="flex h-full w-full flex-1 flex-row items-center justify-center">
                             <Spinner size="lg" color="primary" label="Loading..." className={"m-auto w-full"}/>
                         </div>
                     </div>

@@ -44,7 +44,7 @@ export default function MessagesDropdown() {
 
     const { mutate: markAsRead, isLoading } = usePUTinstantMessageThreadUpdateIsRead()
 
-    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage, isFetchingNextPage)
 
     const threads = data!.pages.flatMap((page) => page.EntityArray)
     const total = data!.pages[data!.pages.length - 1].Total

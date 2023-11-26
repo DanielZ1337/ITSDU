@@ -13,7 +13,7 @@ export default function CourseIndex() {
     const courseId = Number(id)
 
     return (
-        <div className="grid items-start gap-6 px-4 text-sm font-medium h-full">
+        <div className="grid h-full items-start gap-6 px-4 text-sm font-medium">
             <div className={"flex gap-4 flex-1 h-full"}>
                 <Splitter direction={SplitDirection.Horizontal} minWidths={[300, 300]}
                     initialSizes={[200, 100]}>
@@ -31,10 +31,10 @@ export default function CourseIndex() {
                         <h2 className={"text-xl font-bold inline-flex gap-4"}><Files /> Resources</h2>
                         <Suspense
                             fallback={<div className={"flex flex-col gap-2 w-full"}>
-                                <Skeleton className="h-4 bg-foreground/20 rounded" />
-                                <Skeleton className="h-4 bg-foreground/20 rounded" />
-                                <Skeleton className="h-4 bg-foreground/20 rounded" />
-                                <Skeleton className="h-4 bg-foreground/20 rounded" />
+                                <Skeleton className="h-4 rounded bg-foreground/20" />
+                                <Skeleton className="h-4 rounded bg-foreground/20" />
+                                <Skeleton className="h-4 rounded bg-foreground/20" />
+                                <Skeleton className="h-4 rounded bg-foreground/20" />
                             </div>}>
                             <Resources courseId={courseId} />
                         </Suspense>

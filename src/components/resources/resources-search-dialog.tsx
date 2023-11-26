@@ -150,7 +150,7 @@ export default function SearchResourcesDialog({courseId}: {
                         <span
                             className="hidden lg:inline-flex xl:hidden">Search...</span>
                         <kbd
-                            className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
+                            className="pointer-events-none absolute right-2 my-auto hidden h-5 select-none items-center gap-1 rounded border font-mono font-medium opacity-100 bg-muted px-1.5 text-[10px] lg:flex">
                             <span>
                                 {isMacOS() ? "⌘" : "Ctrl"}
                             </span>
@@ -174,7 +174,7 @@ export default function SearchResourcesDialog({courseId}: {
                         No resources found.
                     </CommandEmpty>
                     {isFetching ? (
-                        <div className="space-y-1 overflow-hidden px-1 py-2">
+                        <div className="overflow-hidden px-1 py-2 space-y-1">
                             <Skeleton className="h-4 w-10 rounded"/>
                             <Skeleton className="h-8 rounded-sm"/>
                             <Skeleton className="h-8 rounded-sm"/>
@@ -185,7 +185,7 @@ export default function SearchResourcesDialog({courseId}: {
                                 heading={`${resources?.Resources.EntityArray.length
                                 } resources found`}
                             >
-                                <div className="my-2 space-y-1 overflow-hidden pr-1 overflow-y-auto max-h-[40dvh]">
+                                <div className="my-2 overflow-hidden overflow-y-auto pr-1 space-y-1 max-h-[40dvh]">
                                     {resources!.Resources.EntityArray.map((resource) => (
                                         <CommandItem
                                             data-elementid={resource.ElementId}
@@ -198,7 +198,7 @@ export default function SearchResourcesDialog({courseId}: {
                                             })}
                                         >
                                             <span
-                                                className="line-clamp-1 break-all truncate"
+                                                className="truncate break-all line-clamp-1"
                                             >{resource.Title}</span>
                                             <div className="flex">
                                                 {isResourceFile(resource) && (
@@ -256,7 +256,7 @@ export default function SearchResourcesDialog({courseId}: {
                                                         <DownloadIcon className={"w-6 h-6"}/>
                                                     </Button>)}
                                                 <div
-                                                    className="flex justify-end cursor-pointer hover:opacity-80 active:opacity-60 p-2 rounded-full bg-background/30 h-fit w-fit active:scale-95 transform transition-all duration-200 ease-in-out hover:shadow-md ml-4 md:ml-6 lg:ml-8 xl:ml-10">
+                                                    className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                                                     <img src={resource.IconUrl} alt={resource.Title}
                                                          className={"w-6 h-6"}/>
                                                 </div>

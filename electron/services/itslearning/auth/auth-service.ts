@@ -1,4 +1,4 @@
-import { safeStorage } from "electron";
+import { BrowserWindow, safeStorage } from "electron";
 import { GrantType } from "./types/grant_type"
 import { ITSLEARNING_SCOPES_ENUM } from "./types/scopes"
 import axios from "axios";
@@ -112,6 +112,14 @@ export class AuthService {
         const escapedRegex = new RegExp(escaped, 'gm');
         const matches = escapedRegex.exec(URI);
         return matches?.[1];
+    }
+
+    public async loadSigninPage(win?: BrowserWindow | null) {
+        await win?.loadURL(getItslearningOAuthUrl())
+        await win?.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
+        setTimeout(async () => {
+            await win?.webContents.executeJavaScript(`document.getElementsByClassName('table')[0].click()`)
+        }, 1000)
     }
 }
 

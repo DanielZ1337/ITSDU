@@ -17,7 +17,7 @@ export default function MessageChat({ threadId }: {
 
     const user = useUser()
 
-    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage, isFetchingNextPage)
 
     return (
         <>
@@ -39,11 +39,11 @@ export default function MessageChat({ threadId }: {
             )))}
 
             {hasNextPage && (
-                <div className="flex justify-center items-center" ref={ref} />
+                <div className="flex items-center justify-center" ref={ref} />
             )}
 
             {isFetchingNextPage && (
-                <div className="m-auto w-10 h-10">
+                <div className="m-auto h-10 w-10">
                     <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin m-auto"} />
                 </div>
             )}

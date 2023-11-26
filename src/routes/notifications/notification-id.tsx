@@ -28,24 +28,24 @@ export default function NotificationID() {
 
     return (
         <div
-            className="flex-1 flex-col w-full overflow-hidden flex p-6">
+            className="flex w-full flex-1 flex-col overflow-hidden p-6">
             <Helmet>
                 <title>{currentNotificaton!.Text}</title>
             </Helmet>
-            <h1 className="text-2xl font-bold mb-4">{currentNotificaton!.Text}</h1>
-            <div className="overflow-auto m-auto w-full px-20">
-                <div className="max-w-2xl m-auto dark:bg-foreground/40 bg-foreground/10 rounded-md shadow-md p-10">
-                    <div className="flex items-center mb-4">
-                        <img src={currentNotificaton!.IconUrl} alt="Notification Icon" className="w-6 h-6 mr-2"/>
+            <h1 className="mb-4 text-2xl font-bold">{currentNotificaton!.Text}</h1>
+            <div className="m-auto w-full overflow-auto px-20">
+                <div className="m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40">
+                    <div className="mb-4 flex items-center">
+                        <img src={currentNotificaton!.IconUrl} alt="Notification Icon" className="mr-2 h-6 w-6"/>
                         <h1 className="text-lg font-bold">{currentNotificaton!.LocationTitle}</h1>
                     </div>
                     <p className="mb-4">{currentNotificaton!.Text}</p>
-                    {currentNotificaton!.PublishedDate && <p className="text-sm text-foreground/80 mb-4">Published
+                    {currentNotificaton!.PublishedDate && <p className="mb-4 text-sm text-foreground/80">Published
                         Date: {new Date(currentNotificaton!.PublishedDate).toDateString()}</p>}
                     {currentNotificaton.LightBulletin && (
                         <div className="border-t border-gray-300 pt-4">
-                            <h2 className="text-md font-semibold mb-2">Announcement:</h2>
-                            <p className="text-sm text-foreground/80 whitespace-pre-wrap">
+                            <h2 className="mb-2 font-semibold text-md">Announcement:</h2>
+                            <p className="whitespace-pre-wrap text-sm text-foreground/80">
                                 <Linkify options={{render: renderLink}}>
                                     {currentNotificaton!.LightBulletin.Text}
                                 </Linkify>
@@ -54,10 +54,10 @@ export default function NotificationID() {
                     )}
                     {currentNotificaton!.ElementsCount > 0 && (
                         <div className="border-t border-gray-300 pt-4">
-                            <h2 className="text-md font-semibold mb-2">Resources:</h2>
+                            <h2 className="mb-2 font-semibold text-md">Resources:</h2>
                             {resources?.EntityArray.map((resource) => (
-                                <div key={resource.ElementId} className="flex items-center mb-2">
-                                    <img src={resource.IconUrl} alt="Resource Icon" className="w-6 h-6 mr-2"/>
+                                <div key={resource.ElementId} className="mb-2 flex items-center">
+                                    <img src={resource.IconUrl} alt="Resource Icon" className="mr-2 h-6 w-6"/>
                                     <button
                                         onClick={async () => {
                                             if (isResourcePDFFromUrlOrElementType(resource)) {

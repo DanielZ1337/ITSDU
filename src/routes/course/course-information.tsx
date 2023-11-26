@@ -13,44 +13,44 @@ export default function CourseInformation() {
     })
 
     return (
-        <div className="px-8 pt-6 pb-8 mb-4 flex flex-col my-2">
-            <div className="-mx-3 md:flex mb-6">
-                <div className="md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+        <div className="my-2 mb-4 flex flex-col px-8 pt-6 pb-8">
+            <div className="-mx-3 mb-6 md:flex">
+                <div className="mb-6 px-3 md:mb-0 md:w-1/2">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-grey-darker"
                            htmlFor="course-name">
                         Course Name
                     </label>
-                    <p className="text-grey-darker text-base">{course?.Title}</p>
+                    <p className="text-base text-grey-darker">{course?.Title}</p>
                 </div>
-                <div className="md:w-1/2 px-3">
-                    <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+                <div className="px-3 md:w-1/2">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-grey-darker"
                            htmlFor="course-code">
                         Course Code
                     </label>
-                    <p className="text-grey-darker text-base">{course?.Code}</p>
+                    <p className="text-base text-grey-darker">{course?.Code}</p>
                 </div>
             </div>
-            <div className="-mx-3 md:flex mb-6">
-                <div className="md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2"
+            <div className="-mx-3 mb-6 md:flex">
+                <div className="mb-6 px-3 md:mb-0 md:w-1/2">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-grey-darker"
                            htmlFor="course-start-date">
                         Start Date
                     </label>
-                    <p className="text-grey-darker text-base">{new Date(course!.CreatedDateTimeUtc).toDateString()}{" "}({getRelativeTimeString(new Date(course!.CreatedDateTimeUtc))})</p>
+                    <p className="text-base text-grey-darker">{new Date(course!.CreatedDateTimeUtc).toDateString()}{" "}({getRelativeTimeString(new Date(course!.CreatedDateTimeUtc))})</p>
                 </div>
             </div>
-            {/*<div className="-mx-3 md:flex mb-6">
-                <div className="md:w-1/2 px-3 mb-6 md:mb-0">
-                    <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" htmlFor="course-teacher">
+            {/*<div className="-mx-3 mb-6 md:flex">
+                <div className="mb-6 px-3 md:mb-0 md:w-1/2">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-grey-darker" htmlFor="course-teacher">
                         Teacher
                     </label>
-                    <p className="text-grey-darker text-base">{course?.teacher}</p>
+                    <p className="text-base text-grey-darker">{course?.teacher}</p>
                 </div>
-                <div className="md:w-1/2 px-3">
-                    <label className="block uppercase tracking-wide text-grey-darker text-xs font-bold mb-2" htmlFor="course-description">
+                <div className="px-3 md:w-1/2">
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wide text-grey-darker" htmlFor="course-description">
                         Description
                     </label>
-                    <p className="text-grey-darker text-base">{course?.description}</p>
+                    <p className="text-base text-grey-darker">{course?.description}</p>
                 </div>
             </div>*/}
         </div>

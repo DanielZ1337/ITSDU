@@ -47,7 +47,7 @@ export function MessagesFileDrop({files, setFiles, disabled, uploadProgress}: {
             {uploadProgress > 0 && (
                 <Progress className={"mt-4 w-64"} indicatorClassName={"bg-green-500"} value={uploadProgress}/>
             )}
-            {/*<h2 className="m-0 h-[1.25rem] text-xs leading-5 text-foreground/25">
+            {/*<h2 className="m-0 text-xs leading-5 h-[1.25rem] text-foreground/25">
                 Image (2MB)
             </h2>*/}
         </button>

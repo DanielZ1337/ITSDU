@@ -46,6 +46,10 @@ protocol.registerSchemesAsPrivileged([{
 
 // to load the application, setup and stuff
 async function createMainWindow() {
+    const allWindows = BrowserWindow.getAllWindows()
+    if (allWindows.length > 0) {
+        allWindows.forEach(w => w.close())
+    }
     const windowService = new WindowOptionsService()
     const windowOptions = windowService.getWindowOptions()
     win = new BrowserWindow({
@@ -61,6 +65,8 @@ async function createMainWindow() {
         minWidth: 800,
         // show: false,
         darkTheme: startUpTheme === 'dark',
+        // darkTheme: nativeTheme.shouldUseDarkColors,
+        backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
         frame: false,
         ...windowOptions,
     })
@@ -108,7 +114,7 @@ async function createMainWindow() {
     }
 }
 
-async function createAuthWindow() {
+export async function createAuthWindow() {
     authWindow = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         autoHideMenuBar: true,
@@ -119,12 +125,9 @@ async function createAuthWindow() {
         darkTheme: startUpTheme === 'dark',
         focusable: true,
     })
+    authService.loadSigninPage(authWindow)
 
-    await authWindow.loadURL(getItslearningOAuthUrl())
-    await authWindow?.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
-    setTimeout(async () => {
-        await authWindow?.webContents.executeJavaScript(`document.getElementsByClassName('table')[0].click()`)
-    }, 1000)
+    return authWindow
 }
 
 if (process.platform === 'win32') {

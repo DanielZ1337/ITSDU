@@ -4,7 +4,7 @@ import UpdatesTypeSelect, {
 } from "@/components/notifications/notifications-updates-type-select";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
-import { NotificationsCardsFetchMoreInView } from "@/components/notifications/notifications-cards-fetch-more-in-view";
+import { FetchMoreInview } from "@/components/fetch-more-in-view";
 
 export default function NotificationUpdates() {
     const {
@@ -30,7 +30,7 @@ export default function NotificationUpdates() {
 
     return (
         <>
-            <div className="py-5 sticky top-0 flex items-center gap-4 border-b bg-zinc-100/40 px-6 dark:bg-zinc-800/40 backdrop-blur-md shadow z-10 justify-between">
+            <div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b bg-zinc-100/40 px-6 py-5 shadow backdrop-blur-md dark:bg-zinc-800/40">
                 <h1 className="text-2xl font-bold">Recent Updates</h1>
                 <UpdatesTypeSelect update={selectedUpdatesType} onChange={setSelectedUpdatesType} />
             </div>
@@ -39,11 +39,12 @@ export default function NotificationUpdates() {
                     {isLoading ? <NotificationsCardsFallback /> : <NotificationCards filteredNotifications={filteredNotifications} />}
                 </div>
                 {!isLoading && (
-                    <NotificationsCardsFetchMoreInView
+                    <FetchMoreInview
                         hasNextPage={hasNextPage}
                         fetchNextPage={fetchNextPage}
-                        isFetchingNextPage={isFetchingNextPage}
-                    />
+                        isFetchingNextPage={isFetchingNextPage}>
+                        {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
+                    </FetchMoreInview>
                 )}
             </div>
         </>

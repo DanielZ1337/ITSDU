@@ -48,7 +48,7 @@ export default function Header() {
                         {/* <Button onClick={() => {
                             window.localStorage.clear()
                             window.location.reload()
-                        }} className="px-4 py-2 bg-black text-white line-clamp-1 truncate">
+                        }} className="truncate bg-black px-4 py-2 text-white line-clamp-1">
                             CLEAR LOCAL STORAGE
                         </Button>*/}
                     </div>

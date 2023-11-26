@@ -78,7 +78,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             className={cn(column.getIsSorted() && "text-foreground-800")}
                         >
                             Type
-                            <div className="relative h-4 w-4 ml-2">
+                            <div className="relative ml-2 h-4 w-4">
                                 <ArrowUp
                                     className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
                                 <ArrowUpDown
@@ -88,7 +88,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                     </div>
                 )
             },
-            cell: ({ row }) => <img src={row.original.IconUrl} alt={row.getValue(COLUMN_IDS.title)} className="w-8 h-8 mx-auto" />,
+            cell: ({ row }) => <img src={row.original.IconUrl} alt={row.getValue(COLUMN_IDS.title)} className="mx-auto h-8 w-8" />,
         },
         {
             id: COLUMN_IDS.title,
@@ -102,7 +102,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                         className={cn(column.getIsSorted() && "text-foreground-800")}
                     >
                         Title
-                        <div className="relative h-4 w-4 ml-2">
+                        <div className="relative ml-2 h-4 w-4">
                             <ArrowUp
                                 className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
                             <ArrowUpDown
@@ -124,7 +124,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                         } else {
                             window.app.openExternal(original.ContentUrl)
                         }
-                    }} className="cursor-pointer text-sm text-foreground-800 hover:underline w-full">
+                    }} className="w-full cursor-pointer text-sm text-foreground-800 hover:underline">
                         {original.Title}
                     </Link>
                 )
@@ -143,7 +143,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                             className={cn(column.getIsSorted() && "text-foreground-800")}
                         >
                             Published (ElementId)
-                            <div className="relative h-4 w-4 ml-2">
+                            <div className="relative ml-2 h-4 w-4">
                                 <ArrowUp
                                     className={cn("absolute h-4 w-4 transform transition-all opacity-100 duration-200 ", column.getIsSorted() === "desc" ? "rotate-180" : "", !column.getIsSorted() && "opacity-0")} />
                                 <ArrowUpDown
@@ -275,7 +275,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
     return (
         <div className="w-full">
             <div className="flex items-center py-4">
-                <div className="flex gap-4 w-full">
+                <div className="flex w-full gap-4">
                     <Input
                         disabled={isLoading || !data?.length}
                         placeholder="Filter resources..."
@@ -331,7 +331,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
                 </div>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto select-none">
+                        <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
                             Columns <ChevronDown className="ml-2 h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -356,7 +356,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="rounded-md border overflow-hidden">
+            <div className="overflow-hidden rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -415,7 +415,7 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-end py-4 space-x-2">
                 <div className="flex-1 text-sm text-muted-foreground">
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
                     {table.getFilteredRowModel().rows.length} row(s) selected.

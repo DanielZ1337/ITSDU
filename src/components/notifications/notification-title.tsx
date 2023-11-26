@@ -20,7 +20,7 @@ export default function NotificationTitle({notification, showLocation, setShowEl
             {notification.ElementsCount > 1 && (
                 <> and {" "}
                     <button
-                        className="text-blue-500 hover:text-blue-600 transition-colors hover:underline"
+                        className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
                         onClick={() => setShowElements(prev => !prev)}
                     >
                         {notification.ElementsCount - 1} more

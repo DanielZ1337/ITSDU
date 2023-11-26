@@ -30,7 +30,7 @@ export default function MessagesSidebarChatList({ query }: { query: string }) {
         messagesOrdered = messagesOrdered?.filter((thread) => thread.Name?.toLowerCase().includes(query.toLowerCase()) || thread.Participants.filter((participant) => participant.PersonId !== user!.PersonId).map((participant) => participant.FullName).join(", ").toLowerCase().includes(query.toLowerCase()))
     }
 
-    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage)
+    const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage, isFetchingNextPage)
 
 
     const isLastMessageRead = (thread: ItslearningRestApiEntitiesInstantMessageThread) => {

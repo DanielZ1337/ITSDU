@@ -25,14 +25,14 @@ export default function Layout() {
     const {pathname} = useLocation()
 
     return (
-        <div className="flex flex-col h-screen max-h-screen min-h-screen overflow-hidden">
+        <div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
             <IsOnlineIndicator/>
-            <div className="drag flex items-center justify-between px-4 py-2 border-b border-background/40">
-                <Link className="no-drag shrink-0" to={'/'}>
+            <div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
+                <Link className="shrink-0 no-drag" to={'/'}>
                     <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
-                         className="ml-4 mt-2 w-8 h-8 my-auto"/>
+                         className="my-auto mt-2 ml-4 h-8 w-8"/>
                 </Link>
-                <div className="px-4 w-full max-w-xl">
+                <div className="w-full max-w-xl px-4">
                     <ErrorBoundary fallback={<div>ERROR</div>}>
                         <TitlebarSearch/>
                     </ErrorBoundary>
@@ -52,7 +52,7 @@ export default function Layout() {
                 </div>
             </div>
             <BrowserNav/>
-            <div className="drag flex-col overflow-hidden flex flex-1 max-h-screen bg-background relative">
+            <div className="relative flex max-h-screen flex-1 flex-col overflow-hidden drag bg-background">
                 <Sidebar/>
                 <div
                     className={"no-drag ml-24 h-full flex flex-1 overflow-hidden dark:bg-foreground/[2%] transition-all rounded-tl-md"}>

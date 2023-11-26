@@ -19,14 +19,14 @@ export default function CourseParticipants() {
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Course Participants</h1>
-            <div className="flex items-center mb-4">
+            <h1 className="mb-4 text-2xl font-bold">Course Participants</h1>
+            <div className="mb-4 flex items-center">
                 <Input
                     type="text"
                     placeholder="Search participants"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border border-gray-300 rounded-md py-2 px-4 w-full sm:w-1/2 mr-2"
+                    className="mr-2 w-full rounded-md border border-gray-300 px-4 py-2 sm:w-1/2"
                 />
                 <CourseParticipantsRolesSelect roleIds={roleIdsFromFilteredParticipants}
                                                onChange={setSelectedRolesIds}/>

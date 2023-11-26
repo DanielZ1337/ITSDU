@@ -13,7 +13,7 @@ export default function NotificationElement({element}: { element: ItslearningRes
                 window.app.openExternal(element.ContentUrl)
             }
         }}
-                className="text-blue-500 hover:text-blue-600 transition-colors hover:underline"
+                className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
         >
             {element.Title}
         </button>
