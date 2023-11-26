@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect} from 'react'
-import {Button} from '@/components/ui/button'
-import {DownloadIcon, Search} from 'lucide-react'
-import {cn, isMacOS} from '@/lib/utils'
-import {Skeleton} from '@/components/ui/skeleton'
+import React, { useCallback, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+import { DownloadIcon, Search } from 'lucide-react'
+import { cn, isMacOS } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
     CommandDialog,
     CommandEmpty,
@@ -11,27 +11,30 @@ import {
     CommandItem,
     CommandList
 } from '@/components/ui/command'
-import {useDebounce} from '@uidotdev/usehooks'
-import {useToast} from './ui/use-toast'
+import { useDebounce } from '@uidotdev/usehooks'
+import { useToast } from '../ui/use-toast'
 import useGETcourseResourceBySearch from '@/queries/courses/useGETcourseResourceBySearch'
-import {useCourse} from '@/hooks/atoms/useCourse'
+import { useCourse } from '@/hooks/atoms/useCourse'
 import {
     ItsolutionsItslUtilsConstantsLocationType
 } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType'
-import {isResourceFile, isResourcePDFFromUrlOrElementType} from '@/types/api-types/extra/learning-tool-id-types'
-import {useNavigate} from 'react-router-dom'
+import { isResourceFile, isResourcePDFFromUrlOrElementType, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
+import { useNavigate } from 'react-router-dom'
 import useGETstarredCourses from '@/queries/course-cards/useGETstarredCourses'
 import useGETunstarredCourses from '@/queries/course-cards/useGETunstarredCourses'
+import { isSupportedResourceInApp } from '../../types/api-types/extra/learning-tool-id-types';
+import TitlebarButton from './titlebar-button'
 
 export default function TitlebarSearch() {
     const [isOpen, setIsOpen] = React.useState(false)
     const [query, setQuery] = React.useState("")
     const debouncedQuery = useDebounce(query, 300)
-    const {toast, dismiss} = useToast()
-    const {courseId} = useCourse()
+    const { toast, dismiss } = useToast()
+    const { courseId } = useCourse()
     const navigate = useNavigate()
+    const navigateToResource = useNavigateToResource(navigate)
 
-    const {data: resources, isFetching: isResourcesFetching} = useGETcourseResourceBySearch({
+    const { data: resources, isFetching: isResourcesFetching } = useGETcourseResourceBySearch({
         searchText: debouncedQuery,
         locationId: courseId || 0,
         locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
@@ -41,7 +44,7 @@ export default function TitlebarSearch() {
         refetchOnReconnect: false,
     })
 
-    const {data: starredCourses, isLoading: isStarredFetching} = useGETstarredCourses({
+    const { data: starredCourses, isLoading: isStarredFetching } = useGETstarredCourses({
         PageIndex: 0,
         PageSize: 9999,
         searchText: debouncedQuery,
@@ -51,7 +54,7 @@ export default function TitlebarSearch() {
         keepPreviousData: true
     })
 
-    const {data: unstarredCourses, isLoading: isUnstarredFetching} = useGETunstarredCourses({
+    const { data: unstarredCourses, isLoading: isUnstarredFetching } = useGETunstarredCourses({
         PageIndex: 0,
         PageSize: 9999,
         searchText: debouncedQuery,
@@ -92,7 +95,7 @@ export default function TitlebarSearch() {
                                         await new Promise<void>((resolve) => {
                                             window.addEventListener('mouseup', () => {
                                                 resolve()
-                                            }, {once: true})
+                                            }, { once: true })
                                         })
 
                                         // if the mouse was pressed for less than 500ms, open the file
@@ -153,22 +156,7 @@ export default function TitlebarSearch() {
 
     return (
         <>
-            <Button
-                size={"sm"}
-                className="relative inline-flex h-9 w-full items-center justify-start rounded-md border bg-transparent text-sm font-medium shadow-sm transition-colors no-drag border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1 active:scale-100 disabled:pointer-events-none disabled:opacity-50"
-                onClick={() => setIsOpen(true)}
-            >
-                <Search className={"h-4 w-4 shrink-0"}/>
-                <span className="ml-2">Search...</span>
-                <kbd
-                    className="pointer-events-none absolute right-2 my-auto flex h-5 select-none items-center gap-1 rounded border font-mono font-medium opacity-100 bg-muted px-1.5 text-[10px]">
-                    <span>
-                        {isMacOS() ? "⌘" : "Ctrl"}
-                    </span>
-                    X
-                </kbd>
-                <span className="sr-only">Search resources</span>
-            </Button>
+            <TitlebarButton onClick={() => setIsOpen(true)} />
             <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
                 <CommandInput
                     placeholder="Search resources..."
@@ -184,9 +172,9 @@ export default function TitlebarSearch() {
                     <div className="my-2 overflow-hidden overflow-y-auto pr-1 space-y-1 max-h-[40dvh]">
                         {isStarredFetching || isUnstarredFetching ? (
                             <div className="overflow-hidden px-1 py-2 space-y-1">
-                                <Skeleton className="h-4 w-10 rounded"/>
-                                <Skeleton className="h-8 rounded-sm"/>
-                                <Skeleton className="h-8 rounded-sm"/>
+                                <Skeleton className="h-4 w-10 rounded" />
+                                <Skeleton className="h-8 rounded-sm" />
+                                <Skeleton className="h-8 rounded-sm" />
                             </div>
                         ) : (
                             starredCourses && unstarredCourses && (
@@ -241,15 +229,15 @@ export default function TitlebarSearch() {
                         </CommandEmpty>
                         {isResourcesFetching ? (
                             <div className="overflow-hidden px-1 py-2 space-y-1">
-                                <Skeleton className="h-4 w-10 rounded"/>
-                                <Skeleton className="h-8 rounded-sm"/>
-                                <Skeleton className="h-8 rounded-sm"/>
+                                <Skeleton className="h-4 w-10 rounded" />
+                                <Skeleton className="h-8 rounded-sm" />
+                                <Skeleton className="h-8 rounded-sm" />
                             </div>
                         ) : (
                             resources && resources.Resources.EntityArray[0]?.CourseId === courseId && (
                                 <CommandGroup
                                     heading={`${resources?.Resources.EntityArray.length
-                                    } resources found`}
+                                        } resources found`}
                                 >
                                     <>
                                         {resources!.Resources.EntityArray.map((resource) => (
@@ -260,8 +248,8 @@ export default function TitlebarSearch() {
                                                 className="flex items-center justify-between"
                                                 onSelect={() => handleSelect(() => {
                                                     console.log("Selected resource", resource)
-                                                    if (isResourcePDFFromUrlOrElementType(resource)) {
-                                                        navigate(`/documents/${resource.ElementId}`)
+                                                    if (isSupportedResourceInApp(resource)) {
+                                                        navigateToResource(resource)
                                                     } else {
                                                         window.app.openExternal(resource.ContentUrl, true)
                                                     }
@@ -298,7 +286,7 @@ export default function TitlebarSearch() {
                                                                             await new Promise<void>((resolve) => {
                                                                                 window.addEventListener('mouseup', () => {
                                                                                     resolve()
-                                                                                }, {once: true})
+                                                                                }, { once: true })
                                                                             })
 
                                                                             // if the mouse was pressed for less than 500ms, open the file
@@ -323,12 +311,12 @@ export default function TitlebarSearch() {
                                                                 })
                                                             }}
                                                         >
-                                                            <DownloadIcon className={"w-6 h-6"}/>
+                                                            <DownloadIcon className={"w-6 h-6"} />
                                                         </Button>)}
                                                     <div
                                                         className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                                                         <img src={resource.IconUrl} alt={resource.Title}
-                                                             className={"w-6 h-6"}/>
+                                                            className={"w-6 h-6"} />
                                                     </div>
                                                 </div>
                                             </CommandItem>

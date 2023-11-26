@@ -84,10 +84,15 @@ contextBridge.exposeInMainWorld('cookies', {
     }
 })
 
-contextBridge.exposeInMainWorld('blob', {
-    get: async (elementId: number) => {
-        const blob = await ipcRenderer.invoke('get-blob-from-element-id', elementId)
-        return blob
+contextBridge.exposeInMainWorld('resources', {
+    officeDocuments: {
+        get: async (elementId: number | string) => {
+            const { accessToken, downloadUrl } = await ipcRenderer.invoke('resources:get-office-document', elementId)
+            return { accessToken, downloadUrl }
+        }
+    },
+    file: {
+        get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-file', elementId)
     }
 })
 
@@ -96,6 +101,19 @@ declare global {
     // eslint-disable-next-line no-unused-vars
     interface Window {
         ipcRenderer: typeof ipcRenderer
+        resources: {
+            officeDocuments: {
+                get: (elementId: number | string) => Promise<{ accessToken: string, downloadUrl: string }>
+            },
+            file: {
+                get: (elementId: number | string) => Promise<{
+                    arrayBuffer: Buffer;
+                    size: number;
+                    name: string;
+                    type: string;
+                }>
+            }
+        }
         darkMode: {
             toggle: () => Promise<boolean>
             system: () => Promise<void>
@@ -119,11 +137,11 @@ declare global {
             openExternal: (url: string, sso?: boolean) => Promise<void>
         },
         download: {
-            start: (elementId: number, filename: string) => Promise<void>
+            start: (elementId: number | string, filename: string) => Promise<void>
             external: (url: string, filename: string) => Promise<void>
         },
         itslearning_file_scraping: {
-            start: (elementId: number, filename: string) => Promise<void>
+            start: (elementId: number | string, filename: string) => Promise<void>
         },
         auth: {
             store: {
@@ -134,14 +152,11 @@ declare global {
             logout: () => Promise<void>
         },
         ai: {
-            upload: (elementId: number) => Promise<boolean>
+            upload: (elementId: number | string) => Promise<boolean>
         },
         cookies: {
             get: (elementId: number | string) => Promise<string>
         },
-        blob: {
-            get: (elementId: number | string) => Promise<string>
-        }
     }
 }
 

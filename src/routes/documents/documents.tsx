@@ -1,5 +1,5 @@
 import PdfRenderer from '@/components/pdf-renderers/pdf-renderer'
-import useResourceByElementID from '@/hooks/usePDFbyElementID'
+import useResourceByElementID from '@/queries/resources/useResourceByElementID'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -56,7 +56,7 @@ export default function Documents() {
         } else {
             return (
                 <div className="relative flex h-full w-full items-center justify-center">
-                    <iframe src={data} className="h-full w-full" />
+                    <iframe src={data?.url} className="h-full w-full" />
                     <Button className="absolute inset-y-0 right-4 my-auto mr-4 group" variant='secondary' data-active={aiSidepanel} onClick={toggleSidebar}>
                         <span className='relative h-4 w-4'>
                             <ArrowRightToLine
@@ -74,7 +74,7 @@ export default function Documents() {
         <div className="flex h-full max-h-full w-full flex-1 overflow-hidden" ref={containerRef}>
             {useCustomPDFRenderer ? (
                 <PdfRenderer
-                    url={data}
+                    url={data?.url}
                     aiSidepanelWidth={aiSidepanelWidth ?? 0}
                     externalIsLoading={isLoading}
                     containerWidth={containerWidth}

@@ -31,7 +31,8 @@ import {
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
 import { cn } from "@/lib/utils.ts";
 import { Link, useMatch, useNavigate } from "react-router-dom"
-import { isResourceFile, isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
+import { isResourceFile, isResourceMicrosoftOfficeDocument, isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
+import { isSupportedResourceInApp, useNavigateToResource } from '../../types/api-types/extra/learning-tool-id-types';
 
 const COLUMN_IDS = {
     select: "select",
@@ -113,14 +114,14 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
             },
             cell: ({ row }) => {
                 const original = row.original
-                const navigate = useNavigate()
+                const navigateToResource = useNavigateToResource()
                 return (
                     <Link to={root ? `${original.ElementId}` : `../${original.ElementId}`} onClick={(e) => {
                         if (original.ElementType === "Folder") return
                         e.stopPropagation()
                         e.preventDefault()
-                        if (isResourcePDFFromUrlOrElementType(original)) {
-                            navigate(`/documents/${original.ElementId}`)
+                        if (isSupportedResourceInApp(original)) {
+                            navigateToResource(original)
                         } else {
                             window.app.openExternal(original.ContentUrl)
                         }
@@ -169,7 +170,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
             enableHiding: false,
             cell: ({ row }) => {
                 const resource = row.original
-                const navigate = useNavigate()
+                const navigateToResource = useNavigateToResource()
 
                 return (
                     <DropdownMenu>
@@ -200,11 +201,13 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                                 >
                                     Download
                                 </DropdownMenuItem>)}
-                            {isResourcePDFFromUrlOrElementType(resource) && (
+                            {isSupportedResourceInApp(resource) && (
                                 <DropdownMenuItem
                                     onClick={async (e) => {
                                         e.stopPropagation()
-                                        navigate(`/documents/${resource.ElementId}`)
+                                        // documents/:elementId for pdfs
+                                        // office/:elementId for office documents
+                                        navigateToResource(resource)
                                     }}
                                 >
                                     Open In App

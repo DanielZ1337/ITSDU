@@ -27,9 +27,11 @@ import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/
 import NotificationUpdates from "./routes/notifications/notification-updates";
 import CourseAnnouncements from "./routes/course/course-announcements";
 import NotificationID from "./routes/notifications/notification-id";
-const Documents = lazy(() => import("./routes/documents"));
+const Documents = lazy(() => import("./routes/documents/documents"));
 import CourseAnnouncementError from "./routes/course/errors-pages/course-announcement-error";
 import CourseSchedule from "./routes/course/course-schedule";
+import OfficeDocument from "./routes/documents/office-document";
+import OtherFiles from "./routes/documents/other-files";
 
 const router = createHashRouter([
     {
@@ -41,6 +43,27 @@ const router = createHashRouter([
                 element: <Index />,
                 errorElement: <ErrorPage />,
                 index: true,
+            },
+            {
+                path: "/documents",
+                errorElement: <ErrorPage />,
+                children: [
+                    {
+                        path: "pdf/:elementId",
+                        element: <SuspenseWrapper><Documents /></SuspenseWrapper>,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "office/:elementId",
+                        element: <SuspenseWrapper><OfficeDocument /></SuspenseWrapper>,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "other/:elementId",
+                        element: <SuspenseWrapper><OtherFiles /></SuspenseWrapper>,
+                        errorElement: <ErrorPage />,
+                    }
+                ]
             },
             {
                 path: "/person/:id",
@@ -129,11 +152,6 @@ const router = createHashRouter([
                         errorElement: <ErrorPage />,
                     }
                 ],
-            },
-            {
-                path: "/documents/:elementId",
-                element: <SuspenseWrapper><Documents /></SuspenseWrapper>,
-                errorElement: <ErrorPage />,
             },
             {
                 path: "/profile",

@@ -31,10 +31,12 @@ function CodeBlock({
     return (
         <pre
             className={cn(
-                "bg-black relative flex w-full h-full overflow-hidden rounded-lg",
+                "relative flex w-full h-full overflow-hidden rounded-lg",
                 value && "border",
                 codeWrap && "whitespace-pre-wrap",
-                preClass
+                preClass,
+                //hsl(230, 1%, 98%)
+                resolvedTheme === "dark" ? "bg-black" : "bg-[#f6f8fa]",
             )}
 
             onMouseEnter={() => {

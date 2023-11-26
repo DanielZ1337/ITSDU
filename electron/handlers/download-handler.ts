@@ -2,8 +2,10 @@ import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
 import { download } from "electron-dl";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
-import { CreateScrapeWindow, getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
+import { CreateScrapeWindow, getCookiesForDomain as getCookiesFromDomain } from "../../electron/services/scrape/scraper.ts";
 import {
+    getMicrosoftOfficeDocumentAccessTokenAndUrl,
+    getResourceAsFile,
     getResourceDownloadLink,
     getResourceLinkByElementID,
     ITSLEARNING_RESOURCE_URL
@@ -64,7 +66,7 @@ async function getBlobFromUrl() {
         const win = CreateScrapeWindow()
         const ssoLink = await getResourceLinkByElementID(elementId)
         await win.loadURL(ssoLink)
-        const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+        const cookies = await getCookiesFromDomain(win, ITSLEARNING_RESOURCE_URL)
         const cookiesFormatted = getFormattedCookies(cookies)
         const resourceLink = await getResourceDownloadLink(ssoLink, win)
 
@@ -76,6 +78,34 @@ async function getBlobFromUrl() {
         })
 
         return data
+    })
+}
+
+async function getResourceAsFileHandler() {
+    ipcMain.handle('resources:get-file', async (_, elementId: string | number) => {
+        const win = CreateScrapeWindow()
+        const ssoLink = await getResourceLinkByElementID(elementId)
+        await win.loadURL(ssoLink)
+        const cookies = await getCookiesFromDomain(win, ITSLEARNING_RESOURCE_URL)
+        const resourceLink = await getResourceDownloadLink(ssoLink, win)
+        const resource = await getResourceAsFile(resourceLink, cookies)
+
+        return resource
+    })
+
+}
+
+async function getMicrosoftOfficeDocument() {
+    ipcMain.handle('resources:get-office-document', async (_, elementId: string | number) => {
+        try {
+            const win = CreateScrapeWindow()
+            const ssoLink = await getResourceLinkByElementID(elementId)
+            await win.loadURL(ssoLink)
+            const { downloadUrl, accessToken } = await getMicrosoftOfficeDocumentAccessTokenAndUrl(ssoLink)
+            return { downloadUrl, accessToken }
+        } catch (error) {
+            console.error(error)
+        }
     })
 }
 
@@ -101,7 +131,7 @@ function uploadDocumentForAI() {
 
         console.log('Getting cookies for AI')
 
-        const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+        const cookies = await getCookiesFromDomain(win, ITSLEARNING_RESOURCE_URL)
 
         const cookiesFormatted = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ')
 
@@ -114,26 +144,26 @@ function uploadDocumentForAI() {
         return uploadRes.status === 200
 
         /* console.log('Getting file for AI')
-
+ 
         // get the file as a file type
         const data = await getResourceAsFile(url, cookies)
-
+ 
         console.log('Got file for AI')
         console.log(data)
-
+ 
         // make a formdata and then a post request to localhost:3000/api/uploadFile
         const formData = new FormData()
         formData.append('file', new Blob([data.buffer]), data.name)
         formData.append('elementId', elementId)
-
+ 
         const uploadRes = await axios.post('http://itsdu.danielz.dev/api/uploadFile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         })
-
+ 
         if (!uploadRes.data.success) throw new Error('Could not upload file for AI')
-
+ 
         console.log('Uploaded file for AI') */
 
     })
@@ -221,4 +251,6 @@ export default function initDownloadHandlers() {
     downloadStartHandler()
     uploadDocumentForAI()
     getBlobFromUrl()
+    getMicrosoftOfficeDocument()
+    getResourceAsFileHandler()
 }

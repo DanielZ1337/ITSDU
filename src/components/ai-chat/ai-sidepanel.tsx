@@ -2,7 +2,7 @@ import { useAISidepanel } from '@/hooks/atoms/useAISidepanel';
 import { useUser } from '@/hooks/atoms/useUser';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Message from './message';
 import { Spinner } from '@nextui-org/spinner';
@@ -14,6 +14,7 @@ import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
 import { MessageType } from '@/types/ai-message';
 import { useInView } from 'react-intersection-observer';
 import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView';
+import { Textarea } from '../ui/textarea';
 
 export default function AISidePanel({ elementId }: { elementId: string | number }) {
     const { aiSidepanel } = useAISidepanel()
@@ -66,13 +67,42 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         uploadDocumentForAI()
     }, [elementExists, elementExistsLoading, elementId])
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent<HTMLTextAreaElement>) => {
         e.preventDefault()
         if (message.trim() === '' || messageIsLoading || !elementExists) return
         const newMessage = { content: message, role: 'user', timestamp: new Date() } as MessageType;
         setChatMessages(prev => [newMessage, ...prev])
         await chatCompletion()
     }
+
+
+
+    const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
+    const adjustTextAreaHeight = (e: React.ChangeEvent<HTMLTextAreaElement> | string) => {
+        if (textAreaRef.current) {
+            const message = typeof e === 'string' ? e : e.target.value;
+            // if the text area is empty, set the height to 10px
+            if (message.trim() === '') {
+                textAreaRef.current.style.height = '10px';
+            } else if (textAreaRef.current.scrollHeight > 38) {
+                textAreaRef.current.style.height = 'auto';
+                textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 'px';
+            }
+        }
+    }
+    const onMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setMessage(e.target.value)
+        adjustTextAreaHeight(e)
+    }
+
+    const textAreaOnKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault()
+            handleSubmit(e)
+        }
+    }
+
 
     const abortResponse = () => {
         if (abortController) {
@@ -159,6 +189,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             // Set the loading state to false
             setMessageIsLoading(false);
             setMessage('')
+            adjustTextAreaHeight('')
         }
     }
 
@@ -225,9 +256,14 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                         )}
                         <form onSubmit={handleSubmit}
                             className="flex shrink-0 flex-row items-center justify-between rounded-md space-x-2">
-                            <Input onChange={(e) => setMessage(e.target.value)} value={message}
+                            <Textarea onKeyDown={textAreaOnKeyDown}
+                                ref={textAreaRef}
+                                onChange={onMessageChange} value={message}
                                 disabled={messageIsLoading}
-                                placeholder="Type your message here..." />
+                                placeholder="Type your message here..."
+                                //match the height of the input to the height of the text area
+                                className="resize-y flex-1 min-h-10 h-10 max-h-40 overflow-y-auto"
+                            />
                             <Button disabled={!elementExists || messageIsLoading || message.trim() === ''}
                                 type="submit" className="ml-2 flex-shrink-0">
                                 Send

@@ -4,6 +4,7 @@ import { GET_ITSLEARNING_URL } from "../itslearning.ts";
 import { CreateScrapeWindow } from "../../scrape/scraper.ts";
 import { apiUrl } from "../../../../src/lib/utils.ts";
 import { AuthService } from "../auth/auth-service.ts";
+import { getFormattedCookies } from "../../../utils/cookies.ts";
 
 const ITSLEARNING_RESOURCE_SUBDOMAIN = 'resource'
 export const ITSLEARNING_RESOURCE_URL = GET_ITSLEARNING_URL(ITSLEARNING_RESOURCE_SUBDOMAIN)
@@ -42,11 +43,34 @@ export async function getResourceDownloadLink(url: string, customWin?: BrowserWi
     return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId);
 }
 
+export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(url: string, customWin?: BrowserWindow) {
+    const win = customWin || CreateScrapeWindow({
+        show: true,
+        webPreferences: {
+            nodeIntegration: true,
+            javascript: false,
+        }
+    })
+    await win.loadURL(url)
+    // document.getElementById('ctl00_ContentPlaceHolder_ExtensionIframe')
+    const iframeSrc = await win.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
+    await win.loadURL(iframeSrc)
+    // document.getElementById('ctl00_ctl00_MainFormContent_PreviewIframe_FilePreviewIframe')
+    const previewIframeSrc = await win.webContents.executeJavaScript(`document.querySelector('iframe').src`)
+    await win.loadURL(previewIframeSrc)
+    const accessToken = await win.webContents.executeJavaScript(`document.querySelector('input[name="access_token"]').value`)
+    const downloadUrl = await win.webContents.executeJavaScript(`document.querySelectorAll('form')[1].action`)
+    win.close()
+    if (!accessToken || !downloadUrl) throw new Error('Could not get microsoft office document')
+    return { accessToken, downloadUrl }
+}
+
 export async function getResourceAsFile(url: string, cookies: Cookie[]) {
     // fetch url with cookies
+    const cookiesFormatted = getFormattedCookies(cookies)
     const { data, headers } = await axios.get(url, {
         headers: {
-            Cookie: cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; '),
+            Cookie: cookiesFormatted,
         },
         responseType: 'arraybuffer'
     })
@@ -55,14 +79,15 @@ export async function getResourceAsFile(url: string, cookies: Cookie[]) {
     const contentDisposition = headers['content-disposition']
     const filenameMatch = contentDisposition && contentDisposition.match(/filename="([^"]+)"/)
     const filename = filenameMatch ? decodeURIComponent(filenameMatch[1]) : 'unknown'
+    const fileType = headers['content-type'] as string
 
     // turn it into a file type
-    const buffer = Buffer.from(data)
+    const arrayBuffer = Buffer.from(data)
     const file = {
-        buffer,
-        size: buffer.length,
+        arrayBuffer: arrayBuffer,
+        size: arrayBuffer.length,
         name: filename,
-        type: headers['content-type']
+        type: fileType,
     }
 
     return file

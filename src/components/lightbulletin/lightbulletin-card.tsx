@@ -17,7 +17,7 @@ import {
     ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import HoverDate from "../hover-date";
-import { isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
+import { isResourcePDFFromUrlOrElementType, isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesElementType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
 import { useCourse } from "@/hooks/atoms/useCourse";
 import { getPersonInitials } from "@/lib/utils";
@@ -34,6 +34,7 @@ export default function LightbulletinCard({ bulletin }: {
     const { toast } = useToast()
     const navigate = useNavigate()
     const { courseId } = useCourse()
+    const navigateToResource = useNavigateToResource(navigate)
 
     const { mutate, isLoading } = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
@@ -127,8 +128,8 @@ export default function LightbulletinCard({ bulletin }: {
                         <div
                             className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment"}
                             key={resource.ElementId} onClick={() => {
-                                if (isResourcePDFFromUrlOrElementType(resource)) {
-                                    navigate(`/documents/${resource.ElementId}`)
+                                if (isSupportedResourceInApp(resource)) {
+                                    navigateToResource(resource)
                                     // @ts-ignore
                                 } else if (resource.ElementType === ItslearningRestApiEntitiesElementType[ItslearningRestApiEntitiesElementType.Folder]) {
                                     navigate(`/courses/${courseId}/resources/${resource.ElementId}`)
