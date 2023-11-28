@@ -1,4 +1,4 @@
-import { BookCheck, BookCopy, ClipboardList, Users2 } from "lucide-react"
+import { BookCheck, BookCopy, ClipboardList, GanttChart, Users2 } from "lucide-react"
 import {
     AiOutlineCalendar,
     AiOutlineFile,
@@ -8,83 +8,109 @@ import {
     AiOutlineNotification
 } from "react-icons/ai"
 import { cn } from "./utils"
+import { NavigationType } from "@/types/navigation-link"
 
 const defaultNavLinkClassName = "h-4 w-4 3xl:w-5 3xl:h-5"
 
 export const navlinks = [
     {
-        name: 'Home',
+        title: 'Home',
         icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
-        to: '/',
-        end: true
+        href: '/',
+        end: true,
+        disabled: false
     },
     {
-        name: 'Updates',
+        title: 'Overview',
+        icon: <GanttChart className={cn("", defaultNavLinkClassName)} />,
+        href: '/overview',
+        end: true,
+        disabled: true
+    },
+    {
+        title: 'Updates',
         icon: <BookCheck className={cn("", defaultNavLinkClassName)} />,
-        to: '/updates',
-        end: true
+        href: '/updates',
+        end: true,
+        disabled: false
     },
     {
-        name: 'Calendar',
+        title: 'Calendar',
         icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
-        to: '/calendar',
-        end: true
+        href: '/calendar',
+        end: true,
+        disabled: false
     },
     {
-        name: 'Messages',
+        title: 'Messages',
         icon: <AiOutlineMessage className={cn("", defaultNavLinkClassName)} />,
-        to: '/messages',
-        end: true
+        href: '/messages',
+        end: true,
+        disabled: false
     },
     {
-        name: 'Courses',
+        title: 'Courses',
         icon: <BookCopy className={cn("", defaultNavLinkClassName)} />,
-        to: '/courses',
-        end: true
+        href: '/courses',
+        end: true,
+        disabled: false
     },
-] as const
+] as NavigationType[]
 
 export const courseNavLinks = [
     {
-        name: 'Overview',
+        title: 'Overview',
         icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
-        to: '.',
-        end: true
+        href: '.',
+        end: true,
+        disabled: false
     },
     {
-        name: 'Schedule',
+        title: 'Schedule',
         icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
-        to: 'schedule',
-        end: false
+        href: 'schedule',
+        end: false,
+        disabled: false
     },
     {
-        name: 'Announcements',
+        title: 'Announcements',
         icon: <AiOutlineNotification className={cn("", defaultNavLinkClassName)} />,
-        to: 'announcements',
-        end: false
+        href: 'announcements',
+        end: false,
+        disabled: false
     },
     {
-        name: 'Resources',
+        title: 'Resources',
         icon: <AiOutlineFile className={cn("", defaultNavLinkClassName)} />,
-        to: 'resources',
-        end: false
+        href: 'resources',
+        end: false,
+        disabled: false
     },
     {
-        name: 'Tasks',
+        title: 'Tasks',
         icon: <ClipboardList className={cn("", defaultNavLinkClassName)} />,
-        to: 'tasks',
-        end: false
+        href: 'tasks',
+        end: false,
+        disabled: false
     },
     {
-        name: 'Participants',
+        title: 'Participants',
         icon: <Users2 className={cn("", defaultNavLinkClassName)} />,
-        to: 'participants',
-        end: false
+        href: 'participants',
+        end: false,
+        disabled: false
     },
     {
-        name: 'Course Information',
+        title: 'Course Information',
         icon: <AiOutlineInfoCircle className={cn("", defaultNavLinkClassName)} />,
-        to: 'course-information',
-        end: false
+        href: 'course-information',
+        end: false,
+        disabled: false
     }
-] as const
+] as NavigationType[]
+
+export const combinedNavLinks = [
+    ...navlinks,
+    ...courseNavLinks
+] as NavigationType[]
+

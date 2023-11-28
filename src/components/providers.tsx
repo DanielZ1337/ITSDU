@@ -1,8 +1,9 @@
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {ThemeProvider} from "next-themes";
-import {HelmetProvider} from "react-helmet-async";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LazyMotion, domAnimation } from "framer-motion";
+import { ThemeProvider } from "next-themes";
+import { HelmetProvider } from "react-helmet-async";
 
-export default function Providers({children}: {
+export default function Providers({ children }: {
     children: React.ReactNode
 }) {
     const queryClient = new QueryClient({
@@ -23,7 +24,9 @@ export default function Providers({children}: {
             <ThemeProvider attribute={"class"} enableSystem>
                 <QueryClientProvider client={queryClient}>
                     {/*<div className={"overflow-x-auto"}>*/}
-                    {children}
+                    <LazyMotion features={domAnimation}>
+                        {children}
+                    </LazyMotion>
                     {/*</div>*/}
                 </QueryClientProvider>
             </ThemeProvider>

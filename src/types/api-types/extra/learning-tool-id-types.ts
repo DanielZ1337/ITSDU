@@ -3,8 +3,8 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
-import {NavigateFunction, useNavigate} from "react-router-dom";
+import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export enum LearningToolIdTypes {
     LINK = 50010,
@@ -14,11 +14,11 @@ export enum LearningToolIdTypes {
 
 // TODO: add mp4, mkv (maybe other video formats as well) + JPG, PNG, GIF, SVG, etc. (maybe other image formats as well)
 
-export function isResourceFile(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | number) {
-    if (typeof varToCompare === "number") {
-        return varToCompare === LearningToolIdTypes.FILE
+export function isResourceFile(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | number) {
+    if (typeof resource === "number") {
+        return resource === LearningToolIdTypes.FILE
     } else {
-        return varToCompare.LearningToolId === LearningToolIdTypes.FILE
+        return resource.LearningToolId === LearningToolIdTypes.FILE
     }
 }
 
@@ -35,15 +35,15 @@ enum IconTypesForResources {
 export function useNavigateToResource(navigater?: NavigateFunction) {
     const navigate = navigater || useNavigate()
 
-    const navigateToResource = (varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) => {
-        const elementId = typeof varToCompare === "number" || typeof varToCompare === "string" ? varToCompare : varToCompare.ElementId
-        if (isResourceMicrosoftOfficeDocument(varToCompare)) {
+    const navigateToResource = (resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) => {
+        const elementId = typeof resource === "number" || typeof resource === "string" ? resource : resource.ElementId
+        if (isResourceMicrosoftOfficeDocument(resource)) {
             navigate(`/documents/office/${elementId}`)
-        } else if (isResourcePDFFromUrlOrElementType(varToCompare)) {
+        } else if (isResourcePDFFromUrlOrElementType(resource)) {
             navigate(`/documents/pdf/${elementId}`)
-        } else {
+        } else if (isResourceWithFileExtension(resource)) {
             // check file extension
-            const fileName = typeof varToCompare === "number" || typeof varToCompare === "string" ? varToCompare : varToCompare.Title
+            const fileName = typeof resource === "number" || typeof resource === "string" ? resource : resource.Title
             const fileExtension = getFileExtension(String(fileName))
             /* switch (fileExtension) {
                 case FileExtensionTypes.TXT:
@@ -66,6 +66,10 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
                     break;
             } */
             navigate(`/documents/other/${elementId}`)
+        } else {
+            if (typeof resource === "number") return
+            const url = typeof resource === "string" ? resource : resource.Url
+            window.app.openExternal(url, true)
         }
     }
 
@@ -89,13 +93,13 @@ enum FileExtensionTypes {
     // Add more file extensions here
 }
 
-export function isResourceWithFileExtension(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourceWithFileExtension(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
     const fileExtensions = Object.values(FileExtensionTypes) as string[];
-    if (typeof varToCompare === "number" || typeof varToCompare === "string") {
-        const fileExtension = getFileExtension(String(varToCompare));
+    if (typeof resource === "number" || typeof resource === "string") {
+        const fileExtension = getFileExtension(String(resource));
         return fileExtensions.includes(fileExtension);
     } else {
-        const fileExtension = getFileExtension(varToCompare.Title);
+        const fileExtension = getFileExtension(resource.Title);
         return fileExtensions.includes(fileExtension);
     }
 }
@@ -105,31 +109,31 @@ function getFileExtension(fileName: string) {
     return fileName.substring(lastDotIndex + 1).toLowerCase();
 }
 
-export function isSupportedResourceInApp(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
-    return isResourceMicrosoftOfficeDocument(varToCompare) || isResourcePDFFromUrlOrElementType(varToCompare) || isResourceWithFileExtension(varToCompare);
+export function isSupportedResourceInApp(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+    return isResourceMicrosoftOfficeDocument(resource) || isResourcePDFFromUrlOrElementType(resource) || isResourceWithFileExtension(resource);
 }
 
-export function isResourceMicrosoftOfficeDocument(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourceMicrosoftOfficeDocument(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
     // IconTypeId 1, 2 and 3 are DOCX, XLSX and PPTX respectively (this is the only way to find out whether or not a resource is a Microsoft Office Document)
     const OfficeDocumentIconTypeIds = [IconTypesForResources.DOCX, IconTypesForResources.XLSX, IconTypesForResources.PPTX];
-    if (typeof varToCompare === "number") {
-        return OfficeDocumentIconTypeIds.includes(varToCompare)
-    } else if (typeof varToCompare === "string") {
-        return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(varToCompare))
+    if (typeof resource === "number") {
+        return OfficeDocumentIconTypeIds.includes(resource)
+    } else if (typeof resource === "string") {
+        return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource))
     } else {
-        return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(varToCompare.IconUrl));
+        return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource.IconUrl));
     }
 }
 
-export function isResourcePDFFromUrlOrElementType(varToCompare: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourcePDFFromUrlOrElementType(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
     // IconTypeId 12 is PDF (this is the only way to find out whether or not a resource is a PDF)
     const IconTypeId = IconTypesForResources.PDF;
-    if (typeof varToCompare === "number") {
-        return varToCompare === IconTypeId
-    } else if (typeof varToCompare === "string") {
-        return getIconTypeIdFromUrl(varToCompare) === IconTypeId
+    if (typeof resource === "number") {
+        return resource === IconTypeId
+    } else if (typeof resource === "string") {
+        return getIconTypeIdFromUrl(resource) === IconTypeId
     } else {
-        return getIconTypeIdFromUrl(varToCompare.IconUrl) === IconTypeId;
+        return getIconTypeIdFromUrl(resource.IconUrl) === IconTypeId;
     }
 }
 

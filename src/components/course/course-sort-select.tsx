@@ -1,16 +1,17 @@
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select.tsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select.tsx";
 import {
+    CourseCardsSortByTypes,
     CourseCardsSortByTypesConst,
     CourseCardsSortByTypesLabels
 } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
 
 export default function CourseSortSelect({
-                                             selectedRankedBy,
-                                             setSelectedRankedBy,
-                                         }: {
-    selectedRankedBy: string
+    selectedRankedBy,
+    setSelectedRankedBy,
+}: {
+    selectedRankedBy: CourseCardsSortByTypes
     // eslint-disable-next-line no-unused-vars
-    setSelectedRankedBy: (value: string) => void
+    setSelectedRankedBy: (courseType: CourseCardsSortByTypes) => void
 }) {
     return (
         <Select onValueChange={setSelectedRankedBy} value={selectedRankedBy}>
