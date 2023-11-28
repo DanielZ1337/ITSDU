@@ -1,15 +1,14 @@
-import React, { Suspense, useEffect, useState } from "react";
-import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
-import { Badge } from "@/components/ui/badge.tsx";
-import { BellOff, BellRing, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx";
+import React, {Suspense, useEffect, useState} from "react";
+import {BsChatSquareTextFill, BsFileEarmarkFill} from "react-icons/bs";
+import {Badge} from "@/components/ui/badge.tsx";
+import {BellOff, BellRing, Loader2} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx";
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
-import { useToast } from "@/components/ui/use-toast.ts";
+import {useToast} from "@/components/ui/use-toast.ts";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbulletinResources.ts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
-import { Link, useNavigate } from "react-router-dom";
+import {Link} from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
 import Linkify from "linkify-react";
 import renderLink from "../custom-render-link-linkify";
@@ -17,30 +16,29 @@ import {
     ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import HoverDate from "../hover-date";
-import { isResourcePDFFromUrlOrElementType, isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
-import { ItslearningRestApiEntitiesElementType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
-import { useCourse } from "@/hooks/atoms/useCourse";
-import { getPersonInitials } from "@/lib/utils";
+import {useCourse} from "@/hooks/atoms/useCourse";
 import LightbulletinAvatar from "./lightbulletin-avatar";
+import LightbulletinResource from "./lightbulletin-resource";
+import LightbulletinLinkPreview from "./lightbulletin-link-preview";
+import {LinkifyType} from "@/types/linkify";
 
-export default function LightbulletinCard({ bulletin }: {
+export default function LightbulletinCard({bulletin, links}: {
     bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
+    links?: LinkifyType[]
 }) {
     const [readMore, setReadMore] = useState(false);
     const [hasReadMore, setHasReadMore] = useState<boolean>(false)
     const textRef = React.useRef<HTMLPreElement>(null);
     const [showComments, setShowComments] = useState<boolean>(false)
     const [showResources, setShowResources] = useState<boolean>(false)
-    const { toast } = useToast()
-    const navigate = useNavigate()
-    const { courseId } = useCourse()
-    const navigateToResource = useNavigateToResource(navigate)
+    const {toast} = useToast()
+    const {courseId} = useCourse()
 
-    const { mutate, isLoading } = usePUTlightbulletinNotifications({
+    const {mutate, isLoading} = usePUTlightbulletinNotifications({
         lightbulletinId: bulletin.LightBulletinId,
     })
 
-    const { data: Resources } = useGETlightbulletinResources({
+    const {data: Resources} = useGETlightbulletinResources({
         bulletinId: bulletin.LightBulletinId,
     }, {
         enabled: bulletin.ResourcesCount > 0,
@@ -54,11 +52,10 @@ export default function LightbulletinCard({ bulletin }: {
         }, 1000)
     }, []);
 
-
     return (
         <div data-marginonpublished={bulletin.Text.split("\n").length > 1} data-readmore={readMore}
-            data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
-            className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[readmore=true]:dark:hover:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 data-[readmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
+             data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
+             className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[readmore=true]:dark:hover:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 data-[readmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5">
             <div className="flex justify-between">
                 <div className="flex items-center space-x-2">
                     <LightbulletinAvatar
@@ -74,7 +71,7 @@ export default function LightbulletinCard({ bulletin }: {
                                 {bulletin.PublishedBy.FullName}{' '}
                             </Link>
                         </PersonHoverCard>
-                        <HoverDate date={bulletin.PublishedDate} />
+                        <HoverDate date={bulletin.PublishedDate}/>
                     </div>
                 </div>
                 <Button
@@ -108,41 +105,39 @@ export default function LightbulletinCard({ bulletin }: {
                     variant={"secondary"}
                     className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                     {bulletin.IsSubscribed ? (
-                        <BellRing className={"stroke-success w-6 h-6"} />
+                        <BellRing className={"stroke-success w-6 h-6"}/>
                     ) : (
-                        <BellOff className={"stroke-destructive w-6 h-6"} />
+                        <BellOff className={"stroke-destructive w-6 h-6"}/>
                     )}
                 </Button>
             </div>
-            <pre ref={textRef} onClick={() => {
-                setReadMore(!readMore)
-            }}
-                className={"py-4 text-wrap font-sans font-normal group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
-                <Linkify options={{ render: renderLink }}>
+            <Linkify options={{render: renderLink}}
+            >
+                <span
+                    ref={textRef}
+                    onClick={() => setReadMore(prev => !prev)}
+                    className={"py-4 whitespace-pre text-wrap font-sans font-normal group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=false]:group-data-[readmore=true]:cursor-pointer group-data-[hasreadmore=true]:group-data-[readmore=false]:cursor-pointer"}>
                     {bulletin.Text}
-                </Linkify>
-            </pre>
+                </span>
+            </Linkify>
+            {links && links.length > 0 && (
+                <div className="mb-4 flex flex-col rounded-lg p-2 space-y-4">
+                    {links.map((link) => (
+                        <Suspense key={link.href} fallback={<Loader2
+                            className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>}>
+                            <LightbulletinLinkPreview key={link.href} href={link.value} title={link.value}/>
+                        </Suspense>
+                    ))}
+                </div>
+            )}
+            {/* <div
+                className={"w-full items-center justify-center flex flex-col gap-4 truncate text-lg group-data-[readmore=false]:hidden group-data-[readmore=true]:flex"}>
+                <OgImagePreview url={links[links.length - 1]} />
+            </div> */}
             {showResources && (
                 <div className="mt-4 mb-4 flex flex-col rounded-lg p-2 space-y-4">
                     {Resources!.EntityArray.map((resource) => (
-                        <div
-                            className={"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment"}
-                            key={resource.ElementId} onClick={() => {
-                                if (isSupportedResourceInApp(resource)) {
-                                    navigateToResource(resource)
-                                    // @ts-ignore
-                                } else if (resource.ElementType === ItslearningRestApiEntitiesElementType[ItslearningRestApiEntitiesElementType.Folder]) {
-                                    navigate(`/courses/${courseId}/resources/${resource.ElementId}`)
-                                } else {
-                                    window.app.openExternal(resource.ContentUrl, true)
-                                }
-                            }}>
-                            <div
-                                className="flex items-center p-2 text-blue-500 group-hover/attachment:text-blue-600 space-x-2">
-                                <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
-                                <span className="truncate">{resource.Title}</span>
-                            </div>
-                        </div>
+                        <LightbulletinResource key={resource.ElementId} resource={resource} courseId={courseId!}/>
                     ))}
                 </div>
             )}
@@ -150,12 +145,12 @@ export default function LightbulletinCard({ bulletin }: {
                 <>
                     {bulletin.CommentsCount > 0 && (
                         <Suspense fallback={
-                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"} />
+                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"}/>
                         }>
-                            <LightbulletinComments lightbulletinId={bulletin.LightBulletinId} />
+                            <LightbulletinComments lightbulletinId={bulletin.LightBulletinId}/>
                         </Suspense>
                     )}
-                    <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId} />
+                    <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId}/>
                 </>
             )}
             <div className="mt-2 flex gap-4 truncate text-lg">
@@ -165,7 +160,7 @@ export default function LightbulletinCard({ bulletin }: {
                     variant={"purple"}
                 >
                     {bulletin.CommentsCount}
-                    <BsChatSquareTextFill className={"mt-1"} />
+                    <BsChatSquareTextFill className={"mt-1"}/>
                 </Badge>
                 {/*)}*/}
                 {bulletin.ResourcesCount > 0 && (
@@ -174,7 +169,7 @@ export default function LightbulletinCard({ bulletin }: {
                         variant={"purple"}
                     >
                         {bulletin.ResourcesCount}
-                        <BsFileEarmarkFill />
+                        <BsFileEarmarkFill/>
                     </Badge>
                 )}
             </div>

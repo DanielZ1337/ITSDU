@@ -1,37 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Check, ChevronsUpDown } from "lucide-react"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import {Check, ChevronsUpDown} from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-} from "@/components/ui/command"
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { toast } from "@/components/ui/use-toast"
+import {cn} from "@/lib/utils"
+import {Button} from "@/components/ui/button"
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem,} from "@/components/ui/command"
+import {Popover, PopoverContent, PopoverTrigger,} from "@/components/ui/popover"
+import {toast} from "@/components/ui/use-toast"
 import React from "react"
 
 const languages = [
-    { label: "English", value: "en" },
-    { label: "Danish", value: "dk" },
+    {label: "English", value: "en"},
+    {label: "Danish", value: "dk"},
     // { label: "French", value: "fr" },
     // { label: "German", value: "de" },
     // { label: "Spanish", value: "es" },
@@ -42,7 +20,7 @@ const languages = [
     // { label: "Chinese", value: "zh" },
 ] as const
 
-export function LanguageCombobox({ disabled }: { disabled?: boolean }) {
+export function LanguageCombobox({disabled}: { disabled?: boolean }) {
 
     const [field, setField] = React.useState<typeof languages[number]>(languages[0])
 
@@ -64,14 +42,14 @@ export function LanguageCombobox({ disabled }: { disabled?: boolean }) {
                             (language) => language.value === field.value
                         )?.label
                         : "Select language"}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="p-0 w-[200px]">
                 <Command
                     className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200"
                 >
-                    <CommandInput placeholder="Search language..." />
+                    <CommandInput placeholder="Search language..."/>
                     <CommandEmpty>No language found.</CommandEmpty>
                     <CommandGroup>
                         {languages.map((language) => (

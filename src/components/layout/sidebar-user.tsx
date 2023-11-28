@@ -1,7 +1,5 @@
-import { useUser } from "@/hooks/atoms/useUser"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {useUser} from "@/hooks/atoms/useUser"
 import SettingsDropdown from "@/components/settings/settings-dropdown"
-import { getPersonInitials } from "@/lib/utils"
 import ProfileAvatar from "../profile-avatar"
 
 export default function SidebarUser() {
@@ -21,7 +19,7 @@ export default function SidebarUser() {
                 <div className="pr-4 leading-4">
                     <h4 className="whitespace-pre-wrap break-all font-semibold line-clamp-1">{user?.FullName}</h4>
                 </div>
-                <SettingsDropdown />
+                <SettingsDropdown/>
             </div>
         </>
     )

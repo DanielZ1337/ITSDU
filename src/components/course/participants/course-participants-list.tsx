@@ -1,11 +1,9 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
-import { GETcourseParticipants } from "@/types/api-types/courses/GETcourseParticipants";
-import { getPersonInitials } from "@/lib/utils";
+import {GETcourseParticipants} from "@/types/api-types/courses/GETcourseParticipants";
 import ProfileAvatar from "@/components/profile-avatar";
 
-export default function CourseParticipantsList({ participants }: { participants: GETcourseParticipants["EntityArray"] }) {
+export default function CourseParticipantsList({participants}: { participants: GETcourseParticipants["EntityArray"] }) {
 
 
     if (participants.length === 0) {

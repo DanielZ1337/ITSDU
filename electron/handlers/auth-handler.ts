@@ -1,10 +1,11 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { store_keys } from '../services/itslearning/auth/types/store_keys.ts';
-import { CreateScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
+import { CreateScrapeWindow, getCookiesForDomain, scrapePage } from '../services/scrape/scraper';
 import { getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL } from "../services/itslearning/resources/resources.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
 import { createAuthWindow } from "../../electron/main.ts";
+import axios from "axios";
 
 const authService = AuthService.getInstance()
 
@@ -58,7 +59,29 @@ function logoutHandler() {
     });
 }
 
+function scrapePageHandler() {
+    ipcMain.handle('scrape-page', async (_, url) => {
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    responseType: "text",
+                    "User-Agent": "Mozilla/5.0 (compatible; Googlebot/2.1; https://www.google.com/bot.html)",
+                },
+                timeout: 1000,
+            });
+
+            const { data, status, statusText } = response
+
+            return { data, status, statusText }
+        } catch (error) {
+            console.error(error)
+            return null
+        }
+    })
+}
+
 export default function initAuthIpcHandlers() {
+    scrapePageHandler()
     getTokenHandler()
     setTokenHandler()
     deleteTokenHandler()

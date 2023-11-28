@@ -1,4 +1,4 @@
-import { BookCheck, ClipboardList, Users2 } from "lucide-react"
+import { BookCheck, BookCopy, ClipboardList, Users2 } from "lucide-react"
 import {
     AiOutlineCalendar,
     AiOutlineFile,
@@ -7,36 +7,39 @@ import {
     AiOutlineMessage,
     AiOutlineNotification
 } from "react-icons/ai"
+import { cn } from "./utils"
+
+const defaultNavLinkClassName = "h-4 w-4 3xl:w-5 3xl:h-5"
 
 export const navlinks = [
     {
         name: 'Home',
-        icon: <AiOutlineHome className="h-4 w-4" />,
+        icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
         to: '/',
         end: true
     },
     {
-        name: 'Courses',
-        icon: <AiOutlineHome className="h-4 w-4" />,
-        to: '/courses',
-        end: true
-    },
-    {
         name: 'Updates',
-        icon: <BookCheck className="h-4 w-4" />,
+        icon: <BookCheck className={cn("", defaultNavLinkClassName)} />,
         to: '/updates',
         end: true
     },
     {
         name: 'Calendar',
-        icon: <AiOutlineCalendar className="h-4 w-4" />,
+        icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
         to: '/calendar',
         end: true
     },
     {
         name: 'Messages',
-        icon: <AiOutlineMessage className="h-4 w-4" />,
+        icon: <AiOutlineMessage className={cn("", defaultNavLinkClassName)} />,
         to: '/messages',
+        end: true
+    },
+    {
+        name: 'Courses',
+        icon: <BookCopy className={cn("", defaultNavLinkClassName)} />,
+        to: '/courses',
         end: true
     },
 ] as const
@@ -44,43 +47,43 @@ export const navlinks = [
 export const courseNavLinks = [
     {
         name: 'Overview',
-        icon: <AiOutlineHome className="h-4 w-4" />,
+        icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
         to: '.',
         end: true
     },
     {
         name: 'Schedule',
-        icon: <AiOutlineCalendar className="h-4 w-4" />,
+        icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
         to: 'schedule',
         end: false
     },
     {
         name: 'Announcements',
-        icon: <AiOutlineNotification className="h-4 w-4" />,
+        icon: <AiOutlineNotification className={cn("", defaultNavLinkClassName)} />,
         to: 'announcements',
         end: false
     },
     {
         name: 'Resources',
-        icon: <AiOutlineFile className="h-4 w-4" />,
+        icon: <AiOutlineFile className={cn("", defaultNavLinkClassName)} />,
         to: 'resources',
         end: false
     },
     {
         name: 'Tasks',
-        icon: <ClipboardList className="h-4 w-4" />,
+        icon: <ClipboardList className={cn("", defaultNavLinkClassName)} />,
         to: 'tasks',
         end: false
     },
     {
         name: 'Participants',
-        icon: <Users2 className="h-4 w-4" />,
+        icon: <Users2 className={cn("", defaultNavLinkClassName)} />,
         to: 'participants',
         end: false
     },
     {
         name: 'Course Information',
-        icon: <AiOutlineInfoCircle className="h-4 w-4" />,
+        icon: <AiOutlineInfoCircle className={cn("", defaultNavLinkClassName)} />,
         to: 'course-information',
         end: false
     }

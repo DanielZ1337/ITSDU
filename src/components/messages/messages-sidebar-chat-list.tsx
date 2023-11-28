@@ -1,19 +1,17 @@
 import useGETinstantMessagesv2 from '@/queries/messages/useGETinstantMessagesv2';
-import { useInView } from 'framer-motion';
-import { useEffect, useRef } from 'react'
 import MessagesSidebarChat from './messages-sidebar-chat';
 import MessageSidebarChatFallback from './fallbacks/message-sidebar-chat-fallback';
-import { useUser } from '@/hooks/atoms/useUser.ts'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 import {
     ItslearningRestApiEntitiesInstantMessageThread
 } from '@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread';
 import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView';
 
-export default function MessagesSidebarChatList({ query }: { query: string }) {
+export default function MessagesSidebarChatList({query}: { query: string }) {
 
     const user = useUser()
 
-    const { data: messages, fetchNextPage, isFetchingNextPage, hasNextPage } = useGETinstantMessagesv2({
+    const {data: messages, fetchNextPage, isFetchingNextPage, hasNextPage} = useGETinstantMessagesv2({
         maxMessages: 1,
         threadPage: 0,
         maxThreadCount: 10,
@@ -53,11 +51,11 @@ export default function MessagesSidebarChatList({ query }: { query: string }) {
 
             {isFetchingNextPage && (
                 <div className={"animate-in slide-in-from-left-32"}>
-                    <MessageSidebarChatFallback />
+                    <MessageSidebarChatFallback/>
                 </div>
             )}
 
-            {hasNextPage && <div ref={ref} />}
+            {hasNextPage && <div ref={ref}/>}
         </div>
     )
 }

@@ -1,23 +1,23 @@
-import { ArrowLeftToLine, ArrowRightToLine, ChevronDown, ChevronUp, DownloadIcon, Loader2, RotateCw, Search, } from 'lucide-react'
-import { Document, Page, pdfjs } from 'react-pdf'
+import {ChevronDown, ChevronUp, DownloadIcon, Loader2, RotateCw, Search,} from 'lucide-react'
+import {Document, Page, pdfjs} from 'react-pdf'
 
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
-import { useToast } from '@/components/ui/use-toast'
+import {useToast} from '@/components/ui/use-toast'
 
-import { useResizeDetector } from 'react-resize-detector'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import {useResizeDetector} from 'react-resize-detector'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {useEffect, useMemo, useRef, useState} from 'react'
 
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import {useForm} from 'react-hook-form'
+import {z} from 'zod'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { cn } from '@/lib/utils'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from '@/components/ui/dropdown-menu'
+import {zodResolver} from '@hookform/resolvers/zod'
+import {cn} from '@/lib/utils'
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from '@/components/ui/dropdown-menu'
 import PdfFullscreen from './pdf-fullscreen'
-import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
+import {useAISidepanel} from '@/hooks/atoms/useAISidepanel'
 import AISidepanelButton from '../ai-chat/ai-sidepanel-button'
 
 // import SimpleBar from 'simplebar-react'
@@ -33,10 +33,16 @@ interface PdfRendererProps {
     containerHeight?: number | null
 }
 
-export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, containerWidth, containerHeight }: PdfRendererProps) {
-    const { toast } = useToast()
+export default function PdfRenderer({
+                                        url,
+                                        externalIsLoading,
+                                        aiSidepanelWidth,
+                                        containerWidth,
+                                        containerHeight
+                                    }: PdfRendererProps) {
+    const {toast} = useToast()
 
-    const { aiSidepanel, toggleSidebar } = useAISidepanel()
+    const {aiSidepanel, toggleSidebar} = useAISidepanel()
     const [numPages, setNumPages] = useState<number>()
     const [currPage, setCurrPage] = useState<number>(1)
     const [scale, setScale] = useState<number>(1)
@@ -47,7 +53,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
 
     const [pageHeight, setPageHeight] = useState<number | null>(null)
     const [pageWidth, setPageWidth] = useState<number | null>(null)
-    const { height: toolbarHeight, ref: toolbarRef } = useResizeDetector()
+    const {height: toolbarHeight, ref: toolbarRef} = useResizeDetector()
 
     console.log('containerHeight', containerHeight)
     console.log('containerWidth', containerWidth)
@@ -99,7 +105,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
         setValue,
     } = useForm<TCustomPageValidator>({
         defaultValues: {
@@ -113,8 +119,8 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
     console.log(errors)
 
     const handlePageSubmit = ({
-        page,
-    }: TCustomPageValidator) => {
+                                  page,
+                              }: TCustomPageValidator) => {
         setCurrPage(Number(page))
         setValue('page', String(page))
     }
@@ -178,10 +184,10 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
 
     return (
         <div className='flex h-full w-full flex-col items-center shadow bg-background'
-            ref={ref}
+             ref={ref}
         >
             <div className='flex h-14 w-full items-center justify-between border-b px-2'
-                ref={toolbarRef}
+                 ref={toolbarRef}
             >
                 <div className='flex items-center gap-1.5'>
                     <Button
@@ -189,7 +195,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                         onClick={handlePageDecrease}
                         variant='ghost'
                         aria-label='previous page'>
-                        <ChevronDown className='h-4 w-4' />
+                        <ChevronDown className='h-4 w-4'/>
                     </Button>
 
                     <div className='flex items-center gap-1.5'>
@@ -219,7 +225,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                         onClick={handlePageIncrease}
                         variant='ghost'
                         aria-label='next page'>
-                        <ChevronUp className='h-4 w-4' />
+                        <ChevronUp className='h-4 w-4'/>
                     </Button>
                 </div>
 
@@ -230,9 +236,9 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                                 className='gap-1.5'
                                 aria-label='zoom'
                                 variant='ghost'>
-                                <Search className='h-4 w-4' />
+                                <Search className='h-4 w-4'/>
                                 {scale * 100}%
-                                <ChevronDown className='h-3 w-3 opacity-50' />
+                                <ChevronDown className='h-3 w-3 opacity-50'/>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -259,7 +265,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                         onClick={() => setRotation((prev) => prev + 90)}
                         variant='ghost'
                         aria-label='rotate 90 degrees'>
-                        <RotateCw className='h-4 w-4' />
+                        <RotateCw className='h-4 w-4'/>
                     </Button>
                     <Button asChild variant={'ghost'}>
                         <a
@@ -268,11 +274,11 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                             className='flex items-center gap-1.5'
                             aria-label='download'
                         >
-                            <DownloadIcon className='h-4 w-4' />
+                            <DownloadIcon className='h-4 w-4'/>
                         </a>
                     </Button>
-                    <PdfFullscreen fileUrl={url} />
-                    <AISidepanelButton />
+                    <PdfFullscreen fileUrl={url}/>
+                    <AISidepanelButton/>
                 </div>
             </div>
 
@@ -282,11 +288,11 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
             >
                 {externalIsLoading ? (
                     <div className='flex h-full w-full justify-center'>
-                        <Loader2 className='m-auto h-8 w-8 animate-spin' />
+                        <Loader2 className='m-auto h-8 w-8 animate-spin'/>
                     </div>
                 ) : (
                     <Document
-                        loading={<Loader2 className='m-auto h-8 w-8 animate-spin' />}
+                        loading={<Loader2 className='m-auto h-8 w-8 animate-spin'/>}
                         onLoadError={() => {
                             toast({
                                 title: 'Error loading PDF',
@@ -294,7 +300,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                                 variant: 'destructive',
                             })
                         }}
-                        onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                        onLoadSuccess={({numPages}) => setNumPages(numPages)}
                         file={url}
                         className={cn('w-full h-full flex flex-col overflow-y-auto overflow-x-hidden items-center max-h-full', isLoading && 'justify-center')}>
                         {isLoading && renderedScale ? (
@@ -316,7 +322,7 @@ export default function PdfRenderer({ url, externalIsLoading, aiSidepanelWidth, 
                                 key={'@' + scale}
                                 loading={
                                     <div className='flex justify-center'>
-                                        <Loader2 className='my-24 h-8 w-8 animate-spin' />
+                                        <Loader2 className='my-24 h-8 w-8 animate-spin'/>
                                     </div>
                                 }
                                 onRenderSuccess={(page) => {

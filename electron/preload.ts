@@ -96,6 +96,13 @@ contextBridge.exposeInMainWorld('resources', {
     }
 })
 
+contextBridge.exposeInMainWorld('scrape', {
+    get: async (url: string) => {
+        const { data, status } = await ipcRenderer.invoke('scrape-page', url)
+        return { data, status }
+    }
+})
+
 // edit window object and type definition
 declare global {
     // eslint-disable-next-line no-unused-vars
@@ -157,6 +164,9 @@ declare global {
         cookies: {
             get: (elementId: number | string) => Promise<string>
         },
+        scrape: {
+            get: (url: string) => Promise<{ data: string, status: number, statusText: string } | null>
+        }
     }
 }
 

@@ -1,10 +1,8 @@
 import useGETperson from "@/queries/person/useGETperson.ts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
-import { getPersonInitials } from "@/lib/utils";
 import ProfileAvatar from "../profile-avatar";
 
-export function PersonInfo({ personId }: { personId: number }) {
-    const { data: person } = useGETperson({
+export function PersonInfo({personId}: { personId: number }) {
+    const {data: person} = useGETperson({
         personId
     }, {
         suspense: true,

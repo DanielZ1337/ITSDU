@@ -1,5 +1,5 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
-import { TanstackKeys } from '../../types/tanstack-keys';
+import {useQuery, UseQueryOptions} from '@tanstack/react-query';
+import {TanstackKeys} from '../../types/tanstack-keys';
 
 type OfficeDocument = {
     accessToken: string

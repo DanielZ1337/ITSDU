@@ -1,10 +1,9 @@
-import { useUser } from "@/hooks/atoms/useUser"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar"
-import { MessageRole } from "@/types/api-types/AI/GETpreviousMessages"
-import { getPersonInitials } from "@/lib/utils"
+import {useUser} from "@/hooks/atoms/useUser"
+import {MessageRole} from "@/types/api-types/AI/GETpreviousMessages"
+import {getPersonInitials} from "@/lib/utils"
 import ProfileAvatar from "../profile-avatar"
 
-export default function MessageAvatar({ role }: { role: MessageRole }) {
+export default function MessageAvatar({role}: { role: MessageRole }) {
     const user = useUser()!
 
     const src = role === "user" ? user?.ProfileImageUrl : "itsl-itslearning-file://icon.ico"

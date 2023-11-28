@@ -23,6 +23,12 @@ export default function useResourceByElementID(elementId: number | string, query
         const stream = blob.stream()
         return { ...file, url, text, stream, blob }
     }, {
-        ...queryConfig
+        ...queryConfig,
+        // complete caching of resources
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchIntervalInBackground: false,
     })
 }

@@ -1,8 +1,10 @@
-import { calculateShadowPosition } from "@/components/scroll-shadow";
-import { useCallback, useEffect } from "react";
+import {calculateShadowPosition} from "@/components/scroll-shadow";
+import {useCallback, useEffect} from "react";
 
 export function useMeasureScrollPosition(viewportRef?: React.RefObject<HTMLDivElement>, onChange?: (position: ShadowPosition) => void) {
-    const measureScrollHeight = useCallback(() => { onChange?.(calculateShadowPosition(viewportRef)) }, [onChange, viewportRef]);
+    const measureScrollHeight = useCallback(() => {
+        onChange?.(calculateShadowPosition(viewportRef))
+    }, [onChange, viewportRef]);
 
 
     useEffect(() => {

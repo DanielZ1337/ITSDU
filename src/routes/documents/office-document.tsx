@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useOfficeDocumentByElementId from '../../queries/resources/useOfficeDocumentByElementID';
 
@@ -65,7 +65,7 @@ export default function OfficeDocument() {
 
     if (isLoading || !data) {
         return (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex h-full items-center justify-center">
                 <Loader2 className={"stroke-foreground shrink-0 h-8 w-8 animate-spin m-auto"} />
             </div>
         )
@@ -78,7 +78,7 @@ export default function OfficeDocument() {
     }
 
     return (
-        <div id="ctl00_MainFormContent_FileRepoViewer_ctl00" className="w-full h-full">
+        <div id="ctl00_MainFormContent_FileRepoViewer_ctl00" className="h-full w-full">
             {/* {!isLoading && !error && accessToken && downloadUrl && (
                 <iframe
                     name="office_frame"
@@ -93,4 +93,4 @@ export default function OfficeDocument() {
             )} */}
         </div>
     );
-};
+}

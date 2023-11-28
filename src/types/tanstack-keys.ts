@@ -27,6 +27,7 @@ export enum TanstackKeys {
     LightbulletinNotifications = "lightbulletinNotifications",
     LightbulletinResources = "lightbulletinResources",
     LightbulletinsForCourse = "lightbulletinsForCourse",
+    LinkOGPreview = "linkOGPreview",
     Messages = "messages",
     MessagesRecipientsSearch = "messagesRecipientsSearch",
     Messagesv2 = "messagesv2",

@@ -1,23 +1,21 @@
-import { useAISidepanel } from '@/hooks/atoms/useAISidepanel';
-import { useUser } from '@/hooks/atoms/useUser';
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import {useAISidepanel} from '@/hooks/atoms/useAISidepanel';
+import {useUser} from '@/hooks/atoms/useUser';
+import {cn} from '@/lib/utils';
+import {Loader2} from 'lucide-react';
+import {useEffect, useMemo, useRef, useState} from 'react';
+import {motion} from 'framer-motion';
 import Message from './message';
-import { Spinner } from '@nextui-org/spinner';
-import { BsStopCircleFill } from 'react-icons/bs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import {Spinner} from '@nextui-org/spinner';
+import {BsStopCircleFill} from 'react-icons/bs';
+import {Button} from '@/components/ui/button';
 import useGETcheckElementID from '@/queries/AI/useGETcheckElementID';
 import useGETpreviousMessages from '@/queries/AI/useGETpreviousMessages';
-import { MessageType } from '@/types/ai-message';
-import { useInView } from 'react-intersection-observer';
+import {MessageType} from '@/types/ai-message';
 import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView';
-import { Textarea } from '../ui/textarea';
+import {Textarea} from '../ui/textarea';
 
-export default function AISidePanel({ elementId }: { elementId: string | number }) {
-    const { aiSidepanel } = useAISidepanel()
+export default function AISidePanel({elementId}: { elementId: string | number }) {
+    const {aiSidepanel} = useAISidepanel()
     const user = useUser()!
 
     const [message, setMessage] = useState<string>('')
@@ -28,7 +26,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const [refetchCount, setRefetchCount] = useState<number>(0)
     const [error, setError] = useState<string | null>(null)
 
-    const { data: elementExists, isLoading: elementExistsLoading, refetch } = useGETcheckElementID(elementId, {
+    const {data: elementExists, isLoading: elementExistsLoading, refetch} = useGETcheckElementID(elementId, {
         enabled: aiSidepanel,
     })
 
@@ -70,11 +68,10 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement, MouseEvent> | React.KeyboardEvent<HTMLTextAreaElement>) => {
         e.preventDefault()
         if (message.trim() === '' || messageIsLoading || !elementExists) return
-        const newMessage = { content: message, role: 'user', timestamp: new Date() } as MessageType;
+        const newMessage = {content: message, role: 'user', timestamp: new Date()} as MessageType;
         setChatMessages(prev => [newMessage, ...prev])
         await chatCompletion()
     }
-
 
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -122,7 +119,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
         const abortController = new AbortController();
         setAbortController(abortController);
         const signal = abortController.signal;
-        setChatMessages(prev => [{ content: '', role: 'system' }, ...prev])
+        setChatMessages(prev => [{content: '', role: 'system'}, ...prev])
 
         try {
             const url = `https://itsdu.danielz.dev/api/message/${elementId}`
@@ -151,7 +148,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             while (loop) {
                 const chunk = await reader.read()
 
-                const { done, value } = chunk
+                const {done, value} = chunk
 
                 if (done) {
                     loop = false
@@ -161,7 +158,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                 const decodedChunk = decoder.decode(value)
                 // the incoming messsage should be in the first index of the array¨
                 setChatMessages(prev => {
-                    const newMessage = { content: decodedChunk, role: "system" } as MessageType;
+                    const newMessage = {content: decodedChunk, role: "system"} as MessageType;
                     if (prev.length > 0 && prev[0].role === 'system') {
                         const lastMessage = prev[0];
                         const updatedMessage = {
@@ -199,7 +196,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             <div className="flex max-h-full flex-1 flex-col overflow-hidden p-4">
                 <div className="flex max-h-full flex-1 flex-col rounded-md p-4 bg-foreground/10">
                     <div className="flex flex-col items-center justify-center p-4">
-                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="h-8 w-8" />
+                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="h-8 w-8"/>
                         <h1 className="mt-2 text-2xl font-bold">ITSDU AI</h1>
                     </div>
                     <div
@@ -213,59 +210,60 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
                             {chatMessages.map((message, i) => (
                                 <motion.div
                                     key={chatMessages.length - i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2 }}
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.2}}
                                 >
                                     {i === 0 && messageIsLoading && chatMessages[0].role === 'system' && chatMessages[0].content === '' ? (
                                         <Message key={chatMessages.length - i} role={message.role}>
-                                            <Spinner size="sm" color="primary" className={"m-auto w-full h-full"} />
+                                            <Spinner size="sm" color="primary" className={"m-auto w-full h-full"}/>
                                         </Message>
                                     ) : (
                                         <Message key={chatMessages.length - i} role={message.role}
-                                            message={message.content} />
+                                                 message={message.content}/>
                                     )}
                                 </motion.div>
                             ))}
                             {reversedPreviousMessages && reversedPreviousMessages.map((message, i) => (
                                 <motion.div
                                     key={reversedPreviousMessages.length - i}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2, delay: 0.1 * i }}
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.2, delay: 0.1 * i}}
                                 >
                                     <Message key={reversedPreviousMessages.length - i} role={message.role}
-                                        message={message.content} />
+                                             message={message.content}/>
                                 </motion.div>
                             ))}
                             {elementExistsLoading || uploadingDocument || isPreviousMessagesLoading ? (
-                                <Loader2 className={"animate-spin text-white m-auto"} />
+                                <Loader2 className={"animate-spin text-white m-auto"}/>
                             ) : (
                                 previousMessages && previousMessages.pages.length > 0 && previousMessages.pages[previousMessages.pages.length - 1].totalMessages > previousMessages.pages[previousMessages.pages.length - 1].pageSize && (
                                     <div ref={ref} className="flex flex-row items-center justify-center">
-                                        <span className="text-white/50">{isFetchingNextPage ? 'Loading...' : previousMessages.pages[previousMessages.pages.length - 1].totalMessages > previousMessages.pages[previousMessages.pages.length - 1].pageIndex * previousMessages.pages[previousMessages.pages.length - 1].pageSize ? 'Load more' : 'No more messages'}</span>
+                                        <span
+                                            className="text-white/50">{isFetchingNextPage ? 'Loading...' : previousMessages.pages[previousMessages.pages.length - 1].totalMessages > previousMessages.pages[previousMessages.pages.length - 1].pageIndex * previousMessages.pages[previousMessages.pages.length - 1].pageSize ? 'Load more' : 'No more messages'}</span>
                                     </div>
                                 )
                             )}
                         </div>
                         {messageIsLoading && (
                             <Button className="flex-shrink-0" onClick={abortResponse}>
-                                <BsStopCircleFill size={24} className="mr-2 text-red-500/80" />
+                                <BsStopCircleFill size={24} className="mr-2 text-red-500/80"/>
                                 Stop Generating...
                             </Button>
                         )}
                         <form onSubmit={handleSubmit}
-                            className="flex shrink-0 flex-row items-center justify-between rounded-md space-x-2">
+                              className="flex shrink-0 flex-row items-center justify-between rounded-md space-x-2">
                             <Textarea onKeyDown={textAreaOnKeyDown}
-                                ref={textAreaRef}
-                                onChange={onMessageChange} value={message}
-                                disabled={messageIsLoading}
-                                placeholder="Type your message here..."
+                                      ref={textAreaRef}
+                                      onChange={onMessageChange} value={message}
+                                      disabled={messageIsLoading}
+                                      placeholder="Type your message here..."
                                 //match the height of the input to the height of the text area
-                                className="resize-y flex-1 min-h-10 h-10 max-h-40 overflow-y-auto"
+                                      className="h-10 max-h-40 flex-1 resize-y overflow-y-auto min-h-10"
                             />
                             <Button disabled={!elementExists || messageIsLoading || message.trim() === ''}
-                                type="submit" className="ml-2 flex-shrink-0">
+                                    type="submit" className="ml-2 flex-shrink-0">
                                 Send
                             </Button>
                         </form>

@@ -1,3 +1,4 @@
+import he from 'he';
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
@@ -49,6 +50,17 @@ export const getQueryKeysFromParamsObject = (params: {
         }
     })
 }
+
+export function findMetaData(property: string, stringToSearch: string) {
+    const regex = new RegExp(
+        `<meta(?=.*?content="(.*?)")(?=[^>]*property="${property}").*?>`
+    );
+
+    const match = stringToSearch.match(regex);
+
+    return match ? he.decode(match[1]) : "";
+}
+
 
 export const baseUrl = import.meta.env.DEV ? 'http://localhost:8080/' : 'https://sdu.itslearning.com/'
 
