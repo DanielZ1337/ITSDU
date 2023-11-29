@@ -50,6 +50,6 @@ export enum TanstackKeys {
     ResourceByElementID = "resourceByElementID",
     ResourceOfficeDocumentByElementID = "resourceOfficeDocumentByElementID",
     SsoUrl = "ssoUrl",
-    StarredCourses = "starrredCourses",
+    StarredCourses = "starredCourses",
     UnstarredCourses = "unstarredCourses",
 }

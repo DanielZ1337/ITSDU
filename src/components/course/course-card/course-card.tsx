@@ -1,22 +1,23 @@
-import {ClipboardList, ListTodo, Loader2, Megaphone, StarIcon, UserSquare2} from "lucide-react";
-import {cn} from "@/lib/utils.ts";
-import {useNavigate} from "react-router-dom";
-import {ItslearningRestApiEntitiesCourseCard} from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
+import { ClipboardList, ListTodo, Loader2, Megaphone, StarIcon, UserSquare2 } from "lucide-react";
+import { cn } from "@/lib/utils.ts";
+import { useNavigate } from "react-router-dom";
+import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
-import {Button} from "@/components/ui/button.tsx";
-import {useToast} from "@/components/ui/use-toast.ts";
-import {useAtom} from "jotai";
-import {isCoursesBulkStarEditingAtom} from "@/atoms/courses-bulk-star-edit.ts";
-import {Checkbox} from "@nextui-org/react";
+import { Button } from "@/components/ui/button.tsx";
+import { useToast } from "@/components/ui/use-toast.ts";
+import { useAtom } from "jotai";
+import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
+import { Checkbox } from "@nextui-org/react";
 import CourseCardInfo from "./course-card-info.tsx";
 import CourseCardContextMenu from "./course-card-context-menu.tsx";
+import { Loader } from "@/components/ui/loader.tsx";
 
-export default function CourseCard({card}: {
+export default function CourseCard({ card }: {
     card: ItslearningRestApiEntitiesCourseCard
 }) {
     const navigate = useNavigate()
-    const {toast} = useToast()
-    const {mutate, isLoading} = usePUTcourseFavorite({
+    const { toast } = useToast()
+    const { mutate, isLoading } = usePUTcourseFavorite({
         courseId: card.CourseId,
     })
     const [isCoursesBulkEditing, /*setIsCoursesBulkEditing*/] = useAtom(isCoursesBulkStarEditingAtom)
@@ -74,42 +75,42 @@ export default function CourseCard({card}: {
                             }}
                             className={"hover:cursor-pointer hover:bg-yellow-400/10 w-fit h-fit rounded-full p-1"}>
                             {!isCoursesBulkEditing ? isLoading ? (
-                                <Loader2 className={"stroke-black shrink-0 m-1 h-6 w-6 animate-spin"}/>
+                                <Loader className={"m-1"} />
                             ) : (
                                 <StarIcon
-                                    className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')}/>
+                                    className={cn("stroke-yellow-500 shrink-0 m-1 h-6 w-6", card.IsFavouriteCourse && 'fill-yellow-500')} />
                             ) : (
                                 <Checkbox
                                     className={"m-0 p-0 w-fit max-h-[20px] max-w-[20px] flex-shrink-0 flex-grow-0"}
                                     defaultChecked={card.IsFavouriteCourse}
                                     checked={card.IsFavouriteCourse}
                                     defaultSelected={card.IsFavouriteCourse}
-                                    /*onChange={() => {
-                                        setCoursesBulkEdit({
-                                            ...coursesBulkEdit,
-                                            [card.CourseId]: !card.IsFavouriteCourse,
-                                        })
-                                    }}*/
+                                /*onChange={() => {
+                                    setCoursesBulkEdit({
+                                        ...coursesBulkEdit,
+                                        [card.CourseId]: !card.IsFavouriteCourse,
+                                    })
+                                }}*/
                                 />
                             )}
                         </Button>
                     </div>
                     <div className={"flex gap-2 w-full justify-evenly"}>
                         {card.NumberOfAnnouncements > 0 && (
-                            <CourseCardInfo icon={<Megaphone/>} count={card.NumberOfAnnouncements}
-                                            href={`/courses/${card.CourseId}/announcements`}/>
+                            <CourseCardInfo icon={<Megaphone />} count={card.NumberOfAnnouncements}
+                                href={`/courses/${card.CourseId}/announcements`} />
                         )}
                         {card.NumberOfFollowUpTasks > 0 && (
-                            <CourseCardInfo icon={<ListTodo/>} count={card.NumberOfFollowUpTasks}
-                                            href={`/courses/${card.CourseId}/tasks`}/>
+                            <CourseCardInfo icon={<ListTodo />} count={card.NumberOfFollowUpTasks}
+                                href={`/courses/${card.CourseId}/tasks`} />
                         )}
                         {card.NumberOfTasks > 0 && (
-                            <CourseCardInfo icon={<ClipboardList/>} count={card.NumberOfTasks}
-                                            href={`/courses/${card.CourseId}/tasks`}/>
+                            <CourseCardInfo icon={<ClipboardList />} count={card.NumberOfTasks}
+                                href={`/courses/${card.CourseId}/tasks`} />
                         )}
                         {card.NumberOfTeachers > 0 && (
-                            <CourseCardInfo icon={<UserSquare2/>} count={card.NumberOfTeachers}
-                                            href={`/courses/${card.CourseId}/participants`}/>
+                            <CourseCardInfo icon={<UserSquare2 />} count={card.NumberOfTeachers}
+                                href={`/courses/${card.CourseId}/participants`} />
                         )}
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import useOfficeDocumentByElementId from '../../queries/resources/useOfficeDocumentByElementID';
+import { Loader } from "@/components/ui/loader";
 
 export default function OfficeDocument() {
     const { elementId } = useParams();
@@ -66,7 +67,7 @@ export default function OfficeDocument() {
     if (isLoading || !data) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader2 className={"stroke-foreground shrink-0 h-8 w-8 animate-spin m-auto"} />
+                <Loader size={"md"} className={"m-auto"} />
             </div>
         )
     }

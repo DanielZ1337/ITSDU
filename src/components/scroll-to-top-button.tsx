@@ -1,9 +1,9 @@
-import {AnimatePresence, motion} from "framer-motion";
-import {Button} from "@/components/ui/button.tsx";
-import {ChevronUp} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import { AnimatePresence, motion, m } from 'framer-motion';
+import { Button } from "@/components/ui/button.tsx";
+import { ChevronUp } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
-export default function ScrollToTopButton({viewportRef}: {
+export default function ScrollToTopButton({ viewportRef }: {
     viewportRef: React.RefObject<HTMLDivElement>
 }) {
 
@@ -22,11 +22,11 @@ export default function ScrollToTopButton({viewportRef}: {
     return (
         <AnimatePresence>
             {showToTopButton && (
-                <motion.div
-                    initial={{opacity: 0, y: 100}}
-                    animate={{opacity: 1, y: 0}}
-                    exit={{opacity: 0, y: 100}}
-                    transition={{duration: 0.2}}
+                <m.div
+                    initial={{ opacity: 0, y: 100 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 100 }}
+                    transition={{ duration: 0.2 }}
                 >
                     <Button
                         variant={"outline"}
@@ -39,9 +39,9 @@ export default function ScrollToTopButton({viewportRef}: {
                             })
                         }}
                     >
-                        <ChevronUp className="h-7 w-7 stroke-foreground"/>
+                        <ChevronUp className="h-7 w-7 stroke-foreground" />
                     </Button>
-                </motion.div>
+                </m.div>
             )}
         </AnimatePresence>
     )

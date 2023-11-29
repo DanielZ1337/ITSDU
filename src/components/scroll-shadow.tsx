@@ -1,5 +1,5 @@
-import {cn} from '@/lib/utils';
-import {AnimatePresence, motion} from 'framer-motion';
+import { cn } from '@/lib/utils';
+import { AnimatePresence, m } from 'framer-motion';
 
 export type ShadowPosition = 'top' | 'bottom' | 'both';
 
@@ -20,7 +20,7 @@ export function calculateShadowPosition(viewportRef?: React.RefObject<HTMLDivEle
     }
 }
 
-export function Shadow({position}: { position: ShadowPosition }) {
+export function Shadow({ position }: { position: ShadowPosition }) {
 
     const defaultClassName = 'pointer-events-none absolute left-0 right-0 h-24 w-full inset-x-0'
 
@@ -31,14 +31,14 @@ export function Shadow({position}: { position: ShadowPosition }) {
 
     const topComponent = () => {
         return (
-            <motion.div
+            <m.div
                 key="top"
                 layout
                 layoutId="top"
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                exit={{opacity: 0}}
-                transition={{type: "spring", stiffness: 500, damping: 30, mass: 0.8}}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
                 className={cn(defaultClassName, topClassName)}
             />
         )
@@ -46,14 +46,14 @@ export function Shadow({position}: { position: ShadowPosition }) {
 
     const bottomComponent = () => {
         return (
-            <motion.div
+            <m.div
                 key="bottom"
                 layout
                 layoutId="bottom"
-                initial={{opacity: 0}}
-                animate={{opacity: 1}}
-                exit={{opacity: 0}}
-                transition={{type: "spring", stiffness: 500, damping: 30, mass: 0.8}}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
                 className={cn(defaultClassName, bottomClassName)}
             />
         )

@@ -1,66 +1,41 @@
-
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import { findMetaData } from "@/lib/utils.ts";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { GETLinkOGPreview, GETLinkOGPreviewApiUrl } from "@/types/api-types/extra/GETLinkOGPreview";
 
-type OgPreview = {
-    title: string
-    description: string
-    siteName: string
-    url: string
-    image: {
-        url: string
-        alt: string
-        width: string | number
-        height: string | number
-    }
-}
-
-export default function useGETLinkOGPreview(href: string, queryConfig?: UseQueryOptions<OgPreview, Error, OgPreview, string[]>) {
+export default function useGETLinkOGPreview(href: string, queryConfig?: UseQueryOptions<GETLinkOGPreview, Error, GETLinkOGPreview, string[]>) {
     return useQuery([TanstackKeys.LinkOGPreview, href], async () => {
-        if (!href || href.trim() === "" || href.trim() === "http://" || href.trim() === "https://") {
-            throw new Error("No link provided");
+        const res = await axios.get(GETLinkOGPreviewApiUrl({
+            url: href
+        }))
+
+        const data = res.data as GETLinkOGPreview
+
+        // sort the icon array by the object's type property
+        data.links.icon.sort((a, b) => {
+            if (a.type === "image/png" && b.type !== "image/png") {
+                return -1
+            } else if (a.type !== "image/png" && b.type === "image/png") {
+                return 1
+            } else if (a.type === "image/svg" || a.type === "image/svg+xml") {
+                return -1
+            } else if (b.type === "image/svg" || b.type === "image/svg+xml") {
+                return 1
+            } else {
+                return 0
+            }
+        })
+
+        const img = new Image()
+        img.src = data.links.icon[0].href || "https://www.google.com/s2/favicons?sz=64&domain_url=" + href
+        img.onerror = () => {
+            data.links.icon[0].href = "https://www.google.com/s2/favicons?sz=64&domain_url=" + href
         }
+        img.remove()
 
-        const formattedHref = new URL(href)
+        if (res.status !== 200) throw new Error(res.statusText);
 
-        console.log(formattedHref)
-
-        if (formattedHref.protocol !== "http:" && formattedHref.protocol !== "https:") {
-            throw new Error("Invalid link protocol");
-        }
-
-        const res = await window.scrape.get(formattedHref.toString())
-        const { data } = res || {};
-
-        if (!data) {
-            throw new Error("No data found");
-        }
-
-        const title = findMetaData("og:title", data);
-        const description = findMetaData("og:description", data);
-        const imageUrl = findMetaData("og:image", data);
-        const imageAlt = findMetaData("og:image:alt", data);
-        const imageWidth = findMetaData("og:image:width", data);
-        const imageHeight = findMetaData("og:image:height", data);
-        const siteName = findMetaData("og:site_name", data);
-        const url = findMetaData("og:url", data);
-
-        const ogPreviewData = {
-            title,
-            description,
-            siteName,
-            url,
-            image: {
-                url: imageUrl,
-                alt: imageAlt,
-                width: imageWidth || 1200,
-                height: imageHeight || 630,
-            },
-        };
-
-        return ogPreviewData;
+        return data;
     }, {
         ...queryConfig
     });

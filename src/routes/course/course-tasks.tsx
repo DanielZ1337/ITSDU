@@ -1,148 +1,132 @@
-import useGETcourseTasklistDailyWorkflow from "@/queries/courses/useGETcourseTasklistDailyWorkflow.ts";
-import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { motion, useCycle } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
+import useGETcourseTasklistDailyWorkflowCompleted from "@/queries/courses/useGETcourseTasklistDailyWorkflowCompleted";
+import { Badge } from "@/components/ui/badge";
+import { FetchMoreInview } from "@/components/fetch-more-in-view";
+import TasksCardSkeletons from "@/components/course/tasks/fallback/tasks-card-skeletons";
 
 export default function CourseTasks() {
     const { id } = useParams()
     const courseId = Number(id)
-    const { data, isError, isLoading, error } = useGETcourseTasklistDailyWorkflow({
-        courseId,
-        PageIndex: 0,
-        PageSize: 100,
-    }, {
-        suspense: true,
-    })
-
-    const [activeTab, setActiveTab] = useState('active'); // 'active' or 'completed'
-    const filteredTasks = data?.EntityArray[0].TaskDailyWorkflow.EntityArray.filter(
-        (task) =>
-            (activeTab === 'active' && task.Status !== 'Completed') ||
-            (activeTab === 'completed' && task.Status === 'Completed')
-    );
-
-    const tabVariants = {
-        // The active tab is the one we want to animate to with x, y, opacity, colors, etc.
-        active: {
-            color: '#fff',
-            backgroundColor: '#2563EB',
-            scale: 1.05,
-            borderRadius: '0.375rem',
-        },
-        // The inactive tab is the one we want to animate away from with x, y, opacity, colors, etc.
-        inactive: {
-            color: '#374151',
-            backgroundColor: '#E5E7EB',
-            scale: 1,
-            borderRadius: '0.375rem',
-        },
-    };
-
-    const [tabAnimation, cycleTabAnimation] = useCycle('active', 'inactive');
-
-    console.log(data)
 
     return (
-        <div className="max-w-3xl mx-auto p-4 dark:bg-gray-800">
-            <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex justify-center items-center space-x-4"
-            >
-                <motion.button
-                    onClick={() => {
-                        setActiveTab('active');
-                        cycleTabAnimation();
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    variants={tabVariants}
-                    animate={tabAnimation}
-                    className="py-2 px-4 rounded"
+        <div className="p-4 h-full overflow-y-auto overflow-x-hidden">
+            <CompletedCourseTasks courseId={courseId} />
+        </div >
+    )
+}
+
+function CompletedCourseTasks({ courseId }: { courseId: number }) {
+
+    // itslearning api doesn't support pagination for this endpoint even though they say it does so this tricks Tanstack Query into thinking it doesn't have anymore pages based on the page size, total and page index
+    const PAGE_SIZE = 9999
+    const { data, isError, isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = useGETcourseTasklistDailyWorkflowCompleted({
+        courseId,
+        PageIndex: 1,
+        // itslearning api doesn't support pagination for this endpoint even though they say it does so this tricks Tanstack Query into thinking it doesn't have anymore pages based on the page size, total and page index
+        PageSize: PAGE_SIZE,
+    })
+
+    data?.pages.sort((a, b) => {
+        a.EntityArray.sort((a, b) => {
+            return b.TaskId - a.TaskId
+        })
+
+        b.EntityArray.sort((a, b) => {
+            return b.TaskId - a.TaskId
+        })
+
+        return b.EntityArray[0].TaskId - a.EntityArray[0].TaskId
+    })
+
+    if (isError) {
+        return (
+            <div className="p-4 flex-1 flex flex-col items-center justify-center">
+                <h1 className="text-2xl font-bold">Error</h1>
+                <p className="text-gray-600">{error?.message}</p>
+            </div>
+        )
+    }
+
+    if (data?.pages[0].EntityArray.length === 0) {
+        return (
+            <div className="p-4 flex-1 flex flex-col items-center justify-center">
+                <h1 className="text-2xl font-bold">No tasks</h1>
+                <p className="text-gray-600">You have no tasks in this course.</p>
+            </div>
+        )
+    }
+
+    return (
+        <AnimatePresence mode="wait">
+            {isLoading ?
+                <m.div
+                    key={'tasks-skeletons'}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    className="w-full h-fit mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 "
                 >
-                    Active
-                </motion.button>
-                <motion.button
-                    onClick={() => {
-                        setActiveTab('completed');
-                        cycleTabAnimation();
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    variants={tabVariants}
-                    animate={tabAnimation}
-                    className="py-2 px-4 rounded"
+                    <TasksCardSkeletons count={10} />
+                </m.div>
+                : <m.div
+                    key={'tasks'}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 20 }}
+                    transition={{ duration: 0.5 }}
+                    className="w-full h-fit mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4"
                 >
-                    Completed
-                </motion.button>
-            </motion.div>
-            <div className="mt-4">
-                {isLoading ? (
-                    <p className="text-center">Loading...</p>
-                ) : isError ? (
-                    <p className="text-center text-red-500">{error.message}</p>
-                ) : filteredTasks.length > 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
-                    >
-                        {filteredTasks.map((task) => (
-                            <motion.div
+                    {data?.pages.map((page) => (
+                        page.EntityArray.map((task, i) => (
+                            <m.div
                                 key={task.TaskId}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.1 }}
-                                className="bg-white dark:bg-gray-700 rounded shadow p-4 mb-4"
+                                transition={{ duration: 0.5, delay: 0.1 * i }}
+                                className="bg-foreground/10 rounded-md shadow p-6 overflow-hidden"
                             >
-                                <div
-                                    key={task.TaskId}
-                                    className="bg-white dark:bg-gray-700 rounded shadow p-4 mb-4"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center space-x-2">
-                                            <img
-                                                src={task.IconUrl}
-                                                alt="Task Icon"
-                                                className="w-6 h-6 object-contain"
-                                            />
-                                            <h3 className="text-lg font-semibold">{task.TaskTitle}</h3>
-                                        </div>
-                                        <span
-                                            className={`px-2 py-1 rounded ${task.Status === 'Completed'
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-gray-300 text-gray-700 dark:bg-gray-600 dark:text-gray-300'
-                                                }`}
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2 overflow-hidden">
+                                        <img
+                                            src={task.IconUrl}
+                                            alt="Task Icon"
+                                            className="w-6 h-6 object-contain"
+                                        />
+                                        <a
+                                            href={task.TaskUrl}
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                            className="truncate text-blue-500 hover:underline block mt-2"
                                         >
-                                            {task.Status === 'Completed' ? 'Completed' : 'Active'}
-                                        </span>
+                                            <h3 className="text-lg font-semibold truncate">{task.TaskTitle}</h3>
+                                        </a>
                                     </div>
-                                    <p className="text-gray-600">{task.CourseTitle}</p>
-                                    {task.Deadline && (
-                                        <p className="text-gray-600">
-                                            Deadline: {new Date(task.Deadline).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                    <a
-                                        href={task.TaskUrl}
-                                        target={task.TaskUrlTarget}
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:underline block mt-2"
-                                    >
-                                        View Task
-                                    </a>
-                                    {/* Add additional task details as needed */}
+                                    <Badge variant={'success'}>
+                                        Completed
+                                    </Badge>
                                 </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                ) : (
-                    <p className="text-center text-gray-600">
-                        No {activeTab === 'active' ? 'active' : 'completed'} tasks found.
-                    </p>
-                )}
-            </div>
-        </div>
+                                <p className="dark:text-gray-300 text-gray-700 mt-2">{task.CourseTitle}</p>
+                                {/* {task.Deadline && (
+                            <p className="text-gray-600">
+                                Deadline: {new Date(task.Deadline).toLocaleDateString()}
+                            </p>
+                        )} */}
+                            </m.div>
+                        ))
+                    ))}
+                    {hasNextPage && (
+                        <FetchMoreInview
+                            hasNextPage={hasNextPage}
+                            fetchNextPage={fetchNextPage}
+                            isFetchingNextPage={isFetchingNextPage}
+                            className="py-4 text-center text-gray-600 text-sm"
+                        >
+                            {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Load more' : ''}
+                        </FetchMoreInview>
+                    )}
+                </m.div>
+            }
+        </AnimatePresence>
     )
 }

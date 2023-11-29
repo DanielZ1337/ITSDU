@@ -5,6 +5,7 @@ import { Expand, Loader2 } from 'lucide-react'
 import { Document, Page } from 'react-pdf'
 import { useToast } from '../../ui/use-toast'
 import { useResizeDetector } from 'react-resize-detector'
+import { Loader } from '@/components/ui/loader'
 
 interface PdfFullscreenProps {
     fileUrl?: string
@@ -41,7 +42,7 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
                     <Document
                         loading={
                             <div className='flex justify-center'>
-                                <Loader2 className='my-24 h-8 w-8 animate-spin' />
+                                <Loader className='my-24' />
                             </div>
                         }
                         onLoadError={() => {

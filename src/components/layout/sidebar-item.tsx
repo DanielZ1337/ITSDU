@@ -22,7 +22,7 @@ export default function SidebarItem({ title, icon, href, end = true, disabled }:
                     {isActive && (
                         <motion.div
                             layoutId="active-pill"
-                            transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
                             className={cn("inset-0 absolute bg-accent rounded-lg bg-gradient-to-tr from-accent to-background/60 transition-shadow", sidebarActive && 'shadow-md shadow-primary/5')}
                         />
                     )}
