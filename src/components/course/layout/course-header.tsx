@@ -11,6 +11,7 @@ import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import { Helmet } from "react-helmet-async";
 import { TanstackKeys } from "@/types/tanstack-keys";
 import { AnimatePresence, m } from 'framer-motion';
+import { Loader } from "@/components/ui/loader";
 
 export default function CourseHeader({ courseId }: {
     courseId: number
@@ -88,11 +89,11 @@ export default function CourseHeader({ courseId }: {
                                     transition={{ duration: 0.2 }}
                                     className={"absolute w-6 h-6 flex items-center justify-center"}
                                 >
-                                    <Loader2 className={"stroke-foreground shrink-0 m-1 h-6 w-6 animate-spin"} />
+                                    <Loader className={"m-1"} />
                                 </m.div>
                             )}
                         </AnimatePresence>
-                        <AnimatePresence>
+                        <AnimatePresence initial={false}>
                             {!isTogglingStarred && (
                                 <m.div
                                     initial={{ rotate: -90, scale: 0, opacity: 0 }}

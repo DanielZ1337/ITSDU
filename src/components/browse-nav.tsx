@@ -3,7 +3,7 @@ import { ArrowLeftCircleIcon, ArrowRightCircleIcon, HomeIcon, RefreshCwIcon } fr
 import { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, m } from 'framer-motion';
 import { useBrowseNavigation } from '@/hooks/atoms/useBrowseNavigation'
 
 export default function BrowserNav() {
@@ -61,7 +61,7 @@ export default function BrowserNav() {
     return (
         <AnimatePresence>
             {showBrowseNavigation &&
-                <motion.div
+                <m.div
                     layout
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
@@ -92,7 +92,7 @@ export default function BrowserNav() {
                                 onChange={(e) => setAddress(e.target.value)} />
                         </form>
                     </div>
-                </motion.div>
+                </m.div>
             }
         </AnimatePresence>
 

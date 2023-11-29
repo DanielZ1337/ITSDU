@@ -1,12 +1,12 @@
-import {useCallback, useState} from "react"
+import { useCallback, useState } from "react"
 import copy from "copy-to-clipboard"
-import {AnimatePresence, motion, MotionConfig} from "framer-motion"
+import { AnimatePresence, motion, MotionConfig, m } from 'framer-motion';
 
 export default function CopyButton({
-                                       value,
-                                       copyable = true,
-                                       isBlockHovered,
-                                   }: {
+    value,
+    copyable = true,
+    isBlockHovered,
+}: {
     value: string
     copyable?: boolean
     isBlockHovered?: boolean
@@ -23,20 +23,20 @@ export default function CopyButton({
     }, [value])
 
     const variants = {
-        visible: {opacity: 1, scale: 1},
-        hidden: {opacity: 0, scale: 0.5},
+        visible: { opacity: 1, scale: 1 },
+        hidden: { opacity: 0, scale: 0.5 },
     }
     return (
         <button
             onClick={onCopy}
             aria-label="Copy code"
             className={`copy-button ${isBlockHovered ? "opacity-100" : copying ? "opacity-100" : "opacity-0"
-            } absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`}
+                } absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`}
         >
-            <MotionConfig transition={{duration: 0.15}}>
+            <MotionConfig transition={{ duration: 0.15 }}>
                 <AnimatePresence initial={false} mode="wait">
                     {copying ? (
-                        <motion.div
+                        <m.div
                             animate="visible"
                             exit="hidden"
                             initial="hidden"
@@ -56,9 +56,9 @@ export default function CopyButton({
                             >
                                 <path d="M20 6L9 17l-5-5"></path>
                             </svg>
-                        </motion.div>
+                        </m.div>
                     ) : (
-                        <motion.div
+                        <m.div
                             animate="visible"
                             exit="hidden"
                             initial="hidden"
@@ -79,7 +79,7 @@ export default function CopyButton({
                                 <path
                                     d="M8 17.929H6c-1.105 0-2-.912-2-2.036V5.036C4 3.91 4.895 3 6 3h8c1.105 0 2 .911 2 2.036v1.866m-6 .17h8c1.105 0 2 .91 2 2.035v10.857C20 21.09 19.105 22 18 22h-8c-1.105 0-2-.911-2-2.036V9.107c0-1.124.895-2.036 2-2.036z"></path>
                             </svg>
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </MotionConfig>

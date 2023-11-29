@@ -15,20 +15,23 @@ import { getFormattedCookies } from "../utils/cookies.ts";
 
 const authService = AuthService.getInstance()
 
+export async function openLinkInBrowser(url: string, sso: boolean = true) {
+    if (sso) {
+        const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+            params: {
+                'access_token': authService.getToken('access_token'),
+            }
+        })
+        url = data.Url
+    }
+
+    // open the url with the default browser
+    await shell.openExternal(url)
+}
+
 function openExternalHandler() {
     ipcMain.handle('app:openExternal', async (_, url, sso) => {
-        // open the url with the default browser and get sso url
-        if (sso) {
-            const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
-                params: {
-                    'access_token': authService.getToken('access_token'),
-                }
-            })
-            url = data.Url
-        }
-
-        // open the url with the default browser
-        await shell.openExternal(url)
+        await openLinkInBrowser(url, sso)
     })
 }
 
@@ -70,7 +73,7 @@ async function getBlobFromUrl() {
         const cookiesFormatted = getFormattedCookies(cookies)
         const resourceLink = await getResourceDownloadLink(ssoLink, win)
 
-        const { data, headers } = await axios.get(resourceLink, {
+        const { data } = await axios.get(resourceLink, {
             headers: {
                 Cookie: cookiesFormatted,
             },

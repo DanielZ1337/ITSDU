@@ -22,6 +22,7 @@ import LightbulletinResource from "./lightbulletin-resource";
 import LightbulletinLinkPreview from "./lightbulletin-link-preview";
 import { LinkifyType } from "@/types/linkify";
 import LightbulletinLink from "./lightbulletin-link";
+import { Loader } from "../ui/loader";
 
 export default function LightbulletinCard({ bulletin, links }: {
     bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
@@ -125,7 +126,7 @@ export default function LightbulletinCard({ bulletin, links }: {
                 <div className="mb-4 flex flex-col rounded-lg p-2 space-y-4">
                     {links.map((link) => (
                         <Suspense key={link.href} fallback={<LightbulletinLink>
-                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto"} />
+                            <Loader className={"stroke-current text-gray-500 m-auto"} />
                         </LightbulletinLink>}>
                             <LightbulletinLinkPreview key={link.href} href={link.value} title={link.value} />
                         </Suspense>
@@ -147,7 +148,7 @@ export default function LightbulletinCard({ bulletin, links }: {
                 <>
                     {bulletin.CommentsCount > 0 && (
                         <Suspense fallback={
-                            <Loader2 className={"w-6 h-6 stroke-current text-gray-500 animate-spin m-auto my-4"} />
+                            <Loader className={"stroke-current text-gray-500 m-auto my-4"} />
                         }>
                             <LightbulletinComments lightbulletinId={bulletin.LightBulletinId} />
                         </Suspense>

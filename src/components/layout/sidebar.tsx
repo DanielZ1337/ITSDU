@@ -4,7 +4,7 @@ import { useCourse } from "@/hooks/atoms/useCourse"
 import { useSidebar } from "@/hooks/atoms/useSidebar"
 import SidebarItem from "./sidebar-item"
 import { courseNavLinks, navlinks } from "@/lib/routes"
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion'
 import { NavLink } from "react-router-dom"
 import { ErrorBoundary } from "react-error-boundary"
 import SidebarUser from "./sidebar-user"
@@ -18,7 +18,7 @@ export default function Sidebar() {
         <div
             onMouseEnter={() => setSidebarActive(true)}
             onMouseLeave={() => setSidebarActive(false)}
-            className={cn('overflow-hidden no-drag top-0 absolute transition-all h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between', sidebarActive ? 'w-64' : 'w-24')}>
+            className={cn('overflow-hidden no-drag top-0 absolute transition-width h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between', sidebarActive ? 'w-64' : 'w-24')}>
             <div className="flex h-full flex-col gap-1 overflow-x-hidden scrollbar-hide">
                 <SidebarGroupTitle title="General" />
                 {navlinks.map((link) => (
@@ -33,7 +33,7 @@ export default function Sidebar() {
                 ))}
                 <AnimatePresence>
                     {courseActive && (
-                        <motion.div
+                        <m.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
@@ -51,7 +51,7 @@ export default function Sidebar() {
                                     disabled={link.disabled}
                                 />
                             ))}
-                        </motion.div>
+                        </m.div>
                     )}
                 </AnimatePresence>
             </div>

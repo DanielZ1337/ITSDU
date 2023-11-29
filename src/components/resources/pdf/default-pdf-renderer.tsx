@@ -1,12 +1,13 @@
 import { Loader2 } from "lucide-react"
 import AISidepanelButton from "../../ai-chat/ai-sidepanel-button"
+import { Loader } from "@/components/ui/loader"
 
 export default function DefaultPdfRenderer({ isLoading, data }: { isLoading: boolean, data: string }) {
     if (isLoading) {
         return (
             <div className="flex h-full w-full items-center justify-center">
                 <div className="h-10 w-10">
-                    <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin m-auto"} />
+                    <Loader className={"m-auto"} />
                 </div>
             </div>
         )

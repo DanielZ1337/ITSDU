@@ -19,6 +19,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import PdfFullscreen from './pdf-fullscreen'
 import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
 import AISidepanelButton from '../../ai-chat/ai-sidepanel-button'
+import { Loader } from '@/components/ui/loader'
 
 // import SimpleBar from 'simplebar-react'
 // import PdfFullscreen from './PdfFullscreen'
@@ -27,6 +28,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pd
 
 interface PdfRendererProps {
     url?: string
+    filename?: string
     externalIsLoading?: boolean
     aiSidepanelWidth: number
     containerWidth?: number | null
@@ -35,6 +37,7 @@ interface PdfRendererProps {
 
 export default function PdfRenderer({
     url,
+    filename,
     externalIsLoading,
     aiSidepanelWidth,
     containerWidth,
@@ -233,12 +236,12 @@ export default function PdfRenderer({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button
-                                className='gap-1.5'
+                                className='gap-1.5 group'
                                 aria-label='zoom'
                                 variant='ghost'>
                                 <Search className='h-4 w-4' />
                                 {scale * 100}%
-                                <ChevronDown className='h-3 w-3 opacity-50' />
+                                <ChevronDown className='group-data-[state=open]:rotate-180 h-3 w-3 opacity-50' />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
@@ -270,7 +273,7 @@ export default function PdfRenderer({
                     <Button asChild variant={'ghost'}>
                         <a
                             href={url}
-                            download='document.pdf'
+                            download={filename || 'document.pdf'}
                             className='flex items-center gap-1.5'
                             aria-label='download'
                         >
@@ -288,11 +291,11 @@ export default function PdfRenderer({
             >
                 {externalIsLoading ? (
                     <div className='flex h-full w-full justify-center'>
-                        <Loader2 className='m-auto h-8 w-8 animate-spin' />
+                        <Loader size={"md"} className='m-auto' />
                     </div>
                 ) : (
                     <Document
-                        loading={<Loader2 className='m-auto h-8 w-8 animate-spin' />}
+                        loading={<Loader size={"md"} className='m-auto' />}
                         onLoadError={() => {
                             toast({
                                 title: 'Error loading PDF',
@@ -302,7 +305,7 @@ export default function PdfRenderer({
                         }}
                         onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                         file={url}
-                        className={cn('w-full h-full flex flex-col overflow-y-auto overflow-x-hidden items-center max-h-full', isLoading && 'justify-center')}>
+                        className={cn('w-full h-full flex flex-col overflow-auto items-center max-h-full', isLoading && 'justify-center')}>
                         {isLoading && renderedScale ? (
                             <Page
                                 width={width ? width : 1}
@@ -322,7 +325,7 @@ export default function PdfRenderer({
                                 key={'@' + scale}
                                 loading={
                                     <div className='flex justify-center'>
-                                        <Loader2 className='my-24 h-8 w-8 animate-spin' />
+                                        <Loader size={"md"} className='my-24' />
                                     </div>
                                 }
                                 onRenderSuccess={(page) => {

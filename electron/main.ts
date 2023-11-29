@@ -1,12 +1,10 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from "electron"
-import path from 'path'
+import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from "electron";
+import path from 'path';
 import {
-    AuthService,
-    getItslearningOAuthUrl,
-    ITSLEARNING_CLIENT_ID,
+    AuthService, ITSLEARNING_CLIENT_ID,
     ITSLEARNING_OAUTH_TOKEN_URL,
-    REFRESH_ACCESS_TOKEN_INTERVAL,
-} from "./services/itslearning/auth/auth-service.ts"
+    REFRESH_ACCESS_TOKEN_INTERVAL
+} from "./services/itslearning/auth/auth-service.ts";
 import darkModeHandlerInitializer from "./handlers/dark-mode-handlers.ts";
 import appHandlerInitializer from "./handlers/app-handler.ts";
 import initAuthIpcHandlers from "./handlers/auth-handler.ts";
@@ -16,7 +14,7 @@ import * as fs from "fs";
 import { themeStore } from "./services/theme/theme-service.ts";
 import { WindowOptionsService } from './services/window-options/window-options-service';
 import { startProxyDevServer } from "./utils/proxy-dev-server.ts";
-import initDownloadHandlers from "./handlers/download-handler.ts";
+import initDownloadHandlers, { openLinkInBrowser } from "./handlers/download-handler.ts";
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -75,11 +73,14 @@ async function createMainWindow() {
         console.log(handler)
         // handles office download links
         const origin = new URL(handler.url)
-        const referrer = new URL(handler.referrer.url)
-        if (origin.hostname === 'eu1wopi.itslearning.com' || referrer.hostname.includes('officeapps.live.com')) {
+        let referrer
+        try {
+            referrer = new URL(handler.referrer.url)
+        } catch (e) {
+            console.error(e)
+        }
+        if (origin.hostname === 'eu1wopi.itslearning.com' || referrer?.hostname.includes('officeapps.live.com')) {
             if (!win) return { action: 'deny' }
-
-            console.log(handler)
 
             return {
                 action: 'allow',
@@ -97,6 +98,10 @@ async function createMainWindow() {
                 }
             }
         } else {
+            if (origin.hostname.includes('itslearning.com')) {
+                // open externall in default browser
+                openLinkInBrowser(handler.url, true)
+            }
             return { action: 'deny' }
         }
     });
@@ -225,8 +230,8 @@ app.on('will-finish-launching', function () {
     // Protocol handler for osx
     app.on('open-url', function (event, url) {
         event.preventDefault()
-        /*deeplinkingUrl = url
-        logEverywhere('open-url# ' + deeplinkingUrl)*/
+        // deeplinkingUrl = url
+        logEverywhere('open-url# ' + url)
     })
 })
 

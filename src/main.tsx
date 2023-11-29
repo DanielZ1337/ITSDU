@@ -6,34 +6,35 @@ import Providers from "@/components/providers.tsx";
 import axios from "axios";
 import { lazy } from "react";
 
-import ErrorPage from "@/error-page.tsx";
-import Profile from "@/routes/profile.tsx";
-import Index from "@/routes/index.tsx";
-import Calendar from "@/routes/calendar.tsx";
-import SuspenseWrapper from "@/components/suspense-wrapper.tsx";
-import Messages from "@/components/messages/messages.tsx";
-import CourseLayout from "@/components/course/layout/course-layout.tsx";
-import CourseIndex from "@/routes/course/course-index.tsx";
-import CourseParticipants from "@/routes/course/course-participants.tsx";
-import CourseInformation from "@/routes/course/course-information.tsx";
-import CourseResources from "@/routes/course/course-resources";
-import CourseRootResources from "@/routes/course/course-root-resources";
-import CourseTasks from "@/routes/course/course-tasks.tsx";
-import PersonIndex from "@/routes/person/person-index.tsx";
-import CoursesIndex from "@/routes/courses.tsx";
-import CourseError from "./routes/course/course-error";
-import Layout from "./components/layout";
-import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
-import NotificationUpdates from "./routes/notifications/notification-updates";
-import CourseAnnouncements from "./routes/course/course-announcements";
-import NotificationID from "./routes/notifications/notification-id";
-import CourseAnnouncementError from "./routes/course/errors-pages/course-announcement-error";
-import CourseSchedule from "./routes/course/course-schedule";
-import OfficeDocument from "./routes/documents/office-document";
-import OtherFiles from "./routes/documents/other-files";
-import Overview from "./routes/overview";
-
 const Documents = lazy(() => import("./routes/documents/documents"));
+const Layout = lazy(() => import("./components/layout"));
+const ErrorPage = lazy(() => import("@/error-page.tsx"));
+const Profile = lazy(() => import("@/routes/profile.tsx"));
+const Index = lazy(() => import("@/routes/index.tsx"));
+const Calendar = lazy(() => import("@/routes/calendar.tsx"));
+const SuspenseWrapper = lazy(() => import("@/components/suspense-wrapper.tsx"));
+const Messages = lazy(() => import("@/components/messages/messages.tsx"));
+const CourseLayout = lazy(() => import("@/components/course/layout/course-layout.tsx"));
+const CourseIndex = lazy(() => import("@/routes/course/course-index.tsx"));
+const CourseParticipants = lazy(() => import("@/routes/course/course-participants.tsx"));
+const CourseInformation = lazy(() => import("@/routes/course/course-information.tsx"));
+const CourseResources = lazy(() => import("@/routes/course/course-resources"));
+const CourseRootResources = lazy(() => import("@/routes/course/course-root-resources"));
+const CourseTasks = lazy(() => import("@/routes/course/course-tasks.tsx"));
+const PersonIndex = lazy(() => import("@/routes/person/person-index.tsx"));
+const CoursesIndex = lazy(() => import("@/routes/courses.tsx"));
+const CourseError = lazy(() => import("./routes/course/course-error"));
+import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
+const NotificationUpdates = lazy(() => import("./routes/notifications/notification-updates"));
+const CourseAnnouncements = lazy(() => import("./routes/course/course-announcements"));
+const NotificationID = lazy(() => import("./routes/notifications/notification-id"));
+const CourseAnnouncementError = lazy(() => import("./routes/course/errors-pages/course-announcement-error"));
+const CourseSchedule = lazy(() => import("./routes/course/course-schedule"));
+const OfficeDocument = lazy(() => import("./routes/documents/office-document"));
+const OtherFiles = lazy(() => import("./routes/documents/other-files"));
+const Overview = lazy(() => import("./routes/overview"));
+
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const router = createHashRouter([
     {
@@ -186,7 +187,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <RouterProvider fallbackElement={<ErrorPage />} future={{
                 v7_startTransition: true,
             }} router={router} />
-            {/* <ReactQueryDevtools position="left" /> */}
+            <ReactQueryDevtools position="left" />
             {/* </React.StrictMode> */}
         </SuspenseWrapper>
     </Providers>

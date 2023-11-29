@@ -1,8 +1,8 @@
-import PdfRenderer from '@/components/resources/pdf/pdf-renderer'
 import useResourceByElementID from '@/queries/resources/useResourceByElementID'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, useEffect, useRef, useState } from 'react'
+const PdfRenderer = lazy(() => import('@/components/resources/pdf/pdf-renderer'))
 import { useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, m } from 'framer-motion';
 import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'
 import { useResizeDetector } from 'react-resize-detector'
 import AISidePanel from '@/components/ai-chat/ai-sidepanel'
@@ -10,6 +10,7 @@ import { useAtom } from 'jotai'
 import { customPDFrendererAtom } from '@/atoms/default-pdf-renderer'
 import { ArrowLeftToLine, ArrowRightToLine, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Loader } from '@/components/ui/loader';
 
 export default function Documents() {
     const { elementId } = useParams();
@@ -49,7 +50,7 @@ export default function Documents() {
             return (
                 <div className="flex h-full w-full items-center justify-center">
                     <div className="h-10 w-10">
-                        <Loader2 className={"stroke-foreground shrink-0 h-6 w-6 animate-spin m-auto"} />
+                        <Loader className={"m-auto"} />
                     </div>
                 </div>
             )
@@ -76,6 +77,7 @@ export default function Documents() {
             {useCustomPDFRenderer ? (
                 <PdfRenderer
                     url={data?.url}
+                    filename={data?.name}
                     aiSidepanelWidth={aiSidepanelWidth ?? 0}
                     externalIsLoading={isLoading}
                     containerWidth={containerWidth}
@@ -88,13 +90,13 @@ export default function Documents() {
             <div className="flex h-full w-full flex-1"
                 ref={aiSidepanelRef}
             >
-                <motion.div className="flex h-full max-h-full flex-1 flex-row overflow-hidden"
+                <m.div className="flex h-full max-h-full flex-1 flex-row overflow-hidden"
                     initial={false}
                     animate={{ width: aiSidepanel ? '33vw' : 0 }}
                     transition={{ duration: 0.2 }}
                 >
                     <AISidePanel elementId={elementId} />
-                </motion.div>
+                </m.div>
             </div>
         </div>
     )
