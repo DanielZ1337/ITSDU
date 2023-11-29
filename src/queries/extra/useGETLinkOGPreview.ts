@@ -1,7 +1,7 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { TanstackKeys } from "../../types/tanstack-keys";
-import { GETLinkOGPreview, GETLinkOGPreviewApiUrl } from "@/types/api-types/extra/GETLinkOGPreview";
+import {TanstackKeys} from "../../types/tanstack-keys";
+import {GETLinkOGPreview, GETLinkOGPreviewApiUrl} from "@/types/api-types/extra/GETLinkOGPreview";
 
 export default function useGETLinkOGPreview(href: string, queryConfig?: UseQueryOptions<GETLinkOGPreview, Error, GETLinkOGPreview, string[]>) {
     return useQuery([TanstackKeys.LinkOGPreview, href], async () => {

@@ -1,14 +1,14 @@
-import { GETstarredCoursesParams } from "@/types/api-types/course-cards/GETstarredCourses.ts";
-import { GETunstarredCoursesParams } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
+import {GETstarredCoursesParams} from "@/types/api-types/course-cards/GETstarredCourses.ts";
+import {GETunstarredCoursesParams} from "@/types/api-types/course-cards/GETunstarredCourses.ts";
 import useGETcourses from "@/queries/course-cards/useGETcourses.ts";
-import { ClipboardList } from "lucide-react";
+import {ClipboardList} from "lucide-react";
 import CourseCard from "@/components/course/course-card/course-card.tsx";
 
-export default function CourseCards({ config, courseCardTypes }: {
+export default function CourseCards({config, courseCardTypes}: {
     courseCardTypes: "Starred" | "Unstarred" | "All"
     config: GETstarredCoursesParams | GETunstarredCoursesParams
 }) {
-    const { data } = useGETcourses(courseCardTypes, {
+    const {data} = useGETcourses(courseCardTypes, {
         ...config,
     }, {
         suspense: true,
@@ -25,7 +25,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                 <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
                     <span
                         className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                        <ClipboardList /> No courses
+                        <ClipboardList/> No courses
                     </span>
                 </div>
             </div>
@@ -39,7 +39,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                     <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
                         <span
                             className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                            <ClipboardList /> No starred courses
+                            <ClipboardList/> No starred courses
                         </span>
                     </div>
                 </div>
@@ -51,7 +51,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                     </h1>
                     <div className={"flex flex-wrap gap-4 justify-center"}>
                         {starredCourses?.map((course) => (
-                            <CourseCard key={course.CourseId} card={course} />
+                            <CourseCard key={course.CourseId} card={course}/>
                         ))}
                     </div>
                 </div>
@@ -64,7 +64,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                     </h1>
                     <div className={"flex flex-wrap gap-4 justify-center"}>
                         {unstarredCourses?.map((course) => (
-                            <CourseCard key={course.CourseId} card={course} />
+                            <CourseCard key={course.CourseId} card={course}/>
                         ))}
                     </div>
                 </div>
@@ -74,7 +74,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                     <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
                         <span
                             className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                            <ClipboardList /> No unstarred courses
+                            <ClipboardList/> No unstarred courses
                         </span>
                     </div>
                 </div>
@@ -85,7 +85,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                     <div className={"flex flex-col w-full h-full p-4 justify-center items-center"}>
                         <span
                             className={"text-gray-500 flex gap-2 items-center justify-center text-sm sm:text-base md:text-lg font-semibold tracking-tighter"}>
-                            <ClipboardList /> No courses
+                            <ClipboardList/> No courses
                         </span>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                                 </h2>
                                 <div className={"flex flex-wrap gap-4 justify-center"}>
                                     {starredCourses?.map((course) => (
-                                        <CourseCard key={course.CourseId} card={course} />
+                                        <CourseCard key={course.CourseId} card={course}/>
                                     ))}
                                 </div>
                             </div>
@@ -112,7 +112,7 @@ export default function CourseCards({ config, courseCardTypes }: {
                                 </h2>
                                 <div className={"flex flex-wrap gap-4 justify-center"}>
                                     {unstarredCourses?.map((course) => (
-                                        <CourseCard key={course.CourseId} card={course} />
+                                        <CourseCard key={course.CourseId} card={course}/>
                                     ))}
                                 </div>
                             </div>

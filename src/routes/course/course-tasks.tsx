@@ -1,26 +1,34 @@
-import { useParams } from "react-router-dom";
-import { AnimatePresence, m } from 'framer-motion';
+import {useParams} from "react-router-dom";
+import {AnimatePresence, m} from 'framer-motion';
 import useGETcourseTasklistDailyWorkflowCompleted from "@/queries/courses/useGETcourseTasklistDailyWorkflowCompleted";
-import { Badge } from "@/components/ui/badge";
-import { FetchMoreInview } from "@/components/fetch-more-in-view";
+import {Badge} from "@/components/ui/badge";
+import {FetchMoreInview} from "@/components/fetch-more-in-view";
 import TasksCardSkeletons from "@/components/course/tasks/fallback/tasks-card-skeletons";
 
 export default function CourseTasks() {
-    const { id } = useParams()
+    const {id} = useParams()
     const courseId = Number(id)
 
     return (
-        <div className="p-4 h-full overflow-y-auto overflow-x-hidden">
-            <CompletedCourseTasks courseId={courseId} />
-        </div >
+        <div className="h-full overflow-y-auto overflow-x-hidden p-4">
+            <CompletedCourseTasks courseId={courseId}/>
+        </div>
     )
 }
 
-function CompletedCourseTasks({ courseId }: { courseId: number }) {
+function CompletedCourseTasks({courseId}: { courseId: number }) {
 
     // itslearning api doesn't support pagination for this endpoint even though they say it does so this tricks Tanstack Query into thinking it doesn't have anymore pages based on the page size, total and page index
     const PAGE_SIZE = 9999
-    const { data, isError, isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = useGETcourseTasklistDailyWorkflowCompleted({
+    const {
+        data,
+        isError,
+        isLoading,
+        error,
+        hasNextPage,
+        fetchNextPage,
+        isFetchingNextPage
+    } = useGETcourseTasklistDailyWorkflowCompleted({
         courseId,
         PageIndex: 1,
         // itslearning api doesn't support pagination for this endpoint even though they say it does so this tricks Tanstack Query into thinking it doesn't have anymore pages based on the page size, total and page index
@@ -41,7 +49,7 @@ function CompletedCourseTasks({ courseId }: { courseId: number }) {
 
     if (isError) {
         return (
-            <div className="p-4 flex-1 flex flex-col items-center justify-center">
+            <div className="flex flex-1 flex-col items-center justify-center p-4">
                 <h1 className="text-2xl font-bold">Error</h1>
                 <p className="text-gray-600">{error?.message}</p>
             </div>
@@ -50,7 +58,7 @@ function CompletedCourseTasks({ courseId }: { courseId: number }) {
 
     if (data?.pages[0].EntityArray.length === 0) {
         return (
-            <div className="p-4 flex-1 flex flex-col items-center justify-center">
+            <div className="flex flex-1 flex-col items-center justify-center p-4">
                 <h1 className="text-2xl font-bold">No tasks</h1>
                 <p className="text-gray-600">You have no tasks in this course.</p>
             </div>
@@ -62,51 +70,51 @@ function CompletedCourseTasks({ courseId }: { courseId: number }) {
             {isLoading ?
                 <m.div
                     key={'tasks-skeletons'}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    className="w-full h-fit mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 "
+                    animate={{opacity: 1, y: 0}}
+                    exit={{opacity: 0, y: 20}}
+                    className="mx-auto grid h-fit w-full grid-cols-1 gap-4 lg:grid-cols-2"
                 >
-                    <TasksCardSkeletons count={10} />
+                    <TasksCardSkeletons count={10}/>
                 </m.div>
                 : <m.div
                     key={'tasks'}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    transition={{ duration: 0.5 }}
-                    className="w-full h-fit mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4"
+                    initial={{opacity: 0, y: 20}}
+                    animate={{opacity: 1, y: 0}}
+                    exit={{opacity: 0, y: 20}}
+                    transition={{duration: 0.5}}
+                    className="mx-auto grid h-fit w-full grid-cols-1 gap-4 lg:grid-cols-2"
                 >
                     {data?.pages.map((page) => (
                         page.EntityArray.map((task, i) => (
                             <m.div
                                 key={task.TaskId}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.5, delay: 0.1 * i }}
-                                className="bg-foreground/10 rounded-md shadow p-6 overflow-hidden"
+                                initial={{opacity: 0, y: 20}}
+                                animate={{opacity: 1, y: 0}}
+                                transition={{duration: 0.5, delay: 0.1 * i}}
+                                className="overflow-hidden rounded-md p-6 shadow bg-foreground/10"
                             >
 
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center space-x-2 overflow-hidden">
+                                    <div className="flex items-center overflow-hidden space-x-2">
                                         <img
                                             src={task.IconUrl}
                                             alt="Task Icon"
-                                            className="w-6 h-6 object-contain"
+                                            className="h-6 w-6 object-contain"
                                         />
                                         <a
                                             href={task.TaskUrl}
                                             rel="noopener noreferrer"
                                             target="_blank"
-                                            className="truncate text-blue-500 hover:underline block mt-2"
+                                            className="mt-2 block truncate text-blue-500 hover:underline"
                                         >
-                                            <h3 className="text-lg font-semibold truncate">{task.TaskTitle}</h3>
+                                            <h3 className="truncate text-lg font-semibold">{task.TaskTitle}</h3>
                                         </a>
                                     </div>
                                     <Badge variant={'success'}>
                                         Completed
                                     </Badge>
                                 </div>
-                                <p className="dark:text-gray-300 text-gray-700 mt-2">{task.CourseTitle}</p>
+                                <p className="mt-2 text-gray-700 dark:text-gray-300">{task.CourseTitle}</p>
                                 {/* {task.Deadline && (
                             <p className="text-gray-600">
                                 Deadline: {new Date(task.Deadline).toLocaleDateString()}
@@ -120,7 +128,7 @@ function CompletedCourseTasks({ courseId }: { courseId: number }) {
                             hasNextPage={hasNextPage}
                             fetchNextPage={fetchNextPage}
                             isFetchingNextPage={isFetchingNextPage}
-                            className="py-4 text-center text-gray-600 text-sm"
+                            className="py-4 text-center text-sm text-gray-600"
                         >
                             {isFetchingNextPage ? 'Loading more...' : hasNextPage ? 'Load more' : ''}
                         </FetchMoreInview>

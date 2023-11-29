@@ -1,9 +1,9 @@
 import useGETcourseLastThreeUpdatedResources from '@/queries/courses/useGETcourseLastThreeUpdatedResources'
-import { useParams } from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 
 export default function Overview() {
-    const { courseId } = useParams()
-    const { data } = useGETcourseLastThreeUpdatedResources({
+    const {courseId} = useParams()
+    const {data} = useGETcourseLastThreeUpdatedResources({
         courseId: Number(courseId),
         elementType: 0,
     }, {

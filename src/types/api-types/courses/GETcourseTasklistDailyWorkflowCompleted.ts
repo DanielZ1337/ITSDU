@@ -1,5 +1,5 @@
-import { apiUrl } from "@/lib/utils.ts";
-import { ItslearningRestApiEntitiesTaskDailyWorkflow } from "../utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
+import {apiUrl} from "@/lib/utils.ts";
+import {ItslearningRestApiEntitiesTaskDailyWorkflow} from "../utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
 
 const GETcourseTasklistDailyWorkflowCompletedApiEndpoint = "restapi/personal/tasklistdailyworkflow/{courseId}/completed/v1?PageIndex={PageIndex}&PageSize={PageSize}"
 

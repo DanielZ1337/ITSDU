@@ -1,6 +1,6 @@
 //https://if.oembeditslearning.com/iframely?v=1&app=1&lazy=1&iframe=1&url=
 
-import { apiUrl } from "@/lib/utils";
+import {apiUrl} from "@/lib/utils";
 
 const GETLinkOGPreviewApiEndpoint = 'https://if.oembeditslearning.com/iframely';
 

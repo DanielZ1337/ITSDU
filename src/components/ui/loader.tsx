@@ -1,8 +1,8 @@
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
-import { Loader2, LucideProps } from "lucide-react"
+import {cva, type VariantProps} from "class-variance-authority"
+import {Loader2, LucideProps} from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import {cn} from "@/lib/utils"
 
 const loaderVariants = cva(
     "animate-spin shrink-0",
@@ -36,14 +36,14 @@ const loaderVariants = cva(
 
 interface LoaderProps
     extends Omit<LucideProps, "size">,
-    VariantProps<typeof loaderVariants> {
+        VariantProps<typeof loaderVariants> {
 }
 
 const Loader = React.forwardRef<SVGSVGElement, LoaderProps>(
-    ({ className, variant, size, ...props }, ref) => {
+    ({className, variant, size, ...props}, ref) => {
         return (
             <Loader2
-                className={cn(loaderVariants({ variant, size, className }))}
+                className={cn(loaderVariants({variant, size, className}))}
                 ref={ref}
                 {...props}
             />
@@ -53,4 +53,4 @@ const Loader = React.forwardRef<SVGSVGElement, LoaderProps>(
 
 Loader.displayName = "Loader"
 
-export { Loader, loaderVariants }
+export {Loader, loaderVariants}

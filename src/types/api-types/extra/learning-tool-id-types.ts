@@ -3,8 +3,8 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import {NavigateFunction, useNavigate} from "react-router-dom";
 
 export enum LearningToolIdTypes {
     LINK = 50010,

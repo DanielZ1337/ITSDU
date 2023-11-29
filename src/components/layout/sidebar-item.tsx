@@ -1,28 +1,28 @@
-import { useSidebar } from "@/hooks/atoms/useSidebar";
-import { NavLink } from "react-router-dom";
-import { motion } from 'framer-motion';
-import { cn } from "@/lib/utils";
-import { NavigationType } from "@/types/navigation-link";
+import {useSidebar} from "@/hooks/atoms/useSidebar";
+import {NavLink} from "react-router-dom";
+import {motion} from 'framer-motion';
+import {cn} from "@/lib/utils";
+import {NavigationType} from "@/types/navigation-link";
 
-export default function SidebarItem({ title, icon, href, end = true, disabled }: NavigationType) {
-    const { sidebarActive } = useSidebar()
+export default function SidebarItem({title, icon, href, end = true, disabled}: NavigationType) {
+    const {sidebarActive} = useSidebar()
 
     return (
         <NavLink
             onClick={(e) => disabled && e.preventDefault()}
             className={({
-                isActive,
-                isPending
-            }) => cn('animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground', isActive ? 'text-foreground' : 'text-foreground/60', isPending && 'opacity-50', disabled && 'opacity-50 cursor-not-allowed')}
+                            isActive,
+                            isPending
+                        }) => cn('animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground', isActive ? 'text-foreground' : 'text-foreground/60', isPending && 'opacity-50', disabled && 'opacity-50 cursor-not-allowed')}
             to={href}
             end={end}
         >
-            {({ isActive }) => (
+            {({isActive}) => (
                 <>
                     {isActive && (
                         <motion.div
                             layoutId="active-pill"
-                            transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+                            transition={{type: "spring", stiffness: 400, damping: 30, mass: 0.8}}
                             className={cn("inset-0 absolute bg-accent rounded-lg bg-gradient-to-tr from-accent to-background/60 transition-shadow", sidebarActive && 'shadow-md shadow-primary/5')}
                         />
                     )}

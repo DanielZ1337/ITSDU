@@ -1,9 +1,9 @@
-import { cn } from '@/lib/utils'
-import { useTheme } from 'next-themes'
-import { Loader } from './ui/loader'
+import {cn} from '@/lib/utils'
+import {useTheme} from 'next-themes'
+import {Loader} from './ui/loader'
 
 export default function CodeBlockFallback() {
-    const { resolvedTheme } = useTheme()
+    const {resolvedTheme} = useTheme()
     return (
         <pre
             className={cn(
@@ -11,7 +11,7 @@ export default function CodeBlockFallback() {
                 //hsl(230, 1%, 98%)
                 resolvedTheme === "dark" ? "bg-black" : "bg-[#f6f8fa]",
             )}>
-            <Loader className="m-auto" />
+            <Loader className="m-auto"/>
         </pre>
     )
 }

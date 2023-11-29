@@ -2,19 +2,19 @@ import useGETnotificationElements from "@/queries/notifications/useGETnotificati
 import {
     ItslearningRestApiEntitiesStreamItemV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2";
-import { AnimatePresence, m } from 'framer-motion';
-import { useState } from "react";
+import {AnimatePresence, m} from 'framer-motion';
+import {useState} from "react";
 import LightbulletinCard from "../lightbulletin/lightbulletin-card";
-import { getRelativeTimeString } from "@/lib/utils";
+import {getRelativeTimeString} from "@/lib/utils";
 import NotificationElement from "./notification-element";
 import NotificationTitle from "./notification-title";
 import * as linkify from "linkifyjs";
 
-export default function NotificationCard({ notification, showLocation = true }: {
+export default function NotificationCard({notification, showLocation = true}: {
     notification: ItslearningRestApiEntitiesStreamItemV2,
     showLocation?: boolean,
 }) {
-    const { data } = useGETnotificationElements({
+    const {data} = useGETnotificationElements({
         notificationId: notification.NotificationId,
         PageSize: 9999,
     }, {
@@ -46,22 +46,22 @@ export default function NotificationCard({ notification, showLocation = true }: 
             )}
             <AnimatePresence>
                 {showElements && <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
+                    initial={{height: 0, opacity: 0}}
+                    animate={{height: 'auto', opacity: 1}}
+                    exit={{height: 0, opacity: 0}}
                     className="overflow-hidden"
                 >
                     {data!.EntityArray.slice(1).map((element, i) => (
                         <m.div key={element.ElementId} className="mt-2"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{
-                                opacity: 1,
-                                y: 0,
-                                transition: { delay: i * 0.1, type: "tween", duration: 0.3 }
-                            }}
-                            exit={{ opacity: 0, y: 10 }}
+                               initial={{opacity: 0, y: 10}}
+                               animate={{
+                                   opacity: 1,
+                                   y: 0,
+                                   transition: {delay: i * 0.1, type: "tween", duration: 0.3}
+                               }}
+                               exit={{opacity: 0, y: 10}}
                         >
-                            <NotificationElement element={element} />
+                            <NotificationElement element={element}/>
                         </m.div>
                     ))}
                 </m.div>}
@@ -69,15 +69,15 @@ export default function NotificationCard({ notification, showLocation = true }: 
             <AnimatePresence>
                 {showLightBulletin && notification.LightBulletin && (
                     <m.div
-                        initial={{ opacity: 0, y: 10, height: 0 }}
-                        animate={{ opacity: 1, y: 0, height: 'auto' }}
-                        exit={{ opacity: 0, y: 10, height: 0 }}
-                        transition={{ type: "tween", duration: 0.3 }}
+                        initial={{opacity: 0, y: 10, height: 0}}
+                        animate={{opacity: 1, y: 0, height: 'auto'}}
+                        exit={{opacity: 0, y: 10, height: 0}}
+                        transition={{type: "tween", duration: 0.3}}
                         className="overflow-hidden"
                     >
                         <div className="mt-2">
                             <LightbulletinCard links={linkify.find(notification.LightBulletin.Text)}
-                                bulletin={notification.LightBulletin} />
+                                               bulletin={notification.LightBulletin}/>
                         </div>
                     </m.div>
                 )}

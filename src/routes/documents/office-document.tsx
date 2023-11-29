@@ -1,19 +1,18 @@
-import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import {useEffect} from "react";
+import {useParams} from "react-router-dom";
 import useOfficeDocumentByElementId from '../../queries/resources/useOfficeDocumentByElementID';
-import { Loader } from "@/components/ui/loader";
+import {Loader} from "@/components/ui/loader";
 
 export default function OfficeDocument() {
-    const { elementId } = useParams();
+    const {elementId} = useParams();
     if (!elementId) {
         return <p>Invalid ID</p>;
     }
-    const { isLoading, isError, data } = useOfficeDocumentByElementId(elementId)
+    const {isLoading, isError, data} = useOfficeDocumentByElementId(elementId)
 
     useEffect(() => {
         if (data) {
-            const { accessToken, downloadUrl } = data;
+            const {accessToken, downloadUrl} = data;
             const accessTokenInput = document.createElement('input');
             accessTokenInput.name = 'access_token';
             accessTokenInput.value = accessToken;
@@ -67,7 +66,7 @@ export default function OfficeDocument() {
     if (isLoading || !data) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader size={"md"} className={"m-auto"} />
+                <Loader size={"md"} className={"m-auto"}/>
             </div>
         )
     }
