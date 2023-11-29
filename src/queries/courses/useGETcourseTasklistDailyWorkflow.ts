@@ -1,18 +1,19 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useInfiniteQuery, UseInfiniteQueryOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETcourseTasklistDailyWorkflow,
     GETcourseTasklistDailyWorkflowApiUrl,
     GETcourseTasklistDailyWorkflowParams
 } from "@/types/api-types/courses/GETcourseTasklistDailyWorkflow.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
-export default function useGETcourseTasklistDailyWorkflow(params: GETcourseTasklistDailyWorkflowParams, queryConfig?: UseQueryOptions<GETcourseTasklistDailyWorkflow, Error, GETcourseTasklistDailyWorkflow, string[]>) {
+export default function useGETcourseTasklistDailyWorkflow(params: GETcourseTasklistDailyWorkflowParams, queryConfig?: UseInfiniteQueryOptions<GETcourseTasklistDailyWorkflow, Error, GETcourseTasklistDailyWorkflow, GETcourseTasklistDailyWorkflow, string[]>) {
 
-    return useQuery([TanstackKeys.CourseTasklistDailyWorkflow, ...getQueryKeysFromParamsObject(params)], async () => {
+    return useInfiniteQuery([TanstackKeys.CourseTasklistDailyWorkflow, ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.PageIndex || 0 }) => {
         const res = await axios.get(GETcourseTasklistDailyWorkflowApiUrl({
-            ...params
+            ...params,
+            PageIndex: pageParam
         }), {
             params: {
                 "access_token": await getAccessToken() || '',
@@ -24,6 +25,20 @@ export default function useGETcourseTasklistDailyWorkflow(params: GETcourseTaskl
 
         return res.data;
     }, {
-        ...queryConfig
+        ...queryConfig,
+        getNextPageParam: (lastPage) => {
+            if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+                return lastPage.CurrentPageIndex + 1;
+            } else {
+                return undefined;
+            }
+        },
+        getPreviousPageParam: (firstPage) => {
+            if (firstPage.CurrentPageIndex > 0) {
+                return firstPage.CurrentPageIndex - 1;
+            } else {
+                return undefined;
+            }
+        }
     })
 }

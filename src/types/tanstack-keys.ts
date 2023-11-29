@@ -18,6 +18,7 @@ export enum TanstackKeys {
     CourseResourcesBySearch = "courseResourcesBySearch",
     CourseRootResources = "courseRootResources",
     CourseTasklistDailyWorkflow = "courseTasklistDailyWorkflow",
+    CourseTasklistDailyWorkflowCompleted = "courseTasklistDailyWorkflowCompleted",
     Courses = "courses",
     DELETEinstantMessage = "DELETEinstantMessage",
     DELETEinstantMessageThread = "DELETEinstantMessageThread",
