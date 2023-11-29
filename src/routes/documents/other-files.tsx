@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import useResourceByElementID, { ResourceFileType } from '@/queries/resources/useResourceByElementID';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
-import CodeBlock from '@/components/code-block';
+// import CodeBlock from '@/components/code-block';
+const CodeBlock = lazy(() => import("@/components/code-block"));
 import { Loader } from '@/components/ui/loader';
 
 function createDataColumns(data: any[]): ColumnDef<any>[] {

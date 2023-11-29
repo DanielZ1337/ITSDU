@@ -1,10 +1,10 @@
-import { useState } from "react"
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
-import { cn } from "@/lib/utils"
-import CopyButton from "@/components/copy-button"
+import { useState } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { cn } from "@/lib/utils";
+import CopyButton from "@/components/copy-button";
 import { customCodeTheme } from "@/styles/custom-code-theme";
 import { useTheme } from "next-themes";
-import { AnimatePresence, motion, m } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 
 
 function CodeBlock({

@@ -1,6 +1,6 @@
-import PdfRenderer from '@/components/resources/pdf/pdf-renderer'
 import useResourceByElementID from '@/queries/resources/useResourceByElementID'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, useEffect, useRef, useState } from 'react'
+const PdfRenderer = lazy(() => import('@/components/resources/pdf/pdf-renderer'))
 import { useParams } from 'react-router-dom'
 import { motion, m } from 'framer-motion';
 import { useAISidepanel } from '@/hooks/atoms/useAISidepanel'

@@ -188,9 +188,6 @@ export default function PdfRenderer({
     return (
         <div className='flex h-full w-full flex-col items-center shadow bg-background'
             ref={ref}
-            style={{
-                maxWidth: aiSidepanel ? `calc(100% - ${aiSidepanelWidth}px)` : '100%',
-            }}
         >
             <div className='flex h-14 w-full items-center justify-between border-b px-2'
                 ref={toolbarRef}
