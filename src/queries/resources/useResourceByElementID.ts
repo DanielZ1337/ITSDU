@@ -15,7 +15,6 @@ export type ResourceFileType = {
 export default function useResourceByElementID(elementId: number | string, queryConfig?: UseQueryOptions<ResourceFileType, Error, ResourceFileType, string[]>) {
 
     return useQuery([TanstackKeys.ResourceByElementID, elementId.toString()], async () => {
-        await new Promise(resolve => setTimeout(resolve, 10000))
         const file = await window.resources.file.get(elementId)
         const { arrayBuffer, type } = file
         const blob = new Blob([arrayBuffer], { type })
