@@ -1,13 +1,14 @@
 import { Badge } from '@/components/ui/badge';
+import { ItslearningRestApiEntitiesTaskDailyWorkflow } from '@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflow';
 import { m } from 'framer-motion';
 
-export function CourseTaskCard({ task, completed }: { task: any, completed?: boolean }) {
+export function CourseTaskCard({ task, completed, index }: { task: ItslearningRestApiEntitiesTaskDailyWorkflow, completed?: boolean, index?: number }) {
     return (
         <m.div
             key={task.TaskId}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.2, delay: index ? index * 0.1 : 0 }}
             className="overflow-hidden rounded-md p-6 shadow bg-foreground/10"
         >
             <div className="flex items-center justify-between">

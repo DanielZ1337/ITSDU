@@ -44,7 +44,7 @@ export default function CourseAnnouncements() {
             </div>
             <div className="p-6">
                 <div className="flex flex-col gap-4">
-                    {isLoading ? <NotificationsCardsFallback count={PAGE_SIZE} /> :
+                    {isLoading ? <NotificationsCardsFallback count={DEFAULT_PAGE_SIZE} /> :
                         <NotificationCards filteredNotifications={filteredNotifications} />}
                 </div>
                 {!isLoading && (

@@ -40,9 +40,7 @@ export default function CourseTasks() {
                 </div>
             </div>
             <div className="mt-4">
-                <Suspense fallback={<CourseTasksSkeletonsAnimated PageSize={TASKS_PAGE_SIZE} />}>
-                    {activeTab === 'active' ? <CourseTasksActive TASKS_PAGE_SIZE={TASKS_PAGE_SIZE} courseId={courseId} /> : <CourseTasksCompleted TASKS_PAGE_SIZE={TASKS_PAGE_SIZE} courseId={courseId} />}
-                </Suspense>
+                {activeTab === 'active' ? <CourseTasksActive PageSize={TASKS_PAGE_SIZE} courseId={courseId} /> : <CourseTasksCompleted PageSize={TASKS_PAGE_SIZE} courseId={courseId} />}
             </div>
         </div>
     )

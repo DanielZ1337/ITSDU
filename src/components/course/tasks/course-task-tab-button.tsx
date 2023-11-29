@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { m } from 'framer-motion';
+import { m, motion } from 'framer-motion';
 
 export function CourseTaskTabButton({ active, onClick, children }: { active: boolean, onClick: () => void, children: React.ReactNode }) {
     return (
@@ -13,7 +13,7 @@ export function CourseTaskTabButton({ active, onClick, children }: { active: boo
                 {children}
             </Button>
             {active && (
-                <m.div
+                <motion.div
                     layoutId="active-tab-indicator"
                     transition={{ duration: 0.2 }}
                     className="z-10 absolute bottom-1 w-1/2 h-1 bg-purple-500 rounded-full"
