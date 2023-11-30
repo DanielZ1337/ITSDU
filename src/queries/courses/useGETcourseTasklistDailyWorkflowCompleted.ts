@@ -11,7 +11,6 @@ import { TanstackKeys } from "@/types/tanstack-keys";
 export default function useGETcourseTasklistDailyWorkflowCompleted(params: GETcourseTasklistDailyWorkflowCompletedParams, queryConfig?: UseInfiniteQueryOptions<GETcourseTasklistDailyWorkflowCompleted, Error, GETcourseTasklistDailyWorkflowCompleted, GETcourseTasklistDailyWorkflowCompleted, string[]>) {
 
     return useInfiniteQuery([TanstackKeys.CourseTasklistDailyWorkflowCompleted, ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.PageIndex || 0 }) => {
-        await new Promise(resolve => setTimeout(resolve, 3000))
         const res = await axios.get(GETcourseTasklistDailyWorkflowCompletedApiUrl({
             ...params,
             PageIndex: pageParam

@@ -19,7 +19,7 @@ export function CourseTasksCompleted({ courseId, PageSize }: { courseId: number,
         isFetchingNextPage
     } = useGETcourseTasklistDailyWorkflowCompleted({
         courseId,
-        PageIndex: 0,
+        PageIndex: 1,
         // disable the paramter, as itslearning says it is supported but it is not
         PageSize: 9999,
     });
