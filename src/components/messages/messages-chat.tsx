@@ -4,16 +4,36 @@ import useGETinstantMessagesForThread from '@/queries/messages/useGETinstantMess
 import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView'
 import { Loader } from '../ui/loader'
 import { DEFAULT_PAGE_SIZE } from '@/lib/constants'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { GETinstantMessagesForThread } from '@/types/api-types/messages/GETinstantMessagesForThread'
+import { InfiniteData } from '@tanstack/react-query'
 
 export default function MessageChat({ threadId }: {
     threadId: number
 }) {
-    const { data: messages, isFetchingNextPage, fetchNextPage, hasNextPage } = useGETinstantMessagesForThread({
+    const { data, isFetchingNextPage, fetchNextPage, hasNextPage } = useGETinstantMessagesForThread({
         threadId,
         pageSize: DEFAULT_PAGE_SIZE,
     }, {
         suspense: true,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMount: true,
+        refetchInterval: 1000 * 10,
+        refetchIntervalInBackground: true,
     })
+
+    let messages = useRef<InfiniteData<GETinstantMessagesForThread>>(data!)
+
+    // data.pages.filter where the id in messages doesn't exist
+    const newMessages = data?.pages.filter((page) => {
+        return !messages.current.pages.some((message) => message.Messages.EntityArray.some((message) => message.MessageId === page.Messages.EntityArray[0].MessageId))
+    })
+
+    messages.current = {
+        ...messages.current,
+        pages: [...newMessages!, ...messages.current.pages]
+    }
 
     const user = useUser()
 
@@ -21,8 +41,9 @@ export default function MessageChat({ threadId }: {
 
     return (
         <>
-            {messages?.pages.map((page) => page.Messages.EntityArray.map((message) => (
-                <MessageChatMessage me={user!.PersonId === message.CreatedBy}
+            {messages.current.pages.map((page) => page.Messages.EntityArray.map((message) => (
+                <MessageChatMessage
+                    me={user!.PersonId === message.CreatedBy}
                     id={message.MessageId}
                     pictureUrl={message.CreatedByAvatar}
                     messageText={message.Text}

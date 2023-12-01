@@ -3,8 +3,8 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
-import {NavigateFunction, useNavigate} from "react-router-dom";
+import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 
 export enum LearningToolIdTypes {
     LINK = 50010,
@@ -28,6 +28,7 @@ enum IconTypesForResources {
     PPTX = 3,
     PDF = 12,
     MP4 = 13,
+    JPEG = 11,
 }
 
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
@@ -45,27 +46,32 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
             // check file extension
             const fileName = typeof resource === "number" || typeof resource === "string" ? resource : resource.Title
             const fileExtension = getFileExtension(String(fileName))
-            /* switch (fileExtension) {
-                case FileExtensionTypes.TXT:
-                    navigate(`/documents/text/${elementId}`)
-                    break;
-                case FileExtensionTypes.CSV:
-                    navigate(`/documents/text/${elementId}`)
-                    break;
-                case FileExtensionTypes.XML:
-                    navigate(`/xml-files/${elementId}`)
-                    break;
-                case FileExtensionTypes.JSON:
-                    navigate(`/documents/text/${elementId}`)
-                    break;
-                case FileExtensionTypes.JAVA:
-                    navigate(`/java-files/${elementId}`)
-                    break;
+            // switch statement for if the file extension is an image or a video
+            switch (fileExtension) {
+                case FileExtensionTypes.MP4:
+                    // (itslearning doesn't support previewing mkv files, so we can't get the resource url from the scraped DOM)
+                    // case FileExtensionTypes.MKV: 
+                    navigate(`/documents/media/${elementId}`, {
+                        state: {
+                            type: "video"
+                        }
+                    })
+                    break
+                case FileExtensionTypes.JPG:
+                case FileExtensionTypes.PNG:
+                case FileExtensionTypes.GIF:
+                case FileExtensionTypes.SVG:
+                case FileExtensionTypes.JPEG:
+                    navigate(`/documents/media/${elementId}`, {
+                        state: {
+                            type: "image"
+                        }
+                    })
+                    break
                 default:
-                    navigate(`/files/${elementId}`)
-                    break;
-            } */
-            navigate(`/documents/other/${elementId}`)
+                    navigate(`/documents/other/${elementId}`)
+                    break
+            }
         } else {
             if (typeof resource === "number") return
             const url = typeof resource === "string" ? resource : resource.Url

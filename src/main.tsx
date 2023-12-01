@@ -1,12 +1,13 @@
-import {getAccessToken} from "@/lib/utils.ts";
+import { getAccessToken } from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client';
 import '@/index.css';
-import {createHashRouter, RouterProvider} from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import Providers from "@/components/providers.tsx";
 import axios from "axios";
-import {lazy} from "react";
-import {GETunreadInstantMessagesCountApiUrl} from "./types/api-types/messages/GETunreadInstantMessagesCount";
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools';
+import { lazy, useEffect, useState } from "react";
+import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import MediaDocuments from "./routes/documents/media-documents";
 
 const Documents = lazy(() => import("./routes/documents/documents"));
 const Layout = lazy(() => import("./components/layout"));
@@ -32,149 +33,154 @@ const CourseAnnouncements = lazy(() => import("./routes/course/course-announceme
 const NotificationID = lazy(() => import("./routes/notifications/notification-id"));
 const CourseAnnouncementError = lazy(() => import("./routes/course/errors-pages/course-announcement-error"));
 const CourseSchedule = lazy(() => import("./routes/course/course-schedule"));
-const OfficeDocument = lazy(() => import("./routes/documents/office-document"));
+const OfficeDocuments = lazy(() => import("./routes/documents/office-documents"));
 const OtherFiles = lazy(() => import("./routes/documents/other-files"));
 const Overview = lazy(() => import("./routes/overview"));
 
 const router = createHashRouter([
     {
-        element: <Layout/>,
-        errorElement: <ErrorPage/>,
+        element: <Layout />,
+        errorElement: <ErrorPage />,
         children: [
             {
                 path: "/",
-                element: <Index/>,
-                errorElement: <ErrorPage/>,
+                element: <Index />,
+                errorElement: <ErrorPage />,
                 index: true,
             },
             {
                 path: "/documents",
-                errorElement: <ErrorPage/>,
+                errorElement: <ErrorPage />,
                 children: [
                     {
                         path: "pdf/:elementId",
-                        element: <SuspenseWrapper><Documents/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
+                        element: <Documents />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "office/:elementId",
-                        element: <SuspenseWrapper><OfficeDocument/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
+                        element: <OfficeDocuments />,
+                        errorElement: <ErrorPage />,
+                    },
+                    {
+                        path: "media/:elementId",
+                        element: <MediaDocuments />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "other/:elementId",
-                        element: <SuspenseWrapper><OtherFiles/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
-                    }
+                        element: <OtherFiles />,
+                        errorElement: <ErrorPage />,
+                    },
                 ]
             },
             {
-                path: "/overview/:courseId",
-                element: <SuspenseWrapper><Overview/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                path: "/overview",
+                element: <Overview />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "/person/:id",
-                element: <SuspenseWrapper><PersonIndex/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                element: <PersonIndex />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "/courses",
-                element: <SuspenseWrapper><CoursesIndex/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                element: <CoursesIndex />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "/updates",
-                errorElement: <ErrorPage/>,
+                errorElement: <ErrorPage />,
                 children: [
                     {
-                        element: <SuspenseWrapper><NotificationUpdates/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
+                        element: <NotificationUpdates />,
+                        errorElement: <ErrorPage />,
                         index: true,
                     },
                     {
                         path: ":notificationId",
-                        element: <SuspenseWrapper><NotificationID/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
+                        element: <NotificationID />,
+                        errorElement: <ErrorPage />,
                     }
                 ]
             },
             {
                 path: "/calendar",
-                element: <SuspenseWrapper><Calendar/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                element: <Calendar />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "/courses/:id",
-                element: <SuspenseWrapper><CourseLayout/></SuspenseWrapper>,
-                errorElement: <CourseError/>,
+                element: <CourseLayout />,
+                errorElement: <CourseError />,
                 children: [
                     {
-                        element: <SuspenseWrapper><CourseIndex/></SuspenseWrapper>,
+                        element: <CourseIndex />,
                         index: true,
-                        errorElement: <ErrorPage/>,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "resources",
-                        errorElement: <ErrorPage/>,
+                        errorElement: <ErrorPage />,
                         children: [
                             {
-                                element: <SuspenseWrapper><CourseRootResources/></SuspenseWrapper>,
-                                errorElement: <ErrorPage/>,
+                                element: <CourseRootResources />,
+                                errorElement: <ErrorPage />,
                                 index: true,
                             },
                             {
                                 path: ":folderId",
-                                element: <SuspenseWrapper><CourseResources/></SuspenseWrapper>,
-                                errorElement: <ErrorPage/>,
+                                element: <CourseResources />,
+                                errorElement: <ErrorPage />,
                             },
                         ]
                     },
                     {
                         path: "schedule",
-                        element: <SuspenseWrapper><CourseSchedule/></SuspenseWrapper>,
-                        errorElement: <ErrorPage/>,
+                        element: <CourseSchedule />,
+                        errorElement: <ErrorPage />,
                     },
                     {
-                        path: "announcements",
-                        element: <SuspenseWrapper><CourseAnnouncements/></SuspenseWrapper>,
-                        errorElement: <CourseAnnouncementError/>,
+                        path: "updates",
+                        element: <CourseAnnouncements />,
+                        errorElement: <CourseAnnouncementError />,
                     },
                     {
                         path: "course-information",
-                        element: <SuspenseWrapper><CourseInformation/></SuspenseWrapper>,
+                        element: <CourseInformation />,
                     },
                     {
                         path: "tasks",
-                        element: <SuspenseWrapper><CourseTasks/></SuspenseWrapper>,
+                        element: <CourseTasks />,
                     },
                     {
                         path: "participants",
-                        element: <SuspenseWrapper>
-                            <CourseParticipants/>
-                        </SuspenseWrapper>,
+                        element:
+                            <CourseParticipants />
+                        ,
                     },
                     {
                         path: "*",
-                        element: <ErrorPage/>,
-                        errorElement: <ErrorPage/>,
+                        element: <ErrorPage />,
+                        errorElement: <ErrorPage />,
                     }
                 ],
             },
             {
                 path: "/profile",
-                element: <SuspenseWrapper><Profile/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                element: <Profile />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "/messages/:id?",
-                element: <SuspenseWrapper><Messages/></SuspenseWrapper>,
-                errorElement: <ErrorPage/>,
+                element: <Messages />,
+                errorElement: <ErrorPage />,
             },
             {
                 path: "*",
-                element: <ErrorPage/>,
-                errorElement: <ErrorPage/>,
+                element: <ErrorPage />,
+                errorElement: <ErrorPage />,
             }
         ]
     },
@@ -184,10 +190,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Providers>
         <SuspenseWrapper max>
             {/* <React.StrictMode> */}
-            <RouterProvider fallbackElement={<ErrorPage/>} future={{
+            <RouterProvider fallbackElement={<ErrorPage />} future={{
                 v7_startTransition: true,
-            }} router={router}/>
-            <ReactQueryDevtools position="left"/>
+            }} router={router} />
+            <ReactQueryDevtools position="left" />
             {/* </React.StrictMode> */}
         </SuspenseWrapper>
     </Providers>
@@ -238,7 +244,7 @@ setInterval(async () => {
 }, 1000 * 15) // 15 seconds
 
 // Remove Preload scripts loading
-postMessage({payload: 'removeLoading'}, '*')
+postMessage({ payload: 'removeLoading' }, '*')
 
 // Use contextBridge
 window.ipcRenderer.on('main-process-message', (_event, message) => {

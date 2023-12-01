@@ -99,19 +99,24 @@ export class AuthService {
         })
 
         const { access_token, refresh_token } = data
+        if (!access_token || !refresh_token) throw new Error('Invalid refresh token')
         this.setToken('access_token', access_token)
         this.setToken('refresh_token', refresh_token)
     }
 
     public getAuthCodeFromURI(URI: string) {
-        // const regex = /itsl-itslearning:\/\/login\/\?state=damn&code=(.*)/gm;
-        const redirectURI = RegexEscape(`${ITSLEARNING_REDIRECT_URI}/?`);
-        const stateCode = RegexEscape(ITSLEARNING_OAUTH_STATE);
-        const states = RegexEscape(`state=${stateCode}&code=`);
-        const escaped = redirectURI + states + '(.*)';
-        const escapedRegex = new RegExp(escaped, 'gm');
-        const matches = escapedRegex.exec(URI);
-        return matches?.[1];
+        try {
+            const url = new URL(URI);
+            const params = new URLSearchParams(url.search);
+            const code = params.get("code");
+            const state = params.get("state");
+            if (state === ITSLEARNING_OAUTH_STATE && code) {
+                return code;
+            }
+        } catch (error) {
+            console.error(error);
+        }
+        return null;
     }
 
     public async loadSigninPage(win?: BrowserWindow | null) {

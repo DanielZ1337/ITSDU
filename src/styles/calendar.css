@@ -34,8 +34,12 @@
     z-index: 10 !important;
 }
 
+/* .rbc-time-content {
+    border-top: 10px !important;
+} */
+
 .rbc-button-link {
-    @apply mt-3.5;
+    @apply h-full w-full;
 }
 
 .rbc-event {

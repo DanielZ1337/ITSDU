@@ -1,18 +1,18 @@
-import {Calendar as ReactBigCalendar, momentLocalizer} from 'react-big-calendar';
+import { Calendar as ReactBigCalendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import '@/styles/calendar.css';
 import useGETcalendarEvents from '@/queries/calendar/useGETcalendarEvents';
-import {cn} from "@/lib/utils.ts";
-import {Spinner} from "@nextui-org/spinner";
+import { cn } from "@/lib/utils.ts";
+import { Spinner } from "@nextui-org/spinner";
 import {
     ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Calendar.CalendarEventV2.ts";
-import {convert} from "html-to-text";
+import { convert } from "html-to-text";
 import he from "he";
-import {Button} from "@/components/ui/button.tsx";
-import {useEffect, useState} from "react";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button.tsx";
+import { useEffect, useState } from "react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
     ItslearningRestApiEntitiesPersonalCalendarEvent
 } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.CalendarEvent';
@@ -21,7 +21,7 @@ const localizer = momentLocalizer(moment);
 
 export default function CalendarIndex() {
 
-    const {data, isLoading} = useGETcalendarEvents({
+    const { data, isLoading } = useGETcalendarEvents({
         fromDate: new Date(2021, 1),
     }, {
         keepPreviousData: true,
@@ -39,11 +39,11 @@ export default function CalendarIndex() {
 
     const [event, setEvent] = useState(null)
     return (
-        <div className={"flex flex-1 flex-col h-full"}>
+        <div className={"flex flex-1 flex-col h-full p-4"}>
             {/*<div className={"flex flex-row gap-4 w-full justify-end mt-4 sm:mt-8 md:mt-12 lg:mt-16 xl:mt-20 h-[3vh"}>*/}
             {/*    <div className={"w-1/3 relative"}>*/}
             {/*        <Input*/}
-            <Calendar events={events} isLoading={isLoading}/>
+            <Calendar events={events} isLoading={isLoading} />
         </div>
     );
 }
@@ -51,38 +51,56 @@ export default function CalendarIndex() {
 type CalendarEvent =
     ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2
     | ItslearningRestApiEntitiesPersonalCalendarEvent & {
-    EventId: number
-    EventType: number
-    LocationId: number
-    LocationGroupId: number
-    HidePersonalWordForPersonalEvent: boolean
-}
+        EventId: number
+        EventType: number
+        LocationId: number
+        LocationGroupId: number
+        HidePersonalWordForPersonalEvent: boolean
+    }
 
-export function Calendar({events, isLoading}: {
+type ViewsType = "month" | "week" | "day" | "agenda"
+
+export function Calendar({ events, isLoading, views, defaultView, showToolbar, showHeader, className }: {
     events?: CalendarEvent[] | ItslearningRestApiEntitiesPersonalCalendarEvent[],
-    isLoading?: boolean
+    isLoading?: boolean,
+    views?: ViewsType[],
+    defaultView?: ViewsType,
+    showToolbar?: boolean,
+    showHeader?: boolean,
+    className?: string
 }) {
+    const [view, setView] = useState<ViewsType>(defaultView || "month")
+
+    useEffect(() => {
+        if (!showHeader && showHeader !== undefined) {
+            // remove div with class rbc-time-header
+            const timeHeader = document.getElementsByClassName("rbc-time-header")[0]
+            if (timeHeader) timeHeader.remove()
+        }
+    }, [])
+
+
+    console.log(events)
     return (
-        <div className={"relative flex flex-1 flex-col h-full"}>
+        <div className={cn("relative flex flex-1 flex-col h-full", className)}>
             {isLoading && (
                 <div className={"absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "}>
-                    <Spinner size={"lg"}/>
+                    <Spinner size={"lg"} />
                 </div>
             )}
             <ReactBigCalendar
+                toolbar={showToolbar}
                 localizer={localizer}
                 events={events}
                 startAccessor="FromDate"
                 endAccessor="ToDate"
                 titleAccessor={"EventTitle"}
-                style={{height: "100vh"}}
-                onSelectEvent={(event) => {
-                    console.log(event)
-                }}
+                style={{ height: "100%" }}
+                onView={(view) => setView(view as any)}
                 min={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 8)}
                 max={new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 18)}
-                views={["month", "week", "day", "agenda"]}
-                // view={"month"}
+                views={views || ["month", "week", "day", "agenda"]}
+                view={view}
                 components={{
                     header: (props) => {
 
@@ -94,14 +112,20 @@ export function Calendar({events, isLoading}: {
                         const dayOfWeek = moment(date).format("ddd")
                         const dayOfMonth = moment(date).format("D")
                         return (
-                            <div>
-                                <span className={"text-gray-500 text-medium font-semibold "}>
+                            <div
+                                className={cn("flex items-center justify-center gap-2 h-full px-2 py-1.5")}
+                            >
+                                <span className={"text-gray-500 text-medium font-semibold"}>
                                     {dayOfWeek}
                                 </span>
-                                <span
-                                    className={cn("text-sm font-semibold px-2 py-1.5", isCurrentDate && "ml-2 bg-primary text-primary-foreground rounded-full")}>
-                                    {dayOfMonth}
-                                </span>
+                                {view === "week" && (
+                                    <div className={cn("w-7 h-7 flex items-center justify-center", isCurrentDate && "bg-primary text-primary-foreground rounded-full")}>
+                                        <span
+                                            className={cn("text-center text-sm font-semibold")}>
+                                            {dayOfMonth}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         )
                     },
@@ -177,13 +201,13 @@ export function Calendar({events, isLoading}: {
     )
 }
 
-function CustomToolBar({...props}) {
+function CustomToolBar({ ...props }) {
 
     //{date, view, views, label, onView, onNavigate, localizer}
 
     const weekNumber = moment(props.date).week()
     return (
-        <div className={"flex flex-col"}>
+        <div className={"flex flex-col pb-2"}>
             <div className={"flex flex-row justify-between items-center"}>
                 <span className={"text-xl font-semibold"}>
                     {props.label} (Week {weekNumber})
@@ -202,7 +226,7 @@ function CustomToolBar({...props}) {
     )
 }
 
-function EventCard({event}: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
+function EventCard({ event }: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
     return (
         <div className={"flex flex-col p-2 bg-purple-500 rounded border-2 border-purple-800"}>
             <span className={"text-white font-semibold text-sm"}>
@@ -212,7 +236,7 @@ function EventCard({event}: { event: ItslearningRestApiEntitiesPersonalCalendarC
     )
 }
 
-function CustomAgendaView({...props}) {
+function CustomAgendaView({ ...props }) {
     console.log(props)
 
     return (

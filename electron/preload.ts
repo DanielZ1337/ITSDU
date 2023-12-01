@@ -93,6 +93,9 @@ contextBridge.exposeInMainWorld('resources', {
     },
     file: {
         get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-file', elementId)
+    },
+    media: {
+        get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-media', elementId)
     }
 })
 
@@ -119,6 +122,9 @@ declare global {
                     name: string;
                     type: string;
                 }>
+            },
+            media: {
+                get: (elementId: number | string) => Promise<string>
             }
         }
         darkMode: {

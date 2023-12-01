@@ -22,20 +22,6 @@ export default function MessagesChatInputsField() {
     const [uploadProgress, setUploadProgress] = useState<number>(0)
     const [, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
 
-    // TODO: add some kind of check to see if the message can be replied to
-    const { data } = useGETinstantMessagesForThread({
-        threadId: currentChat as number,
-        pageSize: 1,
-    }, {
-        suspense: true,
-    })
-
-    const messageCanReply = !data?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage || data?.pages[0].Messages.EntityArray[0].MessageThreadParticipants !== null
-
-    if (!messageCanReply) {
-        return null
-    }
-
     const startSimulatedProgress = useCallback(() => {
         setUploadProgress(0)
 
@@ -164,6 +150,30 @@ export default function MessagesChatInputsField() {
 
         return () => window.removeEventListener('keydown', handleSendShortcut)
     }, [handleSubmit])
+
+    // TODO: add some kind of check to see if the message can be replied to
+    const { data } = useGETinstantMessagesForThread({
+        threadId: currentChat as number,
+        pageSize: 1,
+    })
+
+    const showRef = useRef<boolean>(true)
+
+    useEffect(() => {
+        const messageCanReply = !data?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage || data?.pages[0].Messages.EntityArray[0].MessageThreadParticipants !== null
+
+        if (!messageCanReply) {
+            toast({
+                title: "Error",
+                description: "This message cannot be replied to",
+                variant: "destructive",
+                duration: 3000,
+            })
+            showRef.current = false
+        }
+    }, [data])
+
+    if (!showRef.current) return null
 
     return (
         <div className="flex max-h-64 flex-col border-t p-4">

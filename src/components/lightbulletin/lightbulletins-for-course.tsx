@@ -2,45 +2,41 @@ import useGETlightbulletinsForCourse from "@/queries/lightbulletin-course/useGET
 import LightbulletinCard from "@/components/lightbulletin/lightbulletin-card.tsx";
 import * as linkify from 'linkifyjs';
 
-export default function LightbulletinsForCourse({courseId}: {
+export default function LightbulletinsForCourse({ courseId }: {
     courseId: number
 }) {
 
-    const {data} = useGETlightbulletinsForCourse({
+    const { data } = useGETlightbulletinsForCourse({
         courseId: courseId
     }, {
         suspense: true,
     })
 
-    /*const ref = React.useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        function setHeightOfScrollElement() {
-            const height = window.innerHeight - ref.current!.getBoundingClientRect().top - 20
-            ref.current!.style.height = `${height}px`
-        }
-
-        setHeightOfScrollElement()
-        window.addEventListener('resize', setHeightOfScrollElement)
-        ref.current?.addEventListener('mouseover', setHeightOfScrollElement)
-        return () => {
-            window.removeEventListener('resize', setHeightOfScrollElement)
-            ref.current?.removeEventListener('mouseover', setHeightOfScrollElement)
-        }
-    }, []);*/
-
     return (
-        /*<ScrollShadow
-            ref={ref}
-            style={{height: 'calc(100vh - 100px)'}}
-            className={"w-full my-2 p-2 scrollbar hover:scrollbar-thumb-foreground/15 active:scrollbar-thumb-foreground/10 scrollbar-thumb-foreground/20 scrollbar-w-2 scrollbar-thumb-rounded-full"}>*/
-        <div className={"grid grid-cols-1 gap-4"}>
+        <div className={"grid grid-cols-1 gap-6 p-4"}>
             {data!.EntityArray.map((bulletin, idx) => {
+                // find the date of the previous bulletin and compare it to the current one. When the month is different make a new header
+                const previousBulletin = data!.EntityArray[idx - 1]
+                const previousBulletinDate = previousBulletin ? new Date(previousBulletin.PublishedDate) : null
+                const currentBulletinDate = new Date(bulletin.PublishedDate)
+                const hasNextBulletin = data!.EntityArray[idx - 1] !== undefined
+                const shouldMakeNewHeader = previousBulletinDate === null || previousBulletinDate.getMonth() !== currentBulletinDate.getMonth()
+
+
                 return (
-                    <LightbulletinCard links={linkify.find(bulletin.Text)} bulletin={bulletin} key={idx}/>
+                    <div key={bulletin.LightBulletinId}>
+                        {shouldMakeNewHeader && hasNextBulletin && (
+                            <div className={"flex items-center justify-center pb-6"}>
+                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />                                <div className={"bg-foreground/5 rounded-md px-4 py-1 mx-4"}>
+                                    <div className={"text-xs font-medium text-foreground/50"}>{currentBulletinDate.toLocaleString('default', { month: 'long' })}</div>
+                                </div>
+                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />
+                            </div>
+                        )}
+                        <LightbulletinCard links={linkify.find(bulletin.Text)} bulletin={bulletin} />
+                    </div>
                 )
             })}
         </div>
-        // </ScrollShadow>
     )
 }

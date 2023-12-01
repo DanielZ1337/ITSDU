@@ -243,7 +243,30 @@ function downloadStartHandler() {
     })
 }
 
+function getVideoLinkHandler() {
+    ipcMain.handle("resources:get-media", async (_, elementId: string | number) => {
+        try {
+            const win = CreateScrapeWindow({
+                show: true,
+            })
+            const ssoLink = await getResourceLinkByElementID(elementId)
+            await win.loadURL(ssoLink)
+            const iframeSrc = await win.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
+            await win.loadURL(iframeSrc)
+            const videoIframeSrc = await win.webContents.executeJavaScript(`document.querySelector('iframe').src`)
+            await win.loadURL(videoIframeSrc)
+            const mediaLink = await win.webContents.executeJavaScript(`document.querySelector('body').querySelector('[src]').src`)
+            win.close()
+            return mediaLink
+        } catch (e) {
+            console.error(e)
+            return null
+        }
+    })
+}
+
 export default function initDownloadHandlers() {
+    getVideoLinkHandler()
     openExternalHandler()
     getPathHandler()
     openShellHandler()

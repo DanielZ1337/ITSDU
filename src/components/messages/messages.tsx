@@ -1,8 +1,8 @@
-import {Suspense} from "react";
+import { Suspense } from "react";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
-import {currentChatAtom, currentChatEnum} from '@/atoms/current-chat.ts';
-import {useAtom} from "jotai";
-import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
+import { currentChatAtom, currentChatEnum } from '@/atoms/current-chat.ts';
+import { useAtom } from "jotai";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import MessageChat from "./messages-chat";
@@ -20,19 +20,19 @@ export default function Messages() {
     return (
         <div className="flex h-full w-full flex-1 overflow-y-hidden">
             <div className="w-1/4 overflow-x-hidden overflow-y-hidden border-r">
-                <MessagesSidebar/>
+                <MessagesSidebar />
             </div>
             <div className="flex w-3/4 flex-col">
-                <MessagesChatHeader recipientsSelected={recipientsSelected}/>
+                <MessagesChatHeader recipientsSelected={recipientsSelected} />
                 <div className="flex flex-1 flex-col-reverse gap-4 overflow-y-auto overflow-x-hidden p-4">
                     {isExistingChat && (
-                        <Suspense fallback={<MessagesChatFallback/>}>
-                            <MessageChat threadId={currentChat}/>
+                        <Suspense fallback={<MessagesChatFallback />}>
+                            <MessageChat threadId={currentChat} />
                         </Suspense>
                     )}
                 </div>
                 {isNewChatOrExistingChat && (
-                    <MessagesChatInputsField key={currentChat}/>
+                    <MessagesChatInputsField key={currentChat} />
                 )}
             </div>
         </div>
