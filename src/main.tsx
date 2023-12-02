@@ -8,6 +8,7 @@ import { lazy, useEffect, useState } from "react";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import MediaDocuments from "./routes/documents/media-documents";
+import CoursePlans from "./routes/course/course-plans";
 
 const Documents = lazy(() => import("./routes/documents/documents"));
 const Layout = lazy(() => import("./components/layout"));
@@ -159,6 +160,11 @@ const router = createHashRouter([
                         element:
                             <CourseParticipants />
                         ,
+                    },
+                    {
+                        path: "plans",
+                        element: <CoursePlans />,
+                        errorElement: <ErrorPage />,
                     },
                     {
                         path: "*",

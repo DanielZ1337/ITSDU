@@ -45,7 +45,7 @@ export async function getResourceDownloadLink(url: string, customWin?: BrowserWi
 
 export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(url: string, customWin?: BrowserWindow) {
     const win = customWin || CreateScrapeWindow({
-        show: true,
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             javascript: false,
@@ -94,11 +94,19 @@ export async function getResourceAsFile(url: string, cookies: Cookie[]) {
 }
 
 export async function getResourceLinkByElementID(elementId: string | number) {
+    const ssoLink = await getSSOLink(`https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`)
+
+    if (!ssoLink) throw new Error('Could not get resource link')
+
+    return ssoLink
+}
+
+export async function getSSOLink(url: string) {
     const authService = AuthService.getInstance()
     const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
         params: {
             'access_token': authService.getToken('access_token'),
-            'url': `https://sdu.itslearning.com/LearningToolElement/ViewLearningToolElement.aspx?LearningToolElementId=${elementId}`
+            'url': url
         }
     })
 

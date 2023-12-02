@@ -1,6 +1,6 @@
-import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     GETstarredCourses,
     GETstarredCoursesApiUrl,
@@ -11,7 +11,7 @@ import {
     GETunstarredCoursesApiUrl,
     GETunstarredCoursesParams
 } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All" = "Starred", params: GETstarredCoursesParams | GETunstarredCoursesParams, queryConfig?: UseQueryOptions<GETstarredCourses | GETunstarredCourses, Error, GETstarredCourses | GETunstarredCourses, string[]>) {
 
@@ -37,14 +37,15 @@ export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All"
                 }
             });
 
-            console.log(unstarredRes);
+            const starredData = starredRes.data as GETstarredCourses;
+            const unstarredData = unstarredRes.data as GETunstarredCourses;
 
             if (unstarredRes.status !== 200) throw new Error(unstarredRes.statusText);
 
             return {
                 EntityArray: [
-                    ...starredRes.data.EntityArray,
-                    ...unstarredRes.data.EntityArray
+                    ...starredData.EntityArray,
+                    ...unstarredData.EntityArray
                 ],
                 Total: unstarredRes.data.Total + starredRes.data.Total,
                 CurrentPageIndex: unstarredRes.data.CurrentPageIndex,
@@ -64,7 +65,7 @@ export default function useGETcourses(isStarred: "Starred" | "Unstarred" | "All"
 
             if (res.status !== 200) throw new Error(res.statusText);
 
-            return res.data;
+            return res.data as GETstarredCourses | GETunstarredCourses;
         }
     }, {
         suspense: true,

@@ -1,29 +1,29 @@
-import {Divider} from "@nextui-org/divider";
-import {useIntersectionObserver} from "@uidotdev/usehooks";
-import React, {SetStateAction, useEffect, useState} from "react";
-import {cn} from "@/lib/utils";
-import {DividerProps} from "@nextui-org/react";
-import {ComputerIcon, MoonIcon, SettingsIcon, SunIcon} from "lucide-react";
-import {useTheme} from "next-themes";
-import {useUser} from '@/hooks/atoms/useUser.ts';
-import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
-import {Dialog, DialogContent, DialogOverlay} from "@/components/ui/dialog";
-import {Tabs, TabsList} from "@/components/ui/tabs";
-import {Button} from "@/components/ui/button";
-import {LanguageCombobox} from "../language-combobox";
-import {Input} from "@/components/ui/input";
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
-import {ScrollArea} from "../ui/scroll-area";
-import {useAtom} from "jotai";
-import {customPDFrendererAtom} from "@/atoms/default-pdf-renderer";
-import {calculateShadowPosition, Shadow, ShadowPosition} from "../scroll-shadow";
-import {useMeasureScrollPosition} from "@/hooks/useMeasureScrollPosition";
+import { Divider } from "@nextui-org/divider";
+import { useIntersectionObserver } from "@uidotdev/usehooks";
+import React, { SetStateAction, useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { DividerProps } from "@nextui-org/react";
+import { ComputerIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useUser } from '@/hooks/atoms/useUser.ts';
+import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { Tabs, TabsList } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { LanguageCombobox } from "../language-combobox";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { ScrollArea } from "../ui/scroll-area";
+import { useAtom } from "jotai";
+import { customPDFrendererAtom } from "@/atoms/default-pdf-renderer";
+import { calculateShadowPosition, Shadow, ShadowPosition } from "../scroll-shadow";
+import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
 import SettingsSidebarButton from "./settings-sidebar-button";
 import SettingsCloseButton from "./settings-close-button";
 
 export default function SettingsModal() {
 
-    const {showSettingsModal, setShowSettingsModal} = useShowSettingsModal()
+    const { showSettingsModal, setShowSettingsModal } = useShowSettingsModal()
 
     return (
         <Dialog
@@ -31,14 +31,14 @@ export default function SettingsModal() {
             onOpenChange={setShowSettingsModal}
         >
             <DialogOverlay
-                className="data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-none data-[state=open]:!duration-500"/>
+                className="data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-none data-[state=open]:!duration-500" />
             <DialogContent
-                customClose={<SettingsCloseButton/>}
+                customClose={<SettingsCloseButton />}
                 className="flex flex-1 flex-col h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0"
             >
-                <div className="absolute h-14 w-full bg-transparent drag"/>
+                <div className="absolute h-14 w-full bg-transparent drag" />
                 <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-10 py-14">
-                    <SettingsCustom/>
+                    <SettingsCustom />
                 </div>
             </DialogContent>
         </Dialog>
@@ -67,11 +67,11 @@ function SettingsCustom() {
             className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
             {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
             <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection}
-                  orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
+                orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
                 <TabsList
                     className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
                     <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
-                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"}/>
+                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
                     <SettingsSidebarButton
                         currentSection={memoizedCurrentSection}
                         value="Preferences"
@@ -94,7 +94,7 @@ function SettingsCustom() {
                         setCurrentHover={setCurrentHover}
                     />
                 </TabsList>
-                <Divider orientation={"vertical"} className={"hidden md:block h-full"}/>
+                <Divider orientation={"vertical"} className={"hidden md:block h-full"} />
                 <ScrollArea
                     className={"w-full overflow-y-auto relative rounded-l-md transition-all duration-75"}
                     // scrollbarClassName="absolute"
@@ -110,55 +110,55 @@ function SettingsCustom() {
                         <div className="flex w-full flex-col gap-4">
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Dark Mode</h6>
-                                <DarkModeSetting/>
+                                <DarkModeSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Language</h6>
-                                <LanguageSetting/>
+                                <LanguageSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Home Page</h6>
-                                <DefaultHomePageSetting/>
+                                <DefaultHomePageSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Use Custom PDF Renderer</h6>
-                                <CustomPDFRendererSetting/>
+                                <CustomPDFRendererSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Enable/Disable Uploading AI Chats</h6>
-                                <UploadAIChatsSetting/>
+                                <UploadAIChatsSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Sort Type for Course Cards</h6>
-                                <DefaultSortTypeSetting/>
+                                <DefaultSortTypeSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default AI Chat Sidepanel</h6>
-                                <DefaultChatSidepanelSetting/>
+                                <DefaultChatSidepanelSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Sort Type for Updates</h6>
-                                <DefaultSortTypeUpdatesSetting/>
+                                <DefaultSortTypeUpdatesSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Interval for Refreshing Access Tokens (in ms)</h6>
-                                <RefreshAccessTokenIntervalSetting/>
+                                <RefreshAccessTokenIntervalSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Custom Titlebar Buttons</h6>
-                                <CustomTitlebarButtons/>
+                                <CustomTitlebarButtons />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Custom Titlebar</h6>
-                                <CustomTitlebarSetting/>
+                                <CustomTitlebarSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Resource Open Type</h6>
-                                <DefaultResourceOpenTypeSetting/>
+                                <DefaultResourceOpenTypeSetting />
                             </div>
                         </div>
                     </SettingsCardSection>
-                    <Shadow position={shadowPosition}/>
+                    <Shadow position={shadowPosition} />
                 </ScrollArea>
             </Tabs>
         </div>
@@ -166,14 +166,14 @@ function SettingsCustom() {
 }
 
 function DarkModeSetting() {
-    const {theme} = useTheme()
+    const { theme } = useTheme()
 
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
-                <ThemeChangeButton theme={"light"}/>
-                <ThemeChangeButton theme={"dark"}/>
-                <ThemeChangeButton theme={"system"}/>
+                <ThemeChangeButton theme={"light"} />
+                <ThemeChangeButton theme={"dark"} />
+                <ThemeChangeButton theme={"system"} />
             </div>
             <div className="flex flex-row gap-2">
                 <span className="text-foreground">Current Theme: {theme}</span>
@@ -206,7 +206,7 @@ function DefaultHomePageSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -231,7 +231,7 @@ function CustomPDFRendererSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -252,7 +252,7 @@ function UploadAIChatsSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -273,7 +273,7 @@ function CustomTitlebarButtons() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -294,7 +294,7 @@ function CustomTitlebarSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -317,7 +317,7 @@ function DefaultSortTypeSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -339,7 +339,7 @@ function DefaultChatSidepanelSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -362,7 +362,7 @@ function DefaultSortTypeUpdatesSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -387,7 +387,7 @@ function DefaultResourceOpenTypeSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme"/>
+                <SelectValue placeholder="Theme" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -470,7 +470,7 @@ function RefreshAccessTokenIntervalSetting() {
     )
 }
 
-function SettingsSidebar({currentSection, rootRef}: {
+function SettingsSidebar({ currentSection, rootRef }: {
     currentSection: string,
     rootRef: React.RefObject<HTMLDivElement>
 }) {
@@ -505,14 +505,14 @@ function SettingsSidebar({currentSection, rootRef}: {
             className={"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 p-2 min-w-[20vw] overflow-x-auto md:overflow-y-auto"}
             ref={navRef}>
             <SettingsNavTitle title={"Preferences"}
-                              icon={<SettingsIcon/>} {...SettingsNavTitleSettings} />
+                icon={<SettingsIcon />} {...SettingsNavTitleSettings} />
             <Divider {...navDividerSettings} />
         </nav>
     )
 }
 
-function ThemeChangeButton({theme}: { theme: string }) {
-    const {setTheme, theme: currentTheme} = useTheme()
+function ThemeChangeButton({ theme }: { theme: string }) {
+    const { setTheme, theme: currentTheme } = useTheme()
 
     const ThemeIconClassName = 'w-6 h-6 text-foreground'
     return (
@@ -524,14 +524,14 @@ function ThemeChangeButton({theme}: { theme: string }) {
             variant={"ghost"}
             size={"lg"}
         >
-            {theme === 'light' && <SunIcon className={ThemeIconClassName}/>}
-            {theme === 'dark' && <MoonIcon className={ThemeIconClassName}/>}
-            {theme === 'system' && <ComputerIcon className={ThemeIconClassName}/>}
+            {theme === 'light' && <SunIcon className={ThemeIconClassName} />}
+            {theme === 'dark' && <MoonIcon className={ThemeIconClassName} />}
+            {theme === 'system' && <ComputerIcon className={ThemeIconClassName} />}
         </Button>
     )
 }
 
-function SettingsCardSection({title, children, setCurrentSection, root}: {
+function SettingsCardSection({ title, children, setCurrentSection, root }: {
     title: string,
     children?: React.ReactNode,
     setCurrentSection?: React.Dispatch<SetStateAction<string>>,
@@ -567,7 +567,7 @@ interface SettingsNavTitleProps {
     icon?: React.ReactNode
 }
 
-function SettingsNavTitle({currentSection, title, navbarRef, rootRef, isMobile, icon}: SettingsNavTitleProps) {
+function SettingsNavTitle({ currentSection, title, navbarRef, rootRef, isMobile, icon }: SettingsNavTitleProps) {
     const ref = React.useRef<HTMLHeadingElement>(null)
 
     useEffect(() => {

@@ -8,6 +8,7 @@ import {
     getResourceAsFile,
     getResourceDownloadLink,
     getResourceLinkByElementID,
+    getSSOLink,
     ITSLEARNING_RESOURCE_URL
 } from "../../electron/services/itslearning/resources/resources.ts";
 import { VITE_DEV_SERVER_URL } from "../main.ts";
@@ -246,9 +247,7 @@ function downloadStartHandler() {
 function getVideoLinkHandler() {
     ipcMain.handle("resources:get-media", async (_, elementId: string | number) => {
         try {
-            const win = CreateScrapeWindow({
-                show: true,
-            })
+            const win = CreateScrapeWindow()
             const ssoLink = await getResourceLinkByElementID(elementId)
             await win.loadURL(ssoLink)
             const iframeSrc = await win.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
@@ -265,7 +264,137 @@ function getVideoLinkHandler() {
     })
 }
 
+function getCoursePlansHandler() {
+    ipcMain.handle("resources:get-course-plans", async (_, courseId: string | number) => {
+        try {
+            const win = CreateScrapeWindow()
+            //https://sdu.itslearning.com/Planner/Planner.aspx?CourseID=29221
+            const payloadUrl = new URL(`https://sdu.itslearning.com/Planner/Planner.aspx`)
+            payloadUrl.searchParams.append('CourseID', courseId.toString())
+            payloadUrl.searchParams.append('Filter', '-1')
+            const ssoLink = await getSSOLink(payloadUrl.toString())
+            await win.loadURL(ssoLink)
+            const body = await win.webContents.executeJavaScript(`document.querySelector('body').innerHTML`)
+            win.close()
+
+            const cheerio = await import('cheerio')
+
+            // Assuming your HTML snippet is stored in a variable named 'htmlContent'
+            const $ = cheerio.load(body)
+
+            // Select all elements with class 'itsl-topic'
+            const courses = $('.itsl-topic')
+
+            const coursePlans: object[] = []
+
+            // Loop through each course to extract information
+            courses.each((_, element) => {
+                const attributes = element.attribs; // Get all attributes as an object
+
+                // Extract specific attributes
+                const dataTopicId = attributes['data-topic-id'];
+                const courseTitle = $(element).find('.itsl-topic-title span').text().trim();
+
+                // Extract plans count
+                const plansText = $(element).find('.itsl-topic-expander .itsl-topic-expanded-text').text().trim();
+                const plansCount = parseInt(plansText.split(' ')[0]); // Extracting the numeric part
+
+                // Extract and convert dates
+                const datesText = $(element).find('.itsl-topic-expander .itsl-topic-dates').text().trim();
+                // get the dates from the string "from 24-10-2023 to 31-10-2023"
+                const dates = datesText.split(' ').slice(1, 4);
+                const fromDateString = dates[0]
+                const toDateString = dates[2]
+
+                // Convert dates to Date objects using moment.js
+                // dynamically import moment.js
+                const moment = require('moment')
+
+                const fromDate = moment(fromDateString, 'DD-MM-YYYY').toDate()
+
+                const toDate = moment(toDateString, 'DD-MM-YYYY').toDate()
+
+                console.log('-----------------------')
+                console.log('toDate', dates[2])
+                console.log('-----------------------')
+
+                // Log extracted information
+                console.log(`Course Title: ${courseTitle}`);
+                console.log(`Data Topic ID: ${dataTopicId}`);
+                console.log(`Plans Count: ${plansCount}`);
+                console.log(`From Date: ${fromDate.toDateString()}`);
+                console.log(`To Date: ${toDate.toDateString()}`);
+
+                // Log all attributes
+                console.log('Attributes:');
+                Object.keys(attributes).forEach((attr) => {
+                    console.log(`${attr}: ${attributes[attr]}`);
+                });
+
+                const coursePlan = {
+                    dataTopicId,
+                    courseTitle,
+                    plansCount,
+                    fromDate,
+                    toDate,
+                    attributes
+                }
+
+                coursePlans.push(coursePlan)
+
+                console.log('-----------------------');
+            });
+
+            return coursePlans
+        } catch (e) {
+            console.error(e)
+            return null
+        }
+    })
+}
+
+function streamFileHandler() {
+    ipcMain.handle("resources:stream-start", async (event, elementId) => {
+        try {
+            const win = CreateScrapeWindow()
+            const ssoLink = await getResourceLinkByElementID(elementId)
+            await win.loadURL(ssoLink)
+            const cookies = await getCookiesFromDomain(win, ITSLEARNING_RESOURCE_URL)
+            const resourceLink = await getResourceDownloadLink(ssoLink, win)
+            let downloaded = 0
+
+            axios.get(resourceLink, {
+                headers: {
+                    Cookie: getFormattedCookies(cookies),
+                },
+                responseType: 'stream'
+            }).then(res => {
+                res.data.on('data', (data: ArrayBuffer) => {
+                    downloaded += Buffer.byteLength(data)
+                    console.log(downloaded)
+                    event.sender.send('resources:stream-data', { total: res.headers['content-length'], loaded: downloaded })
+                })
+                res.data.on('end', () => {
+                    // event.sender.send('downloadEnd')
+                    // win.close()
+                })
+                res.data.on('error', (error: Error) => {
+                    // event.sender.send('downloadError', error)
+                })
+            })
+
+            return resourceLink
+        } catch (e) {
+            console.error(e)
+            return null
+        }
+    })
+
+}
+
 export default function initDownloadHandlers() {
+    getCoursePlansHandler()
+    streamFileHandler()
     getVideoLinkHandler()
     openExternalHandler()
     getPathHandler()

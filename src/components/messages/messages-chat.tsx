@@ -25,6 +25,10 @@ export default function MessageChat({ threadId }: {
 
     let messages = useRef<InfiniteData<GETinstantMessagesForThread>>(data!)
 
+    useEffect(() => {
+        messages.current = data!
+    }, [threadId])
+
     // data.pages.filter where the id in messages doesn't exist
     const newMessages = data?.pages.filter((page) => {
         return !messages.current.pages.some((message) => message.Messages.EntityArray.some((message) => message.MessageId === page.Messages.EntityArray[0].MessageId))

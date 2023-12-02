@@ -21,14 +21,17 @@ export default function LightbulletinsForCourse({ courseId }: {
                 const currentBulletinDate = new Date(bulletin.PublishedDate)
                 const hasNextBulletin = data!.EntityArray[idx - 1] !== undefined
                 const shouldMakeNewHeader = previousBulletinDate === null || previousBulletinDate.getMonth() !== currentBulletinDate.getMonth()
-
+                const showYear = currentBulletinDate.getFullYear() !== new Date().getFullYear()
 
                 return (
                     <div key={bulletin.LightBulletinId}>
                         {shouldMakeNewHeader && hasNextBulletin && (
                             <div className={"flex items-center justify-center pb-6"}>
-                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />                                <div className={"bg-foreground/5 rounded-md px-4 py-1 mx-4"}>
-                                    <div className={"text-xs font-medium text-foreground/50"}>{currentBulletinDate.toLocaleString('default', { month: 'long' })}</div>
+                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />
+                                <div className={"bg-foreground/5 rounded-md px-4 py-1 mx-4"}>
+                                    <div className={"text-xs font-medium text-foreground/50 text-nowrap"}>
+                                        {currentBulletinDate.toLocaleString('default', { month: 'long', year: showYear ? 'numeric' : undefined })}
+                                    </div>
                                 </div>
                                 <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />
                             </div>

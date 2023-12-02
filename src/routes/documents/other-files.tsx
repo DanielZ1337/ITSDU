@@ -1,4 +1,4 @@
-import React, { lazy } from 'react';
+import React, { lazy, useEffect, useState } from 'react';
 import useResourceByElementID, { ResourceFileType } from '@/queries/resources/useResourceByElementID';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
@@ -243,6 +243,15 @@ export default function OtherFiles() {
     }
     const { isLoading, isError, data } = useResourceByElementID(elementId);
 
+    useEffect(() => {
+        if (data?.type === "text/csv") {
+            Papa.parse(data?.text ?? "", {
+                complete: (results) => {
+                    console.log("Finished:", results.data);
+                },
+            });
+        }
+    }, [data?.text]);
 
     if (isError) {
         return <p className="text-primary">Error</p>;

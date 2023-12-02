@@ -155,11 +155,14 @@ export default function MessagesChatInputsField() {
     const { data } = useGETinstantMessagesForThread({
         threadId: currentChat as number,
         pageSize: 1,
+    }, {
+        enabled: !isNewChat
     })
 
     const showRef = useRef<boolean>(true)
 
     useEffect(() => {
+        if (!isNewChat) return
         const messageCanReply = !data?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage || data?.pages[0].Messages.EntityArray[0].MessageThreadParticipants !== null
 
         if (!messageCanReply) {

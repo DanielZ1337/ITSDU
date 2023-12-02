@@ -1,4 +1,4 @@
-import { BookCheck, BookCopy, ClipboardList, GanttChart, Users2 } from "lucide-react"
+import { BookCheck, BookCopy, ClipboardList, Files, GanttChart, Route, Users2 } from "lucide-react"
 import {
     AiOutlineCalendar,
     AiOutlineFile,
@@ -81,7 +81,7 @@ export const courseNavLinks = [
     },
     {
         title: 'Resources',
-        icon: <AiOutlineFile className={cn("", defaultNavLinkClassName)} />,
+        icon: <Files className={cn("", defaultNavLinkClassName)} />,
         href: 'resources',
         end: false,
         disabled: false
@@ -90,6 +90,13 @@ export const courseNavLinks = [
         title: 'Tasks',
         icon: <ClipboardList className={cn("", defaultNavLinkClassName)} />,
         href: 'tasks',
+        end: false,
+        disabled: false
+    },
+    {
+        title: 'Plans',
+        icon: <Route className={cn("", defaultNavLinkClassName)} />,
+        href: 'plans',
         end: false,
         disabled: false
     },

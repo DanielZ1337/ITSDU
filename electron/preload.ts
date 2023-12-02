@@ -92,10 +92,16 @@ contextBridge.exposeInMainWorld('resources', {
         }
     },
     file: {
-        get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-file', elementId)
+        get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-file', elementId),
+        stream: {
+            start: async (elementId: number | string) => await ipcRenderer.invoke('resources:stream-start', elementId)
+        }
     },
     media: {
         get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-media', elementId)
+    },
+    coursePlans: {
+        get: async (courseId: number | string) => await ipcRenderer.invoke('resources:get-course-plans', courseId)
     }
 })
 
@@ -121,10 +127,16 @@ declare global {
                     size: number;
                     name: string;
                     type: string;
-                }>
+                }>,
+                stream: {
+                    start: (elementId: number | string) => Promise<void>
+                }
             },
             media: {
                 get: (elementId: number | string) => Promise<string>
+            },
+            coursePlans: {
+                get: (courseId: number | string) => Promise<object[]>
             }
         }
         darkMode: {
