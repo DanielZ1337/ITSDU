@@ -25,6 +25,7 @@
     "@hookform/resolvers": "^3.3.2",
     "@nextui-org/react": "^2.1.13",
     "@nextui-org/spinner": "^2.0.19",
+    "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-context-menu": "^2.1.5",

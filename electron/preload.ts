@@ -101,7 +101,10 @@ contextBridge.exposeInMainWorld('resources', {
         get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-media', elementId)
     },
     coursePlans: {
-        get: async (courseId: number | string) => await ipcRenderer.invoke('resources:get-course-plans', courseId)
+        get: async (courseId: number | string) => await ipcRenderer.invoke('resources:get-course-plans', courseId),
+        elements: {
+            get: async (courseId: number | string, topicId: number | string) => await ipcRenderer.invoke('resources:get-course-plan-elements', courseId, topicId)
+        }
     }
 })
 
@@ -137,6 +140,9 @@ declare global {
             },
             coursePlans: {
                 get: (courseId: number | string) => Promise<object[]>
+                elements: {
+                    get: (courseId: number | string, topicId: number | string) => Promise<object[]>
+                }
             }
         }
         darkMode: {

@@ -13,14 +13,16 @@ import {
 } from "../../electron/services/itslearning/resources/resources.ts";
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
+import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 
 const authService = AuthService.getInstance()
 
 export async function openLinkInBrowser(url: string, sso: boolean = true) {
     if (sso) {
-        const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1?url=${url}`, {
+        const { data } = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1`, {
             params: {
                 'access_token': authService.getToken('access_token'),
+                'url': url
             }
         })
         url = data.Url
@@ -285,7 +287,20 @@ function getCoursePlansHandler() {
             // Select all elements with class 'itsl-topic'
             const courses = $('.itsl-topic')
 
-            const coursePlans: object[] = []
+            type CoursePlan = {
+                dataTopicId: number | string;
+                courseTitle: string;
+                plansCount: number;
+                fromDate: string | null;
+                toDate: string | null;
+                attributes: {
+                    id: string
+                    class: string
+                    "data-topic-id": string
+                }
+            }
+
+            const coursePlans: CoursePlan[] = []
 
             // Loop through each course to extract information
             courses.each((_, element) => {
@@ -303,6 +318,8 @@ function getCoursePlansHandler() {
                 const datesText = $(element).find('.itsl-topic-expander .itsl-topic-dates').text().trim();
                 // get the dates from the string "from 24-10-2023 to 31-10-2023"
                 const dates = datesText.split(' ').slice(1, 4);
+                let fromDate = null;
+                let toDate = null;
                 const fromDateString = dates[0]
                 const toDateString = dates[2]
 
@@ -310,26 +327,9 @@ function getCoursePlansHandler() {
                 // dynamically import moment.js
                 const moment = require('moment')
 
-                const fromDate = moment(fromDateString, 'DD-MM-YYYY').toDate()
+                fromDate = fromDateString && moment(fromDateString, 'DD-MM-YYYY').toDate()
 
-                const toDate = moment(toDateString, 'DD-MM-YYYY').toDate()
-
-                console.log('-----------------------')
-                console.log('toDate', dates[2])
-                console.log('-----------------------')
-
-                // Log extracted information
-                console.log(`Course Title: ${courseTitle}`);
-                console.log(`Data Topic ID: ${dataTopicId}`);
-                console.log(`Plans Count: ${plansCount}`);
-                console.log(`From Date: ${fromDate.toDateString()}`);
-                console.log(`To Date: ${toDate.toDateString()}`);
-
-                // Log all attributes
-                console.log('Attributes:');
-                Object.keys(attributes).forEach((attr) => {
-                    console.log(`${attr}: ${attributes[attr]}`);
-                });
+                toDate = toDateString && moment(toDateString, 'DD-MM-YYYY').toDate()
 
                 const coursePlan = {
                     dataTopicId,
@@ -338,11 +338,9 @@ function getCoursePlansHandler() {
                     fromDate,
                     toDate,
                     attributes
-                }
+                } as CoursePlan
 
                 coursePlans.push(coursePlan)
-
-                console.log('-----------------------');
             });
 
             return coursePlans
@@ -351,6 +349,174 @@ function getCoursePlansHandler() {
             return null
         }
     })
+}
+
+function getCoursePlanElementsHandler() {
+    ipcMain.handle("resources:get-course-plan-elements", async (_, courseId: string | number, topicId: string | number) => {
+        try {
+            const win = CreateScrapeWindow()
+            const payloadUrl = new URL(`https://sdu.itslearning.com/Planner/Planner.aspx`)
+            payloadUrl.searchParams.append('CourseID', courseId.toString())
+            payloadUrl.searchParams.append('Filter', '-1')
+            const ssoLink = await getSSOLink(payloadUrl.toString())
+            await win.loadURL(ssoLink)
+            const cookies = await getCookiesFromDomain(win, ITSLEARNING_URL)
+            win.close()
+            const nestedResponse = await axios.post(
+                'https://sdu.itslearning.com/RestApi/planner/plan/multiple/forTopic',
+                {
+                    isSearching: false,
+                    searchText: null,
+                    pageNumber: 1,
+                    pageSize: 25,
+                    sort: 'Order:asc',
+                    filter: '',
+                    chunkNumber: 0,
+                    chunkSize: 15,
+                    courseId: courseId,
+                    topicId: topicId,
+                    start: '',
+                    end: '',
+                    childId: '0',
+                    dashboardHierarchyId: '0',
+                    dashboardName: '',
+                    currentDisplayMode: '0',
+                },
+                {
+                    headers: {
+                        Cookie: getFormattedCookies(cookies),
+                    },
+                }
+            )
+
+            const htmlContent = nestedResponse.data.gridData
+
+            const cheerio = await import('cheerio')
+
+            const $ = cheerio.load(htmlContent)
+
+            // Select all the gridrows that contain the information
+            const gridRows = $('.gridrow')
+
+            type ResponseObject = {
+                title: string
+                date: {
+                    from: Date | null
+                    to: Date | null
+                }
+                description: string
+                resourcesAndActivities: ResourceActivityObject[]
+            }
+
+            type ResourceActivityObject = {
+                planId: string
+                elementId: string
+                link: string
+                title: string
+            }
+
+            const jsonObject: ResponseObject[] = []
+
+            // Iterate through each gridrow to extract relevant information
+            gridRows.each((_, element) => {
+                const row = $(element)
+
+                // Extract necessary information from each gridrow
+                const title = row.find('.itsl-planner-min-title-width .itsl-plan-title-label').text().trim()
+                const dateString = row.find('.itsl-plan-date .itsl-inline-date-picker-view').text().trim()
+                const date = parseDateAndTime(dateString)
+                let fromDate
+                let toDate
+                if (date.from) {
+                    fromDate = date.from.toDate()
+                }
+
+                if (date.to) {
+                    toDate = date.to.toDate()
+                }
+                const descriptionContainer = row.find('.itsl-planner-htmltext-viewer')
+                const descriptionParagraphs = descriptionContainer.find('p').map((index, element) => $(element).text()).get();
+                const description = descriptionParagraphs.join('\n')
+                const resourceActivityElements = $('.itsl-plan-elements-item')
+
+                const resourcesAndActivities: ResourceActivityObject[] = []
+
+                // Iterate through each element to extract IDs and links
+                resourceActivityElements.each((index, element) => {
+                    const resourceActivity = $(element)
+
+                    // Extract the data attributes
+                    const planId = resourceActivity.attr('data-plan-id')
+                    const elementId = resourceActivity.attr('data-element-id')
+                    const link = resourceActivity.find('a.itsl-plan-elements-item-link').attr('href')
+                    const title = resourceActivity.find('span').text();
+
+                    // Create a JSON object for each resource and activity
+                    const resourceActivityObject = {
+                        planId,
+                        elementId,
+                        link,
+                        title
+                    } as ResourceActivityObject
+
+                    // Add the JSON object to the array
+                    resourcesAndActivities.push(resourceActivityObject)
+                })
+
+                // Create a JSON object for each row
+                const rowObject = {
+                    title,
+                    date: {
+                        from: fromDate,
+                        to: toDate
+                    },
+                    description,
+                    resourcesAndActivities,
+                }
+
+                // Add the JSON object to the array
+                jsonObject.push(rowObject)
+            })
+
+            // Output the final JSON object
+
+            return jsonObject
+        } catch (e) {
+            console.error(e)
+            return null
+        }
+    })
+}
+
+function parseDateAndTime(dateString: string) {
+    const dateRegex = /(\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2}) – (\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2})/;
+    const timeRegex = /(\d{1,2}:\d{2}) – (\d{1,2}:\d{2})/;
+
+    let fromDate, toDate;
+
+    const dateMatch = dateString.match(dateRegex);
+    const timeMatch = dateString.match(timeRegex);
+
+    const moment = require('moment')
+
+    if (dateMatch) {
+        fromDate = moment(dateMatch[1], 'DD. MMM HH:mm');
+        toDate = moment(dateMatch[3], 'DD. MMM HH:mm');
+        if (!toDate.isValid()) {
+            toDate = moment(dateMatch[3], 'DD. MMM HH:mm').add(1, 'day');
+        }
+    } else if (timeMatch) {
+        const currentTime = moment().format('DD. MMM');
+        fromDate = moment(`${currentTime} ${timeMatch[1]}`, 'DD. MMM HH:mm');
+        toDate = moment(`${currentTime} ${timeMatch[2]}`, 'DD. MMM HH:mm');
+        if (!toDate.isValid() || toDate.isBefore(fromDate)) {
+            toDate = moment(`${currentTime} ${timeMatch[2]}`, 'DD. MMM HH:mm').add(1, 'day');
+        }
+    } else {
+        // Handle other cases here if needed
+    }
+
+    return { from: fromDate, to: toDate };
 }
 
 function streamFileHandler() {
@@ -393,6 +559,7 @@ function streamFileHandler() {
 }
 
 export default function initDownloadHandlers() {
+    getCoursePlanElementsHandler()
     getCoursePlansHandler()
     streamFileHandler()
     getVideoLinkHandler()

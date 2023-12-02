@@ -17,11 +17,11 @@ export default function useGETcoursePlansScraped(courseId: number | string, quer
 }
 
 type CoursePlan = {
-    dataTopicId: number;
+    dataTopicId: number | string;
     courseTitle: string;
     plansCount: number;
-    fromDate: string;
-    toDate: string;
+    fromDate: string | null;
+    toDate: string | null;
     attributes: {
         id: string
         class: string

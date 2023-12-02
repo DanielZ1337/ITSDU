@@ -17,6 +17,7 @@ export enum TanstackKeys {
     CourseParticipants = "courseParticipants",
     CoursePlans = "coursePlans",
     CoursePlansScraped = "coursePlansScraped",
+    CoursePlanElements = "coursePlanElements",
     CourseResourcesBySearch = "courseResourcesBySearch",
     CourseRootResources = "courseRootResources",
     CourseTasklistDailyWorkflow = "courseTasklistDailyWorkflow",
