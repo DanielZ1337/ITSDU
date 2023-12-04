@@ -11,35 +11,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, MoreVertical } from "lucide-react";
 import { isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
-import CourseTasksCardSkeletons from "@/components/course/tasks/fallback/course-tasks-card-skeletons";
-
-function CoursePlansSkeletonsAnimated({ PageSize }: { PageSize?: number }) {
-    let PageSizeNormalized
-
-    if (PageSize) {
-        if (PageSize > 10 || PageSize < 1) {
-            PageSizeNormalized = 10
-        }
-    }
-
-    return (
-        <m.div
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="mx-auto w-full h-fit flex flex-col gap-4"
-        >
-            <CourseTasksCardSkeletons count={PageSizeNormalized || 10} />
-        </m.div>
-    )
-}
+import { CoursePlansSkeletonsAnimated } from "@/components/course/plans/course-plans-card-skeletons-animated";
 
 export default function CoursePlans() {
     const { id } = useParams();
     const courseId = Number(id);
     const { data, isLoading } = useGETcoursePlansScraped(courseId)
-
-    console.log(data)
 
     return (
         <div className="grid items-start gap-6 p-4 text-sm font-medium">
@@ -65,7 +42,7 @@ export default function CoursePlans() {
                             >
                                 <Accordion type="single" collapsible>
                                     <AccordionItem className="border-none" value={String(plan.dataTopicId)}>
-                                        <AccordionTrigger className="group hover:no-underline py-0 w-fit text-lg font-semibold ">
+                                        <AccordionTrigger className="px-4 group hover:no-underline py-0 w-fit text-lg font-semibold ">
                                             <span className="flex flex-col">
                                                 <span className="text-left group-hover:underline">
                                                     {plan.planTitle}
@@ -134,10 +111,10 @@ function CoursePlanElements({ courseId, topicId }: { courseId: number | string, 
                                             className="flex items-center gap-2"
                                         >
                                             <img
-                                                className="inline-block w-6 h-6 mr-2"
+                                                className="inline-block w-6 h-6 mr-2 shrink-0"
                                                 src={resource.img} alt={resource.title} />
                                             <a
-                                                className="text-blue-500 hover:underline"
+                                                className="text-blue-500 hover:underline truncate"
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 onClick={async (e) => {
