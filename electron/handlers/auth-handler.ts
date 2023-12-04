@@ -1,7 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { store_keys } from '../services/itslearning/auth/types/store_keys.ts';
-import { CreateScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
+import { createScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
 import { getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL } from "../services/itslearning/resources/resources.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
 import { createAuthWindow } from "../../electron/main.ts";
@@ -36,7 +36,7 @@ function clearTokensHandler() {
 function getCookies() {
     ipcMain.handle('itslearning-store:get-cookies-for-resource', async (_, elementId) => {
         try {
-            const win = CreateScrapeWindow()
+            const win = createScrapeWindow()
             const ssoLink = await getResourceLinkByElementID(elementId)
             await win.loadURL(ssoLink)
             const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)

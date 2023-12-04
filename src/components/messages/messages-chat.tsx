@@ -7,11 +7,13 @@ import { DEFAULT_PAGE_SIZE } from '@/lib/constants'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { GETinstantMessagesForThread } from '@/types/api-types/messages/GETinstantMessagesForThread'
 import { InfiniteData } from '@tanstack/react-query'
+import { currentChatAtom } from '../../atoms/current-chat';
+import { useAtom } from 'jotai'
 
 export default function MessageChat({ threadId }: {
     threadId: number
 }) {
-    const { data, isFetchingNextPage, fetchNextPage, hasNextPage } = useGETinstantMessagesForThread({
+    const { data: messages, isFetchingNextPage, fetchNextPage, hasNextPage } = useGETinstantMessagesForThread({
         threadId,
         pageSize: DEFAULT_PAGE_SIZE,
     }, {
@@ -21,23 +23,8 @@ export default function MessageChat({ threadId }: {
         refetchOnMount: true,
         refetchInterval: 1000 * 10,
         refetchIntervalInBackground: true,
+        keepPreviousData: true,
     })
-
-    let messages = useRef<InfiniteData<GETinstantMessagesForThread>>(data!)
-
-    useEffect(() => {
-        messages.current = data!
-    }, [threadId])
-
-    // data.pages.filter where the id in messages doesn't exist
-    const newMessages = data?.pages.filter((page) => {
-        return !messages.current.pages.some((message) => message.Messages.EntityArray.some((message) => message.MessageId === page.Messages.EntityArray[0].MessageId))
-    })
-
-    messages.current = {
-        ...messages.current,
-        pages: [...newMessages!, ...messages.current.pages]
-    }
 
     const user = useUser()
 
@@ -45,7 +32,7 @@ export default function MessageChat({ threadId }: {
 
     return (
         <>
-            {messages.current.pages.map((page) => page.Messages.EntityArray.map((message) => (
+            {messages!.pages.map((page) => page.Messages.EntityArray.map((message) => (
                 <MessageChatMessage
                     me={user!.PersonId === message.CreatedBy}
                     id={message.MessageId}

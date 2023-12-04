@@ -18,7 +18,7 @@ export default function useGETcoursePlansScraped(courseId: number | string, quer
 
 type CoursePlan = {
     dataTopicId: number | string;
-    courseTitle: string;
+    planTitle: string;
     plansCount: number;
     fromDate: string | null;
     toDate: string | null;

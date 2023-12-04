@@ -1,148 +1,199 @@
 import { CourseTasksSkeletonsAnimated } from "@/components/course/tasks/fallback/course-tasks-card-skeletons-animated";
 import useGETcoursePlans from "@/queries/courses/useGETcoursePlans";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AnimatePresence, m } from 'framer-motion';
-import { Suspense, useEffect, useState } from "react";
+import { Fragment, Suspense, useEffect, useState } from "react";
 import useGETcoursePlansScraped from "@/queries/extra/useGETcoursePlansScraped";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import useGETcoursePlanElements from "@/queries/extra/useGETcoursePlanElements";
 import { Loader } from "@/components/ui/loader";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, MoreVertical } from "lucide-react";
+import { isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
+import CourseTasksCardSkeletons from "@/components/course/tasks/fallback/course-tasks-card-skeletons";
+
+function CoursePlansSkeletonsAnimated({ PageSize }: { PageSize?: number }) {
+    let PageSizeNormalized
+
+    if (PageSize) {
+        if (PageSize > 10 || PageSize < 1) {
+            PageSizeNormalized = 10
+        }
+    }
+
+    return (
+        <m.div
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="mx-auto w-full h-fit flex flex-col gap-4"
+        >
+            <CourseTasksCardSkeletons count={PageSizeNormalized || 10} />
+        </m.div>
+    )
+}
 
 export default function CoursePlans() {
     const { id } = useParams();
     const courseId = Number(id);
     const { data, isLoading } = useGETcoursePlansScraped(courseId)
 
+    console.log(data)
+
     return (
         <div className="grid items-start gap-6 p-4 text-sm font-medium">
             <AnimatePresence mode="wait">
                 {isLoading ? (
-                    <CourseTasksSkeletonsAnimated key={"skeletons"} PageSize={10} />
+                    <CoursePlansSkeletonsAnimated PageSize={10} />
                 ) : (
-                    <m.div
-                        key={'tasks-active'}
-                        initial={{ opacity: 0, y: 20 }}
+                    <m.div className="flex flex-col gap-4"
+                        key={"plans"}
+                        initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ duration: 0.2 }}
-                        className="mx-auto grid h-fit w-full grid-cols-1 gap-4 lg:grid-cols-2"
+                        transition={{ delay: 0.2 }}
+                        layout
                     >
-                        {data?.map((plan, i) => (
+                        {data?.map((plan, index) => (
                             <m.div
-                                key={plan.dataTopicId}
-                                initial={{ opacity: 0, y: 20 }}
+                                key={index}
+                                initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.2, delay: i ? i * 0.1 : 0 }}
-                                className="overflow-hidden rounded-md p-6 shadow bg-foreground/10"
+                                transition={{ delay: index * 0.1 }}
+                                className="w-full border rounded-md p-4 bg-foreground/10"
+                                layout
                             >
-
                                 <Accordion type="single" collapsible>
-                                    <AccordionItem value={plan.dataTopicId}>
-                                        <AccordionTrigger className="hover:no-underline">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center overflow-hidden space-x-2">
-                                                    <a onClick={(e) => { e.stopPropagation() }}
-                                                        href={`https://sdu.itslearning.com/Planner/Planner.aspx?CourseID=${courseId}&filter=t${plan.dataTopicId}`} rel="noopener noreferrer" target="_blank" className="mt-2 block truncate text-blue-500 hover:underline">
-                                                        <h3 className="truncate text-lg font-semibold">{plan.courseTitle}</h3>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            {plan.fromDate && (
-                                                <p className="text-gray-600">Start: {new Date(plan.fromDate).toLocaleDateString()}</p>
-                                            )}
-
-                                            {plan.toDate && (
-                                                <p className="text-gray-600">End: {new Date(plan.toDate).toLocaleDateString()}</p>
-                                            )}
+                                    <AccordionItem className="border-none" value={String(plan.dataTopicId)}>
+                                        <AccordionTrigger className="group hover:no-underline py-0 w-fit text-lg font-semibold ">
+                                            <span className="flex flex-col">
+                                                <span className="text-left group-hover:underline">
+                                                    {plan.planTitle}
+                                                </span>
+                                                {plan.fromDate && plan.toDate && (
+                                                    <span className="text-sm text-gray-500 mt-1 hover:no-underline">
+                                                        {new Date(plan.fromDate).toDateString()} - {new Date(plan.toDate).toDateString()}
+                                                    </span>
+                                                )}
+                                            </span>
                                         </AccordionTrigger>
-                                        <AccordionContent>
-                                            <Suspense fallback={<div className="flex h-full items-center justify-center">
-                                                <Loader className={"m-auto"} /></div>}>
-                                                <AnimatePresence>
+                                        <AccordionContent
+                                            className="mt-4"
+                                        >
+                                            <Suspense fallback={<Loader className="m-auto" />}>
+                                                <m.div
+                                                    initial={{ opacity: 0, y: -20, height: 0 }}
+                                                    animate={{ opacity: 1, y: 0, height: "auto" }}
+                                                    transition={{ delay: 0.2 }}
+                                                    layout
+                                                >
                                                     <CoursePlanElements courseId={courseId} topicId={plan.dataTopicId} />
-                                                </AnimatePresence>
+                                                </m.div>
                                             </Suspense>
                                         </AccordionContent>
                                     </AccordionItem>
                                 </Accordion>
                             </m.div>
                         ))}
+
                     </m.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     )
 }
 
-
-/**
- * 
- * type ResponseObject = {
-    title: string
-    date: {
-        from: Date | null
-        to: Date | null
-    }
-    description: string
-    resourcesAndActivities: ResourceActivityObject[]
-}
-
-type ResourceActivityObject = {
-    planId: string
-    elementId: string
-    link: string
-    title: string
-}
- */
 function CoursePlanElements({ courseId, topicId }: { courseId: number | string, topicId: number | string }) {
     const { data } = useGETcoursePlanElements(courseId, topicId, {
         suspense: true,
     })
 
-    return (
-        <div className="grid items-start gap-6 p-4 text-sm font-medium">
-            <AnimatePresence>
-                {data?.map((plan, i) => (
-                    <m.div
-                        key={plan.title}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2, delay: i ? i * 0.1 : 0 }}
-                        className="overflow-hidden rounded-md p-6 shadow bg-foreground/10"
-                    >
-                        <a onClick={(e) => { e.stopPropagation() }}
-                            href={`https://sdu.itslearning.com/Planner/Planner.aspx?CourseID=${courseId}&filter=t${topicId}`} rel="noopener noreferrer" target="_blank" className="mt-2 block truncate text-blue-500 hover:underline">
-                            <h3 className="truncate text-lg font-semibold">{plan.title}</h3>
-                        </a>
-                        {plan.date.from && (
-                            <p className="text-gray-600">Start: {new Date(plan.date.from).toLocaleDateString(undefined, {
-                                hour: "numeric",
-                                minute: "numeric"
-                            })}</p>
-                        )}
+    const navigate = useNavigate()
+    const navigateToResource = useNavigateToResource(navigate)
 
-                        {plan.date.to && (
-                            <p className="text-gray-600">End: {new Date(plan.date.to).toLocaleDateString(undefined, {
-                                hour: "numeric",
-                                minute: "numeric"
-                            })}</p>
-                        )}
-                        {plan.description && (
-                            <p className="text-gray-600 whitespace-pre-wrap">Description: {plan.description}</p>
-                        )}
-                        <div className="flex flex-col gap-2">
-                            {plan.resourcesAndActivities.map((resource) => (
-                                <a
-                                    key={resource.elementId}
-                                    onClick={(e) => { e.stopPropagation() }}
-                                    href={resource.link} rel="noopener noreferrer" target="_blank" className="mt-2 block truncate text-blue-500 hover:underline">
-                                    <h3 className="truncate text-lg font-semibold">{resource.title}</h3>
-                                </a>
-                            ))}
+    return (
+        <div className="flex flex-col gap-4 border-t-2 border-foreground/20">
+            {data?.map((element, index) => (
+                <Fragment key={index}>
+                    <div className="p-4">
+                        <h3 className="text-lg font-semibold mb-2">
+                            {element.title}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                            {new Date(element.date.from!).toDateString()} - {new Date(element.date.to!).toDateString()}
+                        </p>
+                        <p className="mt-2 whitespace-pre-wrap">{element.description}</p>
+                        <div className="mt-4">
+                            <ul
+                                className="grid grid-cols-1 gap-2"
+                                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 30fr))" }}
+                            >
+                                {element.resourcesAndActivities.map((resource, resIndex) => (
+                                    <li key={resIndex} className="hover:cursor-pointer">
+                                        <span
+                                            className="flex items-center gap-2"
+                                        >
+                                            <img
+                                                className="inline-block w-6 h-6 mr-2"
+                                                src={resource.img} alt={resource.title} />
+                                            <a
+                                                className="text-blue-500 hover:underline"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                onClick={async (e) => {
+                                                    e.preventDefault()
+                                                    if (isSupportedResourceInApp({
+                                                        ElementId: resource.elementId,
+                                                        IconUrl: resource.img,
+                                                        Title: resource.title,
+                                                        Url: resource.link,
+                                                    })) {
+                                                        navigateToResource({
+                                                            ElementId: resource.elementId,
+                                                            IconUrl: resource.img!,
+                                                            Title: resource.title!,
+                                                            Url: resource.link!,
+                                                        })
+                                                    } else {
+                                                        await window.app.openExternal(`https://sdu.itslearning.com${resource.link}`, true)
+                                                    }
+                                                }}
+                                            >
+                                                {resource.title}
+                                            </a>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger className="flex items-center">
+                                                    <Button size="icon" variant="ghost" className="w-6 h-6 hover:bg-foreground/10 ">
+                                                        <MoreHorizontal
+                                                            className="w-4 h-4"
+                                                        />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent className="bg-foreground-50">
+                                                    <DropdownMenuItem asChild className="block flex-none">
+                                                        <a
+                                                            className="text-center "
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => {
+                                                                e.preventDefault()
+                                                                navigate(`/courses/${courseId}/resources/${resource.parentFolder}`)
+                                                            }}
+                                                        >
+                                                            Go to Folder
+                                                        </a>
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
-                    </m.div>
-                ))}
-            </AnimatePresence>
+                    </div>
+                    {data.length - 1 !== index && <div className={"h-[2px] w-full bg-foreground/20 rounded-full"} />}
+                </Fragment>
+            ))}
         </div>
     )
 }

@@ -31,12 +31,19 @@ enum IconTypesForResources {
     JPEG = 11,
 }
 
+
+type ResourceObject = {
+    ElementId?: string | number
+    Url?: string
+    Title?: string
+    IconUrl?: string
+}
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
 
 export function useNavigateToResource(navigater?: NavigateFunction) {
     const navigate = navigater || useNavigate()
 
-    const navigateToResource = (resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) => {
+    const navigateToResource = (resource: ResourceObject | string | number) => {
         const elementId = typeof resource === "number" || typeof resource === "string" ? resource : resource.ElementId
         if (isResourceMicrosoftOfficeDocument(resource)) {
             navigate(`/documents/office/${elementId}`)
@@ -75,7 +82,7 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
         } else {
             if (typeof resource === "number") return
             const url = typeof resource === "string" ? resource : resource.Url
-            window.app.openExternal(url, true)
+            if (url) window.app.openExternal(url, true)
         }
     }
 
@@ -99,12 +106,13 @@ enum FileExtensionTypes {
     // Add more file extensions here
 }
 
-export function isResourceWithFileExtension(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourceWithFileExtension(resource: ResourceObject | string | number) {
     const fileExtensions = Object.values(FileExtensionTypes) as string[];
     if (typeof resource === "number" || typeof resource === "string") {
         const fileExtension = getFileExtension(String(resource));
         return fileExtensions.includes(fileExtension);
     } else {
+        if (!resource.Title) return false;
         const fileExtension = getFileExtension(resource.Title);
         return fileExtensions.includes(fileExtension);
     }
@@ -115,11 +123,11 @@ function getFileExtension(fileName: string) {
     return fileName.substring(lastDotIndex + 1).toLowerCase();
 }
 
-export function isSupportedResourceInApp(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isSupportedResourceInApp(resource: ResourceObject | string | number) {
     return isResourceMicrosoftOfficeDocument(resource) || isResourcePDFFromUrlOrElementType(resource) || isResourceWithFileExtension(resource);
 }
 
-export function isResourceMicrosoftOfficeDocument(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourceMicrosoftOfficeDocument(resource: ResourceObject | string | number) {
     // IconTypeId 1, 2 and 3 are DOCX, XLSX and PPTX respectively (this is the only way to find out whether or not a resource is a Microsoft Office Document)
     const OfficeDocumentIconTypeIds = [IconTypesForResources.DOCX, IconTypesForResources.XLSX, IconTypesForResources.PPTX];
     if (typeof resource === "number") {
@@ -127,11 +135,12 @@ export function isResourceMicrosoftOfficeDocument(resource: ItslearningRestApiEn
     } else if (typeof resource === "string") {
         return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource))
     } else {
+        if (!resource.IconUrl) return false;
         return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource.IconUrl));
     }
 }
 
-export function isResourcePDFFromUrlOrElementType(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink | string | number) {
+export function isResourcePDFFromUrlOrElementType(resource: ResourceObject | string | number) {
     // IconTypeId 12 is PDF (this is the only way to find out whether or not a resource is a PDF)
     const IconTypeId = IconTypesForResources.PDF;
     if (typeof resource === "number") {
@@ -139,6 +148,7 @@ export function isResourcePDFFromUrlOrElementType(resource: ItslearningRestApiEn
     } else if (typeof resource === "string") {
         return getIconTypeIdFromUrl(resource) === IconTypeId
     } else {
+        if (!resource.IconUrl) return false;
         return getIconTypeIdFromUrl(resource.IconUrl) === IconTypeId;
     }
 }

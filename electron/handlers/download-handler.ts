@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
 import { download } from "electron-dl";
-import { AuthService } from "@/electron/services/itslearning/auth/auth-service";
-import { createScrapeWindow, getCookiesForDomain } from "@/electron/services/scrape/scraper";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { createScrapeWindow, getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
 import {
     getMicrosoftOfficeDocumentAccessTokenAndUrl,
     getResourceAsFile,
@@ -10,10 +10,10 @@ import {
     getResourceLinkByElementID,
     getSSOLink,
     ITSLEARNING_RESOURCE_URL
-} from "@/electron/services/itslearning/resources/resources";
-import { VITE_DEV_SERVER_URL } from "@/electron/main";
-import { getFormattedCookies } from "@/electron/utils/cookies";
-import { ITSLEARNING_URL } from "@/electron/services/itslearning/itslearning";
+} from "../../electron/services/itslearning/resources/resources.ts";
+import { VITE_DEV_SERVER_URL } from "../main.ts";
+import { getFormattedCookies } from "../utils/cookies.ts";
+import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 
 const authService = AuthService.getInstance()
 
@@ -255,7 +255,7 @@ async function getCoursePlansInformation(body: string) {
 
     type CoursePlan = {
         dataTopicId: number | string;
-        courseTitle: string;
+        planTitle: string;
         plansCount: number;
         fromDate: string | null;
         toDate: string | null;
@@ -274,7 +274,7 @@ async function getCoursePlansInformation(body: string) {
 
         // Extract specific attributes
         const dataTopicId = attributes['data-topic-id'];
-        const courseTitle = $(element).find('.itsl-topic-title span').text().trim();
+        const planTitle = $(element).find('.itsl-topic-title span').text().trim();
 
         // Extract plans count
         const plansText = $(element).find('.itsl-topic-expander .itsl-topic-expanded-text').text().trim();
@@ -298,7 +298,7 @@ async function getCoursePlansInformation(body: string) {
 
         const coursePlan = {
             dataTopicId,
-            courseTitle,
+            planTitle,
             plansCount,
             fromDate,
             toDate,
@@ -348,15 +348,17 @@ async function getCoursePlansElements(html: string) {
             from: Date | null
             to: Date | null
         }
-        description: string
+        description: string | null
         resourcesAndActivities: ResourceActivityObject[]
     }
 
     type ResourceActivityObject = {
-        planId: string
-        elementId: string
-        link: string
-        title: string
+        planId: string | undefined
+        elementId: string | undefined
+        link: string | undefined
+        title: string | undefined
+        parentFolder: string | undefined
+        img: string | undefined
     }
 
     const jsonObject: ResponseObject[] = []
@@ -376,9 +378,9 @@ async function getCoursePlansElements(html: string) {
         toDate = date.to && date.to.toDate()
 
         const descriptionContainer = row.find('.itsl-planner-htmltext-viewer')
-        const descriptionParagraphs = descriptionContainer.find('p').map((_, element) => $(element).text()).get();
-        const description = descriptionParagraphs.join('\n')
-        const resourceActivityElements = $('.itsl-plan-elements-item')
+        const descriptionText = descriptionContainer.text().trim()
+        const description = descriptionText !== "-" ? descriptionText : null
+        const resourceActivityElements = row.find('.itsl-plan-elements-item')
 
         const resourcesAndActivities: ResourceActivityObject[] = []
 
@@ -390,15 +392,19 @@ async function getCoursePlansElements(html: string) {
             const planId = resourceActivity.attr('data-plan-id')
             const elementId = resourceActivity.attr('data-element-id')
             const link = resourceActivity.find('a.itsl-plan-elements-item-link').attr('href')
-            const title = resourceActivity.find('span').text();
+            const title = resourceActivity.find('span').text()
+            const parentFolder = resourceActivity.attr('data-parent-folder-id')
+            const img = resourceActivity.find('img').attr('src')
 
             // Create a JSON object for each resource and activity
             const resourceActivityObject = {
                 planId,
                 elementId,
                 link,
-                title
-            } as ResourceActivityObject
+                title,
+                parentFolder,
+                img,
+            }
 
             // Add the JSON object to the array
             resourcesAndActivities.push(resourceActivityObject)

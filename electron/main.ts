@@ -99,7 +99,7 @@ async function createMainWindow() {
             }
         } else {
             if (origin.hostname.includes('itslearning.com')) {
-                // open externall in default browser
+                // open external in default browser
                 openLinkInBrowser(handler.url, true)
             }
             return { action: 'deny' }
@@ -158,6 +158,7 @@ export async function createAuthWindow() {
         width: 800,
         // alwaysOnTop: true,
         darkTheme: startUpTheme === 'dark',
+        backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
         focusable: true,
     })
     authService.loadSigninPage(authWindow)
@@ -307,6 +308,11 @@ app.whenReady().then(async () => {
 
     try {
         await authService.refreshAccessToken()
+        const { access_token, refresh_token } = authService.getTokens()
+        if (!access_token || !refresh_token) {
+            authService.clearTokens()
+            throw new Error('Invalid refresh token')
+        }
         await createMainWindow()
         // setup interval for refreshing access token
         setInterval(async () => {

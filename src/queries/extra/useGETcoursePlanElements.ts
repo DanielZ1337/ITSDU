@@ -7,15 +7,17 @@ type ResponseObject = {
         from: Date | null
         to: Date | null
     }
-    description: string
+    description: string | null
     resourcesAndActivities: ResourceActivityObject[]
 }
 
 type ResourceActivityObject = {
-    planId: string
-    elementId: string
-    link: string
-    title: string
+    planId: string | undefined
+    elementId: string | undefined
+    link: string | undefined
+    title: string | undefined
+    parentFolder: string | undefined
+    img: string | undefined
 }
 
 export default function useGETcoursePlanElements(courseId: number | string, topicId: number | string, queryConfig?: UseQueryOptions<ResponseObject[], Error, ResponseObject[], string[]>) {

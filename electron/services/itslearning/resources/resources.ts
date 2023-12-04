@@ -1,7 +1,7 @@
 import { BrowserWindow, Cookie } from "electron";
 import axios from "axios";
 import { GET_ITSLEARNING_URL } from "../itslearning.ts";
-import { CreateScrapeWindow } from "../../scrape/scraper.ts";
+import { createScrapeWindow } from "../../scrape/scraper.ts";
 import { apiUrl } from "../../../../src/lib/utils.ts";
 import { AuthService } from "../auth/auth-service.ts";
 import { getFormattedCookies } from "../../../utils/cookies.ts";
@@ -37,14 +37,14 @@ export function getResourceFileLinkByIds(LearningObjectId: string | number, Lear
 }
 
 export async function getResourceDownloadLink(url: string, customWin?: BrowserWindow) {
-    const win = customWin || CreateScrapeWindow()
+    const win = customWin || createScrapeWindow()
     const { LearningObjectId, LearningObjectInstanceId } = await getResourceIdsBySSOLink(win, url);
     win.close()
     return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId);
 }
 
 export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(url: string, customWin?: BrowserWindow) {
-    const win = customWin || CreateScrapeWindow({
+    const win = customWin || createScrapeWindow({
         show: false,
         webPreferences: {
             nodeIntegration: true,
