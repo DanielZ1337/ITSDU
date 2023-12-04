@@ -46,7 +46,7 @@ export class AuthService {
         this.store = new Store<Record<string, string>>({
             name: 'itslearning-auth-store',
             watch: true,
-            encryptionKey: ITSLEARNING_STORE_KEY,
+            encryptionKey: import.meta.env.VITE_ITSLEARNING_STORE_KEY,
         })
 
         instance = this
