@@ -295,6 +295,7 @@ app.whenReady().then(async () => {
                 const { access_token, refresh_token } = res.data
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
+                await authService.refreshAccessToken()
                 await createMainWindow()
                 authWindow?.close()
             }).catch(async err => {
