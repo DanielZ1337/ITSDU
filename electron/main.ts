@@ -296,8 +296,9 @@ app.whenReady().then(async () => {
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
                 await authService.refreshAccessToken()
-                await createMainWindow()
                 authWindow?.close()
+                authWindow = null
+                await createMainWindow()
             }).catch(async err => {
                 await createAuthWindow()
                 logEverywhereError('protocol.handle# ' + err)
