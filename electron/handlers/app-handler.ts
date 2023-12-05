@@ -48,7 +48,11 @@ function MaximizerHandler() {
 }
 
 function checkForUpdatesHandler() {
-    ipcMain.handle('app:checkForUpdates', () => {
+    ipcMain.handle('app:checkForUpdates', (event) => {
+
+        autoUpdater.on('checking-for-update', () => {
+            event.sender.send('app:checkForUpdates', { status: 'checking-for-update' })
+        })
         autoUpdater.checkForUpdates()
     })
 }

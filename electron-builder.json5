@@ -2,58 +2,50 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-	$schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-	appId: 'itsdu-desktop-app',
-	asar: true,
-	productName: 'ITSDU Desktop App',
-	compression: "maximum",
-	artifactName: '${productName}-${version}.${ext}',
-	compression: 'store',
-	protocols: [
-		{
-			name: "login redirect URI protocol",
-			schemes: ["itsl-itslearning"]
-		},
-		{
-			name: "file protocol",
-			schemes: ["itsl-itslearning-file"]
-		}
-	],
-	/*publish: {
-		private: true,
-		provider: 'github',
-		releaseType: 'release',
-		owner: 'DanielZ1337',
-		repo: 'itslearning',
-		token: '${GITHUB_TOKEN}'
-	},*/
-	directories: {
-		output: 'release/${version}'
-	},
-	files: ['dist', 'dist-electron'],
-	mac: {
-		target: ['dmg'],
-		artifactName: '${productName}-Mac-${version}-Installer.${ext}'
-	},
-	win: {
-		target: [
-			{
-				target: 'nsis',
-				arch: ['x64']
-			}
-		],
-		artifactName: '${productName}-Windows-${version}-Setup.${ext}'
-	},
-	nsis: {
-		oneClick: true,
-		perMachine: false,
-//		allowToChangeInstallationDirectory: true,
-		deleteAppDataOnUninstall: true
-	},
-	linux: {
-		target: ['deb', 'AppImage'],
-		artifactName: '${productName}-Linux-${version}.${ext}',
-		icon: 'build/icon.png',
-		category: 'Education'
-	}
+  $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
+  appId: 'itsdu',
+  asar: true,
+  productName: 'ITSDU Desktop App',
+  compression: 'maximum',
+  artifactName: '${productName}-${version}.${ext}',
+  compression: 'store',
+  protocols: [
+    {
+      name: 'login redirect URI protocol',
+      schemes: ['itsl-itslearning']
+    },
+    {
+      name: 'file protocol',
+      schemes: ['itsl-itslearning-file']
+    }
+  ],
+  directories: {
+    output: 'release/${version}'
+  },
+  files: ['dist', 'dist-electron'],
+  mac: {
+    target: ['dmg'],
+    artifactName: '${productName}-Mac-${version}-Installer.${ext}'
+  },
+  win: {
+    target: [
+      {
+        target: 'nsis',
+        arch: ['x64']
+      }
+    ],
+    artifactName: '${productName}-Windows-${version}-Setup.${ext}'
+  },
+  nsis: {
+    oneClick: true,
+    perMachine: false,
+    //		allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: true
+  },
+  linux: {
+    target: ['deb', 'AppImage'],
+    artifactName: '${productName}-Linux-${version}.${ext}',
+    icon: 'build/icon.png',
+    category: 'Education'
+  }
 }

@@ -1,4 +1,5 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray, dialog } from "electron";
+import { autoUpdater } from "electron-updater";
 import path from 'path';
 import {
     AuthService, ITSLEARNING_CLIENT_ID,
@@ -167,7 +168,7 @@ export async function createAuthWindow() {
 }
 
 if (process.platform === 'win32') {
-    app.setAppUserModelId('itslearning')
+    app.setAppUserModelId('itsdu')
 }
 
 if (!app.isDefaultProtocolClient('itsl-itslearning')) {
@@ -373,7 +374,7 @@ app.whenReady().then(async () => {
             win?.show()
         })
 
-        tray.setToolTip('itslearning')
+        tray.setToolTip('itsdu')
         tray.on('right-click', () => {
             tray.focus()
             console.log(win?.isVisible())
@@ -385,3 +386,25 @@ app.whenReady().then(async () => {
         })
     }
 })
+
+autoUpdater.on("update-available", () => {
+    dialog.showMessageBox({
+        type: 'info' as const,
+        buttons: ['Ok'],
+        title: 'Application Update',
+        message: 'A new version is available. Downloading now...'
+    })
+})
+
+autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
+    const dialogOpts = {
+        type: 'info' as const,
+        buttons: ['Restart', 'Later'],
+        title: 'Application Update',
+        message: process.platform === 'win32' ? releaseNotes : releaseName,
+        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    };
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall()
+    })
+});

@@ -1,12 +1,38 @@
 {
-  "name": "itslearning",
-  "private": true,
+  "name": "itsdu",
+  "private": false,
   "version": "0.0.0",
   "description": "An electron app for SDU students to interact with itslearning",
   "author": {
     "name": "Daniel Bermann Schmidt",
     "email": "danielz@danielz.dev"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DanielZ1337/itsdu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "react",
+    "vite",
+    "typescript",
+    "tailwindcss",
+    "electron-builder",
+    "itsdu",
+    "itslearning",
+    "sdu",
+    "sdu.dk",
+    "sdu itslearning",
+    "sdu itsdu",
+    "sdu itslearning itsdu",
+    "sdu itslearning itsdu electron",
+    "sdu itslearning itsdu electron app",
+    "sdu itslearning itsdu electron app danielz",
+    "sdu itslearning itsdu electron app danielz1337"
+  ],
+  "homepage": "https://itsdu.danielz.dev/",
+  "publisher": "DanielZ1337",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
@@ -17,7 +43,7 @@
     "wl": "vite build && electron-builder -wl",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "release": "tsc && vite build && electron-builder -p always",
+    "release": "vite build && electron-builder -p always",
     "typecheck": "tsc"
   },
   "dependencies": {

@@ -1,10 +1,11 @@
-import {isSupportedResourceInApp} from "@/types/api-types/extra/learning-tool-id-types"
-import {ItslearningRestApiEntitiesElementLink} from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
-import {useNavigateToResource} from '../../types/api-types/extra/learning-tool-id-types';
-import {useNavigate} from "react-router-dom";
+import { isSupportedResourceInApp } from "@/types/api-types/extra/learning-tool-id-types"
+import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink"
+import { useNavigateToResource } from '../../types/api-types/extra/learning-tool-id-types';
+import { useNavigate } from "react-router-dom";
 import LightbulletinLink from "./lightbulletin-link";
+import { ItslearningRestApiEntitiesElementType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
 
-export default function LightbulletinResource({resource, courseId}: {
+export default function LightbulletinResource({ resource, courseId }: {
     resource: ItslearningRestApiEntitiesElementLink,
     courseId: number | string
 }) {
@@ -22,7 +23,7 @@ export default function LightbulletinResource({resource, courseId}: {
                     window.app.openExternal(resource.ContentUrl, true)
                 }
             }}>
-            <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"}/>
+            <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
             <span className="truncate">{resource.Title}</span>
         </LightbulletinLink>)
 }
