@@ -7,6 +7,7 @@ import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import MessageChat from "./messages-chat";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
+import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
 
 
 export default function Messages() {
@@ -16,6 +17,15 @@ export default function Messages() {
     const isNewChat = currentChat === currentChatEnum.NEW
     const isNewChatOrExistingChat = isExistingChat || isNewChat
     // const filteredMessages = messages?.pages.map((page) => page.EntityArray).flat().filter((thread) => thread.InstantMessageThreadId === currentChat)
+
+    const { data: messages } = useGETinstantMessagesForThread({
+        threadId: currentChat!,
+        pageSize: 1,
+    }, {
+        enabled: isExistingChat,
+    })
+
+    const disabledInputsField = messages?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage
 
     return (
         <div className="flex h-full w-full flex-1 overflow-y-hidden">
@@ -31,7 +41,7 @@ export default function Messages() {
                         </Suspense>
                     )}
                 </div>
-                {isNewChatOrExistingChat && (
+                {isNewChatOrExistingChat && !disabledInputsField && (
                     <MessagesChatInputsField key={currentChat} />
                 )}
             </div>
