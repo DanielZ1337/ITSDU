@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
 import { store_keys } from './services/itslearning/auth/types/store_keys.ts';
+import { UpdateCheckResult, UpdateInfo } from 'electron-updater';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -35,6 +36,8 @@ contextBridge.exposeInMainWorld('app', {
     maximize: () => ipcRenderer.invoke('app:maximize'),
     getVersion: () => ipcRenderer.invoke('app:getVersion'),
     checkForUpdates: () => ipcRenderer.invoke('app:checkForUpdates'),
+    downloadUpdate: () => ipcRenderer.invoke('app:downloadUpdate'),
+    update: () => ipcRenderer.invoke('app:update'),
     relaunch: () => ipcRenderer.invoke('app:relaunch'),
     getPath: (path: string) => ipcRenderer.invoke('app:getPath', path),
     getDownloadPath: () => ipcRenderer.invoke('app:getDownloadPath'),
@@ -158,7 +161,9 @@ declare global {
             quit: () => Promise<void>
             minimize: () => Promise<void>
             maximize: () => Promise<void>
-            checkForUpdates: () => Promise<void>
+            checkForUpdates: () => Promise<UpdateInfo | null>
+            downloadUpdate: () => Promise<string[]>
+            update: () => Promise<void>
             getVersion: () => Promise<string>
             relaunch: () => Promise<void>
             getPath: (path: string) => Promise<string>

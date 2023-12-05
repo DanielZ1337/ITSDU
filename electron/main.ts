@@ -43,6 +43,10 @@ protocol.registerSchemesAsPrivileged([{
     }
 }]);
 
+autoUpdater.autoRunAppAfterInstall = true
+autoUpdater.autoInstallOnAppQuit = false
+autoUpdater.autoDownload = false
+
 // to load the application, setup and stuff
 async function createMainWindow() {
     const allWindows = BrowserWindow.getAllWindows()
@@ -56,7 +60,7 @@ async function createMainWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
-            devTools: isDev,
+            // devTools: isDev,
         },
         autoHideMenuBar: true,
         alwaysOnTop: false,
@@ -162,7 +166,7 @@ export async function createAuthWindow() {
         backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
         focusable: true,
     })
-    authService.loadSigninPage(authWindow)
+    await authService.loadSigninPage(authWindow)
 
     return authWindow
 }
@@ -284,44 +288,46 @@ app.whenReady().then(async () => {
     protocol.handle('itsl-itslearning', async (req) => {
         const code = authService.getAuthCodeFromURI(req.url);
         if (code) {
-            axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
-                "grant_type": GrantType.AUTHORIZATION_CODE,
-                "code": code,
-                "client_id": ITSLEARNING_CLIENT_ID,
-            }, {
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                }
-            }).then(async res => {
+            try {
+                const res = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+                    "grant_type": GrantType.AUTHORIZATION_CODE,
+                    "code": code,
+                    "client_id": ITSLEARNING_CLIENT_ID,
+                }, {
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    }
+                })
                 const { access_token, refresh_token } = res.data
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
                 await authService.refreshAccessToken()
                 authWindow?.close()
                 authWindow = null
-                await createMainWindow()
-            }).catch(async err => {
-                await createAuthWindow()
+                app.relaunch()
+            } catch (err) {
                 logEverywhereError('protocol.handle# ' + err)
-            })
+                await createAuthWindow()
+            }
         } else {
-            await createAuthWindow()
+            authService.loadSigninPage(authWindow)
         }
     })
 
     try {
-        await authService.refreshAccessToken()
         const { access_token, refresh_token } = authService.getTokens()
         if (!access_token || !refresh_token) {
             authService.clearTokens()
             throw new Error('Invalid refresh token')
         }
+        await authService.refreshAccessToken()
         await createMainWindow()
         // setup interval for refreshing access token
         setInterval(async () => {
             await authService.refreshAccessToken()
         }, REFRESH_ACCESS_TOKEN_INTERVAL) // 45 minutes
     } catch (e) {
+        logEverywhereError('app.whenReady# ' + e)
         await createAuthWindow()
     } finally {
         const contextMenu = Menu.buildFromTemplate([
@@ -386,25 +392,3 @@ app.whenReady().then(async () => {
         })
     }
 })
-
-autoUpdater.on("update-available", () => {
-    dialog.showMessageBox({
-        type: 'info' as const,
-        buttons: ['Ok'],
-        title: 'Application Update',
-        message: 'A new version is available. Downloading now...'
-    })
-})
-
-autoUpdater.on("update-downloaded", (_event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info' as const,
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: process.platform === 'win32' ? releaseNotes : releaseName,
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    };
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) autoUpdater.quitAndInstall()
-    })
-});

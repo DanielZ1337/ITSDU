@@ -29,7 +29,24 @@
     "sdu itslearning itsdu electron",
     "sdu itslearning itsdu electron app",
     "sdu itslearning itsdu electron app danielz",
-    "sdu itslearning itsdu electron app danielz1337"
+    "sdu itslearning itsdu electron app danielz1337",
+    "daniel bermann schmidt",
+    "daniel bermann schmidt itsdu",
+    "daniel bermann schmidt itsdu electron",
+    "daniel bermann schmidt itsdu electron app",
+    "daniel bermann schmidt itsdu electron app danielz",
+    "daniel bermann schmidt itsdu electron app danielz1337",
+    "danielz",
+    "danielz itsdu",
+    "danielz itsdu electron",
+    "sdu itslearning itsdu daniel bermann schmidt",
+    "sdu itslearning itsdu daniel bermann schmidt electron",
+    "sdu itslearning itsdu daniel bermann schmidt electron app",
+    "sdu itslearning itsdu daniel bermann schmidt electron app danielz",
+    "sdu itslearning itsdu daniel bermann schmidt oauth",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron app",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron app danielz"
   ],
   "homepage": "https://itsdu.danielz.dev/",
   "publisher": "DanielZ1337",
@@ -44,7 +61,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "release": "vite build && electron-builder -p always",
-    "typecheck": "tsc"
+    "tsc": "tsc"
   },
   "dependencies": {
     "@devbookhq/splitter": "^1.4.2",
@@ -83,6 +100,7 @@
     "electron-dl": "^3.5.1",
     "electron-settings": "^4.0.2",
     "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
     "framer-motion": "^10.16.4",
     "he": "^1.2.0",
     "html-to-text": "^9.0.5",

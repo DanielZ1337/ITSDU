@@ -1,16 +1,19 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
+import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import axios from "axios";
-import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
     PUTcourseFavorite,
     PUTcourseFavoriteApiUrl,
     PUTcourseFavoriteParams
 } from "@/types/api-types/courses/PUTcourseFavorite.ts";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, queryConfig?: UseMutationOptions<PUTcourseFavorite, Error, PUTcourseFavoriteParams | undefined, string[]>) {
 
     return useMutation([TanstackKeys.CourseFavorite, ...getQueryKeysFromParamsObject(params)], async (variables) => {
+        console.log(variables)
+        console.log(params)
+        console.log(await getAccessToken())
         const res = await axios.put(PUTcourseFavoriteApiUrl({
             ...(variables || params)
         }), undefined, {
@@ -19,6 +22,8 @@ export default function usePUTcourseFavorite(params: PUTcourseFavoriteParams, qu
                 ...(variables || params)
             }
         })
+
+        console.error(res.statusText)
 
         if (res.status !== 200) throw new Error(res.statusText);
 

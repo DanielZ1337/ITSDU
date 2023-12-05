@@ -1,4 +1,5 @@
-import { app, autoUpdater, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
+import { autoUpdater } from "electron-updater";
 
 function exitHandler() {
     ipcMain.handle('app:exit', () => {
@@ -48,12 +49,28 @@ function MaximizerHandler() {
 }
 
 function checkForUpdatesHandler() {
-    ipcMain.handle('app:checkForUpdates', (event) => {
+    ipcMain.handle('app:checkForUpdates', async (event) => {
+        return (await autoUpdater.checkForUpdates())?.updateInfo
+    })
+}
 
-        autoUpdater.on('checking-for-update', () => {
-            event.sender.send('app:checkForUpdates', { status: 'checking-for-update' })
+function downloadUpdateHandler() {
+    ipcMain.handle('app:downloadUpdate', async (event) => {
+        autoUpdater.on('download-progress', (progress) => {
+            event.sender.send('app:downloadProgress', progress)
         })
-        autoUpdater.checkForUpdates()
+
+        autoUpdater.on('update-downloaded', (info) => {
+            event.sender.send('app:updateDownloaded', info)
+        })
+
+        return autoUpdater.downloadUpdate()
+    })
+}
+
+function updateHandler() {
+    ipcMain.handle('app:update', async (event) => {
+        return autoUpdater.quitAndInstall()
     })
 }
 
@@ -65,4 +82,6 @@ export default function appHandlerInitializer() {
     MinimizerHandler()
     MaximizerHandler()
     checkForUpdatesHandler()
+    downloadUpdateHandler()
+    updateHandler()
 }
