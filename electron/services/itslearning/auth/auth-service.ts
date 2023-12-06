@@ -2,7 +2,6 @@ import { BrowserWindow, safeStorage } from "electron";
 import { GrantType } from "./types/grant_type"
 import { ITSLEARNING_SCOPES_ENUM } from "./types/scopes"
 import axios from "axios";
-import RegexEscape from 'regex-escape';
 import { store_keys } from "./types/store_keys";
 import { ITSLEARNING_URL } from "../itslearning.ts";
 
@@ -12,7 +11,6 @@ const Store = require('electron-store');
 
 export const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
 export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
-// export const import.meta.env.VITE_ITSLEARNING_OAUTH_STATE = 'A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y='
 const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
 const ITSLEARNING_OAUTH_URL = `${ITSLEARNING_URL}/oauth2/authorize.aspx`
 export const ITSLEARNING_OAUTH_TOKEN_URL = `${ITSLEARNING_URL}/restapi/oauth2/token`
@@ -71,13 +69,13 @@ export class AuthService {
         this.store.delete(key);
     }
 
-    public getToken(key: store_keys): string {
+    public getToken(key: store_keys): string | null {
         try {
             const token = safeStorage.decryptString(Buffer.from(this.store.get(key), 'latin1'));
             return token
         } catch (error) {
             console.error(error)
-            return ''
+            return null
         }
     }
 
