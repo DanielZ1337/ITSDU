@@ -207,6 +207,7 @@ if (gotTheLock) {
             if (win.isMinimized()) {
                 win.restore()
                 win.focus()
+                win.show()
             }
         }
 
@@ -299,12 +300,17 @@ app.whenReady().then(async () => {
                     }
                 })
                 const { access_token, refresh_token } = res.data
+                console.log(access_token, refresh_token)
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
                 await authService.refreshAccessToken()
                 authWindow?.close()
                 authWindow = null
-                app.relaunch()
+                if (!isDev) {
+                    app.relaunch()
+                } else {
+                    await createMainWindow()
+                }
             } catch (err) {
                 logEverywhereError('protocol.handle# ' + err)
                 await createAuthWindow()

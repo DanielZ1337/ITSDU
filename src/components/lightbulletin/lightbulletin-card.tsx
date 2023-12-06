@@ -121,7 +121,7 @@ export default function LightbulletinCard({ bulletin, links }: {
                         <Suspense key={link.href} fallback={<LightbulletinLink>
                             <Loader className={"stroke-current text-gray-500 m-auto"} />
                         </LightbulletinLink>}>
-                            <LightbulletinLinkPreview key={link.href} href={link.value} title={link.value} />
+                            <LightbulletinLinkPreview key={link.href} href={link.value} type={link.type as "url" | "email"} title={link.value} />
                         </Suspense>
                     ))}
                 </div>

@@ -12,14 +12,18 @@ export default function LightbulletinsForCourse({ courseId }: {
         suspense: true,
     })
 
+    const sortedLightbulletins = data!.EntityArray.sort((a, b) => {
+        return new Date(b.PublishedDate).getTime() - new Date(a.PublishedDate).getTime()
+    })
+
     return (
         <div className={"grid grid-cols-1 gap-6 p-4"}>
-            {data!.EntityArray.map((bulletin, idx) => {
+            {sortedLightbulletins?.map((bulletin, idx) => {
                 // find the date of the previous bulletin and compare it to the current one. When the month is different make a new header
-                const previousBulletin = data!.EntityArray[idx - 1]
+                const previousBulletin = sortedLightbulletins[idx - 1]
                 const previousBulletinDate = previousBulletin ? new Date(previousBulletin.PublishedDate) : null
                 const currentBulletinDate = new Date(bulletin.PublishedDate)
-                const hasNextBulletin = data!.EntityArray[idx - 1] !== undefined
+                const hasNextBulletin = sortedLightbulletins[idx - 1] !== undefined
                 const shouldMakeNewHeader = previousBulletinDate === null || previousBulletinDate.getMonth() !== currentBulletinDate.getMonth()
                 const showYear = currentBulletinDate.getFullYear() !== new Date().getFullYear()
 

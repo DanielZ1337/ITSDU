@@ -8,7 +8,7 @@
 protocol.handle('itsl-itslearning', async (req) => {
     // const regex = /itsl-itslearning:\/\/login\/\?state=damn&code=(.*)/gm;
     const redirectURI = RegexEscape(`${ITSLEARNING_REDIRECT_URI}/?`)
-    const stateCode = RegexEscape(ITSLEARNING_OAUTH_STATE)
+    const stateCode = RegexEscape(import.meta.env.VITE_ITSLEARNING_OAUTH_STATE)
     const states = RegexEscape(`state=${stateCode}&code=`)
     const escaped = redirectURI + states + '(.*)'
     const escapedRegex = new RegExp(escaped, 'gm')
@@ -30,7 +30,7 @@ protocol.handle('itsl-itslearning', async (req) => {
                 "Content-Type": "application/x-www-form-urlencoded",
             }
         }).then(res => {
-            const {access_token, refresh_token} = res.data
+            const { access_token, refresh_token } = res.data
             setToken('access_token', access_token)
             setToken('refresh_token', refresh_token)
             authWindow?.close()

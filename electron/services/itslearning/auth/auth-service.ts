@@ -12,16 +12,14 @@ const Store = require('electron-store');
 
 export const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
 export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
-// export const ITSLEARNING_OAUTH_STATE = 'A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y='
-export const ITSLEARNING_OAUTH_STATE = 'damn'
+// export const import.meta.env.VITE_ITSLEARNING_OAUTH_STATE = 'A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y='
 const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
 const ITSLEARNING_OAUTH_URL = `${ITSLEARNING_URL}/oauth2/authorize.aspx`
 export const ITSLEARNING_OAUTH_TOKEN_URL = `${ITSLEARNING_URL}/restapi/oauth2/token`
-export const ITSLEARNING_STORE_KEY = 'IebZ85FuqXQHv2Tpyz5QLWaLJ0w3/OLUwufMP6JaIfY='
 export const getItslearningOAuthUrl = () => {
     const url = new URL(ITSLEARNING_OAUTH_URL)
     url.searchParams.append('client_id', ITSLEARNING_CLIENT_ID)
-    url.searchParams.append('state', ITSLEARNING_OAUTH_STATE)
+    url.searchParams.append('state', import.meta.env.VITE_ITSLEARNING_OAUTH_STATE)
     url.searchParams.append('response_type', 'code')
     url.searchParams.append('scope', ITSLEARNING_SCOPES.join(' '))
     url.searchParams.append('redirect_uri', ITSLEARNING_REDIRECT_URI)
@@ -32,19 +30,16 @@ export const REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45 // 45 minutes
 
 let instance: AuthService | null = null
 
-// @ts-ignore - gives a wrong type error. Will disappear when using import instead of require, but will cause errors and 5 recompilings of the main process
 export class AuthService {
-    // @ts-ignore
-    private store: typeof Store<Record<string, string>>
+    private store: typeof Store
 
     constructor() {
         if (instance) {
             throw new Error("New instance cannot be created!!");
         }
 
-        // @ts-ignore
-        this.store = new Store<Record<string, string>>({
-            name: 'itslearning-auth-store',
+        this.store = new Store({
+            name: 'itsdu-auth-store',
             watch: true,
             encryptionKey: import.meta.env.VITE_ITSLEARNING_STORE_KEY,
         })
@@ -77,7 +72,13 @@ export class AuthService {
     }
 
     public getToken(key: store_keys): string {
-        return safeStorage.decryptString(Buffer.from(this.store.get(key), 'latin1'));
+        try {
+            const token = safeStorage.decryptString(Buffer.from(this.store.get(key), 'latin1'));
+            return token
+        } catch (error) {
+            console.error(error)
+            return ''
+        }
     }
 
     /**
@@ -110,7 +111,7 @@ export class AuthService {
             const params = new URLSearchParams(url.search);
             const code = params.get("code");
             const state = params.get("state");
-            if (state === ITSLEARNING_OAUTH_STATE && code) {
+            if (state === import.meta.env.VITE_ITSLEARNING_OAUTH_STATE && code) {
                 return code;
             }
         } catch (error) {
