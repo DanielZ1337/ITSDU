@@ -1,17 +1,18 @@
-import {currentChatAtom} from "@/atoms/current-chat";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {cn} from "@/lib/utils";
+import { currentChatAtom } from "@/atoms/current-chat";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar.tsx";
+import { cn } from "@/lib/utils";
 import he from "he";
-import {useAtom} from "jotai";
+import { useAtom } from "jotai";
 import useDELETEinstantMessageThread from "@/queries/messages/useDELETEinstantMessageThread.ts";
-import {useToast} from "@/components/ui/use-toast";
-import {Trash2Icon} from "lucide-react";
-import {Button} from "@/components/ui/button.tsx";
-import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
-import {UnreadNotificationIndicator} from "./unread-notification-indicator";
-import {convert} from "html-to-text";
+import { useToast } from "@/components/ui/use-toast";
+import { Trash2Icon } from "lucide-react";
+import { Button } from "@/components/ui/button.tsx";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
+import { UnreadNotificationIndicator } from "./unread-notification-indicator";
+import { convert } from "html-to-text";
+import { useNavigate } from "react-router-dom";
 
-export default function MessagesSidebarChat({title, author, pictureUrl, id, canDelete, isRead}: {
+export default function MessagesSidebarChat({ title, author, pictureUrl, id, canDelete, isRead }: {
     title: string
     author: string
     pictureUrl: string
@@ -21,9 +22,10 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
 }) {
     const [currentChatAtomId, setcurrentChatAtomId] = useAtom(currentChatAtom)
     const [, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
-    const {toast} = useToast()
+    const { toast } = useToast()
+    const navigate = useNavigate()
 
-    const {mutate: DELETEinstantMessageThread} = useDELETEinstantMessageThread({
+    const { mutate: DELETEinstantMessageThread } = useDELETEinstantMessageThread({
         threadId: id,
     }, {
         onSuccess: () => {
@@ -54,7 +56,7 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
             <div className="mr-3">
                 <Avatar>
                     <AvatarImage src={pictureUrl}
-                                 alt={author}/>
+                        alt={author} />
                     <AvatarFallback>
                         {author.split(" ").map((name) => name[0]).slice(0, 3).join("")}
                     </AvatarFallback>
@@ -82,7 +84,7 @@ export default function MessagesSidebarChat({title, author, pictureUrl, id, canD
                             threadId: id,
                         })
                     }} className={"group-hover:flex hidden shrink-0 ml-auto mr-[-0.5rem] p-1 rounded-full"}>
-                    <Trash2Icon className={"w-5 h-5 text-destructive hover:text-destructive/80"}/>
+                    <Trash2Icon className={"w-5 h-5 text-destructive hover:text-destructive/80"} />
                 </Button>
             )}
         </button>

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
 import { currentChatAtom, currentChatEnum } from '@/atoms/current-chat.ts';
 import { useAtom } from "jotai";
@@ -8,43 +8,54 @@ import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-
 import MessageChat from "./messages-chat";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
+import MessageTitleForm from "./messages-title-form";
+import MessagesChatHeaderExistingChat from "./messages-chat-header-existing-chat";
+import MessagesAddRecipients from "./messages-add-recipients";
+import { Helmet } from "react-helmet-async";
+import useGETinstantMessageThread from "@/queries/messages/useGETinstantMessageThread";
 
 
 export default function Messages() {
     const [currentChat] = useAtom(currentChatAtom)
-    const [recipientsSelected] = useAtom(messageSelectedRecipientsAtom)
-    const isExistingChat = currentChat !== currentChatEnum.NONE && currentChat !== currentChatEnum.NEW
-    const isNewChat = currentChat === currentChatEnum.NEW
-    const isNewChatOrExistingChat = isExistingChat || isNewChat
-    // const filteredMessages = messages?.pages.map((page) => page.EntityArray).flat().filter((thread) => thread.InstantMessageThreadId === currentChat)
+    const isChatExisting = currentChat !== currentChatEnum.NONE && currentChat !== currentChatEnum.NEW
+    const isChatNew = currentChat === currentChatEnum.NEW
+    const isChatNewOrExisting = isChatExisting || isChatNew
+    const isChatUndefined = currentChat === currentChatEnum.NONE;
 
-    const { data: messages } = useGETinstantMessagesForThread({
+    const { data: messages, isLoading } = useGETinstantMessageThread({
         threadId: currentChat!,
-        pageSize: 1,
+        maxMessages: 1,
     }, {
-        enabled: isExistingChat,
+        enabled: isChatExisting,
     })
 
-    const disabledInputsField = messages?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage
+    const disabledInputsField = isChatExisting && messages?.OnlyThreadAdminCanSendToThread
 
     return (
         <div className="flex h-full w-full flex-1 overflow-y-hidden">
+            <Helmet>
+                <title>Messages</title>
+            </Helmet>
             <div className="w-1/4 overflow-x-hidden overflow-y-hidden border-r">
                 <MessagesSidebar />
             </div>
             <div className="flex w-3/4 flex-col">
-                <MessagesChatHeader recipientsSelected={recipientsSelected} />
+                <MessagesChatHeader
+                    isChatNew={isChatNew}
+                    isChatUndefined={isChatUndefined}
+                    disabledInputsField={disabledInputsField}
+                />
                 <div className="flex flex-1 flex-col-reverse gap-4 overflow-y-auto overflow-x-hidden p-4">
-                    {isExistingChat && (
+                    {isChatExisting && (
                         <Suspense fallback={<MessagesChatFallback />}>
                             <MessageChat threadId={currentChat} />
                         </Suspense>
                     )}
                 </div>
-                {isNewChatOrExistingChat && !disabledInputsField && (
+                {isChatNewOrExisting && !disabledInputsField && !isLoading && (
                     <MessagesChatInputsField key={currentChat} />
                 )}
             </div>
-        </div>
+        </div >
     )
 }

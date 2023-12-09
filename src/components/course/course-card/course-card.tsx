@@ -98,7 +98,7 @@ export default function CourseCard({ card }: {
                     <div className={"flex gap-2 w-full justify-evenly"}>
                         {card.NumberOfAnnouncements > 0 && (
                             <CourseCardInfo icon={<Megaphone />} count={card.NumberOfAnnouncements}
-                                href={`/courses/${card.CourseId}/announcements`} />
+                                href={`/courses/${card.CourseId}/updates`} />
                         )}
                         {card.NumberOfFollowUpTasks > 0 && (
                             <CourseCardInfo icon={<ListTodo />} count={card.NumberOfFollowUpTasks}

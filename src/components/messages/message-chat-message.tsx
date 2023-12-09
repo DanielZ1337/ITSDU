@@ -1,4 +1,4 @@
-import {cn} from "@/lib/utils.ts";
+import { cn } from "@/lib/utils.ts";
 import he from "he"
 import {
     DropdownMenu,
@@ -6,33 +6,33 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {ChevronDown} from "lucide-react";
-import {Dialog, DialogContent, DialogFooter, DialogTrigger} from "@/components/ui/dialog.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { ChevronDown } from "lucide-react";
+import { Dialog, DialogContent, DialogFooter, DialogTrigger } from "@/components/ui/dialog.tsx";
 import Linkify from "linkify-react";
 import renderLink from "@/components/custom-render-link-linkify.tsx";
-import {useToast} from "@/components/ui/use-toast.ts";
-import {useState} from "react";
+import { useToast } from "@/components/ui/use-toast.ts";
+import { useRef, useState } from "react";
 import useDELETEinstantMessage from "@/queries/messages/useDELETEinstantMessage";
-import {useQueryClient} from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import usePATCHrestoreDeletedMessage from '../../queries/messages/usePATCHrestoreDeletedMessage';
 import ProfileAvatar from "../profile-avatar";
-import {Loader} from "../ui/loader";
+import { Loader } from "../ui/loader";
 
 export default function MessageChatMessage({
-                                               me,
-                                               pictureUrl,
-                                               messageText,
-                                               author,
-                                               time,
-                                               edited,
-                                               attachmentName,
-                                               attachmentUrl,
-                                               isSystemMessage,
-                                               canDelete,
-                                               id,
-                                               isDeleted
-                                           }: {
+    me,
+    pictureUrl,
+    messageText,
+    author,
+    time,
+    edited,
+    attachmentName,
+    attachmentUrl,
+    isSystemMessage,
+    canDelete,
+    id,
+    isDeleted
+}: {
     me?: boolean
     pictureUrl: string
     messageText: string
@@ -55,15 +55,17 @@ export default function MessageChatMessage({
 
     const [isDownloadingImage, setIsDownloadingImage] = useState<boolean>(false)
 
-    const {toast, dismiss} = useToast()
+    const attachmentRef = useRef<string>(attachmentUrl!)
 
-    const {mutate: deleteMessage, isLoading: isDeletingMessage} = useDELETEinstantMessage({
+    const { toast, dismiss } = useToast()
+
+    const { mutate: deleteMessage, isLoading: isDeletingMessage } = useDELETEinstantMessage({
         onSuccess: () => {
             queryClient.invalidateQueries(['messagesv2'])
         }
     })
 
-    const {mutate: restoreMessage, isLoading: isRestoringMessage} = usePATCHrestoreDeletedMessage({
+    const { mutate: restoreMessage, isLoading: isRestoringMessage } = usePATCHrestoreDeletedMessage({
         onSuccess: () => {
             queryClient.invalidateQueries(['messagesv2'])
         }
@@ -73,6 +75,25 @@ export default function MessageChatMessage({
         <p className={cn("whitespace-pre-wrap break-all text-center text-gray-500 italic")}>{he.decode(messageText)}</p>
     )
 
+    function handleRestore() {
+        restoreMessage({ instantMessageId: id })
+    }
+
+    function handleDelete() {
+        deleteMessage({ instantMessageId: id })
+    }
+
+    function handleCopy() {
+        navigator.clipboard.writeText(messageText)
+        toast({
+            title: 'Copied',
+            description: 'Message copied to clipboard',
+            duration: 2000,
+            variant: 'success',
+            size: 'sm',
+        })
+    }
+
     return (
         <div className={cn("mb-4 flex flex-col")}>
             <span
@@ -81,39 +102,41 @@ export default function MessageChatMessage({
             </span>
             <div className={cn("flex", me ? "justify-end" : "justify-start")}>
                 <div className={cn('relative', me ? "order-2 ml-3" : "order-1 mr-3")}>
-                    <ProfileAvatar src={pictureUrl} name={author} className="border-2 border-primary/40"/>
-                    {/* {me && ( */}
+                    <ProfileAvatar src={pictureUrl} name={author} className="border-2 border-primary/40" />
                     <div className={"absolute -bottom-2 -left-1.5"}>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant={"ghost"} size={"smSquare"}>
-                                    <ChevronDown/>
+                                    <ChevronDown />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align={"end"}>
-                                <DropdownMenuItem>Copy</DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={handleCopy}
+                                >
+                                    Copy
+                                </DropdownMenuItem>
                                 {canDelete && (
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            deleteMessage({instantMessageId: id})
-                                        }}
+                                        onClick={handleDelete}
                                         disabled={isDeletingMessage}
                                         className="hover:!bg-destructive"
-                                    >Delete</DropdownMenuItem>
+                                    >
+                                        Delete
+                                    </DropdownMenuItem>
                                 )}
                                 {isDeleted && (
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            restoreMessage({instantMessageId: id})
-                                        }}
+                                        onClick={handleRestore}
                                         disabled={isRestoringMessage}
                                         className="hover:!bg-success"
-                                    >Restore</DropdownMenuItem>
+                                    >
+                                        Restore
+                                    </DropdownMenuItem>
                                 )}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
-                    {/* )} */}
                 </div>
                 <div className={cn(me ? "order-1" : "order-2")}>
                     <p className={cn("text-sm text-gray-500 ", me ? 'text-end' : 'text-start')}>
@@ -121,67 +144,67 @@ export default function MessageChatMessage({
                         {edited && <span className={"text-gray-400"}> (edited)</span>}
                     </p>
                     <div
-                        className={cn("transform transition-all mt-1 p-2 rounded-lg inline-block h-fit", me ? 'float-right bg-blue-500 text-white' : 'float-left bg-foreground/10', isImage || isVideo ? 'max-w-[50dvw] max-h-[50dvh] bg-transparent' : 'max-w-[80dvw]', isDeletingMessage || isRestoringMessage && 'cursor-progress opacity-50')}>
+                        className={cn("transform transition-all mt-1 p-2 rounded-lg inline-block h-fit", me ? 'float-right bg-blue-500 text-white' : 'float-left bg-foreground/10', (isImage || isVideo) ? 'max-w-[50dvw] max-h-[50dvh] bg-transparent' : 'max-w-[80dvw]', (isDeletingMessage || isRestoringMessage) && 'cursor-progress opacity-50')}>
                         <p className={cn("whitespace-pre-wrap break-all")}>
-                            <Linkify options={{render: renderLink}}>
+                            <Linkify options={{ render: renderLink }}>
                                 {he.decode(messageText)}
                             </Linkify>
                         </p>
                         {attachmentUrl && !isImage && (
                             <a href={attachmentUrl}
-                               className={cn("hover:underline", me ? 'text-white' : 'text-blue-500')}
-                               onClick={(e) => {
-                                   e.stopPropagation()
-                                   console.log(attachmentUrl, attachmentName)
-                                   window.download.external(attachmentUrl, attachmentName!)
-                                   window.ipcRenderer.once('download:complete', (_, args) => {
-                                       console.log(args)
-                                       toast({
-                                           title: 'Downloaded',
-                                           description: attachmentName,
-                                           duration: 3000,
-                                           variant: 'success',
-                                           onMouseDown: async () => {
-                                               // if the user clicks on the toast, open the file
-                                               // get the time that the mouse was pressed
-                                               const mouseDownTime = new Date().getTime()
-                                               // wait for the mouse to be released
-                                               await new Promise<void>((resolve) => {
-                                                   window.addEventListener('mouseup', () => {
-                                                       resolve()
-                                                   }, {once: true})
-                                               })
+                                className={cn("hover:underline", me ? 'text-white' : 'text-blue-500')}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    console.log(attachmentUrl, attachmentName)
+                                    window.download.external(attachmentUrl, attachmentName!)
+                                    window.ipcRenderer.once('download:complete', (_, args) => {
+                                        console.log(args)
+                                        toast({
+                                            title: 'Downloaded',
+                                            description: attachmentName,
+                                            duration: 3000,
+                                            variant: 'success',
+                                            onMouseDown: async () => {
+                                                // if the user clicks on the toast, open the file
+                                                // get the time that the mouse was pressed
+                                                const mouseDownTime = new Date().getTime()
+                                                // wait for the mouse to be released
+                                                await new Promise<void>((resolve) => {
+                                                    window.addEventListener('mouseup', () => {
+                                                        resolve()
+                                                    }, { once: true })
+                                                })
 
-                                               // if the mouse was pressed for less than 500ms, open the file
-                                               if (new Date().getTime() - mouseDownTime < 100) {
-                                                   console.log("Opening shell")
-                                                   await window.app.openShell(args)
-                                                   dismiss()
-                                               } else {
-                                                   console.log("Not opening shell")
-                                               }
-                                           },
-                                       })
-                                   })
-                                   window.ipcRenderer.once('download:error', (_, args) => {
-                                       console.log(args)
-                                       toast({
-                                           title: 'Download error',
-                                           description: attachmentName,
-                                           duration: 3000,
-                                           variant: 'destructive'
-                                       })
-                                   })
-                               }}
+                                                // if the mouse was pressed for less than 500ms, open the file
+                                                if (new Date().getTime() - mouseDownTime < 100) {
+                                                    console.log("Opening shell")
+                                                    await window.app.openShell(args)
+                                                    dismiss()
+                                                } else {
+                                                    console.log("Not opening shell")
+                                                }
+                                            },
+                                        })
+                                    })
+                                    window.ipcRenderer.once('download:error', (_, args) => {
+                                        console.log(args)
+                                        toast({
+                                            title: 'Download error',
+                                            description: attachmentName,
+                                            duration: 3000,
+                                            variant: 'destructive'
+                                        })
+                                    })
+                                }}
                             >
                                 <p>{attachmentName}</p>
                             </a>
                         )}
-                        {attachmentUrl && isImage && (
+                        {attachmentRef.current && isImage && (
                             <Dialog>
                                 <DialogTrigger className={"max-w-[50dvw] max-h-[50dvh] rounded-md overflow-hidden"}>
                                     <img
-                                        src={attachmentUrl}
+                                        src={attachmentRef.current}
                                         alt={attachmentName}
                                         className={"max-w-full h-full rounded-md hover:scale-105 transform transition-all duration-200"}
                                     />
@@ -191,7 +214,7 @@ export default function MessageChatMessage({
                                     <div className={"rounded-md mx-auto w-fit mt-4 overflow-hidden"}>
                                         <img
                                             loading={"lazy"}
-                                            src={attachmentUrl}
+                                            src={attachmentRef.current}
                                             alt={attachmentName}
                                             className={"max-w-full h-full hover:scale-105 transform transition-all duration-200"}
                                         />
@@ -199,52 +222,52 @@ export default function MessageChatMessage({
                                     <p className={"mt-0 sm:mt-2 xl:mt-4 xl:text-base text-gray-500 text-sm text-center"}>{attachmentName}</p>
                                     <DialogFooter>
                                         <Button disabled={isDownloadingImage} variant={"outline"}
-                                                className={"mr-2 inline-flex gap-2"} onClick={() => {
-                                            setIsDownloadingImage(true)
-                                            window.download.external(attachmentUrl, attachmentName!)
-                                            window.ipcRenderer.once('download:complete', (_, args) => {
-                                                console.log(args)
-                                                toast({
-                                                    title: 'Downloaded',
-                                                    description: attachmentName,
-                                                    duration: 3000,
-                                                    variant: 'success',
-                                                    onMouseDown: async () => {
-                                                        // if the user clicks on the toast, open the file
-                                                        // get the time that the mouse was pressed
-                                                        const mouseDownTime = new Date().getTime()
-                                                        // wait for the mouse to be released
-                                                        await new Promise<void>((resolve) => {
-                                                            window.addEventListener('mouseup', () => {
-                                                                resolve()
-                                                            }, {once: true})
-                                                        })
+                                            className={"mr-2 inline-flex gap-2"} onClick={() => {
+                                                setIsDownloadingImage(true)
+                                                window.download.external(attachmentUrl, attachmentName!)
+                                                window.ipcRenderer.once('download:complete', (_, args) => {
+                                                    console.log(args)
+                                                    toast({
+                                                        title: 'Downloaded',
+                                                        description: attachmentName,
+                                                        duration: 3000,
+                                                        variant: 'success',
+                                                        onMouseDown: async () => {
+                                                            // if the user clicks on the toast, open the file
+                                                            // get the time that the mouse was pressed
+                                                            const mouseDownTime = new Date().getTime()
+                                                            // wait for the mouse to be released
+                                                            await new Promise<void>((resolve) => {
+                                                                window.addEventListener('mouseup', () => {
+                                                                    resolve()
+                                                                }, { once: true })
+                                                            })
 
-                                                        // if the mouse was pressed for less than 500ms, open the file
-                                                        if (new Date().getTime() - mouseDownTime < 100) {
-                                                            console.log("Opening shell")
-                                                            await window.app.openShell(args)
-                                                            dismiss()
-                                                        } else {
-                                                            console.log("Not opening shell")
-                                                        }
-                                                    },
+                                                            // if the mouse was pressed for less than 500ms, open the file
+                                                            if (new Date().getTime() - mouseDownTime < 100) {
+                                                                console.log("Opening shell")
+                                                                await window.app.openShell(args)
+                                                                dismiss()
+                                                            } else {
+                                                                console.log("Not opening shell")
+                                                            }
+                                                        },
+                                                    })
+                                                    setIsDownloadingImage(false)
                                                 })
-                                                setIsDownloadingImage(false)
-                                            })
-                                            window.ipcRenderer.once('download:error', (_, args) => {
-                                                console.log(args)
-                                                toast({
-                                                    title: 'Download error',
-                                                    description: attachmentName,
-                                                    duration: 3000,
-                                                    variant: 'destructive'
+                                                window.ipcRenderer.once('download:error', (_, args) => {
+                                                    console.log(args)
+                                                    toast({
+                                                        title: 'Download error',
+                                                        description: attachmentName,
+                                                        duration: 3000,
+                                                        variant: 'destructive'
+                                                    })
+                                                    setIsDownloadingImage(false)
                                                 })
-                                                setIsDownloadingImage(false)
-                                            })
-                                        }}>
+                                            }}>
                                             {isDownloadingImage && (
-                                                <Loader/>
+                                                <Loader />
                                             )}
                                             Download
                                         </Button>
@@ -252,9 +275,9 @@ export default function MessageChatMessage({
                                 </DialogContent>
                             </Dialog>
                         )}
-                        {attachmentUrl && isVideo && (
+                        {attachmentRef.current && isVideo && (
                             <video controls className={"max-w-full h-full rounded-lg max-h-[47dvh]"}
-                                   src={attachmentUrl}/>
+                                src={attachmentRef.current} />
                         )}
                     </div>
                 </div>

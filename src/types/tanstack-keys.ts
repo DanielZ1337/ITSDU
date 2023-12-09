@@ -3,6 +3,7 @@
 export enum TanstackKeys {
     AICheckElementID = "AICheckElementID",
     AIpreviousMessages = "AIpreviousMessages",
+    AInewMessage = "AInewMessage",
     Bulletin = "bulletin",
     CalendarEvent = "calendarEvent",
     CalendarEvents = "calendarEvents",
@@ -36,6 +37,7 @@ export enum TanstackKeys {
     MessagesRecipientsSearch = "messagesRecipientsSearch",
     Messagesv2 = "messagesv2",
     Messagesv3 = "messagesv3",
+    MessageThread = "messageThread",
     NotificationElements = "notificationElements",
     Notifications = "notifications",
     NotificationsStream = "notificationsStream",

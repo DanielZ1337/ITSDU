@@ -16,6 +16,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import {
     ItslearningRestApiEntitiesPersonalCalendarEvent
 } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.CalendarEvent';
+import { Helmet } from 'react-helmet-async';
 
 const localizer = momentLocalizer(moment);
 
@@ -40,6 +41,9 @@ export default function CalendarIndex() {
     const [event, setEvent] = useState(null)
     return (
         <div className={"flex flex-1 flex-col h-full p-4"}>
+            <Helmet>
+                <title>Calendar</title>
+            </Helmet>
             {/*<div className={"flex flex-row gap-4 w-full justify-end mt-4 sm:mt-8 md:mt-12 lg:mt-16 xl:mt-20 h-[3vh"}>*/}
             {/*    <div className={"w-1/3 relative"}>*/}
             {/*        <Input*/}

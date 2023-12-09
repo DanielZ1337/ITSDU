@@ -48,13 +48,13 @@ export const navlinks = [
         end: true,
         disabled: false
     },
-    {
+    /* {
         title: 'Courses',
         icon: <BookCopy className={cn("", defaultNavLinkClassName)} />,
         href: '/courses',
         end: true,
         disabled: false
-    },
+    }, */
 ] as NavigationType[]
 
 export const courseNavLinks = [
