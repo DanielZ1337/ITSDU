@@ -139,7 +139,7 @@ function CoursePlanElements({ courseId, topicId }: { courseId: number | string, 
                                                 {resource.title}
                                             </a>
                                             <DropdownMenu>
-                                                <DropdownMenuTrigger className="flex items-center">
+                                                <DropdownMenuTrigger className="flex items-center" asChild>
                                                     <Button size="icon" variant="ghost" className="w-6 h-6 hover:bg-foreground/10 ">
                                                         <MoreHorizontal
                                                             className="w-4 h-4"

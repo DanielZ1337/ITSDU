@@ -73,16 +73,13 @@ export default function AboutModal() {
         >
             <DialogOverlay />
             <DialogPortal>
-                <DialogTrigger>
-                    <button className="hidden"></button>
-                </DialogTrigger>
                 <DialogContent
                     className='md:w-fit'
                 >
                     <DialogHeader>
                         <DialogTitle>About</DialogTitle>
-                        <DialogDescription>
-                            <p className="text-sm text-gray-500">Version {version} - {" "}
+                        <DialogDescription className='flex flex-col'>
+                            <span className="text-sm text-gray-500">Version {version} - {" "}
                                 <button
                                     className="text-sm text-gray-500 hover:text-gray-700"
                                     onClick={checkForUpdate}
@@ -107,10 +104,10 @@ export default function AboutModal() {
                                         {updateResult?.version} - {isDownloading ? `${downloadProgress.toFixed(2)}%` : 'Download'}
                                     </button>
                                 )}
-                            </p>
-                            <p className="text-sm text-gray-500">
+                            </span>
+                            <span className="text-sm text-gray-500">
                                 ITSDU - SDU itslearning desktop app built for students
-                            </p>
+                            </span>
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex p-4">
