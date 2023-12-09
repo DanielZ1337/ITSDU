@@ -111,7 +111,7 @@ function SettingsCustom() {
                 >
                     <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
                         <div className="flex w-full flex-col gap-4">
-                            {JSON.stringify(settings)}
+                            {/* {JSON.stringify(settings)} */}
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Dark Mode</h6>
                                 <DarkModeSetting />
@@ -255,6 +255,7 @@ function UploadAIChatsSetting() {
         <Select
             value={(settings.UploadAIChats).toString()}
             onValueChange={(e) => updateSettings({ UploadAIChats: e === "true" })}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
@@ -297,6 +298,7 @@ function CustomTitlebarSetting() {
         <Select
             value={(settings.CustomTitleBar).toString()}
             onValueChange={(e) => updateSettings({ CustomTitleBar: e === "true" })}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">

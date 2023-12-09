@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import ScrollToTopButton from "@/components/scroll-to-top-button";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Spinner } from "@nextui-org/spinner";
-import Titlebar from "@/components/titlebar/titlebar";
+import TitlebarButtons from "@/components/titlebar/titlebar";
 import TitlebarSearch from "@/components/titlebar/titlebar-search";
 import SettingsModal from "@/components/settings/settings-modal";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
@@ -50,7 +50,7 @@ export default function Layout() {
                             <NotificationsDropdown />
                         </Suspense>
                     </ErrorBoundary>
-                    <Titlebar />
+                    <TitlebarButtons />
                 </div>
             </div>
             <BrowserNav />
