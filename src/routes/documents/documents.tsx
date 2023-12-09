@@ -11,6 +11,7 @@ import { ArrowLeftToLine, ArrowRightToLine } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Loader } from '@/components/ui/loader';
 import { CustomPDFProvider } from '@/contexts/custom-pdf-context';
+import { useSettings } from '@/hooks/atoms/useSettings';
 
 const PdfRenderer = lazy(() => import('@/components/resources/pdf/pdf-renderer'))
 
@@ -45,7 +46,7 @@ export default function Documents() {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const [useCustomPDFRenderer] = useAtom(customPDFrendererAtom)
+    const { settings } = useSettings()
 
     const DefaultPdfRenderer = () => {
         if (isLoading) {
@@ -76,7 +77,7 @@ export default function Documents() {
 
     return (
         <div className="flex h-full max-h-full w-full flex-1 overflow-hidden" ref={containerRef}>
-            {useCustomPDFRenderer ? (
+            {settings.CustomPDFrenderer ? (
                 <CustomPDFProvider>
                     <PdfRenderer
                         url={data?.url}

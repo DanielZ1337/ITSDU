@@ -20,6 +20,7 @@ import { calculateShadowPosition, Shadow, ShadowPosition } from "../scroll-shado
 import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
 import SettingsSidebarButton from "./settings-sidebar-button";
 import SettingsCloseButton from "./settings-close-button";
+import { useSettings } from "@/hooks/atoms/useSettings";
 
 export default function SettingsModal() {
 
@@ -62,13 +63,15 @@ function SettingsCustom() {
     const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(calculateShadowPosition(viewportRef));
     useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
 
+    const { settings } = useSettings()
+
     return (
         <div
             className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
             {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
             <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection}
                 orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
-                <TabsList
+                {/* <TabsList
                     className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
                     <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
                     <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
@@ -94,9 +97,9 @@ function SettingsCustom() {
                         setCurrentHover={setCurrentHover}
                     />
                 </TabsList>
-                <Divider orientation={"vertical"} className={"hidden md:block h-full"} />
+                <Divider orientation={"vertical"} className={"hidden md:block h-full"} /> */}
                 <ScrollArea
-                    className={"w-full overflow-y-auto relative rounded-l-md transition-all duration-75"}
+                    className={"w-1/2 mx-auto overflow-y-auto relative rounded-l-md transition-all duration-75"}
                     // scrollbarClassName="absolute"
                     thumbClassName="bg-neutral-200 dark:bg-neutral-700"
                     ref={rootRef}
@@ -108,6 +111,7 @@ function SettingsCustom() {
                 >
                     <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
                         <div className="flex w-full flex-col gap-4">
+                            {JSON.stringify(settings)}
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Dark Mode</h6>
                                 <DarkModeSetting />
@@ -134,7 +138,7 @@ function SettingsCustom() {
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default AI Chat Sidepanel</h6>
-                                <DefaultChatSidepanelSetting />
+                                <DefaultAIChatSidepanelSetting />
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Sort Type for Updates</h6>
@@ -192,6 +196,7 @@ function LanguageSetting() {
 
     return (
         <LanguageCombobox
+            disabled
         />
     )
 }
@@ -203,6 +208,7 @@ function DefaultHomePageSetting() {
         <Select
             value={defaultHomePage}
             onValueChange={setDefaultHomePage}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
@@ -222,16 +228,16 @@ function DefaultHomePageSetting() {
 }
 
 function CustomPDFRendererSetting() {
-    const [customPDFRenderer, setCustomPDFRenderer] = useAtom(customPDFrendererAtom)
+    const { settings, updateSettings } = useSettings()
 
     return (
         <Select
-            value={(customPDFRenderer).toString()}
-            onValueChange={(e) => setCustomPDFRenderer(e === 'true')}
+            value={(settings.CustomPDFrenderer).toString()}
+            onValueChange={(e) => updateSettings({ CustomPDFrenderer: e === "true" })}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Custom PDF Renderer" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -243,16 +249,16 @@ function CustomPDFRendererSetting() {
 }
 
 function UploadAIChatsSetting() {
-    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+    const { settings, updateSettings } = useSettings()
 
     return (
         <Select
-            value={uploadAIChats}
-            onValueChange={setUploadAIChats}
+            value={(settings.UploadAIChats).toString()}
+            onValueChange={(e) => updateSettings({ UploadAIChats: e === "true" })}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="AI Chat Upload" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -264,16 +270,16 @@ function UploadAIChatsSetting() {
 }
 
 function CustomTitlebarButtons() {
-    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+    const { settings, updateSettings } = useSettings()
 
     return (
         <Select
-            value={uploadAIChats}
-            onValueChange={setUploadAIChats}
+            value={(settings.CustomTitleBarButtons).toString()}
+            onValueChange={(e) => updateSettings({ CustomTitleBarButtons: e === "true" })}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Titlebar Buttons" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -285,16 +291,16 @@ function CustomTitlebarButtons() {
 }
 
 function CustomTitlebarSetting() {
-    const [uploadAIChats, setUploadAIChats] = useState<string>("true")
+    const { settings, updateSettings } = useSettings()
 
     return (
         <Select
-            value={uploadAIChats}
-            onValueChange={setUploadAIChats}
+            value={(settings.CustomTitleBar).toString()}
+            onValueChange={(e) => updateSettings({ CustomTitleBar: e === "true" })}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Titlebar" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -314,6 +320,7 @@ function DefaultSortTypeSetting() {
             onValueChange={(e) => {
                 setDefaultSortType(e as "starred" | "unstarred" | "all")
             }}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
@@ -329,17 +336,17 @@ function DefaultSortTypeSetting() {
     )
 }
 
-function DefaultChatSidepanelSetting() {
-    const [defaultChatSidepanel, setDefaultChatSidepanel] = useState<string>("false")
+function DefaultAIChatSidepanelSetting() {
+    const { settings, updateSettings } = useSettings()
 
     return (
         <Select
-            value={defaultChatSidepanel}
-            onValueChange={setDefaultChatSidepanel}
+            value={(settings.DefaultAIChatSidepanel).toString()}
+            onValueChange={(e) => updateSettings({ DefaultAIChatSidepanel: e === "true" })}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="AI Chat Sidepanel" />
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -359,6 +366,7 @@ function DefaultSortTypeUpdatesSetting() {
             onValueChange={(e) => {
                 setDefaultSortTypeUpdates(e as "all" | "updates" | "announcements")
             }}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
@@ -384,6 +392,7 @@ function DefaultResourceOpenTypeSetting() {
             onValueChange={(e) => {
                 setDefaultResourceOpenType(e as DefaultResourceOpenType)
             }}
+            disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
@@ -465,6 +474,7 @@ function RefreshAccessTokenIntervalSetting() {
                 max={55}
                 type="number"
                 placeholder="Refresh Access Token Interval"
+                disabled
             />
         </div>
     )
