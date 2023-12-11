@@ -113,7 +113,7 @@ export default function SettingsDropdown() {
                     handleDarkModeToggle()
                 })}>
                     <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-                    <DropdownMenuShortcut>${commandOrControl}T</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>{commandOrControl}T</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={(e) =>
@@ -122,7 +122,7 @@ export default function SettingsDropdown() {
                         })}
                 >
                     Settings
-                    <DropdownMenuShortcut>${commandOrControl}S</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>{commandOrControl}S</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={(e) =>
@@ -163,7 +163,7 @@ export default function SettingsDropdown() {
                     className={"hover:!bg-destructive focus:!bg-destructive hover:!text-white"}
                 >
                     <span>Exit</span>
-                    <DropdownMenuShortcut>${commandOrControl}Q</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>{commandOrControl}Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
