@@ -20,6 +20,7 @@ import {browseNavigationAtom as showBrowseNavAtom} from '../../atoms/browse-navi
 import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
 import {useVersion} from "@/hooks/atoms/useVersion.ts";
 import {useAboutModal} from "@/hooks/atoms/useAboutModal.ts";
+import {isMacOS} from "@/lib/utils.ts";
 
 export default function SettingsDropdown() {
     const navigate = useNavigate()
@@ -28,6 +29,13 @@ export default function SettingsDropdown() {
     const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom);
     const {toggleSettingsModal} = useShowSettingsModal()
     const {toggleAboutModal} = useAboutModal()
+    const commandOrControl = () => {
+        if (isMacOS()) {
+            return '⌘'
+        } else {
+            return 'Ctrl '
+        }
+    }
 
     const handleDarkModeToggle = useCallback(async () => {
         const isDarkMode = await window.darkMode.toggle()
@@ -105,7 +113,7 @@ export default function SettingsDropdown() {
                     handleDarkModeToggle()
                 })}>
                     <span className={"text-sm"}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-                    <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>${commandOrControl}T</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={(e) =>
@@ -114,7 +122,7 @@ export default function SettingsDropdown() {
                         })}
                 >
                     Settings
-                    <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>${commandOrControl}S</DropdownMenuShortcut>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={(e) =>
@@ -155,7 +163,7 @@ export default function SettingsDropdown() {
                     className={"hover:!bg-destructive focus:!bg-destructive hover:!text-white"}
                 >
                     <span>Exit</span>
-                    <DropdownMenuShortcut>⌘Q</DropdownMenuShortcut>
+                    <DropdownMenuShortcut>${commandOrControl}Q</DropdownMenuShortcut>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
