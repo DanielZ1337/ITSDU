@@ -37,6 +37,7 @@ const CourseSchedule = lazy(() => import("./routes/course/course-schedule"));
 const OfficeDocuments = lazy(() => import("./routes/documents/office-documents"));
 const OtherFiles = lazy(() => import("./routes/documents/other-files"));
 const Overview = lazy(() => import("./routes/overview"));
+const AIChats = lazy(() => import("./routes/ai-chats"));
 
 const router = createHashRouter([
     {
@@ -181,6 +182,11 @@ const router = createHashRouter([
             {
                 path: "/messages/:id?",
                 element: <Messages />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/ai-chats",
+                element: <AIChats />,
                 errorElement: <ErrorPage />,
             },
             {

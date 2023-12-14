@@ -1,4 +1,4 @@
-import { BookCheck, BookCopy, ClipboardList, Files, GanttChart, Route, Users2 } from "lucide-react"
+import { BookCheck, BookCopy, ClipboardList, FileSearch, Files, GanttChart, Route, Users2 } from "lucide-react"
 import {
     AiOutlineCalendar,
     AiOutlineFile,
@@ -48,6 +48,13 @@ export const navlinks = [
         end: true,
         disabled: false
     },
+    {
+        title: 'AI Chats',
+        icon: <FileSearch className={cn("", defaultNavLinkClassName)} />,
+        href: '/ai-chats',
+        end: true,
+        disabled: false
+    }
     /* {
         title: 'Courses',
         icon: <BookCopy className={cn("", defaultNavLinkClassName)} />,
