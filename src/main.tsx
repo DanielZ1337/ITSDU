@@ -205,7 +205,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <RouterProvider fallbackElement={<ErrorPage />} future={{
                 v7_startTransition: true,
             }} router={router} />
-            <ReactQueryDevtools position="left" />
+            <ReactQueryDevtools position="top" buttonPosition="top-left" />
             {/* </React.StrictMode> */}
         </SuspenseWrapper>
     </Providers>
