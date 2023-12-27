@@ -38,7 +38,7 @@ export function Shadow({ position }: { position: ShadowPosition }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+                transition={{ type: "just", stiffness: 500, damping: 30, mass: 0.8 }}
                 className={cn(defaultClassName, topClassName)}
             />
         )
@@ -53,7 +53,7 @@ export function Shadow({ position }: { position: ShadowPosition }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
+                transition={{ type: "just", stiffness: 500, damping: 30, mass: 0.8 }}
                 className={cn(defaultClassName, bottomClassName)}
             />
         )

@@ -8,8 +8,8 @@ import { useTheme } from "next-themes";
 import { useUser } from '@/hooks/atoms/useUser.ts';
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { Tabs, TabsList } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { LanguageCombobox } from "../language-combobox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -21,6 +21,7 @@ import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
 import SettingsSidebarButton from "./settings-sidebar-button";
 import SettingsCloseButton from "./settings-close-button";
 import { useSettings } from "@/hooks/atoms/useSettings";
+import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resourceIndexedDB";
 
 export default function SettingsModal() {
 
@@ -39,7 +40,26 @@ export default function SettingsModal() {
             >
                 <div className="absolute h-14 w-full bg-transparent drag" />
                 <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-10 py-14">
-                    <SettingsCustom />
+                    {/* <SettingsCustom /> */}
+                    <Tabs defaultValue="settings" className="w-full h-full">
+                        <TabsList className="bg-transparent absolute top-1/2 left-[10%] transform -translate-y-1/2 flex flex-col gap-4 items-center">
+                            <TabsTrigger value="settings" className={buttonVariants({
+                                variant: "link",
+                                className: "bg-transparent data-[state=active]:bg-transparent data-[state=inactive]:text-foreground-500 text-lg data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                            })}>Settings</TabsTrigger>
+                            <TabsTrigger value="indexeddb" className={buttonVariants({
+                                variant: "link",
+                                className: "bg-transparent data-[state=active]:bg-transparent data-[state=inactive]:text-foreground-500 text-lg data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                            })}
+                            >IndexedDB</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="settings" className="h-full w-full overflow-hidden">
+                            <SettingsCustom />
+                        </TabsContent>
+                        <TabsContent value="indexeddb" className="h-full w-full overflow-hidden">
+                            <Bruh />
+                        </TabsContent>
+                    </Tabs>
                 </div>
             </DialogContent>
         </Dialog>
@@ -168,6 +188,171 @@ function SettingsCustom() {
         </div>
     )
 }
+
+function Bruh() {
+    const [currentSection, setCurrentSection] = React.useState<string>('account');
+    const [currentHover, setCurrentHover] = React.useState<string | null>(null);
+
+    const memoizedCurrentSection = React.useMemo(() => currentSection, [currentSection]);
+    const memoizedCurrentHover = React.useMemo(() => currentHover, [currentHover]);
+    const rootRef = React.useRef<HTMLDivElement>(null)
+    const viewportRef = React.useRef<HTMLDivElement>(null)
+
+    const SettingsCardSectionSettings = {
+        root: rootRef,
+        setCurrentSection: setCurrentSection
+    }
+
+    const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(calculateShadowPosition(viewportRef));
+    useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
+
+    const { settings } = useSettings()
+    const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null)
+    const [allResources, setAllResources] = useState<IndexedDBResourceFileType[]>([])
+    const [totalSize, setTotalSize] = useState<number>(0)
+
+    useEffect(() => {
+        ItsduResourcesDBWrapper.getInstance().then((instance) => {
+            setIndexedDBResources(instance)
+        })
+    }, [])
+
+    useEffect(() => {
+        if (indexedDBResources) {
+            indexedDBResources.getAllResources().then((resources) => {
+                resources.sort((a, b) => {
+                    return b.last_accessed.getTime() - a.last_accessed.getTime()
+                })
+                setAllResources(resources)
+
+                let totalSize = 0
+                resources.forEach((resource) => {
+                    totalSize += resource.size
+                })
+                setTotalSize(totalSize)
+            })
+        }
+    }, [indexedDBResources, allResources])
+
+    const formatSize = (size: number) => {
+        if (size < 1024) {
+            return `${size} B`
+        } else if (size < 1024 * 1024) {
+            return `${Math.floor(size / 1024)} KB`
+        } else if (size < 1024 * 1024 * 1024) {
+            return `${Math.floor(size / 1024 / 1024)} MB`
+        } else {
+            return `${Math.floor(size / 1024 / 1024 / 1024)} GB`
+        }
+    }
+
+    return (
+        <div
+            className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
+            {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
+            <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection}
+                orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
+                {/* <TabsList
+                    className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
+                    <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
+                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
+                    <SettingsSidebarButton
+                        currentSection={memoizedCurrentSection}
+                        value="Preferences"
+                        label="Preferences"
+                        currentHover={memoizedCurrentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                    <SettingsSidebarButton
+                        currentSection={memoizedCurrentSection}
+                        value="account"
+                        label="Account"
+                        currentHover={memoizedCurrentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                    <SettingsSidebarButton
+                        currentSection={memoizedCurrentSection}
+                        value="password"
+                        label="Password"
+                        currentHover={memoizedCurrentHover}
+                        setCurrentHover={setCurrentHover}
+                    />
+                </TabsList>
+                <Divider orientation={"vertical"} className={"hidden md:block h-full"} /> */}
+                <ScrollArea
+                    className={"w-1/2 mx-auto overflow-y-auto relative rounded-l-md transition-all duration-75"}
+                    // scrollbarClassName="absolute"
+                    thumbClassName="bg-neutral-200 dark:bg-neutral-700"
+                    ref={rootRef}
+                    viewportRef={viewportRef}
+                    style={{
+                        borderTopRightRadius: shadowPosition === "bottom" ? 5 : 10,
+                        borderBottomRightRadius: shadowPosition === "top" ? 5 : 10
+                    }}
+                >
+                    <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
+                        <div className="flex w-full flex-col gap-4">
+                            {/* {JSON.stringify(settings)} */}
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">All Resources</h6>
+                                <span className="text-foreground">Total Size: {formatSize(totalSize)}</span>
+                                <Button
+                                    variant={"outline"}
+                                    onClick={() => {
+                                        indexedDBResources?.clearResources().then(() => {
+                                            indexedDBResources?.getAllResources().then((resources) => {
+                                                resources.sort((a, b) => {
+                                                    return b.last_accessed.getTime() - a.last_accessed.getTime()
+                                                })
+                                                setAllResources(resources)
+                                            })
+                                        })
+                                    }}
+                                >
+                                    Delete All
+                                </Button>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                {allResources.map((resource) => {
+                                    return (
+                                        <div key={resource.elementId} className="grid grid-cols-2 gap-2 w-full">
+                                            <div className="flex flex-col gap-2 w-full">
+                                                <span className="text-foreground">{resource.elementId}</span>
+                                                <span className="text-foreground">{resource.name}</span>
+                                                <span className="text-foreground">{resource.type}</span>
+                                                <span className="text-foreground">Last accessed: {resource.last_accessed.toDateString()}</span>
+                                                <span className="text-foreground">Size: {formatSize(resource.size)}</span>
+                                            </div>
+                                            <div className="flex flex-col gap-2 w-full">
+                                                <Button
+                                                    variant={"outline"}
+                                                    onClick={() => {
+                                                        indexedDBResources?.deleteResourceById(resource.elementId).then(() => {
+                                                            indexedDBResources?.getAllResources().then((resources) => {
+                                                                resources.sort((a, b) => {
+                                                                    return b.last_accessed.getTime() - a.last_accessed.getTime()
+                                                                })
+                                                                setAllResources(resources)
+                                                            })
+                                                        })
+                                                    }}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </SettingsCardSection>
+                </ScrollArea>
+            </Tabs>
+        </div>
+    )
+}
+
 
 function DarkModeSetting() {
     const { theme } = useTheme()
@@ -560,8 +745,9 @@ function SettingsCardSection({ title, children, setCurrentSection, root }: {
         }
     }, [entry, setCurrentSection, title]);
 
+    //shadow-md
     return (
-        <div className={"p-4 md:p-8 bg-neutral-100 dark:bg-neutral-800 rounded-xl shadow-md w-full h-max"}>
+        <div className={"p-4 md:p-8 bg-neutral-100 dark:bg-neutral-800 rounded-xl w-full h-max"}>
             <h1 data-title={title} ref={ref} className={"py-2 text-2xl font-bold text-foreground"}>{title}</h1>
             <div className={"flex flex-col gap-4 w-full h-full"}>
                 {children}
