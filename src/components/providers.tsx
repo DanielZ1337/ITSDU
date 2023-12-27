@@ -1,9 +1,10 @@
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {domAnimation, LazyMotion} from "framer-motion";
-import {ThemeProvider} from "next-themes";
-import {HelmetProvider} from "react-helmet-async";
+import { defaultSettings } from "@/types/settings";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { domAnimation, LazyMotion } from "framer-motion";
+import { ThemeProvider } from "next-themes";
+import { HelmetProvider } from "react-helmet-async";
 
-export default function Providers({children}: {
+export default function Providers({ children }: {
     children: React.ReactNode
 }) {
     const queryClient = new QueryClient({
@@ -18,6 +19,15 @@ export default function Providers({children}: {
             }
         },
     })
+
+    // initialize settings in the local storage
+    if (!localStorage.getItem("settings")) {
+        localStorage.setItem("settings", JSON.stringify({ ...defaultSettings }))
+    } else {
+        //if settings is already initialized but not all the settings are present, add the missing settings
+        const settings = JSON.parse(localStorage.getItem("settings")!)
+        localStorage.setItem("settings", JSON.stringify({ ...defaultSettings, ...settings }))
+    }
 
     return (
         <HelmetProvider>

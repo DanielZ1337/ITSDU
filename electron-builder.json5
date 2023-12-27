@@ -8,7 +8,7 @@
   productName: 'ITSDU Desktop App',
   compression: 'maximum',
   artifactName: '${productName}-${version}.${ext}',
-  compression: 'store',
+  // compression: 'store',
   protocols: [
     {
       name: 'login redirect URI protocol',
