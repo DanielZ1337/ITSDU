@@ -6,43 +6,13 @@ const DB_VERSION = 3;
 const DB_STORE_NAME = 'itsdu-resources';
 // const DB_SCHEMA = ['elementId', 'name', 'arrayBuffer', 'size', 'type', 'last_updated', 'last_accessed'];
 const DB_KEY_PATH = 'elementId';
-const DB_INDEXES = [
+/* const DB_INDEXES = [
     {
         name: 'elementId',
         keyPath: 'elementId',
         options: { unique: true },
     },
-    {
-        name: 'name',
-        keyPath: 'name',
-        options: { unique: false },
-    },
-    {
-        name: 'arrayBuffer',
-        keyPath: 'arrayBuffer',
-        options: { unique: false },
-    },
-    {
-        name: 'size',
-        keyPath: 'size',
-        options: { unique: false },
-    },
-    {
-        name: 'type',
-        keyPath: 'type',
-        options: { unique: false },
-    },
-    /* {
-        name: 'last_updated',
-        keyPath: 'last_updated',
-        options: { unique: false },
-    }, */
-    {
-        name: 'last_accessed',
-        keyPath: 'last_accessed',
-        options: { unique: false },
-    },
-];
+]; */
 
 export type IndexedDBResourceFileType = Omit<ResourceFileType, 'url' | 'text' | 'stream' | 'blob'> & {
     elementId: string
@@ -55,7 +25,7 @@ class ItsduResourcesDBWrapper {
     private indexedDB: IndexedDB<IndexedDBResourceFileType>;
 
     private constructor() {
-        this.indexedDB = new IndexedDB<IndexedDBResourceFileType>(DB_NAME, DB_VERSION, DB_INDEXES, DB_STORE_NAME, DB_KEY_PATH);
+        this.indexedDB = new IndexedDB<IndexedDBResourceFileType>(DB_NAME, DB_VERSION, DB_STORE_NAME, DB_KEY_PATH);
     }
 
     public static async getInstance() {
@@ -77,7 +47,7 @@ class ItsduResourcesDBWrapper {
 
     public async getResourceById(id: string) {
         try {
-            return await this.indexedDB.getData(DB_STORE_NAME, id);
+            return await this.indexedDB.getData(id);
         } catch (error) {
             console.error(`Failed to get resource with id ${id}:`, error);
             return undefined;
@@ -86,7 +56,7 @@ class ItsduResourcesDBWrapper {
 
     public async insertResource(resource: IndexedDBResourceFileType) {
         try {
-            await this.indexedDB.insertData(DB_STORE_NAME, resource);
+            await this.indexedDB.insertData(resource);
         } catch (error) {
             console.error('Failed to insert resource:', error);
         }
@@ -94,7 +64,7 @@ class ItsduResourcesDBWrapper {
 
     public async deleteResourceById(id: string) {
         try {
-            await this.indexedDB.deleteData(DB_STORE_NAME, id);
+            await this.indexedDB.deleteData(id);
         } catch (error) {
             console.error(`Failed to delete resource with id ${id}:`, error);
         }
@@ -102,7 +72,7 @@ class ItsduResourcesDBWrapper {
 
     public async clearResources() {
         try {
-            await this.indexedDB.clearData(DB_STORE_NAME);
+            await this.indexedDB.clearData();
         } catch (error) {
             console.error('Failed to clear resources:', error);
         }

@@ -14,24 +14,21 @@ interface checkRemainingSpaceOptions {
 const MAX_DB_SIZE = 300 * 1024 * 1024; // 50 MB
 
 class IndexedDB<T> {
-    private db: IDBDatabase | null;
+    private db: IDBDatabase | null = null;
     private DB_NAME: string;
     private DB_VERSION: number;
-    private DB_INDEXES: CustomIDBIndexParameters[];
     private DB_STORE_NAME: string;
     private keyPath: string; // Add keyPath property
 
-    constructor(dbName: string, dbVersion: number, dbIndexes: CustomIDBIndexParameters[], dbStoreName: string, keyPath: string = "id") {
-        this.db = null;
+    constructor(dbName: string, dbVersion: number, dbStoreName: string, keyPath: string = "id") {
         this.DB_NAME = dbName;
         this.DB_VERSION = dbVersion;
-        this.DB_INDEXES = dbIndexes;
         this.keyPath = keyPath;
         this.DB_STORE_NAME = dbStoreName;
         this.openDB();
     }
 
-    public async openDB(): Promise<void> {
+    public async openDB(): Promise<IDBDatabase> {
         if (!this.db) {
             return new Promise((resolve, reject) => {
                 const request = window.indexedDB.open(this.DB_NAME, this.DB_VERSION);
@@ -43,7 +40,7 @@ class IndexedDB<T> {
 
                 request.onsuccess = () => {
                     this.db = request.result;
-                    resolve();
+                    resolve(this.db)
                 };
 
                 request.onupgradeneeded = () => {
@@ -52,6 +49,8 @@ class IndexedDB<T> {
                 };
             });
         }
+
+        return this.db;
     }
 
     private initializeSchema(): void {
@@ -61,10 +60,6 @@ class IndexedDB<T> {
             }
 
             const store = this.db.createObjectStore(this.DB_STORE_NAME, { keyPath: this.keyPath }); // Use keyPath value
-            this.DB_INDEXES.forEach((index) => {
-                const { name, keyPath, options } = index;
-                store.createIndex(name, keyPath as string | string[], options as IDBIndexParameters | undefined); // Fix the type of options
-            });
         } catch (error) {
             console.error("Failed to initialize schema:", error);
         }
@@ -84,7 +79,7 @@ class IndexedDB<T> {
                 return;
             }
 
-            const objectStore = this.getObjectStore(this.DB_STORE_NAME, "readonly");
+            const objectStore = this.getObjectStore("readonly");
             const request = objectStore.getAll();
 
             request.onsuccess = () => {
@@ -98,14 +93,14 @@ class IndexedDB<T> {
         });
     }
 
-    public getData(storeName: string, primaryKey: any): Promise<T | undefined> {
+    public getData(primaryKey: string): Promise<T | undefined> {
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 reject(new Error("Database is not open"));
                 return;
             }
 
-            const objectStore = this.getObjectStore(storeName, "readonly");
+            const objectStore = this.getObjectStore("readonly");
             const request = objectStore.get(primaryKey);
 
             request.onsuccess = () => {
@@ -119,14 +114,14 @@ class IndexedDB<T> {
         });
     }
 
-    public insertData(storeName: string, data: T): Promise<void> {
+    public insertData(data: T): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 reject(new Error("Database is not open"));
                 return;
             }
 
-            const objectStore = this.getObjectStore(storeName, "readwrite");
+            const objectStore = this.getObjectStore("readwrite");
 
             const request = objectStore.put(data);
 
@@ -140,14 +135,14 @@ class IndexedDB<T> {
         });
     }
 
-    public deleteData(storeName: string, primaryKey: any): Promise<void> {
+    public deleteData(primaryKey: string): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 reject(new Error("Database is not open"));
                 return;
             }
 
-            const objectStore = this.getObjectStore(storeName, "readwrite");
+            const objectStore = this.getObjectStore("readwrite");
             const request = objectStore.delete(primaryKey);
 
             request.onsuccess = () => {
@@ -160,14 +155,14 @@ class IndexedDB<T> {
         });
     }
 
-    public clearData(storeName: string): Promise<void> {
+    public clearData(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 reject(new Error("Database is not open"));
                 return;
             }
 
-            const objectStore = this.getObjectStore(storeName, "readwrite");
+            const objectStore = this.getObjectStore("readwrite");
             const request = objectStore.clear();
 
             request.onsuccess = () => {
@@ -180,13 +175,13 @@ class IndexedDB<T> {
         });
     }
 
-    public getObjectStore = (storeName: string, mode: IDBTransactionMode) => {
+    public getObjectStore = (mode: IDBTransactionMode) => {
         if (!this.db) {
             throw new Error("Database is not open");
         }
 
-        const transaction = this.db.transaction(storeName, mode);
-        return transaction.objectStore(storeName);
+        const transaction = this.db.transaction(this.DB_STORE_NAME, mode);
+        return transaction.objectStore(this.DB_STORE_NAME);
     }
 
     public getDBName(): string {
