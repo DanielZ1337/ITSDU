@@ -12,6 +12,12 @@ export default function useGETMediaDocument(elementId: number | string, queryCon
 
         return mediaLink;
     }, {
-        ...queryConfig
+        ...queryConfig,
+        // complete caching of resources
+        refetchInterval: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchIntervalInBackground: false,
     })
 }
