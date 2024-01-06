@@ -7,6 +7,7 @@ import axios from "axios";
 import { lazy, useEffect, useState } from "react";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { defaultSettings } from "@/types/settings";
 
 const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
 const CoursePlans = lazy(() => import("./routes/course/course-plans"));
@@ -185,7 +186,7 @@ const router = createHashRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: "/ai-chats",
+                path: "/ai-chats/:page?",
                 element: <AIChats />,
                 errorElement: <ErrorPage />,
             },
@@ -197,6 +198,15 @@ const router = createHashRouter([
         ]
     },
 ]);
+
+// initialize settings in the local storage
+if (!localStorage.getItem("settings")) {
+    localStorage.setItem("settings", JSON.stringify({ ...defaultSettings }))
+} else {
+    //if settings is already initialized but not all the settings are present, add the missing settings
+    const settings = JSON.parse(localStorage.getItem("settings")!)
+    localStorage.setItem("settings", JSON.stringify({ ...defaultSettings, ...settings }))
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <Providers>

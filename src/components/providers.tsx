@@ -20,14 +20,7 @@ export default function Providers({ children }: {
         },
     })
 
-    // initialize settings in the local storage
-    if (!localStorage.getItem("settings")) {
-        localStorage.setItem("settings", JSON.stringify({ ...defaultSettings }))
-    } else {
-        //if settings is already initialized but not all the settings are present, add the missing settings
-        const settings = JSON.parse(localStorage.getItem("settings")!)
-        localStorage.setItem("settings", JSON.stringify({ ...defaultSettings, ...settings }))
-    }
+
 
     return (
         <HelmetProvider>

@@ -5,52 +5,55 @@ import { Input } from '@/components/ui/input'
 import useGETpreviousChats from '@/queries/AI/useGETpreviousChats'
 import { useCycle } from 'framer-motion'
 import { ArrowRightIcon, DownloadIcon } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom';
 import React, { createContext, useContext, useState } from 'react'
 
-interface PaginationContextProps {
-    pagesNum: number
-    page: number
-    setPage: React.Dispatch<React.SetStateAction<number>>
-}
-
-const PaginationContext = createContext<PaginationContextProps | undefined>(undefined)
-
-function PaginationProvider({ pagesNum, children, DEFAULT_PAGE = 1 }: { pagesNum: number, children: React.ReactNode, DEFAULT_PAGE?: number }) {
-    const [page, setPage] = useState(DEFAULT_PAGE)
-
-    return (
-        <PaginationContext.Provider value={{ pagesNum, page, setPage }}>
-            {children}
-        </PaginationContext.Provider>
-    )
-}
-
-const usePagination = () => {
-    const context = useContext(PaginationContext)
-    if (!context) {
-        throw new Error('usePagination must be used within a PaginationProvider')
-    }
-    return context
-}
-
 export default function AIChats() {
+    let { page } = useParams()
+    if (page === undefined) {
+        page = "1"
+    }
+    const pageInt = parseInt(page)
 
+    const { data } = useGETpreviousChats({
+        pageIndex: pageInt - 1
+    }, {
+        suspense: true
+    })
+
+    console.log(data)
+
+    let pagesNum
+
+    if (data?.pages[0].totalFiles === 0 || data?.pages[0].totalFiles === undefined || data === undefined) {
+        pagesNum = 0
+    } else {
+        pagesNum = Math.ceil(data?.pages[0].totalFiles / data?.pages[0].pageSize)
+    }
+
+    if (data?.pages.length === 0 || data?.pages.length === undefined || data?.pages[0].files.length === 0) {
+        return (
+            <div className="container mx-auto p-4 md:p-6">
+                <h1 className="text-2xl md:text-3xl font-bold mb-6 xl:mb-16">Previous AI Chats</h1>
+                <div className="grid gap-6 grid-cols-2">
+                    <p>No AI Chats found</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto p-4 md:p-6">
             <h1 className="text-2xl md:text-3xl font-bold mb-6 xl:mb-16">Previous AI Chats</h1>
             <div className="grid gap-6 grid-cols-2">
-                <AIChatsGridAndPagination pageNum={1}>
-                    <AIChatsGrid />
-                </AIChatsGridAndPagination>
+                <AIChatsGrid page={pageInt} />
+                <PaginationControls pagesNum={pagesNum} page={pageInt} />
             </div>
         </div>
     )
 }
 
-function AIChatsGrid() {
-    const { page } = usePagination()
+function AIChatsGrid({ page }: { page: number }) {
 
     const { data } = useGETpreviousChats({
         pageIndex: page - 1
@@ -73,55 +76,25 @@ function AIChatsGrid() {
     )
 }
 
-function AIChatsGridAndPagination({ pageNum, children }: { pageNum: number, children: React.ReactNode }) {
-
-    const { data } = useGETpreviousChats({
-        pageIndex: pageNum
-    }, {
-        suspense: true
-    })
-
-    let pagesNum
-
-    if (data?.pages[0].totalFiles === 0 || data?.pages[0].totalFiles === undefined || data === undefined) {
-        pagesNum = 0
-    } else {
-        pagesNum = Math.ceil(data?.pages[0].totalFiles / data?.pages[0].pageSize)
-    }
-
-    if (data?.pages.length === 0 || data?.pages.length === undefined) {
-        return (
-            <div className="container mx-auto p-4 md:p-6">
-                <h1 className="text-2xl md:text-3xl font-bold mb-6 xl:mb-16">Previous AI Chats</h1>
-                <div className="grid gap-6 grid-cols-2">
-                    <p>No AI Chats found</p>
-                </div>
-            </div>
-        )
-    }
-
-
-    return (
-        <PaginationProvider pagesNum={pagesNum}>
-            {children}
-            <PaginationControls />
-        </PaginationProvider>
-    )
-}
-
-
-function PaginationControls() {
-    const { pagesNum, page, setPage } = usePagination()
+function PaginationControls({ pagesNum, page }: { pagesNum: number, page: number }) {
+    const navigate = useNavigate()
 
     const handleNext = () => {
         if (page < pagesNum) {
-            setPage(page + 1)
+            navigate(`/ai-chats/${page + 1}`)
         }
     }
 
     const handlePrev = () => {
         if (page > 1) {
-            setPage(page - 1)
+            navigate(`/ai-chats/${page - 1}`)
+        }
+    }
+
+    const setPage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value)
+        if (value > 0 && value <= pagesNum) {
+            navigate(`/ai-chats/${value}`)
         }
     }
 
@@ -134,7 +107,7 @@ function PaginationControls() {
                     <Input
                         type="number"
                         value={page}
-                        onChange={(e) => setPage(parseInt(e.target.value))}
+                        onChange={setPage}
                         className="w-16 h-8 text-center"
                         min={1}
                         max={pagesNum}

@@ -53,10 +53,10 @@ export default function SettingsModal() {
                             })}
                             >IndexedDB</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="settings" className="h-full w-full overflow-hidden">
+                        <TabsContent value="settings" className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
                             <SettingsCustom />
                         </TabsContent>
-                        <TabsContent value="indexeddb" className="h-full w-full overflow-hidden">
+                        <TabsContent value="indexeddb" className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
                             <Bruh />
                         </TabsContent>
                     </Tabs>
