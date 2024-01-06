@@ -45,7 +45,8 @@
   linux: {
     target: ['deb', 'AppImage'],
     artifactName: '${productName}-Linux-${version}.${ext}',
-    icon: 'build/icon.png',
+    // icon: 'build/icon.png',
     category: 'Education'
-  }
+  },
+  npmRebuild: false
 }
