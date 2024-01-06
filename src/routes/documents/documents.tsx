@@ -49,6 +49,7 @@ export default function Documents() {
     const { settings } = useSettings()
 
     const DefaultPdfRenderer = () => {
+        if (settings.CustomPDFrenderer) return null
         if (isLoading) {
             return (
                 <div className="flex h-full w-full items-center justify-center">

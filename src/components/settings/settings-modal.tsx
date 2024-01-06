@@ -66,6 +66,56 @@ export default function SettingsModal() {
     )
 }
 
+function ResizablePanelSettings({ panelId }: { panelId: string }) {
+    const localStorageKey = `react-resizable-panels:${panelId}`;
+
+    const [panelSettings, setPanelSettings] = useState([70, 30]);
+
+    useEffect(() => {
+        const storedSettings = localStorage.getItem(localStorageKey);
+        if (storedSettings) {
+            const parsedSettings = JSON.parse(storedSettings);
+            setPanelSettings(parsedSettings[`{"defaultSize":70,"minSize":0},{"minSize":0}`].layout);
+        }
+    }, [localStorageKey]);
+
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setPanelSettings({ ...panelSettings, [name]: value });
+    };
+
+    const clearLocalStorage = () => {
+        localStorage.removeItem(localStorageKey);
+    };
+
+    const saveSettings = () => {
+        localStorage.setItem(localStorageKey, JSON.stringify(panelSettings));
+    };
+
+    return (
+        <div>
+            <h2>{`Resizable Panel ${panelId} Settings`}</h2>
+            {/* <div className="py-2">
+                <div>
+                    <label htmlFor={`${panelId}-layout`}>Layout</label>
+                    <input
+                        id={`${panelId}-layout`}
+                        name="layout"
+                        type="text"
+                        value={panelSettings.map(String)}
+                        onChange={handleInputChange}
+                    />
+                </div>
+                <div>
+
+                </div>
+            </div>
+            <Button variant={"outline"} onClick={saveSettings}>Save Settings</Button> */}
+            <Button variant={"outline"} onClick={clearLocalStorage}>Clear Settings</Button>
+        </div>
+    );
+}
+
 function SettingsCustom() {
     const [currentSection, setCurrentSection] = React.useState<string>('account');
     const [currentHover, setCurrentHover] = React.useState<string | null>(null);
@@ -179,6 +229,14 @@ function SettingsCustom() {
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Resource Open Type</h6>
                                 <DefaultResourceOpenTypeSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Default Resource Table Columns</h6>
+                                <DefaultResourceTableColumnsSetting />
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                <h6 className="text-foreground">Resizeable Panel Settings</h6>
+                                <ResizablePanelSettings panelId={"course-index"} />
                             </div>
                         </div>
                     </SettingsCardSection>
