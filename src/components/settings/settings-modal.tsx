@@ -21,7 +21,8 @@ import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
 import SettingsSidebarButton from "./settings-sidebar-button";
 import SettingsCloseButton from "./settings-close-button";
 import { useSettings } from "@/hooks/atoms/useSettings";
-import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resourceIndexedDB";
+import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
+import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
 
 export default function SettingsModal() {
 
@@ -268,6 +269,16 @@ function Bruh() {
     const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null)
     const [allResources, setAllResources] = useState<IndexedDBResourceFileType[]>([])
     const [totalSize, setTotalSize] = useState<number>(0)
+    const [courses, setCourses] = useState<number[]>([])
+
+    if (allResources !== null) {
+        // get all courses
+        allResources.forEach((resource) => {
+            if (Object.prototype.hasOwnProperty.call(resource, "courseId")) {
+                setCourses([...courses, Number(resource.CourseId)])
+            }
+        })
+    }
 
     useEffect(() => {
         ItsduResourcesDBWrapper.getInstance().then((instance) => {
@@ -278,9 +289,7 @@ function Bruh() {
     useEffect(() => {
         if (indexedDBResources) {
             indexedDBResources.getAllResources().then((resources) => {
-                resources.sort((a, b) => {
-                    return b.last_accessed.getTime() - a.last_accessed.getTime()
-                })
+                resources = getSortedResourcesByTime(resources)
                 setAllResources(resources)
 
                 let totalSize = 0
@@ -359,9 +368,7 @@ function Bruh() {
                                     onClick={() => {
                                         indexedDBResources?.clearResources().then(() => {
                                             indexedDBResources?.getAllResources().then((resources) => {
-                                                resources.sort((a, b) => {
-                                                    return b.last_accessed.getTime() - a.last_accessed.getTime()
-                                                })
+                                                resources = getSortedResourcesByTime(resources)
                                                 setAllResources(resources)
                                             })
                                         })
@@ -388,9 +395,7 @@ function Bruh() {
                                                     onClick={() => {
                                                         indexedDBResources?.deleteResourceById(resource.elementId).then(() => {
                                                             indexedDBResources?.getAllResources().then((resources) => {
-                                                                resources.sort((a, b) => {
-                                                                    return b.last_accessed.getTime() - a.last_accessed.getTime()
-                                                                })
+                                                                resources = getSortedResourcesByTime(resources)
                                                                 setAllResources(resources)
                                                             })
                                                         })

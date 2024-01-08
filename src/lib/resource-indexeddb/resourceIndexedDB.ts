@@ -1,5 +1,6 @@
 import { ResourceFileType } from "@/queries/resources/useResourceByElementID";
-import { IndexedDB } from "./indexedDB";
+import { IndexedDB } from "../indexedDB";
+import { GETcourseResourceInfo } from "@/types/api-types/courses/GETcourseResourceInfo";
 
 const DB_NAME = 'itsdu';
 const DB_VERSION = 3;
@@ -16,8 +17,10 @@ const DB_KEY_PATH = 'elementId';
 
 export type IndexedDBResourceFileType = Omit<ResourceFileType, 'url' | 'text' | 'stream' | 'blob'> & {
     elementId: string
-    // last_updated: Date
     last_accessed: Date
+} & Partial<GETcourseResourceInfo> & {
+    CourseTitle: string
+    CourseId: number
 }
 
 class ItsduResourcesDBWrapper {

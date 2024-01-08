@@ -175,6 +175,36 @@ class IndexedDB<T> {
         });
     }
 
+    public updateData(primaryKey: string, data: Partial<T>): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (!this.db) {
+                reject(new Error("Database is not open"));
+                return;
+            }
+
+            const objectStore = this.getObjectStore("readwrite");
+            const request = objectStore.get(primaryKey);
+
+            request.onsuccess = () => {
+                const existingData = request.result as T;
+                const newData = { ...existingData, ...data };
+                const updateRequest = objectStore.put(newData);
+
+                updateRequest.onsuccess = () => {
+                    resolve();
+                };
+
+                updateRequest.onerror = () => {
+                    reject(updateRequest.error);
+                };
+            };
+
+            request.onerror = () => {
+                reject(request.error);
+            };
+        });
+    }
+
     public getObjectStore = (mode: IDBTransactionMode) => {
         if (!this.db) {
             throw new Error("Database is not open");
