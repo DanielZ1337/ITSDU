@@ -24,6 +24,8 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
 import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { ErrorBoundary } from "react-error-boundary";
+import { toast } from "../ui/use-toast";
 
 export default function SettingsModal() {
 
@@ -59,7 +61,20 @@ export default function SettingsModal() {
                             <SettingsCustom />
                         </TabsContent>
                         <TabsContent value="indexeddb" className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
-                            <Bruh />
+                            <ErrorBoundary fallback={
+                                <div className="flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl">
+                                    <h1 className="text-foreground">Error</h1>
+                                    <h2 className="text-foreground">An error occured while loading IndexedDB. Please try again later.</h2>
+                                </div>
+                            } onError={() => {
+                                toast({
+                                    title: "Error",
+                                    variant: "destructive",
+                                    description: "An error occured while loading IndexedDB. Please try again later."
+                                })
+                            }}>
+                                <IndexedDB />
+                            </ErrorBoundary>
                         </TabsContent>
                     </Tabs>
                 </div>
@@ -249,7 +264,7 @@ function SettingsCustom() {
     )
 }
 
-function Bruh() {
+function IndexedDB() {
     const [currentSection, setCurrentSection] = React.useState<string>('account');
     const [currentHover, setCurrentHover] = React.useState<string | null>(null);
 
@@ -269,12 +284,25 @@ function Bruh() {
     const { settings } = useSettings()
     const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null);
     const [allResources, setAllResources] = useState<IndexedDBResourceFileType[] | null>([]);
-    const [totalSize, setTotalSize] = useState(0);
     const [coursesDropdown, setCoursesDropdown] = useState<string[]>([]);
     const [selectedCourses, setSelectedCourses] = useState<string[] | null>(null);
     const [filteredResources, setFilteredResources] = useState<IndexedDBResourceFileType[]>([]);
 
     let courses: any = null
+    const formatSize = (size: number) => {
+        if (size < 1024) {
+            return `${size} B`
+        } else if (size < 1024 * 1024) {
+            return `${Math.floor(size / 1024)} KB`
+        } else if (size < 1024 * 1024 * 1024) {
+            return `${Math.floor(size / 1024 / 1024)} MB`
+        } else {
+            return `${Math.floor(size / 1024 / 1024 / 1024)} GB`
+        }
+    }
+
+    let totalSize = allResources && formatSize(allResources.reduce((acc, resource) => acc + resource.size, 0))
+    let filteredTotalSize = formatSize(filteredResources.reduce((acc, resource) => acc + resource.size, 0))
 
     if (allResources) {
         courses = allResources.reduce((acc: any, resource) => {
@@ -299,9 +327,6 @@ function Bruh() {
             indexedDBResources.getAllResources().then((resources) => {
                 resources = getSortedResourcesByTime(resources);
                 setAllResources(resources);
-
-                const size = resources.reduce((acc, resource) => acc + resource.size, 0);
-                setTotalSize(size);
             });
         }
     }, [indexedDBResources, allResources?.length]);
@@ -310,8 +335,9 @@ function Bruh() {
         if (allResources) {
             const uniqueCourses = Array.from(new Set(allResources.map(resource => String(resource.CourseId))));
             setCoursesDropdown(uniqueCourses);
+            setSelectedCourses(uniqueCourses);
         }
-    }, [allResources]);
+    }, [allResources?.length]);
 
 
     const handleCourseSelect = (courseId: string) => {
@@ -339,17 +365,7 @@ function Bruh() {
         }
     }, [selectedCourses, allResources]);
 
-    const formatSize = (size: number) => {
-        if (size < 1024) {
-            return `${size} B`
-        } else if (size < 1024 * 1024) {
-            return `${Math.floor(size / 1024)} KB`
-        } else if (size < 1024 * 1024 * 1024) {
-            return `${Math.floor(size / 1024 / 1024)} MB`
-        } else {
-            return `${Math.floor(size / 1024 / 1024 / 1024)} GB`
-        }
-    }
+
 
     const handleDeleteResource = (resourceId: string) => {
         indexedDBResources?.deleteResourceById(resourceId).then(() => {
@@ -361,10 +377,19 @@ function Bruh() {
     };
 
     const handleDeleteAllResourcesForFilteredCourses = () => {
-        const filteredResourcesIds = filteredResources.map((resource) => resource.elementId);
+        const filteredResourcesIds = allResources?.map((resource) => resource.elementId);
 
-        filteredResourcesIds.forEach((resourceId) => {
+        const filteredResourcesIdsToDelete = filteredResourcesIds?.filter((resourceId) => {
+            return filteredResources?.some((resource) => selectedCourses?.includes(String(resource.CourseId)) && resource.elementId === resourceId);
+        });
+
+        filteredResourcesIdsToDelete?.forEach((resourceId) => {
             indexedDBResources?.deleteResourceById(resourceId);
+        })
+
+        indexedDBResources?.getAllResources().then((resources) => {
+            resources = getSortedResourcesByTime(resources);
+            setAllResources(resources);
         });
     }
 
@@ -420,13 +445,12 @@ function Bruh() {
                             >
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-foreground">All Resources</h6>
-                                    <span className="text-foreground">Total Size: {formatSize(totalSize)}</span>
+                                    <span className="text-foreground">Total Size: {totalSize}</span>
                                     <Button
                                         variant={"outline"}
                                         onClick={() => {
                                             indexedDBResources?.clearResources().then(() => {
                                                 setAllResources([]);
-                                                setTotalSize(0);
                                             })
                                         }}
                                     >
@@ -435,7 +459,7 @@ function Bruh() {
                                 </div>
                                 <div className="flex flex-col gap-2">
                                     <h6 className="text-foreground">Filtered Resources</h6>
-                                    <span className="text-foreground">Total Size: {formatSize(filteredResources.reduce((acc, resource) => acc + resource.size, 0))}</span>
+                                    <span className="text-foreground">Total Size: {filteredTotalSize}</span>
                                     <Button
                                         variant={"outline"}
                                         onClick={handleDeleteAllResourcesForFilteredCourses}
@@ -444,27 +468,29 @@ function Bruh() {
                                     </Button>
                                 </div>
                             </div>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
-                                        Columns <ChevronDown className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {coursesDropdown.map((courseId) => {
-                                        return (
-                                            <DropdownMenuCheckboxItem
-                                                key={courseId}
-                                                className="capitalize"
-                                                checked={selectedCourses?.includes(courseId)}
-                                                onCheckedChange={() => handleCourseSelect(courseId)}
-                                            >
-                                                {courses[courseId].CourseTitle}
-                                            </DropdownMenuCheckboxItem>
-                                        );
-                                    })}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            {coursesDropdown && coursesDropdown.length > 0 && (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
+                                            Columns <ChevronDown className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        {coursesDropdown.map((courseId) => {
+                                            return (
+                                                <DropdownMenuCheckboxItem
+                                                    key={courseId}
+                                                    className="capitalize"
+                                                    checked={selectedCourses?.includes(courseId)}
+                                                    onCheckedChange={() => handleCourseSelect(courseId)}
+                                                >
+                                                    {courses[courseId]?.CourseTitle}
+                                                </DropdownMenuCheckboxItem>
+                                            );
+                                        })}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                             <div className="flex flex-col gap-2">
                                 {filteredResources?.map((resource) => {
                                     return (

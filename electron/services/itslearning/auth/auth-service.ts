@@ -98,7 +98,6 @@ export class AuthService {
     }
 
     public getTokens() {
-        console.error('getTokens is deprecated, use getStore instead')
         return this.store.store
     }
 

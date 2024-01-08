@@ -304,6 +304,7 @@ function useLoading() {
             safeDOM.append(document.body, oDiv)
         },
         removeLoading() {
+            document.body.style.background = ''
             safeDOM.remove(document.head, oStyle)
             safeDOM.remove(document.body, oDiv)
         },
