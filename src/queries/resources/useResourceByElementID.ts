@@ -4,6 +4,7 @@ import { ItsduResourcesDBWrapper } from '@/lib/resource-indexeddb/resourceIndexe
 import { getSortedResourcesByTime } from '@/lib/resource-indexeddb/resource-indexeddb-utils';
 import axios from 'axios';
 import { GETcourseResourceInfo, GETcourseResourceInfoApiUrl } from '@/types/api-types/courses/GETcourseResourceInfo';
+import { getAccessToken } from '@/lib/utils';
 
 export type ResourceFileType = {
     name: string
@@ -42,9 +43,13 @@ export default function useResourceByElementID(elementId: number | string, query
 
         // get resource info from itslearning API
 
-        const resourceInfoPromise = await axios.get(GETcourseResourceInfoApiUrl({
+        const resourceInfoPromise = (await axios.get(GETcourseResourceInfoApiUrl({
             resourceId: Number(elementId)
-        })) as GETcourseResourceInfo
+        }), {
+            params: {
+                'access_token': await getAccessToken()
+            }
+        })).data as GETcourseResourceInfo
 
         const resourceInfoRes = resourceInfoPromise
 

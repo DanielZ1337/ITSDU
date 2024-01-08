@@ -3,7 +3,7 @@ import { useIntersectionObserver } from "@uidotdev/usehooks";
 import React, { SetStateAction, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DividerProps } from "@nextui-org/react";
-import { ComputerIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { ChevronDown, ComputerIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useUser } from '@/hooks/atoms/useUser.ts';
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
@@ -23,6 +23,7 @@ import SettingsCloseButton from "./settings-close-button";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
 import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 export default function SettingsModal() {
 
@@ -266,40 +267,77 @@ function Bruh() {
     useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
 
     const { settings } = useSettings()
-    const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null)
-    const [allResources, setAllResources] = useState<IndexedDBResourceFileType[]>([])
-    const [totalSize, setTotalSize] = useState<number>(0)
-    const [courses, setCourses] = useState<number[]>([])
+    const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null);
+    const [allResources, setAllResources] = useState<IndexedDBResourceFileType[] | null>([]);
+    const [totalSize, setTotalSize] = useState(0);
+    const [coursesDropdown, setCoursesDropdown] = useState<string[]>([]);
+    const [selectedCourses, setSelectedCourses] = useState<string[] | null>(null);
+    const [filteredResources, setFilteredResources] = useState<IndexedDBResourceFileType[]>([]);
 
-    if (allResources !== null) {
-        // get all courses
-        allResources.forEach((resource) => {
-            if (Object.prototype.hasOwnProperty.call(resource, "courseId")) {
-                setCourses([...courses, Number(resource.CourseId)])
+    let courses: any = null
+
+    if (allResources) {
+        courses = allResources.reduce((acc: any, resource) => {
+            const { CourseId, CourseTitle } = resource
+            acc[CourseId] = {
+                CourseId,
+                CourseTitle,
             }
-        })
+            return acc
+        }, {})
     }
+
 
     useEffect(() => {
         ItsduResourcesDBWrapper.getInstance().then((instance) => {
-            setIndexedDBResources(instance)
-        })
-    }, [])
+            setIndexedDBResources(instance);
+        });
+    }, []);
 
     useEffect(() => {
-        if (indexedDBResources) {
+        if (indexedDBResources && allResources?.length === 0) {
             indexedDBResources.getAllResources().then((resources) => {
-                resources = getSortedResourcesByTime(resources)
-                setAllResources(resources)
+                resources = getSortedResourcesByTime(resources);
+                setAllResources(resources);
 
-                let totalSize = 0
-                resources.forEach((resource) => {
-                    totalSize += resource.size
-                })
-                setTotalSize(totalSize)
-            })
+                const size = resources.reduce((acc, resource) => acc + resource.size, 0);
+                setTotalSize(size);
+            });
         }
-    }, [indexedDBResources, allResources])
+    }, [indexedDBResources, allResources?.length]);
+
+    useEffect(() => {
+        if (allResources) {
+            const uniqueCourses = Array.from(new Set(allResources.map(resource => String(resource.CourseId))));
+            setCoursesDropdown(uniqueCourses);
+        }
+    }, [allResources]);
+
+
+    const handleCourseSelect = (courseId: string) => {
+        // check if the course is already selected
+        const isSelected = selectedCourses?.includes(courseId);
+
+        if (isSelected) {
+            // remove the course from the selected courses
+            setSelectedCourses(selectedCourses?.filter((id) => id !== courseId) || null);
+        } else {
+            // add the course to the selected courses
+            setSelectedCourses((selectedCourses || []).concat(courseId));
+        }
+    };
+
+    useEffect(() => {
+        // Filter resources when selectedCourse changes
+        if (selectedCourses && allResources) {
+            const filtered = allResources.filter((resource) => {
+                return selectedCourses.includes(String(resource.CourseId));
+            });
+            setFilteredResources(filtered);
+        } else {
+            setFilteredResources(allResources || []);
+        }
+    }, [selectedCourses, allResources]);
 
     const formatSize = (size: number) => {
         if (size < 1024) {
@@ -311,6 +349,23 @@ function Bruh() {
         } else {
             return `${Math.floor(size / 1024 / 1024 / 1024)} GB`
         }
+    }
+
+    const handleDeleteResource = (resourceId: string) => {
+        indexedDBResources?.deleteResourceById(resourceId).then(() => {
+            indexedDBResources?.getAllResources().then((resources) => {
+                resources = getSortedResourcesByTime(resources);
+                setAllResources(resources);
+            });
+        });
+    };
+
+    const handleDeleteAllResourcesForFilteredCourses = () => {
+        const filteredResourcesIds = filteredResources.map((resource) => resource.elementId);
+
+        filteredResourcesIds.forEach((resourceId) => {
+            indexedDBResources?.deleteResourceById(resourceId);
+        });
     }
 
     return (
@@ -360,29 +415,63 @@ function Bruh() {
                     <SettingsCardSection title="Preferences" {...SettingsCardSectionSettings}>
                         <div className="flex w-full flex-col gap-4">
                             {/* {JSON.stringify(settings)} */}
-                            <div className="flex flex-col gap-2">
-                                <h6 className="text-foreground">All Resources</h6>
-                                <span className="text-foreground">Total Size: {formatSize(totalSize)}</span>
-                                <Button
-                                    variant={"outline"}
-                                    onClick={() => {
-                                        indexedDBResources?.clearResources().then(() => {
-                                            indexedDBResources?.getAllResources().then((resources) => {
-                                                resources = getSortedResourcesByTime(resources)
-                                                setAllResources(resources)
+                            <div
+                                className="flex flex-row gap-2 w-full justify-between items-center"
+                            >
+                                <div className="flex flex-col gap-2">
+                                    <h6 className="text-foreground">All Resources</h6>
+                                    <span className="text-foreground">Total Size: {formatSize(totalSize)}</span>
+                                    <Button
+                                        variant={"outline"}
+                                        onClick={() => {
+                                            indexedDBResources?.clearResources().then(() => {
+                                                setAllResources([]);
+                                                setTotalSize(0);
                                             })
-                                        })
-                                    }}
-                                >
-                                    Delete All
-                                </Button>
+                                        }}
+                                    >
+                                        Delete All
+                                    </Button>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h6 className="text-foreground">Filtered Resources</h6>
+                                    <span className="text-foreground">Total Size: {formatSize(filteredResources.reduce((acc, resource) => acc + resource.size, 0))}</span>
+                                    <Button
+                                        variant={"outline"}
+                                        onClick={handleDeleteAllResourcesForFilteredCourses}
+                                    >
+                                        Delete All
+                                    </Button>
+                                </div>
                             </div>
-
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
+                                        Columns <ChevronDown className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {coursesDropdown.map((courseId) => {
+                                        return (
+                                            <DropdownMenuCheckboxItem
+                                                key={courseId}
+                                                className="capitalize"
+                                                checked={selectedCourses?.includes(courseId)}
+                                                onCheckedChange={() => handleCourseSelect(courseId)}
+                                            >
+                                                {courses[courseId].CourseTitle}
+                                            </DropdownMenuCheckboxItem>
+                                        );
+                                    })}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             <div className="flex flex-col gap-2">
-                                {allResources.map((resource) => {
+                                {filteredResources?.map((resource) => {
                                     return (
                                         <div key={resource.elementId} className="grid grid-cols-2 gap-2 w-full">
                                             <div className="flex flex-col gap-2 w-full">
+                                                <span className="text-foreground">{resource.CourseTitle}</span>
+                                                <span className="text-foreground">{resource.CourseId}</span>
                                                 <span className="text-foreground">{resource.elementId}</span>
                                                 <span className="text-foreground">{resource.name}</span>
                                                 <span className="text-foreground">{resource.type}</span>
@@ -393,12 +482,7 @@ function Bruh() {
                                                 <Button
                                                     variant={"outline"}
                                                     onClick={() => {
-                                                        indexedDBResources?.deleteResourceById(resource.elementId).then(() => {
-                                                            indexedDBResources?.getAllResources().then((resources) => {
-                                                                resources = getSortedResourcesByTime(resources)
-                                                                setAllResources(resources)
-                                                            })
-                                                        })
+                                                        handleDeleteResource(resource.elementId)
                                                     }}
                                                 >
                                                     Delete
