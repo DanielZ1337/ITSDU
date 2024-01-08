@@ -6,7 +6,6 @@ import Resources from "@/components/resources/resources.tsx";
 import { useParams } from "react-router-dom";
 import { Bell, Files } from "lucide-react";
 import '@/styles/splitter-custom.css'
-import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -35,10 +34,14 @@ export default function CourseIndex() {
                             </div>
                         </div>
                     </ResizablePanel>
-                    <ResizableHandle withHandle
-                        className="bg-border/20 group hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out"
-                        handleClassName="h-10 bg-border/35 group-hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out border border-border/50"
-                    />
+                    <div className="py-60 hover:py-20 active:py-0 transition-all duration-1000 ease-in-out">
+                        <ResizableHandle withHandle
+                            className="rounded-full hover:rounded-full active:rounded-none w-4 bg-border/0 group hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out"
+                            handleClassName="h-16 w-3 bg-border/35 group-hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out border border-border/50"
+                        >
+                            <div className="h-7 w-1 bg-white/50 rounded-full group-hover:bg-white/70 group-active:bg-white transition-all duration-200 ease-in-out"></div>
+                        </ResizableHandle>
+                    </div>
                     <ResizablePanel minSize={0}>
                         <div
                             className={"flex flex-col gap-4 pl-4 py-4 pr-4"}>

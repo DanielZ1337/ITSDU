@@ -263,22 +263,21 @@ function useLoading() {
     `;
 
     const styleContent = `
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-.app-loading-wrap {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: ${localStorage.getItem('theme') === 'dark' ? 'black' : 'white'};
-  z-index: 9;
-}
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .app-loading-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9;
+        }
     `
 
     const oStyle = document.createElement('style')
@@ -291,6 +290,16 @@ function useLoading() {
 
     return {
         appendLoading() {
+            let theme = localStorage.getItem('theme')
+            if (theme === 'dark') {
+                theme = 'black'
+            } else if (theme === 'light') {
+                theme = 'white'
+            } else {
+                // get system theme
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            }
+            document.body.style.background = theme === 'dark' ? 'black' : 'white'
             safeDOM.append(document.head, oStyle)
             safeDOM.append(document.body, oDiv)
         },
