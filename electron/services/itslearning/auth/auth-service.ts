@@ -36,7 +36,6 @@ export class AuthService {
             throw new Error("New instance cannot be created!!");
         }
 
-
         const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
 
         if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
@@ -63,7 +62,7 @@ export class AuthService {
             this.store = new Store({
                 name: 'itsdu-auth-store',
                 watch: true,
-                encryptionKey: import.meta.env.VITE_ITSLEARNING_STORE_KEY,
+                encryptionKey: VITE_ITSLEARNING_STORE_KEY,
             })
 
         }
