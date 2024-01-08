@@ -58,12 +58,16 @@ export class AuthService {
             fs.unlinkSync(authStorePath)
 
             // create a new store again
-
-            this.store = new Store({
-                name: 'itsdu-auth-store',
-                watch: true,
-                encryptionKey: VITE_ITSLEARNING_STORE_KEY,
-            })
+            try {
+                this.store = new Store({
+                    name: 'itsdu-auth-store',
+                    watch: true,
+                    encryptionKey: VITE_ITSLEARNING_STORE_KEY,
+                })
+            } catch (error) {
+                console.error(error)
+                require('electron').app.exit(1)
+            }
 
         }
 
