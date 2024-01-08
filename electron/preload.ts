@@ -292,9 +292,9 @@ function useLoading() {
         appendLoading() {
             let theme = localStorage.getItem('theme')
             if (theme === 'dark') {
-                theme = 'black'
+                theme = 'dark'
             } else if (theme === 'light') {
-                theme = 'white'
+                theme = 'light'
             } else {
                 // get system theme
                 theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
