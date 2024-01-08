@@ -36,11 +36,37 @@ export class AuthService {
             throw new Error("New instance cannot be created!!");
         }
 
-        this.store = new Store({
-            name: 'itsdu-auth-store',
-            watch: true,
-            encryptionKey: import.meta.env.VITE_ITSLEARNING_STORE_KEY,
-        })
+
+        const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
+
+        if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
+
+        try {
+            this.store = new Store({
+                name: 'itsdu-auth-store',
+                watch: true,
+                encryptionKey: VITE_ITSLEARNING_STORE_KEY,
+            })
+
+        } catch (error) {
+            console.error(error)
+            const appPath = require('electron').app.getPath("userData")
+            const authStorePath = `${appPath}\\itsdu-auth-store.json`
+            console.error(`Could not create auth store at ${authStorePath}`)
+            console.error(`Make sure you have the correct ENV variables set in your .env file`)
+            // delete the auth store file on the local machine
+            const fs = require('fs')
+            fs.unlinkSync(authStorePath)
+
+            // create a new store again
+
+            this.store = new Store({
+                name: 'itsdu-auth-store',
+                watch: true,
+                encryptionKey: import.meta.env.VITE_ITSLEARNING_STORE_KEY,
+            })
+
+        }
 
         instance = this
     }
@@ -53,6 +79,7 @@ export class AuthService {
     }
 
     public getTokens() {
+        console.error('getTokens is deprecated, use getStore instead')
         return this.store.store
     }
 
