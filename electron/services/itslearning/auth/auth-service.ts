@@ -17,7 +17,11 @@ export const ITSLEARNING_OAUTH_TOKEN_URL = `${ITSLEARNING_URL}/restapi/oauth2/to
 export const getItslearningOAuthUrl = () => {
     const url = new URL(ITSLEARNING_OAUTH_URL)
     url.searchParams.append('client_id', ITSLEARNING_CLIENT_ID)
-    url.searchParams.append('state', import.meta.env.VITE_ITSLEARNING_OAUTH_STATE)
+
+    const STATE = import.meta.env.VITE_ITSLEARNING_OAUTH_STATE
+    if (!STATE) throw new Error('Missing VITE_ITSLEARNING_OAUTH_STATE in .env file')
+
+    url.searchParams.append('state', STATE)
     url.searchParams.append('response_type', 'code')
     url.searchParams.append('scope', ITSLEARNING_SCOPES.join(' '))
     url.searchParams.append('redirect_uri', ITSLEARNING_REDIRECT_URI)
@@ -39,6 +43,18 @@ export class AuthService {
         const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
 
         if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
+
+        if (!require("electron").app.isPackaged) {
+            this.store = new Store({
+                name: 'itsdu-auth-store-dev',
+                watch: true,
+                encryptionKey: VITE_ITSLEARNING_STORE_KEY,
+            })
+
+            instance = this
+
+            return
+        }
 
         try {
             this.store = new Store({
