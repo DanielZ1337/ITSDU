@@ -290,37 +290,18 @@ function useLoading() {
 
     return {
         async appendLoading() {
-            const darkMode = await ipcRenderer.invoke('dark-mode:get')
+            const theme = await ipcRenderer.invoke('dark-mode:get')
 
-            document.body.style.background = darkMode ? 'black' : 'white'
+            const html = document.getElementsByTagName('html')[0]
+            html.classList.add(theme)
             safeDOM.append(document.head, oStyle)
             safeDOM.append(document.body, oDiv)
         },
         removeLoading() {
-            removeBodyBackgroundWhenReady()
             safeDOM.remove(document.head, oStyle)
             safeDOM.remove(document.body, oDiv)
         },
     }
-}
-
-const removeBodyBackgroundWhenReady = () => {
-    const html = document.getElementsByTagName('html')[0]
-
-    const observer = new MutationObserver((mutationList, obs) => {
-        for (let mutation of mutationList) {
-            if ((mutation.target as HTMLElement).classList.contains('dark') || (mutation.target as HTMLElement).classList.contains('light')) {
-                document.body.style.background = ''
-                observer.disconnect()
-                obs.disconnect()
-            }
-        }
-
-    })
-
-    observer.observe(html, {
-        attributes: true
-    })
 }
 
 const { appendLoading, removeLoading } = useLoading()

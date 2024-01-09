@@ -1,5 +1,5 @@
-import {ipcMain, nativeTheme} from "electron";
-import {themeStore} from "../services/theme/theme-service";
+import { ipcMain, nativeTheme } from "electron";
+import { themeStore } from "../services/theme/theme-service";
 
 function darkModeToggleHandler() {
     ipcMain.handle('dark-mode:toggle', () => {
@@ -21,7 +21,15 @@ function darkModeSetSystemHandler() {
 
 function darkModeGetHandler() {
     ipcMain.handle('dark-mode:get', () => {
-        return nativeTheme.shouldUseDarkColors
+        //return nativeTheme.shouldUseDarkColors
+        return themeStore.get('theme')
+    })
+}
+
+function darkModeSetHandler() {
+    ipcMain.handle('dark-mode:set', (_, value) => {
+        nativeTheme.themeSource = value ? 'dark' : 'light'
+        themeStore.set('theme', value ? 'dark' : 'light')
     })
 }
 
@@ -38,6 +46,7 @@ export default function darkModeHandlerInitializer() {
     darkModeSetSystemHandler()
     darkModeGetHandler()
     darkModeSubscribeHandle()
+    darkModeSetHandler()
 }
 
 
