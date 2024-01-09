@@ -289,26 +289,38 @@ function useLoading() {
     oDiv.innerHTML = oImg.outerHTML
 
     return {
-        appendLoading() {
-            let theme = localStorage.getItem('theme')
-            if (theme === 'dark') {
-                theme = 'dark'
-            } else if (theme === 'light') {
-                theme = 'light'
-            } else {
-                // get system theme
-                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-            }
-            document.body.style.background = theme === 'dark' ? 'black' : 'white'
+        async appendLoading() {
+            const darkMode = await ipcRenderer.invoke('dark-mode:get')
+
+            document.body.style.background = darkMode ? 'black' : 'white'
             safeDOM.append(document.head, oStyle)
             safeDOM.append(document.body, oDiv)
         },
         removeLoading() {
-            document.body.style.background = ''
+            removeBodyBackgroundWhenReady()
             safeDOM.remove(document.head, oStyle)
             safeDOM.remove(document.body, oDiv)
         },
     }
+}
+
+const removeBodyBackgroundWhenReady = () => {
+    const html = document.getElementsByTagName('html')[0]
+
+    const observer = new MutationObserver((mutationList, obs) => {
+        for (let mutation of mutationList) {
+            if ((mutation.target as HTMLElement).classList.contains('dark') || (mutation.target as HTMLElement).classList.contains('light')) {
+                document.body.style.background = ''
+                observer.disconnect()
+                obs.disconnect()
+            }
+        }
+
+    })
+
+    observer.observe(html, {
+        attributes: true
+    })
 }
 
 const { appendLoading, removeLoading } = useLoading()
