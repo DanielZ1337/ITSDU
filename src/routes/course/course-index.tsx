@@ -34,7 +34,7 @@ export default function CourseIndex() {
                             </div>
                         </div>
                     </ResizablePanel>
-                    <div className="py-60 hover:py-20 active:py-0 transition-all duration-1000 ease-in-out">
+                    <div className="py-40 hover:py-20 active:py-0 transition-all duration-1000 ease-in-out">
                         <ResizableHandle withHandle
                             className="rounded-full hover:rounded-full active:rounded-none w-4 bg-border/0 group hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out"
                             handleClassName="h-16 w-3 bg-border/35 group-hover:bg-border/70 active:bg-border transition-all duration-200 ease-in-out border border-border/50"
