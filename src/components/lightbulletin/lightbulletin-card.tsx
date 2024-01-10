@@ -115,6 +115,20 @@ export default function LightbulletinCard({ bulletin, links }: {
                     {bulletin.Text}
                 </Linkify>
             </pre>
+            {bulletin.AttachedImages && bulletin.AttachedImages.length > 0 && (
+                <div className="mb-4 flex p-2 overflow-auto gap-4">
+                    {bulletin.AttachedImages.map((image) => (
+                        <div
+                            key={image.OriginalFileId}
+                            className="w-fit shrink-0 m-auto flex max-h-full flex-col items-center justify-center rounded-md p-4 ring ring-purple-500/50 bg-foreground/10">
+                            <div
+                                className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-sm">
+                                <img src={image.OriginalFileUrl} className="object-contain m-auto flex h-full w-full items-center justify-center" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
             {links && links.length > 0 && (
                 <div className="mb-4 flex flex-col rounded-lg p-2 space-y-4">
                     {links.map((link) => (
