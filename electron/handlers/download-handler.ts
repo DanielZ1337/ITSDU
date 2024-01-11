@@ -14,6 +14,8 @@ import {
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
 import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
+import * as fs from 'fs';
+import path from "path";
 
 const authService = AuthService.getInstance()
 
@@ -157,25 +159,46 @@ function itslearningElementDownload() {
             if (!win) return
             console.log('download# ' + url)
 
-            // download the file
-            const downloadItem = await download(win, url, {
-                // directory: app.getPath('downloads'),
-                showProgressBar: true,
-                showBadge: true,
-                onProgress(progress) {
-                    if (progress.totalBytes) {
-                        const percent = Math.floor(
-                            (progress.transferredBytes / progress.totalBytes) * 100
-                        );
+            const cookies = await win.webContents.session.cookies.get({ url: ITSLEARNING_RESOURCE_URL })
+
+            axios.get(url, {
+                responseType: 'stream',
+                headers: {
+                    Cookie: getFormattedCookies(cookies)
+                },
+                onDownloadProgress: (progress) => {
+                    if (progress.progress) {
+                        const percent = Math.round(progress.progress * 100);
                         console.log(`Downloaded ${percent}%`);
                     }
-                },
+                }
+            }).then(res => {
+                const headerFilename = res.headers['content-disposition']
+                const filenameRegex = /filename\*?=["']([^"']+)["']/i;
+                const match = headerFilename.match(filenameRegex);
+                const decodedFilename = match ? decodeURIComponent(match[1]) : null;
+                const saveFilename = decodedFilename || filename
+                let finalFilename = saveFilename;
+
+                let i = 1;
+                while (fs.existsSync(path.join(app.getPath('downloads'), finalFilename))) {
+                    const extension = path.extname(saveFilename);
+                    const basename = path.basename(saveFilename, extension);
+                    finalFilename = `${basename} (${i})${extension}`;
+                    i++;
+                }
+
+                res.data.pipe(fs.createWriteStream(path.join(app.getPath('downloads'), finalFilename)));
+                res.data.on('end', () => {
+                    event.sender.send('download:complete', path.join(app.getPath('downloads'), finalFilename));
+                });
             })
             // logEverywhere('download# ' + downloadItem.getSavePath())
-            event.sender.send("download:complete", downloadItem.getSavePath())
         } catch (e) {
-            console.error(e)
-            event.sender.send("download:error", null)
+            if (e instanceof Error) {
+                console.error(e)
+                event.sender.send("download:error", e.name)
+            }
         }
     })
 }

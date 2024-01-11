@@ -92,7 +92,8 @@ function ResizablePanelSettings({ panelId }: { panelId: string }) {
         const storedSettings = localStorage.getItem(localStorageKey);
         if (storedSettings) {
             const parsedSettings = JSON.parse(storedSettings);
-            setPanelSettings(parsedSettings[`{"defaultSize":70,"minSize":0},{"minSize":0}`].layout);
+            const layout = parsedSettings[Object.keys(parsedSettings)[0]].layout;
+            setPanelSettings(layout);
         }
     }, [localStorageKey]);
 
