@@ -23,7 +23,6 @@ import LightbulletinLinkPreview from "./lightbulletin-link-preview";
 import { LinkifyType } from "@/types/linkify";
 import LightbulletinLink from "./lightbulletin-link";
 import { Loader } from "../ui/loader";
-import 'react-lazy-load-image-component/src/effects/blur.css';
 import LightbulletinImage from "./lightbulletin-image";
 
 
@@ -46,25 +45,6 @@ export default function LightbulletinCard({ bulletin, links }: {
         bulletinId: bulletin.LightBulletinId,
     }, {
         enabled: bulletin.ResourcesCount > 0,
-        onSuccess: () => {
-            console.log("success")
-            bulletin.IsSubscribed = !bulletin.IsSubscribed
-            toast({
-                title: "Success",
-                description: bulletin.IsSubscribed ? "You will now receive notifications for this lightbulletin" : "You will no longer receive notifications for this lightbulletin",
-                duration: 3000,
-                variant: "success"
-            })
-        },
-        onError: () => {
-            console.log("error")
-            toast({
-                title: "Error",
-                description: "Something went wrong",
-                duration: 3000,
-                variant: "destructive"
-            })
-        }
     })
 
     // let hasReadMore = textRef.current?.scrollHeight > textRef.current?.clientHeight;
@@ -94,7 +74,31 @@ export default function LightbulletinCard({ bulletin, links }: {
                 </div>
                 <Button
                     disabled={isLoading}
-                    onClick={() => mutate({ isSubscribed: !bulletin.IsSubscribed })}
+                    onClick={() => {
+                        mutate({
+                            isSubscribed: !bulletin.IsSubscribed
+                        }, {
+                            onSuccess: () => {
+                                console.log("success")
+                                bulletin.IsSubscribed = !bulletin.IsSubscribed
+                                toast({
+                                    title: "Success",
+                                    description: bulletin.IsSubscribed ? "You will now receive notifications for this lightbulletin" : "You will no longer receive notifications for this lightbulletin",
+                                    duration: 3000,
+                                    variant: "success"
+                                })
+                            },
+                            onError: () => {
+                                console.log("error")
+                                toast({
+                                    title: "Error",
+                                    description: "Something went wrong",
+                                    duration: 3000,
+                                    variant: "destructive"
+                                })
+                            },
+                        })
+                    }}
                     size={"icon"}
                     variant={"secondary"}
                     className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
