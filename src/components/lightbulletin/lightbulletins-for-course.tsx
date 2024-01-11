@@ -21,9 +21,9 @@ export default function LightbulletinsForCourse({ courseId }: {
             {sortedLightbulletins?.map((bulletin, idx) => {
                 // find the date of the previous bulletin and compare it to the current one. When the month is different make a new header
                 const previousBulletin = sortedLightbulletins[idx - 1]
-                const previousBulletinDate = previousBulletin ? new Date(previousBulletin.PublishedDate) : null
+                const hasNextBulletin = previousBulletin !== undefined
+                const previousBulletinDate = hasNextBulletin ? new Date(previousBulletin.PublishedDate) : null
                 const currentBulletinDate = new Date(bulletin.PublishedDate)
-                const hasNextBulletin = sortedLightbulletins[idx - 1] !== undefined
                 const shouldMakeNewHeader = previousBulletinDate === null || previousBulletinDate.getMonth() !== currentBulletinDate.getMonth()
                 const showYear = currentBulletinDate.getFullYear() !== new Date().getFullYear()
 

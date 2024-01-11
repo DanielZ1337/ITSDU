@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useState } from "react";
 import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
 import { Badge } from "@/components/ui/badge.tsx";
 import { BellOff, BellRing } from "lucide-react";
@@ -23,6 +23,9 @@ import LightbulletinLinkPreview from "./lightbulletin-link-preview";
 import { LinkifyType } from "@/types/linkify";
 import LightbulletinLink from "./lightbulletin-link";
 import { Loader } from "../ui/loader";
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import LightbulletinImage from "./lightbulletin-image";
+
 
 export default function LightbulletinCard({ bulletin, links }: {
     bulletin: ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
@@ -43,10 +46,30 @@ export default function LightbulletinCard({ bulletin, links }: {
         bulletinId: bulletin.LightBulletinId,
     }, {
         enabled: bulletin.ResourcesCount > 0,
+        onSuccess: () => {
+            console.log("success")
+            bulletin.IsSubscribed = !bulletin.IsSubscribed
+            toast({
+                title: "Success",
+                description: bulletin.IsSubscribed ? "You will now receive notifications for this lightbulletin" : "You will no longer receive notifications for this lightbulletin",
+                duration: 3000,
+                variant: "success"
+            })
+        },
+        onError: () => {
+            console.log("error")
+            toast({
+                title: "Error",
+                description: "Something went wrong",
+                duration: 3000,
+                variant: "destructive"
+            })
+        }
     })
 
     // let hasReadMore = textRef.current?.scrollHeight > textRef.current?.clientHeight;
     let hasReadMore = bulletin.Text.split("\n").length > 6;
+
     return (
         <div data-marginonpublished={bulletin.Text.split("\n").length > 1} data-readmore={readMore}
             data-hasreadmore={hasReadMore} key={bulletin.LightBulletinId}
@@ -71,31 +94,7 @@ export default function LightbulletinCard({ bulletin, links }: {
                 </div>
                 <Button
                     disabled={isLoading}
-                    onClick={() => {
-                        mutate({
-                            isSubscribed: !bulletin.IsSubscribed
-                        }, {
-                            onSuccess: () => {
-                                console.log("success")
-                                bulletin.IsSubscribed = !bulletin.IsSubscribed
-                                toast({
-                                    title: "Success",
-                                    description: bulletin.IsSubscribed ? "You will now receive notifications for this lightbulletin" : "You will no longer receive notifications for this lightbulletin",
-                                    duration: 3000,
-                                    variant: "success"
-                                })
-                            },
-                            onError: () => {
-                                console.log("error")
-                                toast({
-                                    title: "Error",
-                                    description: "Something went wrong",
-                                    duration: 3000,
-                                    variant: "destructive"
-                                })
-                            },
-                        })
-                    }}
+                    onClick={() => mutate({ isSubscribed: !bulletin.IsSubscribed })}
                     size={"icon"}
                     variant={"secondary"}
                     className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
@@ -118,14 +117,7 @@ export default function LightbulletinCard({ bulletin, links }: {
             {bulletin.AttachedImages && bulletin.AttachedImages.length > 0 && (
                 <div className="mb-4 flex p-2 overflow-auto gap-4">
                     {bulletin.AttachedImages.map((image) => (
-                        <div
-                            key={image.OriginalFileId}
-                            className="w-fit shrink-0 m-auto flex max-h-full flex-col items-center justify-center rounded-md p-4 ring ring-purple-500/50 bg-foreground/10">
-                            <div
-                                className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-sm">
-                                <img src={image.OriginalFileUrl} className="object-contain m-auto flex h-full w-full items-center justify-center" />
-                            </div>
-                        </div>
+                        <LightbulletinImage key={image.OriginalFileId} image={image} />
                     ))}
                 </div>
             )}
