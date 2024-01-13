@@ -1,7 +1,6 @@
 import { BrowserWindow, safeStorage } from "electron";
 import { GrantType } from "./types/grant_type"
 import { ITSLEARNING_SCOPES_ENUM } from "./types/scopes"
-import axios from "axios";
 import { store_keys } from "./types/store_keys";
 import { ITSLEARNING_URL } from "../itslearning.ts";
 
@@ -131,6 +130,7 @@ export class AuthService {
         const current_refresh_token = this.getToken('refresh_token')
 
         if (!current_refresh_token) throw new Error('No refresh token')
+        const axios = (await import('axios')).default
 
         const { data } = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
             "grant_type": GrantType.REFRESH_TOKEN,

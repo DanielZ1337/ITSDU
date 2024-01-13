@@ -1,11 +1,6 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray, dialog } from "electron";
-import { autoUpdater } from "electron-updater";
 import path from 'path';
-
-import axios from "axios";
-import { GrantType } from "./services/itslearning/auth/types/grant_type.ts";
 import * as fs from "fs";
-import { WindowOptionsService } from './services/window-options/window-options-service';
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -25,16 +20,14 @@ protocol.registerSchemesAsPrivileged([{
     }
 }]);
 
-autoUpdater.autoRunAppAfterInstall = true
-autoUpdater.autoInstallOnAppQuit = false
-autoUpdater.autoDownload = false
-
 // to load the application, setup and stuff
 async function createMainWindow() {
     const allWindows = BrowserWindow.getAllWindows()
     if (allWindows.length > 0) {
         allWindows.forEach(w => w.close())
     }
+    const { WindowOptionsService } = await import('./services/window-options/window-options-service');
+
     const windowService = new WindowOptionsService()
     const windowOptions = windowService.getWindowOptions()
 
@@ -300,6 +293,9 @@ app.whenReady().then(async () => {
         const code = authService.getAuthCodeFromURI(req.url);
         if (code) {
             try {
+                const { GrantType } = await import("./services/itslearning/auth/types/grant_type.ts");
+                const axios = (await import("axios")).default;
+
                 const res = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
                     "grant_type": GrantType.AUTHORIZATION_CODE,
                     "code": code,
@@ -345,6 +341,10 @@ app.whenReady().then(async () => {
         const appHandlerInitializer = (await import("./handlers/app-handler.ts")).default;
         const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts")).default;
         const initDownloadHandlers = (await import("./handlers/download-handler.ts")).default;
+        const { autoUpdater } = await import("electron-updater");
+        autoUpdater.autoRunAppAfterInstall = true
+        autoUpdater.autoInstallOnAppQuit = false
+        autoUpdater.autoDownload = false
         darkModeHandlerInitializer()
         appHandlerInitializer()
         initDownloadHandlers()
