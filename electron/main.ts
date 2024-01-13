@@ -1,22 +1,11 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray, dialog } from "electron";
 import { autoUpdater } from "electron-updater";
 import path from 'path';
-import {
-    AuthService, ITSLEARNING_CLIENT_ID,
-    ITSLEARNING_OAUTH_TOKEN_URL,
-    REFRESH_ACCESS_TOKEN_INTERVAL
-} from "./services/itslearning/auth/auth-service.ts";
-import darkModeHandlerInitializer from "./handlers/dark-mode-handlers.ts";
-import appHandlerInitializer from "./handlers/app-handler.ts";
-import initAuthIpcHandlers from "./handlers/auth-handler.ts";
+
 import axios from "axios";
 import { GrantType } from "./services/itslearning/auth/types/grant_type.ts";
 import * as fs from "fs";
-import { themeStore } from "./services/theme/theme-service.ts";
 import { WindowOptionsService } from './services/window-options/window-options-service';
-import { startProxyDevServer } from "./utils/proxy-dev-server.ts";
-import initDownloadHandlers, { openLinkInBrowser } from "./handlers/download-handler.ts";
-import debounce from "debounce"
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -27,14 +16,6 @@ let win: BrowserWindow | null
 let authWindow: BrowserWindow | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
-
-darkModeHandlerInitializer()
-appHandlerInitializer()
-initDownloadHandlers()
-initAuthIpcHandlers()
-
-const authService = AuthService.getInstance()
-const startUpTheme = themeStore.get('theme')
 
 protocol.registerSchemesAsPrivileged([{
     scheme: 'itsl-itslearning-file',
@@ -56,6 +37,12 @@ async function createMainWindow() {
     }
     const windowService = new WindowOptionsService()
     const windowOptions = windowService.getWindowOptions()
+
+    const { themeStore } = await import("./services/theme/theme-service.ts");
+
+
+    const startUpTheme = themeStore.get('theme')
+
     win = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         webPreferences: {
@@ -106,7 +93,7 @@ async function createMainWindow() {
         } else {
             if (origin.hostname.includes('itslearning.com')) {
                 // open external in default browser
-                openLinkInBrowser(handler.url, true)
+                import("./handlers/download-handler.ts").then(({ openLinkInBrowser }) => openLinkInBrowser(handler.url, true))
             }
             return { action: 'deny' }
         }
@@ -114,6 +101,18 @@ async function createMainWindow() {
 
     if (windowOptions.maximized) {
         win.maximize()
+    }
+
+    const debounce = (func: Function, wait: number) => {
+        let timeout: NodeJS.Timeout;
+        return function executedFunction(...args: any[]) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 
     const saveWindowOptionsDebounced = debounce(() => {
@@ -146,6 +145,12 @@ async function createMainWindow() {
 }
 
 export async function createAuthWindow() {
+    const { themeStore } = await import("./services/theme/theme-service.ts");
+
+
+    const startUpTheme = themeStore.get('theme')
+
+
     authWindow = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
         autoHideMenuBar: true,
@@ -157,6 +162,11 @@ export async function createAuthWindow() {
         backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
         focusable: true,
     })
+
+    const { AuthService } = await import("./services/itslearning/auth/auth-service.ts");
+
+    const authService = AuthService.getInstance()
+
     await authService.loadSigninPage(authWindow)
 
     return authWindow
@@ -245,6 +255,8 @@ function logEverywhereError(s: string) {
 
 app.whenReady().then(async () => {
     if (VITE_DEV_SERVER_URL) {
+        const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
+
         await startProxyDevServer()
     }
 
@@ -278,6 +290,13 @@ app.whenReady().then(async () => {
 
     // @ts-ignore
     protocol.handle('itsl-itslearning', async (req) => {
+        const {
+            AuthService, ITSLEARNING_CLIENT_ID,
+            ITSLEARNING_OAUTH_TOKEN_URL,
+        } = await import("./services/itslearning/auth/auth-service.ts");
+
+        const authService = AuthService.getInstance()
+
         const code = authService.getAuthCodeFromURI(req.url);
         if (code) {
             try {
@@ -312,12 +331,24 @@ app.whenReady().then(async () => {
     })
 
     try {
+        const { AuthService, REFRESH_ACCESS_TOKEN_INTERVAL } = await import("./services/itslearning/auth/auth-service.ts");
+
+        const authService = AuthService.getInstance()
+
         const { access_token, refresh_token } = authService.getTokens()
         if (!access_token || !refresh_token) {
             authService.clearTokens()
             throw new Error('Invalid refresh token')
         }
         await authService.refreshAccessToken()
+        const darkModeHandlerInitializer = (await import("./handlers/dark-mode-handlers.ts")).default;
+        const appHandlerInitializer = (await import("./handlers/app-handler.ts")).default;
+        const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts")).default;
+        const initDownloadHandlers = (await import("./handlers/download-handler.ts")).default;
+        darkModeHandlerInitializer()
+        appHandlerInitializer()
+        initDownloadHandlers()
+        initAuthIpcHandlers()
         await createMainWindow()
         // setup interval for refreshing access token
         setInterval(async () => {

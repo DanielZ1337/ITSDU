@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
-import { download } from "electron-dl";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { createScrapeWindow, getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
 import {
@@ -203,6 +202,72 @@ function itslearningElementDownload() {
     })
 }
 
+async function downloadPDF(win: BrowserWindow, url: string) {
+    let cookies = await win.webContents.session.cookies.get({ url: ITSLEARNING_RESOURCE_URL });
+
+    if (!cookies) {
+        cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+    }
+
+    const res = await axios.get(url, {
+        responseType: 'arraybuffer', // Use arraybuffer to handle binary data
+        headers: {
+            Cookie: getFormattedCookies(cookies),
+        },
+        onDownloadProgress: (progress) => {
+            if (progress.progress) {
+                const percent = Math.round(progress.progress * 100);
+                console.log(`Downloaded ${percent}%`);
+            }
+        },
+    });
+
+    return Buffer.from(res.data, 'binary');
+}
+
+function mergePDFsHandler() {
+    ipcMain.handle("app:mergePDFs", async (event, { elementIds, filename }) => {
+        try {
+
+            const pdfs = await Promise.all(elementIds.map(async (elementId: string | number) => {
+                const resourceByElementId = await getResourceLinkByElementID(elementId)
+                const fileLink = await getResourceDownloadLink(resourceByElementId)
+                return fileLink
+            })) as string[]
+
+            const win = BrowserWindow.fromWebContents(event.sender)
+
+            if (!win) return
+
+            const downloadPromises = pdfs.map(url => downloadPDF(win, url));
+
+            const pdfArrayBuffers = await Promise.all(downloadPromises);
+
+            const { PDFDocument } = await import('pdf-lib')
+
+            const mergedPdf = await PDFDocument.create();
+            for (const pdfArrayBuffer of pdfArrayBuffers) {
+                const pdf = await PDFDocument.load(pdfArrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => {
+                    mergedPdf.addPage(page);
+                });
+            }
+            const mergedPdfBytes = await mergedPdf.save();
+            const outputPath = path.join(app.getPath('downloads'), filename || "merged.pdf");
+            fs.writeFileSync(outputPath, mergedPdfBytes);
+
+
+            return mergedPdfBytes;
+        } catch (e) {
+            if (e instanceof Error) {
+                console.error(e)
+                event.sender.send("download:error", e.name)
+            }
+        }
+    })
+}
+
 function downloadExternalHandler() {
     ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
@@ -213,6 +278,7 @@ function downloadExternalHandler() {
             if (!win) return
 
             // download the file
+            const { download } = await import('electron-dl')
             const downloadItem = await download(win, url, {
                 // directory: app.getPath('downloads'),
                 showProgressBar: true,
@@ -259,7 +325,7 @@ function getVideoLinkHandler() {
     })
 }
 
-function getPayloadUrl(courseId: string | number) {
+function getPlannerPayloadUrl(courseId: string | number) {
     const payloadUrl = new URL(`https://sdu.itslearning.com/Planner/Planner.aspx`);
     payloadUrl.searchParams.append('CourseID', courseId.toString());
     payloadUrl.searchParams.append('Filter', '-1');
@@ -346,7 +412,7 @@ async function getCoursePlans(url: string) {
 function getCoursePlansHandler() {
     ipcMain.handle("resources:get-course-plans", async (_, courseId: string | number) => {
         try {
-            const payloadUrl = getPayloadUrl(courseId)
+            const payloadUrl = getPlannerPayloadUrl(courseId)
             const ssoLink = await getSSOLink(payloadUrl)
             const coursePlans = await getCoursePlans(ssoLink)
             return coursePlans
@@ -457,7 +523,7 @@ function getCoursePlanElementsHandler() {
     ipcMain.handle("resources:get-course-plan-elements", async (_, courseId: string | number, topicId: string | number) => {
         try {
             const win = createScrapeWindow()
-            const payloadUrl = getPayloadUrl(courseId)
+            const payloadUrl = getPlannerPayloadUrl(courseId)
             const ssoLink = await getSSOLink(payloadUrl)
             await win.loadURL(ssoLink)
             const cookies = await getCookiesForDomain(win, ITSLEARNING_URL)
@@ -543,7 +609,7 @@ function streamFileHandler() {
                 headers: {
                     Cookie: getFormattedCookies(cookies),
                 },
-                responseType: 'stream'
+                responseType: 'stream',
             }).then(res => {
                 res.data.on('data', (data: ArrayBuffer) => {
                     downloaded += Buffer.byteLength(data)
@@ -585,4 +651,5 @@ export default function initDownloadHandlers() {
     getBlobFromUrl()
     getMicrosoftOfficeDocument()
     getResourceAsFileHandler()
+    mergePDFsHandler()
 }
