@@ -16,6 +16,7 @@ import { themeStore } from "./services/theme/theme-service.ts";
 import { WindowOptionsService } from './services/window-options/window-options-service';
 import { startProxyDevServer } from "./utils/proxy-dev-server.ts";
 import initDownloadHandlers, { openLinkInBrowser } from "./handlers/download-handler.ts";
+import debounce from "debounce"
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -115,25 +116,15 @@ async function createMainWindow() {
         win.maximize()
     }
 
-    win.on('resize', () => {
-        if (!win) return
-        windowService.saveWindowOptions(win)
-    })
+    const saveWindowOptionsDebounced = debounce(() => {
+        if (!win) return;
+        windowService.saveWindowOptions(win);
+    }, 500);
 
-    win.on('maximize', () => {
-        if (!win) return
-        windowService.saveWindowOptions(win)
-    })
-
-    win.on('unmaximize', () => {
-        if (!win) return
-        windowService.saveWindowOptions(win)
-    })
-
-    win.on('move', () => {
-        if (!win) return
-        windowService.saveWindowOptions(win)
-    })
+    win.on('resize', saveWindowOptionsDebounced);
+    win.on('maximize', saveWindowOptionsDebounced);
+    win.on('unmaximize', saveWindowOptionsDebounced);
+    win.on('move', saveWindowOptionsDebounced);
 
 
     // Test active push message to Renderer-process.
@@ -386,7 +377,7 @@ app.whenReady().then(async () => {
             win?.show()
         })
 
-        tray.setToolTip('itsdu')
+        tray.setToolTip('ITSDU')
         tray.on('right-click', () => {
             tray.focus()
             console.log(win?.isVisible())
