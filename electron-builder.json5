@@ -24,7 +24,12 @@
   },
   files: ['dist', 'dist-electron'],
   mac: {
-    target: ['dmg'],
+    target: [
+      {
+        target: ['dmg', 'pkg'],
+        arch: ['x64', 'arm64']
+      }
+    ],
     artifactName: '${productName}-Mac-${version}-Installer.${ext}'
   },
   win: {
