@@ -36,7 +36,7 @@ export default function NotificationID() {
             <div className="m-auto w-full overflow-auto px-20">
                 <div className="m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40">
                     <div className="mb-4 flex items-center">
-                        <img src={currentNotificaton!.IconUrl} alt="Notification Icon" className="mr-2 h-6 w-6" />
+                        <img loading="lazy" src={currentNotificaton!.IconUrl} alt="Notification Icon" className="mr-2 h-6 w-6" />
                         <h1 className="ml-2 text-lg font-bold">{currentNotificaton!.LocationTitle}</h1>
                     </div>
                     <p className="mb-4">{currentNotificaton!.Text}</p>
@@ -57,7 +57,7 @@ export default function NotificationID() {
                             <h2 className="mb-2 font-semibold text-md">Resources:</h2>
                             {resources?.EntityArray.map((resource) => (
                                 <div key={resource.ElementId} className="mb-2 flex items-center">
-                                    <img src={resource.IconUrl} alt="Resource Icon" className="mr-2 h-6 w-6" />
+                                    <img loading="lazy" src={resource.IconUrl} alt="Resource Icon" className="mr-2 h-6 w-6" />
                                     <button
                                         onClick={async () => {
                                             if (isSupportedResourceInApp(resource)) {

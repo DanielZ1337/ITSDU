@@ -41,7 +41,7 @@ export default function Layout() {
             </Suspense>
             <div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
                 <Link className="shrink-0 no-drag" to={'/'}>
-                    <img src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
+                    <img loading="eager" src="itsl-itslearning-file://i_logo_colored.png" alt="itslearning"
                         className="my-auto mt-2 ml-4 h-8 w-8" />
                 </Link>
                 <div className="w-full max-w-xl px-4">

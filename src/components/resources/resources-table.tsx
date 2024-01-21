@@ -90,7 +90,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
                     </div>
                 )
             },
-            cell: ({ row }) => <img src={row.original.IconUrl} alt={row.getValue(COLUMN_IDS.title)}
+            cell: ({ row }) => <img loading="lazy" src={row.original.IconUrl} alt={row.getValue(COLUMN_IDS.title)}
                 className="mx-auto h-8 w-8" />,
         },
         {

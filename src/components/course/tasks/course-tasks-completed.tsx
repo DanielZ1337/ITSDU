@@ -60,7 +60,7 @@ export function CourseTasksCompleted({ courseId, PageSize }: { courseId: number,
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center overflow-hidden space-x-2">
-                                        <img src={task.IconUrl} alt="Task Icon" className="h-6 w-6 object-contain" />
+                                        <img loading="lazy" src={task.IconUrl} alt="Task Icon" className="h-6 w-6 object-contain" />
                                         <a href={task.TaskUrl} rel="noopener noreferrer" target="_blank" className="mt-2 block truncate text-blue-500 hover:underline">
                                             <h3 className="truncate text-lg font-semibold">{task.TaskTitle}</h3>
                                         </a>

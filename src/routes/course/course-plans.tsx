@@ -111,6 +111,7 @@ function CoursePlanElements({ courseId, topicId }: { courseId: number | string, 
                                             className="flex items-center gap-2"
                                         >
                                             <img
+                                                loading="lazy"
                                                 className="inline-block w-6 h-6 mr-2 shrink-0"
                                                 src={resource.img} alt={resource.title} />
                                             <a

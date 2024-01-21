@@ -14,7 +14,7 @@ export default function LightbulletinLinkPreview({ href, title, type }: { href: 
         <LightbulletinLink
             onClick={() => window.app.openShell(type === 'url' ? href : `mailto:${href}`)}
         >
-            <img src={data?.links.icon[0].href || "https://www.google.com/s2/favicons?sz=256&domain_url=" + href}
+            <img loading="lazy" src={data?.links.icon[0].href || "https://www.google.com/s2/favicons?sz=256&domain_url=" + href}
                 alt={href}
                 className={"w-6 h-6"} />
             &nbsp;

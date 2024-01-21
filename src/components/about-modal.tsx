@@ -112,10 +112,10 @@ export default function AboutModal() {
                     </DialogHeader>
                     <div className="flex p-4">
                         <div className='mr-6 flex shrink-0 flex-col'>
-                            <img src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo"
+                            <img loading="lazy" src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo"
                                 className="mx-auto h-20 w-20" />
                             <hr className="my-6" />
-                            <img src="itsl-itslearning-file://icon.ico" alt="itslearning Logo"
+                            <img loading="lazy" src="itsl-itslearning-file://icon.ico" alt="itslearning Logo"
                                 className="mx-auto h-20 w-20" />
                         </div>
                         <p className="text-sm text-gray-500">

@@ -246,7 +246,23 @@ function logEverywhereError(s: string) {
     win?.webContents.send('main-process-error', s)
 }
 
+async function initializeAllHandlers() {
+    const darkModeHandlerInitializer = (await import("./handlers/dark-mode-handlers.ts")).default;
+    const appHandlerInitializer = (await import("./handlers/app-handler.ts")).default;
+    const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts")).default;
+    const initDownloadHandlers = (await import("./handlers/download-handler.ts")).default;
+    const { autoUpdater } = await import("electron-updater");
+    autoUpdater.autoRunAppAfterInstall = true
+    autoUpdater.autoInstallOnAppQuit = false
+    autoUpdater.autoDownload = false
+    darkModeHandlerInitializer()
+    appHandlerInitializer()
+    initDownloadHandlers()
+    initAuthIpcHandlers()
+}
+
 app.whenReady().then(async () => {
+    await initializeAllHandlers()
     if (VITE_DEV_SERVER_URL) {
         const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
 
@@ -337,18 +353,7 @@ app.whenReady().then(async () => {
             throw new Error('Invalid refresh token')
         }
         await authService.refreshAccessToken()
-        const darkModeHandlerInitializer = (await import("./handlers/dark-mode-handlers.ts")).default;
-        const appHandlerInitializer = (await import("./handlers/app-handler.ts")).default;
-        const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts")).default;
-        const initDownloadHandlers = (await import("./handlers/download-handler.ts")).default;
-        const { autoUpdater } = await import("electron-updater");
-        autoUpdater.autoRunAppAfterInstall = true
-        autoUpdater.autoInstallOnAppQuit = false
-        autoUpdater.autoDownload = false
-        darkModeHandlerInitializer()
-        appHandlerInitializer()
-        initDownloadHandlers()
-        initAuthIpcHandlers()
+
         await createMainWindow()
         // setup interval for refreshing access token
         setInterval(async () => {

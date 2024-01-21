@@ -23,7 +23,7 @@ export default function LightbulletinResource({ resource, courseId }: {
                     window.app.openExternal(resource.ContentUrl, true)
                 }
             }}>
-            <img src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
+            <img loading="lazy" src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"} />
             <span className="truncate">{resource.Title}</span>
         </LightbulletinLink>)
 }

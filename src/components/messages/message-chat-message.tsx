@@ -204,6 +204,7 @@ export default function MessageChatMessage({
                             <Dialog>
                                 <DialogTrigger className={"max-w-[50dvw] max-h-[50dvh] rounded-md overflow-hidden"}>
                                     <img
+                                        loading="lazy"
                                         src={attachmentRef.current}
                                         alt={attachmentName}
                                         className={"max-w-full h-full rounded-md hover:scale-105 transform transition-all duration-200"}
@@ -213,7 +214,7 @@ export default function MessageChatMessage({
                                     className={"break-all bg-foreground/5 backdrop-blur-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-opacity-50 max-h-[80dvh] max-w-[80dvh]"}>
                                     <div className={"rounded-md mx-auto w-fit mt-4 overflow-hidden"}>
                                         <img
-                                            loading={"lazy"}
+                                            loading="lazy"
                                             src={attachmentRef.current}
                                             alt={attachmentName}
                                             className={"max-w-full h-full hover:scale-105 transform transition-all duration-200"}

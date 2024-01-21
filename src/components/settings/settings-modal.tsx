@@ -37,7 +37,7 @@ export default function SettingsModal() {
             onOpenChange={setShowSettingsModal}
         >
             <DialogOverlay
-                className="data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-none data-[state=open]:!duration-500" />
+                className="will-change-auto data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-all data-[state=open]:!duration-500" />
             <DialogContent
                 customClose={<SettingsCloseButton />}
                 className="flex flex-1 flex-col h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0"

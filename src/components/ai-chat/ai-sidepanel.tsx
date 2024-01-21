@@ -196,7 +196,7 @@ export default function AISidePanel({ elementId }: { elementId: string | number 
             <div className="flex max-h-full flex-1 flex-col overflow-hidden p-4">
                 <div className="flex max-h-full flex-1 flex-col rounded-md p-4 bg-foreground/10">
                     <div className="flex flex-col items-center justify-center p-4">
-                        <img src="itsl-itslearning-file://icon.ico" alt="Logo" className="h-8 w-8" />
+                        <img loading="lazy" src="itsl-itslearning-file://icon.ico" alt="Logo" className="h-8 w-8" />
                         <h1 className="mt-2 text-2xl font-bold">ITSDU AI</h1>
                     </div>
                     <div

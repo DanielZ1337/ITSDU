@@ -22,7 +22,7 @@ export default function Sidebar() {
         <div
             onMouseEnter={() => setSidebarActive(true)}
             onMouseLeave={() => setSidebarActive(false)}
-            className={cn('overflow-hidden no-drag top-0 absolute transition-width h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between', sidebarActive ? 'w-64' : 'w-24')}
+            className={cn('will-change-auto overflow-hidden no-drag top-0 absolute transition-width h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between', sidebarActive ? 'w-64' : 'w-24')}
         >
             <div className="flex h-full flex-col gap-1 overflow-x-hidden scrollbar-hide">
                 <SidebarGroupTitle title="General" />

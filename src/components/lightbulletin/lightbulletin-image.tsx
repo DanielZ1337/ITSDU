@@ -22,6 +22,7 @@ export default function LightbulletinImage({ image }: { image: ItslearningRestAp
 
     const ImageComponent = ({ className }: { className?: string }) => (
         <img
+            loading="lazy"
             src={imgSrc}
             className={cn("object-contain m-auto flex w-full items-center justify-center", className)} />
     )
