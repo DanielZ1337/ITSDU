@@ -1,8 +1,9 @@
-import {useDebounce} from "@uidotdev/usehooks";
-import {useEffect, useState} from "react";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useEffect, useState } from "react";
 
 export const useIsOnline = () => {
     const [isOnline, setIsOnline] = useState(window.navigator.onLine);
+
     const debouncedIsOnline = useDebounce(isOnline, 3000);
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -14,5 +15,5 @@ export const useIsOnline = () => {
             window.removeEventListener('offline', handleOffline);
         };
     }, []);
-    return {isOnline, debouncedIsOnline};
+    return { isOnline, debouncedIsOnline };
 }

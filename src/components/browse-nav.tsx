@@ -1,13 +1,13 @@
-import {Button} from '@/components/ui/button'
-import {ArrowLeftCircleIcon, ArrowRightCircleIcon, HomeIcon, RefreshCwIcon} from 'lucide-react'
-import {useEffect, useState} from 'react'
-import {Input} from './ui/input'
-import {useLocation, useNavigate, useNavigation} from 'react-router-dom'
-import {AnimatePresence, m} from 'framer-motion';
-import {useBrowseNavigation} from '@/hooks/atoms/useBrowseNavigation'
+import { Button } from '@/components/ui/button'
+import { ArrowLeftCircleIcon, ArrowRightCircleIcon, HomeIcon, RefreshCwIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Input } from './ui/input'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
+import { AnimatePresence, m } from 'framer-motion';
+import { useBrowseNavigation } from '@/hooks/atoms/useBrowseNavigation'
 
 export default function BrowserNav() {
-    const {showBrowseNavigation, toggleBrowseNavigation} = useBrowseNavigation()
+    const { showBrowseNavigation, toggleBrowseNavigation } = useBrowseNavigation()
     const navigate = useNavigate()
     const location = useLocation()
     const pathname = location.pathname
@@ -63,33 +63,33 @@ export default function BrowserNav() {
             {showBrowseNavigation &&
                 <m.div
                     layout
-                    initial={{opacity: 0, height: 0}}
-                    animate={{opacity: 1, height: "auto"}}
-                    exit={{opacity: 0, height: 0}}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
                     className="shrink-0"
                 >
                     <div
                         className='mt-2 mb-4 flex w-full items-center justify-center gap-1 border-y-2 px-2 py-4 drag border-foreground-50'>
                         {/* Back button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
-                                onClick={() => navigate(-1)}><ArrowLeftCircleIcon/></Button>
+                            onClick={() => navigate(-1)}><ArrowLeftCircleIcon /></Button>
                         {/* Forward button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
-                                onClick={() => navigate(1)}><ArrowRightCircleIcon/></Button>
+                            onClick={() => navigate(1)}><ArrowRightCircleIcon /></Button>
                         {/* Reload button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
-                                onClick={() => navigate(0)}><RefreshCwIcon/></Button>
+                            onClick={() => navigate(0)}><RefreshCwIcon /></Button>
                         {/* Home button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
-                                onClick={() => navigate('/')}><HomeIcon/></Button>
+                            onClick={() => navigate('/')}><HomeIcon /></Button>
                         {/* Address bar */}
                         <form onSubmit={(e) => {
                             e.preventDefault()
                             navigate(address)
                         }} className='w-full px-2 no-drag'>
                             <Input className='w-full' type="text" value={address}
-                                   onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
-                                   onChange={(e) => setAddress(e.target.value)}/>
+                                onClick={(e) => e.currentTarget.setSelectionRange(1, e.currentTarget.value.length)}
+                                onChange={(e) => setAddress(e.target.value)} />
                         </form>
                     </div>
                 </m.div>

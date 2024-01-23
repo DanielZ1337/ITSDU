@@ -33,6 +33,12 @@ function clearTokensHandler() {
     });
 }
 
+function refreshTokensHandler() {
+    ipcMain.handle('itslearning-store:refresh', () => {
+        authService.refreshAccessToken()
+    });
+}
+
 function getCookies() {
     ipcMain.handle('itslearning-store:get-cookies-for-resource', async (_, elementId) => {
         try {
@@ -86,6 +92,7 @@ export default function initAuthIpcHandlers() {
     setTokenHandler()
     deleteTokenHandler()
     clearTokensHandler()
+    refreshTokensHandler()
     getCookies()
     logoutHandler()
 }

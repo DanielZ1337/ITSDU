@@ -1,21 +1,14 @@
 import { Suspense, useRef, lazy } from "react";
 import { cn } from '../lib/utils';
-import BrowserNav from "@/components/browse-nav";
 import { ErrorBoundary } from "react-error-boundary";
-import { Toaster } from "@/components/ui/toaster";
-import ScrollToTopButton from "@/components/scroll-to-top-button";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { Spinner } from "@nextui-org/spinner";
-import TitlebarButtons from "@/components/titlebar/titlebar";
-import SettingsModal from "@/components/settings/settings-modal";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
-import AboutModal from "@/components/about-modal";
-import IsOnlineIndicator from "@/components/is-online-indicator";
-import Sidebar from "./layout/sidebar";
-import TitlebarButton from "./titlebar/titlebar-button";
 
+const ToasterLazy = lazy(() => import("@/components/ui/toaster").then((module) => ({ default: module.Toaster })))
+const ScrollToTopButtonLazy = lazy(() => import("@/components/scroll-to-top-button"))
 const MessagesDropdown = lazy(() => import("@/components/messages/dropdown/messages-dropdown"));
 const NotificationsDropdown = lazy(() => import("@/components/notifications/notifications-dropdown"));
 const BrowserNavLazy = lazy(() => import("@/components/browse-nav"));
@@ -37,7 +30,7 @@ export default function Layout() {
     return (
         <div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
             <Suspense fallback={<IsOnlineIndicatorLazy />}>
-                <IsOnlineIndicator />
+                <IsOnlineIndicatorLazy />
             </Suspense>
             <div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
                 <Link className="shrink-0 no-drag" to={'/'}>
@@ -45,7 +38,7 @@ export default function Layout() {
                         className="my-auto mt-2 ml-4 h-8 w-8" />
                 </Link>
                 <div className="w-full max-w-xl px-4">
-                    <ErrorBoundary fallback={<Suspense fallback={<TitlebarButtonLazy disabled />}><TitlebarButton /></Suspense>}>
+                    <ErrorBoundary fallback={<Suspense fallback={<TitlebarButtonLazy disabled />}><TitlebarButtonLazy /></Suspense>}>
                         <Suspense fallback={<TitlebarButtonLazy disabled />}>
                             <TitlebarSearchLazy />
                         </Suspense>
@@ -63,7 +56,7 @@ export default function Layout() {
                         </Suspense>
                     </ErrorBoundary>
                     <Suspense fallback={<TitlebarButtonsLazy />}>
-                        <TitlebarButtons />
+                        <TitlebarButtonsLazy />
                     </Suspense>
                 </div>
             </div>
@@ -96,8 +89,8 @@ export default function Layout() {
                 <div
                     className={cn('pointer-events-none absolute top-0 left-0 h-full w-full bg-black/50 transition-all backdrop-blur-lg z-10 shadow-sm', sidebarActive ? 'opacity-100' : 'opacity-0')} />
                 <Suspense fallback={null}>
-                    <ScrollToTopButton viewportRef={ref} />
-                    <Toaster />
+                    <ScrollToTopButtonLazy viewportRef={ref} />
+                    <ToasterLazy />
                     <SettingsModalLazy />
                     <AboutModalLazy />
                 </Suspense>

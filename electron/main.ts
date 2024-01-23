@@ -1,6 +1,5 @@
-import { app, BrowserWindow, ipcMain, Menu, nativeTheme, protocol, session, Tray, dialog } from "electron";
+import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from "electron";
 import path from 'path';
-import * as fs from "fs";
 
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
@@ -42,6 +41,7 @@ async function createMainWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: true,
             devTools: isDev,
+            v8CacheOptions: 'bypassHeatCheck'
         },
         autoHideMenuBar: true,
         alwaysOnTop: false,
@@ -75,6 +75,8 @@ async function createMainWindow() {
                     parent: win,
                     autoHideMenuBar: true,
                     alwaysOnTop: true,
+                    focusable: true,
+                    center: true,
                     minHeight: 640,
                     minWidth: 800,
                     show: false,
@@ -121,7 +123,7 @@ async function createMainWindow() {
 
     // Test active push message to Renderer-process.
     win.webContents.on('did-finish-load', () => {
-        win?.show()
+        // win?.show()
         win?.webContents.send('main-process-message', (new Date).toLocaleString())
     })
 
@@ -270,11 +272,12 @@ app.whenReady().then(async () => {
     }
 
     const ses = session.defaultSession
-    ses.protocol.registerBufferProtocol('itsl-itslearning-file', (request, callback) => {
+    ses.protocol.registerBufferProtocol('itsl-itslearning-file', async (request, callback) => {
         // get image file path
         const url = request.url.replace('itsl-itslearning-file://', '')
         const filePath = path.join(process.env.VITE_PUBLIC, url)
         // read image file
+        const fs = (await import('fs'))
         fs.readFile(filePath, (error, data) => {
             if (error) {
                 console.error(`Failed to read ${filePath} on ${request.url}`)

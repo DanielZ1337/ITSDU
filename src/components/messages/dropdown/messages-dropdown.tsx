@@ -38,7 +38,7 @@ export default function MessagesDropdown() {
         maxMessages: 9,
         threadPage: 0
     }, {
-        suspense: true
+        suspense: true,
     })
 
     const { mutate: markAsRead, isLoading } = usePUTinstantMessageThreadUpdateIsRead()

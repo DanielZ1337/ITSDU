@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld('auth', {
         clear: () => ipcRenderer.invoke('itslearning-store:clear'),
     },
     logout: () => ipcRenderer.invoke('itslearning-store:logout'),
+    refresh: () => ipcRenderer.invoke('itslearning-store:refresh'),
 })
 
 contextBridge.exposeInMainWorld('darkMode', {
@@ -194,6 +195,7 @@ declare global {
                 clear: () => Promise<void>
             }
             logout: () => Promise<void>
+            refresh: () => Promise<void>
         },
         ai: {
             upload: (elementId: number | string) => Promise<boolean>

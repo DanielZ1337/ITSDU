@@ -1,14 +1,16 @@
 import { getAccessToken } from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client';
 import '@/index.css';
-import { createHashRouter, RouterProvider } from 'react-router-dom';
-import Providers from "@/components/providers.tsx";
+import { createHashRouter } from 'react-router-dom';
 import axios from "axios";
 import { lazy, useEffect, useState } from "react";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { defaultSettings } from "@/types/settings";
+import { ErrorBoundary } from "react-error-boundary";
 
+const RouterProviderLazy = lazy(() => import("react-router-dom").then((module) => ({ default: module.RouterProvider })))
+const Providers = lazy(() => import("@/components/providers.tsx"));
 const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
 const CoursePlans = lazy(() => import("./routes/course/course-plans"));
 const Documents = lazy(() => import("./routes/documents/documents"));
@@ -209,16 +211,18 @@ if (!localStorage.getItem("settings")) {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <Providers>
+    <ErrorBoundary fallback={<></>}>
         <SuspenseWrapper max>
-            {/* <React.StrictMode> */}
-            <RouterProvider fallbackElement={<ErrorPage />} future={{
-                v7_startTransition: true,
-            }} router={router} />
-            <ReactQueryDevtools position="top" buttonPosition="top-left" />
-            {/* </React.StrictMode> */}
+            <Providers>
+                {/* <React.StrictMode> */}
+                <RouterProviderLazy fallbackElement={<ErrorPage />} future={{
+                    v7_startTransition: true,
+                }} router={router} />
+                <ReactQueryDevtools position="top" buttonPosition="top-left" />
+                {/* </React.StrictMode> */}
+            </Providers>
         </SuspenseWrapper>
-    </Providers>
+    </ErrorBoundary>
 )
 
 // unread messages notification system
