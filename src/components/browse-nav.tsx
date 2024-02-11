@@ -22,7 +22,7 @@ export default function BrowserNav() {
     }, [location.pathname, location.search, navigation]);
 
     useEffect(() => {
-        function handleKeyDown(e: KeyboardEvent) {
+        const handleKeyDown = (e: KeyboardEvent) => {
             // alt left and right arrow
             if (e.altKey && e.key === 'ArrowLeft') {
                 e.preventDefault()
@@ -35,7 +35,11 @@ export default function BrowserNav() {
             if (e.ctrlKey && e.key === 'r') {
                 e.stopPropagation()
                 console.log('reload')
-                navigate(0)
+                window.auth.refresh().then(() => {
+                    navigate(0)
+                }).catch(() => {
+                    navigate(0)
+                })
             }
 
             if (e.ctrlKey && e.key === 'l') {

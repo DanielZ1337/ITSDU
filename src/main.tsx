@@ -11,10 +11,10 @@ import { ErrorBoundary } from "react-error-boundary";
 
 const RouterProviderLazy = lazy(() => import("react-router-dom").then((module) => ({ default: module.RouterProvider })))
 const Providers = lazy(() => import("@/components/providers.tsx"));
-const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
-const CoursePlans = lazy(() => import("./routes/course/course-plans"));
-const Documents = lazy(() => import("./routes/documents/documents"));
-const Layout = lazy(() => import("./components/layout"));
+const MediaDocuments = lazy(() => import("@/routes/documents/media-documents"));
+const CoursePlans = lazy(() => import("@/routes/course/course-plans"));
+const Documents = lazy(() => import("@/routes/documents/documents"));
+const Layout = lazy(() => import("@/components/layout"));
 const ErrorPage = lazy(() => import("@/error-page.tsx"));
 const Profile = lazy(() => import("@/routes/profile.tsx"));
 const Index = lazy(() => import("@/routes/index.tsx"));
@@ -30,17 +30,18 @@ const CourseRootResources = lazy(() => import("@/routes/course/course-root-resou
 const CourseTasks = lazy(() => import("@/routes/course/course-tasks.tsx"));
 const PersonIndex = lazy(() => import("@/routes/person/person-index.tsx"));
 const CoursesIndex = lazy(() => import("@/routes/courses.tsx"));
-const CourseError = lazy(() => import("./routes/course/course-error"));
+const CourseError = lazy(() => import("@/routes/course/course-error"));
 
-const NotificationUpdates = lazy(() => import("./routes/notifications/notification-updates"));
-const CourseAnnouncements = lazy(() => import("./routes/course/course-announcements"));
-const NotificationID = lazy(() => import("./routes/notifications/notification-id"));
-const CourseAnnouncementError = lazy(() => import("./routes/course/errors-pages/course-announcement-error"));
-const CourseSchedule = lazy(() => import("./routes/course/course-schedule"));
-const OfficeDocuments = lazy(() => import("./routes/documents/office-documents"));
-const OtherFiles = lazy(() => import("./routes/documents/other-files"));
-const Overview = lazy(() => import("./routes/overview"));
-const AIChats = lazy(() => import("./routes/ai-chats"));
+const NotificationUpdates = lazy(() => import("@/routes/notifications/notification-updates"));
+const CourseAnnouncements = lazy(() => import("@/routes/course/course-announcements"));
+const NotificationID = lazy(() => import("@/routes/notifications/notification-id"));
+const CourseAnnouncementError = lazy(() => import("@/routes/course/errors-pages/course-announcement-error"));
+const CourseSchedule = lazy(() => import("@/routes/course/course-schedule"));
+const OfficeDocuments = lazy(() => import("@/routes/documents/office-documents"));
+const OtherFiles = lazy(() => import("@/routes/documents/other-files"));
+const Overview = lazy(() => import("@/routes/overview"));
+const AIChats = lazy(() => import("@/routes/ai-chats"));
+const MergeDocumentsLazy = lazy(() => import("@/routes/merge-documents"));
 
 const router = createHashRouter([
     {
@@ -190,6 +191,11 @@ const router = createHashRouter([
             {
                 path: "/ai-chats/:page?",
                 element: <AIChats />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/merge-documents",
+                element: <MergeDocumentsLazy />,
                 errorElement: <ErrorPage />,
             },
             {
