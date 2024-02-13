@@ -52,6 +52,13 @@ contextBridge.exposeInMainWorld('app', {
         //console.log(res)
         return res
     },
+    zipDownloadAllCourseResources: async (elementIds: string[]) => {
+        const res = await ipcRenderer.invoke('app:zipDownloadAllCourseResources', {
+            elementIds,
+        })
+        //console.log(res)
+        return res
+    }
 })
 
 contextBridge.exposeInMainWorld('itslearning_file_scraping', {})
@@ -180,6 +187,7 @@ declare global {
             openItem: (path: string) => Promise<void>
             openExternal: (url: string, sso?: boolean) => Promise<void>
             mergePDFs: (elementIds: string[]) => Promise<void>
+            zipDownloadAllCourseResources: (elementIds: number[]) => Promise<string>
         },
         download: {
             start: (elementId: number | string, filename: string) => Promise<void>
