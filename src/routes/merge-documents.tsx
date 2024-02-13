@@ -143,6 +143,7 @@ export default function MergeDocuments() {
                 variant: "success",
                 onClick: () => window.app.openItem(path)
             })
+            setSelectedDocuments(null)
         }).catch((error) => {
             toast({
                 className: "text-white",
@@ -151,9 +152,9 @@ export default function MergeDocuments() {
                 duration: 5000,
                 variant: "destructive"
             })
+            setSelectedDocuments(null)
         }).finally(() => {
             setIsDownloading(false)
-            setSelectedDocuments(null)
         })
     }
 
@@ -220,7 +221,7 @@ export default function MergeDocuments() {
                                                         <h3>{course.Title}</h3>
                                                     </AccordionTrigger>
                                                     <AccordionContent>
-                                                        <CourseDocuments courseId={course.CourseId} />
+                                                        <CourseDocuments courseTitle={course.Title} courseId={course.CourseId} isDownloading={isDownloading} />
                                                     </AccordionContent>
                                                 </AccordionItem>
                                             </Accordion>
@@ -239,7 +240,7 @@ export default function MergeDocuments() {
                                                         <h3>{course.Title}</h3>
                                                     </AccordionTrigger>
                                                     <AccordionContent>
-                                                        <CourseDocuments courseTitle={course.Title} courseId={course.CourseId} />
+                                                        <CourseDocuments courseTitle={course.Title} courseId={course.CourseId} isDownloading={isDownloading} />
                                                     </AccordionContent>
                                                 </AccordionItem>
                                             </Accordion>
@@ -277,7 +278,7 @@ function SortableItem({ id, children }: { id: number, children: React.ReactNode 
     );
 }
 
-function CourseDocuments({ courseId, courseTitle }: { courseId: number, courseTitle?: string }) {
+function CourseDocuments({ courseId, courseTitle, isDownloading }: { courseId: number, courseTitle?: string, isDownloading?: boolean }) {
     const { data, isLoading } = useGETcourseAllResources(courseId)
     const { setSelectedDocuments, selectedDocuments } = useMergeDocumentsContext()
 
@@ -321,9 +322,12 @@ function CourseDocuments({ courseId, courseTitle }: { courseId: number, courseTi
 
     const allDocumentsForCourseSelected = data.every((resource) => selectedDocuments?.has(resource.ElementId)) && data.length > 0 ? true : false
 
+    const disabled = isDownloading || isLoading
+
     return (
         <div className='flex flex-col gap-2'>
             <Toggle
+                disabled={disabled}
                 pressed={allDocumentsForCourseSelected}
                 onPressedChange={toggleSelectAll}
                 className={cn(allDocumentsForCourseSelected ? "!bg-destructive hover:!bg-destructive/75" : "!bg-success-200 hover:!bg-success-100", "text-white")}
@@ -334,7 +338,7 @@ function CourseDocuments({ courseId, courseTitle }: { courseId: number, courseTi
                 <div className='w-full bg-purple-500 h-0.5 rounded-full' />
             </div>
             {data.map((resource) => (
-                <SelectableDocumentCard isLoading={isLoading} key={resource.ElementId} resource={resource} courseId={courseId} courseTitle={courseTitle} />
+                <SelectableDocumentCard key={resource.ElementId} resource={resource} courseId={courseId} courseTitle={courseTitle} isLoading={disabled} />
             ))}
         </div>
     )
