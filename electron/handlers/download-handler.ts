@@ -275,6 +275,19 @@ function zipDownloadAllCourseResourcesHandler() {
 
             if (!win) return
 
+            const Dialog = await import('electron').then(electron => electron.dialog)
+
+            const { filePath } = await Dialog.showSaveDialog(win, {
+                title: 'Save As',
+                defaultPath: path.join(app.getPath('downloads'), filename || "resources.zip"),
+                buttonLabel: 'Save',
+                filters: [
+                    { name: 'Zip Files', extensions: ['zip'] }
+                ]
+            })
+
+            if (!filePath) return
+
             const downloadPromises = elementIds.map(async (elementId: string | number) => {
                 const resourceByElementId = await getResourceLinkByElementID(elementId)
                 const fileLink = await getResourceDownloadLink(resourceByElementId)
@@ -318,7 +331,7 @@ function zipDownloadAllCourseResourcesHandler() {
 
             const zipBlob = await zip.generateAsync({ type: "nodebuffer" });
 
-            const outputPath = path.join(app.getPath('downloads'), filename || "merged.zip");
+            const outputPath = path.join(filePath);
 
             fs.writeFileSync(outputPath, zipBlob);
 
