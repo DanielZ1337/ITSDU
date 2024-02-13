@@ -334,13 +334,13 @@ function CourseDocuments({ courseId, courseTitle }: { courseId: number, courseTi
                 <div className='w-full bg-purple-500 h-0.5 rounded-full' />
             </div>
             {data.map((resource) => (
-                <SelectableDocumentCard key={resource.ElementId} resource={resource} courseId={courseId} courseTitle={courseTitle} />
+                <SelectableDocumentCard isLoading={isLoading} key={resource.ElementId} resource={resource} courseId={courseId} courseTitle={courseTitle} />
             ))}
         </div>
     )
 }
 
-function SelectableDocumentCard({ resource, courseId, courseTitle }: { resource: ItslearningRestApiEntitiesPersonalCourseCourseResource, courseId: number, courseTitle?: string }) {
+function SelectableDocumentCard({ resource, courseId, courseTitle, isLoading }: { resource: ItslearningRestApiEntitiesPersonalCourseCourseResource, courseId: number, courseTitle?: string, isLoading: boolean }) {
     const { addSelectedDocument, removeSelectedDocument, selectedDocuments } = useMergeDocumentsContext()
     const navigate = useNavigate()
     const navigateToResource = useNavigateToResource(navigate)
@@ -366,6 +366,7 @@ function SelectableDocumentCard({ resource, courseId, courseTitle }: { resource:
             <CardDescription className='flex justify-between items-center text-white'>
 
                 <button
+                    disabled={isLoading}
                     onClick={() => {
                         if (isSupportedResourceInApp(resource)) {
                             navigateToResource(resource)
@@ -379,6 +380,7 @@ function SelectableDocumentCard({ resource, courseId, courseTitle }: { resource:
                 </button>
 
                 <Toggle
+                    disabled={isLoading}
                     variant={"outline"}
                     pressed={selectedDocuments?.has(resource.ElementId) || false}
                     onPressedChange={(checked) => handleOnCheckedChange(checked, resource)}
