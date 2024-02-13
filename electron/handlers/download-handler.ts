@@ -268,6 +268,70 @@ function mergePDFsHandler() {
     })
 }
 
+function zipDownloadAllCourseResourcesHandler() {
+    ipcMain.handle("app:zipDownloadAllCourseResources", async (event, { elementIds, filename }) => {
+        try {
+            const win = BrowserWindow.fromWebContents(event.sender)
+
+            if (!win) return
+
+            const downloadPromises = elementIds.map(async (elementId: string | number) => {
+                const resourceByElementId = await getResourceLinkByElementID(elementId)
+                const fileLink = await getResourceDownloadLink(resourceByElementId)
+                const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
+                const res = await axios.get(fileLink, {
+                    responseType: 'arraybuffer', // Use arraybuffer to handle binary data
+                    headers: {
+                        Cookie: getFormattedCookies(cookies),
+                    },
+                    onDownloadProgress: (progress) => {
+                        if (progress.progress) {
+                            const percent = Math.round(progress.progress * 100);
+                            console.log(`Downloaded ${percent}%`);
+                        }
+                    },
+                });
+
+                // get the filename from the headers
+                const headerFilename = res.headers['content-disposition']
+                const filenameRegex = /filename\*?=["']([^"']+)["']/i;
+                const match = headerFilename.match(filenameRegex);
+                const decodedFilename = match ? decodeURIComponent(match[1]) : null;
+                const saveFilename = decodedFilename || filename
+                let finalFilename = saveFilename;
+
+                return {
+                    filename: finalFilename,
+                    buffer: Buffer.from(res.data, 'binary')
+                }
+            });
+
+            const fileArrayBuffers = await Promise.all(downloadPromises);
+
+            const JSZIP = (await import('jszip')).default
+
+            const zip = new JSZIP();
+
+            fileArrayBuffers.forEach(({ filename, buffer }) => {
+                zip.file(filename, buffer);
+            });
+
+            const zipBlob = await zip.generateAsync({ type: "nodebuffer" });
+
+            const outputPath = path.join(app.getPath('downloads'), filename || "merged.zip");
+
+            fs.writeFileSync(outputPath, zipBlob);
+
+            return outputPath;
+        } catch (e) {
+            if (e instanceof Error) {
+                console.error(e)
+                event.sender.send("download:error", e.name)
+            }
+        }
+    })
+}
+
 function downloadExternalHandler() {
     ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
@@ -652,4 +716,5 @@ export default function initDownloadHandlers() {
     getMicrosoftOfficeDocument()
     getResourceAsFileHandler()
     mergePDFsHandler()
+    zipDownloadAllCourseResourcesHandler()
 }

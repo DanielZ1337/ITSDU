@@ -3,18 +3,18 @@ import ReactDOM from 'react-dom/client';
 import '@/index.css';
 import { createHashRouter } from 'react-router-dom';
 import axios from "axios";
-import { lazy, useEffect, useState } from "react";
+import { lazy } from "react";
 import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { defaultSettings } from "@/types/settings";
 import { ErrorBoundary } from "react-error-boundary";
+import { defaultSettings } from "@/types/settings";
 
-const RouterProviderLazy = lazy(() => import("react-router-dom").then((module) => ({ default: module.RouterProvider })))
+const RouterProvider = lazy(() => import("react-router-dom").then((module) => ({ default: module.RouterProvider })));
 const Providers = lazy(() => import("@/components/providers.tsx"));
-const MediaDocuments = lazy(() => import("@/routes/documents/media-documents"));
-const CoursePlans = lazy(() => import("@/routes/course/course-plans"));
-const Documents = lazy(() => import("@/routes/documents/documents"));
-const Layout = lazy(() => import("@/components/layout"));
+const ReactQueryDevtools = lazy(() => import("@tanstack/react-query-devtools").then((module) => ({ default: module.ReactQueryDevtools })));
+const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
+const CoursePlans = lazy(() => import("./routes/course/course-plans"));
+const Documents = lazy(() => import("./routes/documents/documents"));
+const Layout = lazy(() => import("./components/layout"));
 const ErrorPage = lazy(() => import("@/error-page.tsx"));
 const Profile = lazy(() => import("@/routes/profile.tsx"));
 const Index = lazy(() => import("@/routes/index.tsx"));
@@ -42,6 +42,7 @@ const OtherFiles = lazy(() => import("@/routes/documents/other-files"));
 const Overview = lazy(() => import("@/routes/overview"));
 const AIChats = lazy(() => import("@/routes/ai-chats"));
 const MergeDocumentsLazy = lazy(() => import("@/routes/merge-documents"));
+const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
 
 const router = createHashRouter([
     {
@@ -199,10 +200,15 @@ const router = createHashRouter([
                 errorElement: <ErrorPage />,
             },
             {
+                path: "/test-calendar",
+                element: <TestNewCalenderLazy />,
+                errorElement: <ErrorPage />,
+            },
+            {
                 path: "*",
                 element: <ErrorPage />,
                 errorElement: <ErrorPage />,
-            }
+            },
         ]
     },
 ]);
@@ -221,7 +227,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <SuspenseWrapper max>
             <Providers>
                 {/* <React.StrictMode> */}
-                <RouterProviderLazy fallbackElement={<ErrorPage />} future={{
+                <RouterProvider fallbackElement={<ErrorPage />} future={{
                     v7_startTransition: true,
                 }} router={router} />
                 <ReactQueryDevtools position="top" buttonPosition="top-left" />
@@ -251,6 +257,7 @@ setInterval(async () => {
     }).then((res: {
         data: number;
     }) => {
+
         unreadMessages.push({
             count: res.data,
             timestamp: Date.now()
@@ -260,11 +267,14 @@ setInterval(async () => {
             unreadMessages.shift()
         }
 
+        const lastUnreadMessage = unreadMessages[unreadMessages.length - 1]
+        const secondLastUnreadMessage = unreadMessages[unreadMessages.length - 2]
+
         // check if there are any unread messages based on the timestamps and the count
-        if (unreadMessages[unreadMessages.length - 1].count > 0 && unreadMessages[unreadMessages.length - 1].timestamp - unreadMessages[0].timestamp < 1000 * 60 * 5) {
-            if (unreadMessages[unreadMessages.length - 1].count !== unreadMessages[unreadMessages.length - 2].count) {
+        if (lastUnreadMessage.count > 0 && lastUnreadMessage.timestamp - unreadMessages[0].timestamp < 1000 * 60 * 5) {
+            if (lastUnreadMessage.count !== secondLastUnreadMessage.count) {
                 new Notification('itslearning', {
-                    body: `You have ${unreadMessages[unreadMessages.length - 1].count} unread message${unreadMessages[unreadMessages.length - 1].count > 1 ? 's' : ''}`,
+                    body: `You have ${lastUnreadMessage.count} unread message${lastUnreadMessage.count > 1 ? 's' : ''}`,
                     icon: 'itsl-itslearning-file://icon.ico'
                 })
 
