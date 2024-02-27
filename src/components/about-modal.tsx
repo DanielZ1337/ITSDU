@@ -130,7 +130,12 @@ export default function AboutModal() {
                         </p>
                     </div>
                     <DialogFooter>
-                        <p className="text-sm text-gray-500">Created by Daniel Bermann Schmidt</p>
+                        <button
+                            className="text-sm text-gray-500 hover:underline"
+                            onClick={() => void window.app.openExternal('https://danielz.dev', false)}
+                        >
+                            Created by Daniel Bermann Schmidt
+                        </button>
                     </DialogFooter>
                 </DialogContent>
             </DialogPortal>
