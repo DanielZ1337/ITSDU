@@ -13,6 +13,7 @@ export enum ITSLEARNING_SCOPES_ENUM {
     Notifications = 'Notifications',
     Person = 'Person',
     Planner = 'Planner',
+    Reports = 'Reports',
     Sso = 'Sso',
     Statistics = 'Statistics',
     StudentPlan = 'StudentPlan',

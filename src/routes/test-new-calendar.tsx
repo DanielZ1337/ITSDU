@@ -149,7 +149,7 @@ function CalendarHeader() {
                             date={day.toLocaleDateString('en-US', {
                                 day: 'numeric',
                             })}
-                            isActive={day.toDateString() === new Date().toDateString()}
+                            isActive={selectedDate.toDateString() === day.toDateString()}
                         />
                     ))}
                 </div>
@@ -165,7 +165,7 @@ function CalendarHeader() {
 }
 
 const CalendarGrid = () => {
-    const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
     const { selectedDate } = useCalendarContext()
 
     const getDaysInMonth = (date: Date) => {
