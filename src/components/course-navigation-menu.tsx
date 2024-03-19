@@ -15,7 +15,7 @@ import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
 export function CourseNavigationMenu({ title }: { title: string }) {
     const { data: starredCourses } = useGETstarredCourses({
         isShowMore: true,
-        PageSize: 9999,
+        PageSize: 100,
     })
 
     return (

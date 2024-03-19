@@ -1,20 +1,10 @@
 import { useParams } from "react-router-dom";
-import { AnimatePresence, m, useCycle, motion } from 'framer-motion';
-import useGETcourseTasklistDailyWorkflowCompleted from "@/queries/courses/useGETcourseTasklistDailyWorkflowCompleted";
-import { Badge } from "@/components/ui/badge";
-import { FetchMoreInview } from "@/components/fetch-more-in-view";
-import CourseTasksCardSkeletons from "@/components/course/tasks/fallback/course-tasks-card-skeletons";
-import useGETcourseTasklistDailyWorkflow from "@/queries/courses/useGETcourseTasklistDailyWorkflow";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ItslearningRestApiEntitiesTaskDailyWorkflow } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
-import { Suspense } from "react";
+import { useCycle } from 'framer-motion';
 import { CourseTaskTabButton } from "@/components/course/tasks/course-task-tab-button";
-import { CourseTasksSkeletonsAnimated } from "@/components/course/tasks/fallback/course-tasks-card-skeletons-animated";
 import { CourseTasksActive } from "@/components/course/tasks/course-tasks-active";
 import { CourseTasksCompleted } from "@/components/course/tasks/course-tasks-completed";
 
-const TASKS_PAGE_SIZE = 9999
+const TASKS_PAGE_SIZE = 100
 
 export default function CourseTasks() {
     const { id } = useParams()

@@ -8,8 +8,9 @@ import { FetchMoreInview } from "@/components/fetch-more-in-view";
 import { CourseTaskCard } from "./course-task-card";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
+import { ITSLEARNING_API_MAX_SIZE, NumericRange } from "@/lib/utils";
 
-export function CourseTasksActive({ courseId, PageSize }: { courseId: number, PageSize: number }) {
+export function CourseTasksActive({ courseId, PageSize }: { courseId: number, PageSize: ITSLEARNING_API_MAX_SIZE }) {
     const {
         data,
         isLoading,

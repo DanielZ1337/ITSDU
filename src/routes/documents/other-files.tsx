@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from 'react';
+import React, { lazy, useEffect, memo } from 'react';
 import useResourceByElementID, { ResourceFileType } from '@/queries/resources/useResourceByElementID';
 import { useParams } from 'react-router-dom';
 import Papa from 'papaparse';
@@ -236,7 +236,7 @@ function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
 }
 
 
-export default function OtherFiles() {
+function OtherFiles() {
     const { elementId } = useParams();
     if (!elementId) {
         return <p className="text-primary">Invalid ID</p>;
@@ -421,6 +421,8 @@ export default function OtherFiles() {
         </div>
     )
 }
+
+export default memo(OtherFiles);
 
 function DownloadButton({ url, name }: { url?: string, name?: string }) {
     return (

@@ -1,10 +1,11 @@
+import { memo } from "react";
 import { Loader } from '@/components/ui/loader'
 import useGETMediaDocument from '@/queries/extra/useGETMediaDocument'
 import { useLocation, useParams } from 'react-router-dom'
 
 type MediaDocumentType = 'video' | 'image'
 
-export default function MediaDocuments() {
+function MediaDocuments() {
     const { elementId } = useParams()
     const location = useLocation()
     if (!elementId || !location.state) {
@@ -33,3 +34,5 @@ export default function MediaDocuments() {
         </div>
     )
 }
+
+export default memo(MediaDocuments)

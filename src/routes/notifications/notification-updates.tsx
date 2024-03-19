@@ -1,11 +1,13 @@
+import { lazy, Suspense, memo } from "react";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
 import UpdatesTypeSelect, { useUpdatesTypeSelect } from "@/components/notifications/notifications-updates-type-select";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
-import { FetchMoreInview } from "@/components/fetch-more-in-view";
+// import { FetchMoreInview } from "@/components/fetch-more-in-view";
+const FetchMoreInviewLazy = lazy(() => import("@/components/fetch-more-in-view").then((module) => ({ default: module.FetchMoreInview })));
 import { Helmet } from "react-helmet-async";
 
-export default function NotificationUpdates() {
+function NotificationUpdates() {
     const {
         data: notifications,
         isLoading,
@@ -43,14 +45,18 @@ export default function NotificationUpdates() {
                         <NotificationCards filteredNotifications={filteredNotifications} />}
                 </div>
                 {!isLoading && (
-                    <FetchMoreInview
-                        hasNextPage={hasNextPage}
-                        fetchNextPage={fetchNextPage}
-                        isFetchingNextPage={isFetchingNextPage}>
-                        {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
-                    </FetchMoreInview>
+                    <Suspense fallback={null}>
+                        <FetchMoreInviewLazy
+                            hasNextPage={hasNextPage}
+                            fetchNextPage={fetchNextPage}
+                            isFetchingNextPage={isFetchingNextPage}>
+                            {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
+                        </FetchMoreInviewLazy>
+                    </Suspense>
                 )}
             </div>
         </>
     );
 }
+
+export default memo(NotificationUpdates);

@@ -1,7 +1,7 @@
 import {
     ItslearningRestApiEntitiesPersonalCalendarEvent
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.CalendarEvent.ts";
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 
 const GETcourseCalenderEventsApiEndpoint = "restapi/personal/courses/{courseId}/calendarevents/v1?PageIndex={PageIndex}&PageSize={PageSize}&fromDate={fromDate}&toDate={toDate}"
 
@@ -25,7 +25,7 @@ export type GETcourseCalenderEvents = {
 export type GETcourseCalenderEventsParams = {
     courseId: number
     PageIndex?: number
-    PageSize?: number
+    PageSize?: ITSLEARNING_API_MAX_SIZE
     fromDate?: Date
     toDate?: Date
 }
