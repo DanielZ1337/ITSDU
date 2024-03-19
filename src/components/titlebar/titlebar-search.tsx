@@ -58,7 +58,7 @@ export default function TitlebarSearch() {
         keepPreviousData: true
     })
 
-    const tabs = ['courses', 'resources', 'updates']
+    const tabs = ['courses', 'resources']
 
     const [activeTab, setTabIndex] = useCycle(...tabs)
 
