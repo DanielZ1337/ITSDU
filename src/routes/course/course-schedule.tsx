@@ -1,19 +1,19 @@
 import useGETcourseCalendarEvents from "@/queries/courses/useGETcourseCalendarEvents"
-import { useParams } from "react-router-dom"
-import { Calendar } from "../calendar"
+import {useParams} from "react-router-dom"
+import {Calendar} from "../calendar"
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic"
 
 export default function CourseSchedule() {
-    const { id } = useParams()
+    const {id} = useParams()
     const courseId = Number(id)
 
-    const { data: courseInfo } = useGETcourseBasic({
+    const {data: courseInfo} = useGETcourseBasic({
         courseId
     }, {
         suspense: true
     })
 
-    const { data, isLoading } = useGETcourseCalendarEvents({
+    const {data, isLoading} = useGETcourseCalendarEvents({
         courseId,
         fromDate: new Date(courseInfo!.CreatedDateTimeUtc)
     })
@@ -35,7 +35,7 @@ export default function CourseSchedule() {
 
     return (
         <div className={"flex flex-1 flex-col h-full p-4"}>
-            <Calendar events={events} isLoading={isLoading} />
+            <Calendar events={events} isLoading={isLoading}/>
         </div>
     )
 }

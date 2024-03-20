@@ -1,12 +1,12 @@
-import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport, } from "@/components/ui/toast"
-import { useToast } from "@/components/ui/use-toast"
+import {Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport,} from "@/components/ui/toast"
+import {useToast} from "@/components/ui/use-toast"
 
 export function Toaster() {
-    const { toasts } = useToast()
+    const {toasts} = useToast()
 
     return (
         <ToastProvider>
-            {toasts.map(function ({ id, title, description, action, onClick, ...props }) {
+            {toasts.map(function ({id, title, description, action, onClick, ...props}) {
                 return (
                     <Toast key={id} onClick={onClick} {...props}>
                         <div className="grid gap-1">
@@ -16,11 +16,11 @@ export function Toaster() {
                             )}
                         </div>
                         {action}
-                        <ToastClose />
+                        <ToastClose/>
                     </Toast>
                 )
             })}
-            <ToastViewport />
+            <ToastViewport/>
         </ToastProvider>
     )
 }

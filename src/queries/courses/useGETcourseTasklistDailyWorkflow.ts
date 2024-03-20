@@ -1,16 +1,16 @@
-import { useInfiniteQuery, UseInfiniteQueryOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useInfiniteQuery, UseInfiniteQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
 import {
     GETcourseTasklistDailyWorkflow,
     GETcourseTasklistDailyWorkflowApiUrl,
     GETcourseTasklistDailyWorkflowParams
 } from "@/types/api-types/courses/GETcourseTasklistDailyWorkflow.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcourseTasklistDailyWorkflow(params: GETcourseTasklistDailyWorkflowParams, queryConfig?: UseInfiniteQueryOptions<GETcourseTasklistDailyWorkflow, Error, GETcourseTasklistDailyWorkflow, GETcourseTasklistDailyWorkflow, string[]>) {
 
-    return useInfiniteQuery([TanstackKeys.CourseTasklistDailyWorkflow, ...getQueryKeysFromParamsObject(params)], async ({ pageParam = params.PageIndex || 0 }) => {
+    return useInfiniteQuery([TanstackKeys.CourseTasklistDailyWorkflow, ...getQueryKeysFromParamsObject(params)], async ({pageParam = params.PageIndex || 0}) => {
         const res = await axios.get(GETcourseTasklistDailyWorkflowApiUrl({
             ...params,
             PageIndex: pageParam

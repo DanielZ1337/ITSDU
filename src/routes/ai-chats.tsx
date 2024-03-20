@@ -1,21 +1,20 @@
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import {Badge} from '@/components/ui/badge'
+import {Button} from '@/components/ui/button'
+import {Card, CardContent} from '@/components/ui/card'
+import {Input} from '@/components/ui/input'
 import useGETpreviousChats from '@/queries/AI/useGETpreviousChats'
-import { useCycle } from 'framer-motion'
-import { ArrowRightIcon, DownloadIcon } from 'lucide-react'
-import { useNavigate, useParams } from 'react-router-dom';
-import React, { createContext, useContext, useState } from 'react'
+import {ArrowRightIcon, DownloadIcon} from 'lucide-react'
+import {useNavigate, useParams} from 'react-router-dom';
+import React from 'react'
 
 export default function AIChats() {
-    let { page } = useParams()
+    let {page} = useParams()
     if (page === undefined) {
         page = "1"
     }
     const pageInt = parseInt(page)
 
-    const { data } = useGETpreviousChats({
+    const {data} = useGETpreviousChats({
         pageIndex: pageInt - 1
     }, {
         suspense: true
@@ -46,16 +45,16 @@ export default function AIChats() {
         <div className="container mx-auto p-4 md:p-6">
             <h1 className="text-2xl md:text-3xl font-bold mb-6 xl:mb-16">Previous AI Chats</h1>
             <div className="grid gap-6 grid-cols-2">
-                <AIChatsGrid page={pageInt} />
-                <PaginationControls pagesNum={pagesNum} page={pageInt} />
+                <AIChatsGrid page={pageInt}/>
+                <PaginationControls pagesNum={pagesNum} page={pageInt}/>
             </div>
         </div>
     )
 }
 
-function AIChatsGrid({ page }: { page: number }) {
+function AIChatsGrid({page}: { page: number }) {
 
-    const { data } = useGETpreviousChats({
+    const {data} = useGETpreviousChats({
         pageIndex: page - 1
     }, {
         suspense: true
@@ -76,7 +75,7 @@ function AIChatsGrid({ page }: { page: number }) {
     )
 }
 
-function PaginationControls({ pagesNum, page }: { pagesNum: number, page: number }) {
+function PaginationControls({pagesNum, page}: { pagesNum: number, page: number }) {
     const navigate = useNavigate()
 
     const handleNext = () => {
@@ -120,7 +119,12 @@ function PaginationControls({ pagesNum, page }: { pagesNum: number, page: number
     )
 }
 
-function AIChatCard({ title, date, description, elementId }: { title: string, date: Date, description?: string, elementId: number }) {
+function AIChatCard({title, date, description, elementId}: {
+    title: string,
+    date: Date,
+    description?: string,
+    elementId: number
+}) {
 
     const navigate = useNavigate()
 
@@ -142,15 +146,15 @@ function AIChatCard({ title, date, description, elementId }: { title: string, da
                 {description && <p className="text-gray-500">{description}</p>}
                 <div className="mt-4 grid lg:grid-cols-2 grid-cols-1 gap-4">
                     <Button variant="outline"
-                        onClick={handleDownload}
+                            onClick={handleDownload}
                     >
-                        <DownloadIcon className="w-4 h-4 mr-2" />
+                        <DownloadIcon className="w-4 h-4 mr-2"/>
                         Download as PDF
                     </Button>
                     <Button variant="outline"
-                        onClick={handleGoToChat}
+                            onClick={handleGoToChat}
                     >
-                        <ArrowRightIcon className="w-4 h-4 mr-2" />
+                        <ArrowRightIcon className="w-4 h-4 mr-2"/>
                         Go to AI Chat
                     </Button>
                 </div>

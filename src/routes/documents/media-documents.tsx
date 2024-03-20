@@ -1,24 +1,24 @@
-import { memo } from "react";
-import { Loader } from '@/components/ui/loader'
+import {memo} from "react";
+import {Loader} from '@/components/ui/loader'
 import useGETMediaDocument from '@/queries/extra/useGETMediaDocument'
-import { useLocation, useParams } from 'react-router-dom'
+import {useLocation, useParams} from 'react-router-dom'
 
 type MediaDocumentType = 'video' | 'image'
 
 function MediaDocuments() {
-    const { elementId } = useParams()
+    const {elementId} = useParams()
     const location = useLocation()
     if (!elementId || !location.state) {
         throw new Error('Invalid ID or state')
     }
 
-    const { type } = location.state as { type: MediaDocumentType }
+    const {type} = location.state as { type: MediaDocumentType }
 
     if (!type || (type !== 'video' && type !== 'image')) {
         throw new Error('Invalid type')
     }
 
-    const { data, isLoading } = useGETMediaDocument(elementId)
+    const {data, isLoading} = useGETMediaDocument(elementId)
     const Comp = type === 'video' ? 'video' : 'img'
 
     return (
@@ -28,7 +28,9 @@ function MediaDocuments() {
                 <div
                     className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-md">
                     {isLoading || !data ? <div className="flex h-full items-center justify-center">
-                        <Loader size={"md"} className={"m-auto"} /></div> : <Comp src={data} {...(type === 'video' && { autoPlay: true, controls: true })} className="object-contain m-auto flex h-full w-full items-center justify-center" />}
+                            <Loader size={"md"} className={"m-auto"}/></div> :
+                        <Comp src={data} {...(type === 'video' && {autoPlay: true, controls: true})}
+                              className="object-contain m-auto flex h-full w-full items-center justify-center"/>}
                 </div>
             </div>
         </div>

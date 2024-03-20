@@ -1,7 +1,5 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import MediaDocuments from '../../routes/documents/media-documents';
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcoursePlansScraped(courseId: number | string, queryConfig?: UseQueryOptions<CoursePlan[], Error, CoursePlan[], string[]>) {
 

@@ -1,5 +1,5 @@
-import { app, BrowserWindow, ipcMain } from "electron";
-import { autoUpdater } from "electron-updater";
+import {app, BrowserWindow, ipcMain} from "electron";
+import {autoUpdater} from "electron-updater";
 
 function exitHandler() {
     ipcMain.handle('app:exit', () => {

@@ -1,4 +1,4 @@
-import { apiUrl } from "@/lib/utils.ts";
+import {apiUrl} from "@/lib/utils.ts";
 
 const GETcoursePlansCountApiEndpoint = 'restapi/personal/course/{courseId}/plans/counts/v1'
 

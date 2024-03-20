@@ -1,16 +1,16 @@
-import { getAccessToken } from "@/lib/utils.ts";
+import {getAccessToken} from "@/lib/utils.ts";
 import ReactDOM from 'react-dom/client';
 import '@/index.css';
-import { createHashRouter } from 'react-router-dom';
+import {createHashRouter} from 'react-router-dom';
 import axios from "axios";
-import { lazy } from "react";
-import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
-import { ErrorBoundary } from "react-error-boundary";
-import { defaultSettings } from "@/types/settings";
+import {lazy} from "react";
+import {GETunreadInstantMessagesCountApiUrl} from "./types/api-types/messages/GETunreadInstantMessagesCount";
+import {ErrorBoundary} from "react-error-boundary";
+import {defaultSettings} from "@/types/settings";
 
-const RouterProvider = lazy(() => import("react-router-dom").then((module) => ({ default: module.RouterProvider })));
+const RouterProvider = lazy(() => import("react-router-dom").then((module) => ({default: module.RouterProvider})));
 const Providers = lazy(() => import("@/components/providers.tsx"));
-const ReactQueryDevtools = lazy(() => import("@tanstack/react-query-devtools").then((module) => ({ default: module.ReactQueryDevtools })));
+const ReactQueryDevtools = lazy(() => import("@tanstack/react-query-devtools").then((module) => ({default: module.ReactQueryDevtools})));
 const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
 const CoursePlans = lazy(() => import("./routes/course/course-plans"));
 const Documents = lazy(() => import("./routes/documents/documents"));
@@ -46,168 +46,168 @@ const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
 
 const router = createHashRouter([
     {
-        element: <Layout />,
-        errorElement: <ErrorPage />,
+        element: <Layout/>,
+        errorElement: <ErrorPage/>,
         children: [
             {
                 path: "/",
-                element: <Index />,
-                errorElement: <ErrorPage />,
+                element: <Index/>,
+                errorElement: <ErrorPage/>,
                 index: true,
             },
             {
                 path: "/documents",
-                errorElement: <ErrorPage />,
+                errorElement: <ErrorPage/>,
                 children: [
                     {
                         path: "pdf/:elementId",
-                        element: <Documents />,
-                        errorElement: <ErrorPage />,
+                        element: <Documents/>,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "office/:elementId",
-                        element: <OfficeDocuments />,
-                        errorElement: <ErrorPage />,
+                        element: <OfficeDocuments/>,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "media/:elementId",
-                        element: <MediaDocuments />,
-                        errorElement: <ErrorPage />,
+                        element: <MediaDocuments/>,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "other/:elementId",
-                        element: <OtherFiles />,
-                        errorElement: <ErrorPage />,
+                        element: <OtherFiles/>,
+                        errorElement: <ErrorPage/>,
                     },
                 ]
             },
             {
                 path: "/overview",
-                element: <Overview />,
-                errorElement: <ErrorPage />,
+                element: <Overview/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/person/:id",
-                element: <PersonIndex />,
-                errorElement: <ErrorPage />,
+                element: <PersonIndex/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/courses",
-                element: <CoursesIndex />,
-                errorElement: <ErrorPage />,
+                element: <CoursesIndex/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/updates",
-                errorElement: <ErrorPage />,
+                errorElement: <ErrorPage/>,
                 children: [
                     {
-                        element: <NotificationUpdates />,
-                        errorElement: <ErrorPage />,
+                        element: <NotificationUpdates/>,
+                        errorElement: <ErrorPage/>,
                         index: true,
                     },
                     {
                         path: ":notificationId",
-                        element: <NotificationID />,
-                        errorElement: <ErrorPage />,
+                        element: <NotificationID/>,
+                        errorElement: <ErrorPage/>,
                     }
                 ]
             },
             {
                 path: "/calendar",
-                element: <Calendar />,
-                errorElement: <ErrorPage />,
+                element: <Calendar/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/courses/:id",
-                element: <CourseLayout />,
-                errorElement: <CourseError />,
+                element: <CourseLayout/>,
+                errorElement: <CourseError/>,
                 children: [
                     {
-                        element: <CourseIndex />,
+                        element: <CourseIndex/>,
                         index: true,
-                        errorElement: <ErrorPage />,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "resources",
-                        errorElement: <ErrorPage />,
+                        errorElement: <ErrorPage/>,
                         children: [
                             {
-                                element: <CourseRootResources />,
-                                errorElement: <ErrorPage />,
+                                element: <CourseRootResources/>,
+                                errorElement: <ErrorPage/>,
                                 index: true,
                             },
                             {
                                 path: ":folderId",
-                                element: <CourseResources />,
-                                errorElement: <ErrorPage />,
+                                element: <CourseResources/>,
+                                errorElement: <ErrorPage/>,
                             },
                         ]
                     },
                     {
                         path: "schedule",
-                        element: <CourseSchedule />,
-                        errorElement: <ErrorPage />,
+                        element: <CourseSchedule/>,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "updates",
-                        element: <CourseAnnouncements />,
-                        errorElement: <CourseAnnouncementError />,
+                        element: <CourseAnnouncements/>,
+                        errorElement: <CourseAnnouncementError/>,
                     },
                     {
                         path: "course-information",
-                        element: <CourseInformation />,
+                        element: <CourseInformation/>,
                     },
                     {
                         path: "tasks",
-                        element: <CourseTasks />,
+                        element: <CourseTasks/>,
                     },
                     {
                         path: "participants",
                         element:
-                            <CourseParticipants />
+                            <CourseParticipants/>
                         ,
                     },
                     {
                         path: "plans",
-                        element: <CoursePlans />,
-                        errorElement: <ErrorPage />,
+                        element: <CoursePlans/>,
+                        errorElement: <ErrorPage/>,
                     },
                     {
                         path: "*",
-                        element: <ErrorPage />,
-                        errorElement: <ErrorPage />,
+                        element: <ErrorPage/>,
+                        errorElement: <ErrorPage/>,
                     }
                 ],
             },
             {
                 path: "/profile",
-                element: <Profile />,
-                errorElement: <ErrorPage />,
+                element: <Profile/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/messages/:id?",
-                element: <Messages />,
-                errorElement: <ErrorPage />,
+                element: <Messages/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/ai-chats/:page?",
-                element: <AIChats />,
-                errorElement: <ErrorPage />,
+                element: <AIChats/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/merge-zip-documents",
-                element: <MergeZIPDocumentsLazy />,
-                errorElement: <ErrorPage />,
+                element: <MergeZIPDocumentsLazy/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "/test-calendar",
-                element: <TestNewCalenderLazy />,
-                errorElement: <ErrorPage />,
+                element: <TestNewCalenderLazy/>,
+                errorElement: <ErrorPage/>,
             },
             {
                 path: "*",
-                element: <ErrorPage />,
-                errorElement: <ErrorPage />,
+                element: <ErrorPage/>,
+                errorElement: <ErrorPage/>,
             },
         ]
     },
@@ -215,11 +215,11 @@ const router = createHashRouter([
 
 // initialize settings in the local storage
 if (!localStorage.getItem("settings")) {
-    localStorage.setItem("settings", JSON.stringify({ ...defaultSettings }))
+    localStorage.setItem("settings", JSON.stringify({...defaultSettings}))
 } else {
     //if settings is already initialized but not all the settings are present, add the missing settings
     const settings = JSON.parse(localStorage.getItem("settings")!)
-    localStorage.setItem("settings", JSON.stringify({ ...defaultSettings, ...settings }))
+    localStorage.setItem("settings", JSON.stringify({...defaultSettings, ...settings}))
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -227,10 +227,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <SuspenseWrapper max>
             <Providers>
                 {/* <React.StrictMode> */}
-                <RouterProvider fallbackElement={<ErrorPage />} future={{
+                <RouterProvider fallbackElement={<ErrorPage/>} future={{
                     v7_startTransition: true,
-                }} router={router} />
-                <ReactQueryDevtools position="top" buttonPosition="top-left" />
+                }} router={router}/>
+                <ReactQueryDevtools position="top" buttonPosition="top-left"/>
                 {/* </React.StrictMode> */}
             </Providers>
         </SuspenseWrapper>
@@ -286,7 +286,7 @@ setInterval(async () => {
 }, 1000 * 15) // 15 seconds
 
 // Remove Preload scripts loading
-postMessage({ payload: 'removeLoading' }, '*')
+postMessage({payload: 'removeLoading'}, '*')
 
 // Use contextBridge
 window.ipcRenderer.on('main-process-message', (_event, message) => {

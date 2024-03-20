@@ -3,8 +3,7 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import {NavigateFunction, useNavigate} from "react-router-dom";
 
 export enum LearningToolIdTypes {
     LINK = 50010,
@@ -38,6 +37,7 @@ type ResourceObject = {
     Title?: string
     IconUrl?: string
 }
+
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
 
 export function useNavigateToResource(navigater?: NavigateFunction) {

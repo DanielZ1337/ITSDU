@@ -1,32 +1,32 @@
-import { Divider } from "@nextui-org/divider";
-import { useIntersectionObserver } from "@uidotdev/usehooks";
-import React, { SetStateAction, useCallback, useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { DividerProps } from "@nextui-org/react";
-import { ChevronDown, ComputerIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useUser } from '@/hooks/atoms/useUser.ts';
-import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { LanguageCombobox } from "../language-combobox";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { ScrollArea } from "../ui/scroll-area";
-import { calculateShadowPosition, Shadow, ShadowPosition } from "../scroll-shadow";
-import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
+import {Divider} from "@nextui-org/divider";
+import {useIntersectionObserver} from "@uidotdev/usehooks";
+import React, {SetStateAction, useCallback, useEffect, useState} from "react";
+import {cn} from "@/lib/utils";
+import {DividerProps} from "@nextui-org/react";
+import {ChevronDown, ComputerIcon, MoonIcon, SettingsIcon, SunIcon} from "lucide-react";
+import {useTheme} from "next-themes";
+import {useUser} from '@/hooks/atoms/useUser.ts';
+import {useShowSettingsModal} from "@/hooks/atoms/useSettingsModal.ts";
+import {Dialog, DialogContent, DialogOverlay} from "@/components/ui/dialog";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Button, buttonVariants} from "@/components/ui/button";
+import {LanguageCombobox} from "../language-combobox";
+import {Input} from "@/components/ui/input";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "../ui/select";
+import {ScrollArea} from "../ui/scroll-area";
+import {calculateShadowPosition, Shadow, ShadowPosition} from "../scroll-shadow";
+import {useMeasureScrollPosition} from "@/hooks/useMeasureScrollPosition";
 import SettingsCloseButton from "./settings-close-button";
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
-import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { ErrorBoundary } from "react-error-boundary";
-import { toast } from "../ui/use-toast";
+import {useSettings} from "@/hooks/atoms/useSettings";
+import {IndexedDBResourceFileType, ItsduResourcesDBWrapper} from "@/lib/resource-indexeddb/resourceIndexedDB";
+import {getSortedResourcesByTime} from "@/lib/resource-indexeddb/resource-indexeddb-utils";
+import {DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger} from "../ui/dropdown-menu";
+import {ErrorBoundary} from "react-error-boundary";
+import {toast} from "../ui/use-toast";
 
 export default function SettingsModal() {
 
-    const { showSettingsModal, setShowSettingsModal } = useShowSettingsModal()
+    const {showSettingsModal, setShowSettingsModal} = useShowSettingsModal()
 
     return (
         <Dialog
@@ -34,16 +34,17 @@ export default function SettingsModal() {
             onOpenChange={setShowSettingsModal}
         >
             <DialogOverlay
-                className="will-change-auto data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-all data-[state=open]:!duration-500" />
+                className="will-change-auto data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-all data-[state=open]:!duration-500"/>
             <DialogContent
-                customClose={<SettingsCloseButton />}
+                customClose={<SettingsCloseButton/>}
                 className="flex flex-1 flex-col h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0"
             >
-                <div className="absolute h-14 w-full bg-transparent drag" />
+                <div className="absolute h-14 w-full bg-transparent drag"/>
                 <div className="flex h-full w-full flex-col items-center justify-center gap-4 px-10 py-14">
                     {/* <SettingsCustom /> */}
                     <Tabs defaultValue="settings" className="w-full h-full">
-                        <TabsList className="bg-transparent absolute top-1/2 left-[10%] transform -translate-y-1/2 flex flex-col gap-4 items-center">
+                        <TabsList
+                            className="bg-transparent absolute top-1/2 left-[10%] transform -translate-y-1/2 flex flex-col gap-4 items-center">
                             <TabsTrigger value="settings" className={buttonVariants({
                                 variant: "link",
                                 className: "bg-transparent data-[state=active]:bg-transparent data-[state=inactive]:text-foreground-500 text-lg data-[state=active]:text-foreground data-[state=active]:shadow-sm"
@@ -54,14 +55,17 @@ export default function SettingsModal() {
                             })}
                             >IndexedDB</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="settings" className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
-                            <SettingsCustom />
+                        <TabsContent value="settings"
+                                     className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
+                            <SettingsCustom/>
                         </TabsContent>
-                        <TabsContent value="indexeddb" className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
+                        <TabsContent value="indexeddb"
+                                     className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden">
                             <ErrorBoundary fallback={
                                 <div className="flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl">
                                     <h1 className="text-foreground">Error</h1>
-                                    <h2 className="text-foreground">An error occured while loading IndexedDB. Please try again later.</h2>
+                                    <h2 className="text-foreground">An error occured while loading IndexedDB. Please try
+                                        again later.</h2>
                                 </div>
                             } onError={() => {
                                 toast({
@@ -70,7 +74,7 @@ export default function SettingsModal() {
                                     description: "An error occured while loading IndexedDB. Please try again later."
                                 })
                             }}>
-                                <IndexedDB />
+                                <IndexedDB/>
                             </ErrorBoundary>
                         </TabsContent>
                     </Tabs>
@@ -80,7 +84,7 @@ export default function SettingsModal() {
     )
 }
 
-function ResizablePanelSettings({ panelId }: { panelId: string }) {
+function ResizablePanelSettings({panelId}: { panelId: string }) {
     const localStorageKey = `react-resizable-panels:${panelId}`;
 
     const [panelSettings, setPanelSettings] = useState([70, 30]);
@@ -95,8 +99,8 @@ function ResizablePanelSettings({ panelId }: { panelId: string }) {
     }, [localStorageKey]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = event.target;
-        setPanelSettings({ ...panelSettings, [name]: value });
+        const {name, value} = event.target;
+        setPanelSettings({...panelSettings, [name]: value});
     };
 
     const clearLocalStorage = () => {
@@ -148,14 +152,14 @@ function SettingsCustom() {
     const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(calculateShadowPosition(viewportRef));
     useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
 
-    const { settings } = useSettings()
+    const {settings} = useSettings()
 
     return (
         <div
             className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
             {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
             <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection}
-                orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
+                  orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
                 {/* <TabsList
                     className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
                     <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
@@ -199,63 +203,63 @@ function SettingsCustom() {
                             {/* {JSON.stringify(settings)} */}
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Dark Mode</h6>
-                                <DarkModeSetting />
+                                <DarkModeSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Language</h6>
-                                <LanguageSetting />
+                                <LanguageSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Home Page</h6>
-                                <DefaultHomePageSetting />
+                                <DefaultHomePageSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Use Custom PDF Renderer</h6>
-                                <CustomPDFRendererSetting />
+                                <CustomPDFRendererSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Enable/Disable Uploading AI Chats</h6>
-                                <UploadAIChatsSetting />
+                                <UploadAIChatsSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Sort Type for Course Cards</h6>
-                                <DefaultSortTypeSetting />
+                                <DefaultSortTypeSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default AI Chat Sidepanel</h6>
-                                <DefaultAIChatSidepanelSetting />
+                                <DefaultAIChatSidepanelSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Sort Type for Updates</h6>
-                                <DefaultSortTypeUpdatesSetting />
+                                <DefaultSortTypeUpdatesSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Interval for Refreshing Access Tokens (in ms)</h6>
-                                <RefreshAccessTokenIntervalSetting />
+                                <RefreshAccessTokenIntervalSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Custom Titlebar Buttons</h6>
-                                <CustomTitlebarButtons />
+                                <CustomTitlebarButtons/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Custom Titlebar</h6>
-                                <CustomTitlebarSetting />
+                                <CustomTitlebarSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Resource Open Type</h6>
-                                <DefaultResourceOpenTypeSetting />
+                                <DefaultResourceOpenTypeSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Default Resource Table Columns</h6>
-                                <DefaultResourceTableColumnsSetting />
+                                <DefaultResourceTableColumnsSetting/>
                             </div>
                             <div className="flex flex-col gap-2">
                                 <h6 className="text-foreground">Resizeable Panel Settings</h6>
-                                <ResizablePanelSettings panelId={"course-index"} />
+                                <ResizablePanelSettings panelId={"course-index"}/>
                             </div>
                         </div>
                     </SettingsCardSection>
-                    <Shadow position={shadowPosition} />
+                    <Shadow position={shadowPosition}/>
                 </ScrollArea>
             </Tabs>
         </div>
@@ -279,7 +283,7 @@ function IndexedDB() {
     const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(calculateShadowPosition(viewportRef));
     useMeasureScrollPosition(viewportRef, (position) => setShadowPosition(position));
 
-    const { settings } = useSettings()
+    const {settings} = useSettings()
     const [indexedDBResources, setIndexedDBResources] = useState<ItsduResourcesDBWrapper | null>(null);
     const [allResources, setAllResources] = useState<IndexedDBResourceFileType[] | null>([]);
     const [coursesDropdown, setCoursesDropdown] = useState<string[]>([]);
@@ -304,7 +308,7 @@ function IndexedDB() {
 
     if (allResources) {
         courses = allResources.reduce((acc: any, resource) => {
-            const { CourseId, CourseTitle } = resource
+            const {CourseId, CourseTitle} = resource
             acc[CourseId] = {
                 CourseId,
                 CourseTitle,
@@ -364,7 +368,6 @@ function IndexedDB() {
     }, [selectedCourses, allResources]);
 
 
-
     const handleDeleteResource = (resourceId: string) => {
         indexedDBResources?.deleteResourceById(resourceId).then(() => {
             indexedDBResources?.getAllResources().then((resources) => {
@@ -396,7 +399,7 @@ function IndexedDB() {
             className={"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"}>
             {/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
             <Tabs defaultValue={currentSection} value={currentSection} onValueChange={setCurrentSection}
-                orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
+                  orientation="vertical" className="flex h-full w-full flex-col gap-4 md:flex-row">
                 {/* <TabsList
                     className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
                     <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
@@ -469,8 +472,9 @@ function IndexedDB() {
                             {coursesDropdown && coursesDropdown.length > 0 && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
-                                            Columns <ChevronDown className="ml-2 h-4 w-4" />
+                                        <Button variant="outline"
+                                                className="ml-auto scale-100 select-none active:scale-100">
+                                            Columns <ChevronDown className="ml-2 h-4 w-4"/>
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
@@ -499,8 +503,10 @@ function IndexedDB() {
                                                 <span className="text-foreground">{resource.elementId}</span>
                                                 <span className="text-foreground">{resource.name}</span>
                                                 <span className="text-foreground">{resource.type}</span>
-                                                <span className="text-foreground">Last accessed: {resource.last_accessed.toDateString()}</span>
-                                                <span className="text-foreground">Size: {formatSize(resource.size)}</span>
+                                                <span
+                                                    className="text-foreground">Last accessed: {resource.last_accessed.toDateString()}</span>
+                                                <span
+                                                    className="text-foreground">Size: {formatSize(resource.size)}</span>
                                             </div>
                                             <div className="flex flex-col gap-2 w-full">
                                                 <Button
@@ -526,14 +532,14 @@ function IndexedDB() {
 
 
 function DarkModeSetting() {
-    const { theme } = useTheme()
+    const {theme} = useTheme()
 
     return (
         <div className="flex flex-col gap-2">
             <div className="flex flex-row gap-2">
-                <ThemeChangeButton theme={"light"} />
-                <ThemeChangeButton theme={"dark"} />
-                <ThemeChangeButton theme={"system"} />
+                <ThemeChangeButton theme={"light"}/>
+                <ThemeChangeButton theme={"dark"}/>
+                <ThemeChangeButton theme={"system"}/>
             </div>
             <div className="flex flex-row gap-2">
                 <span className="text-foreground">Current Theme: {theme}</span>
@@ -568,7 +574,7 @@ function DefaultHomePageSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Theme"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -584,16 +590,16 @@ function DefaultHomePageSetting() {
 }
 
 function CustomPDFRendererSetting() {
-    const { settings, updateSettings } = useSettings()
+    const {settings, updateSettings} = useSettings()
 
     return (
         <Select
             value={(settings.CustomPDFrenderer).toString()}
-            onValueChange={(e) => updateSettings({ CustomPDFrenderer: e === "true" })}
+            onValueChange={(e) => updateSettings({CustomPDFrenderer: e === "true"})}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Custom PDF Renderer" />
+                <SelectValue placeholder="Custom PDF Renderer"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -605,17 +611,17 @@ function CustomPDFRendererSetting() {
 }
 
 function UploadAIChatsSetting() {
-    const { settings, updateSettings } = useSettings()
+    const {settings, updateSettings} = useSettings()
 
     return (
         <Select
             value={(settings.UploadAIChats).toString()}
-            onValueChange={(e) => updateSettings({ UploadAIChats: e === "true" })}
+            onValueChange={(e) => updateSettings({UploadAIChats: e === "true"})}
             disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="AI Chat Upload" />
+                <SelectValue placeholder="AI Chat Upload"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -627,16 +633,16 @@ function UploadAIChatsSetting() {
 }
 
 function CustomTitlebarButtons() {
-    const { settings, updateSettings } = useSettings()
+    const {settings, updateSettings} = useSettings()
 
     return (
         <Select
             value={(settings.CustomTitleBarButtons).toString()}
-            onValueChange={(e) => updateSettings({ CustomTitleBarButtons: e === "true" })}
+            onValueChange={(e) => updateSettings({CustomTitleBarButtons: e === "true"})}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Titlebar Buttons" />
+                <SelectValue placeholder="Titlebar Buttons"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -648,17 +654,17 @@ function CustomTitlebarButtons() {
 }
 
 function CustomTitlebarSetting() {
-    const { settings, updateSettings } = useSettings()
+    const {settings, updateSettings} = useSettings()
 
     return (
         <Select
             value={(settings.CustomTitleBar).toString()}
-            onValueChange={(e) => updateSettings({ CustomTitleBar: e === "true" })}
+            onValueChange={(e) => updateSettings({CustomTitleBar: e === "true"})}
             disabled
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Titlebar" />
+                <SelectValue placeholder="Titlebar"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -682,7 +688,7 @@ function DefaultSortTypeSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Theme"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -695,16 +701,16 @@ function DefaultSortTypeSetting() {
 }
 
 function DefaultAIChatSidepanelSetting() {
-    const { settings, updateSettings } = useSettings()
+    const {settings, updateSettings} = useSettings()
 
     return (
         <Select
             value={(settings.DefaultAIChatSidepanel).toString()}
-            onValueChange={(e) => updateSettings({ DefaultAIChatSidepanel: e === "true" })}
+            onValueChange={(e) => updateSettings({DefaultAIChatSidepanel: e === "true"})}
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="AI Chat Sidepanel" />
+                <SelectValue placeholder="AI Chat Sidepanel"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -728,7 +734,7 @@ function DefaultSortTypeUpdatesSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Theme"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -754,7 +760,7 @@ function DefaultResourceOpenTypeSetting() {
         >
             <SelectTrigger
                 className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-                <SelectValue placeholder="Theme" />
+                <SelectValue placeholder="Theme"/>
             </SelectTrigger>
             <SelectContent
                 className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
@@ -838,7 +844,7 @@ function RefreshAccessTokenIntervalSetting() {
     )
 }
 
-function SettingsSidebar({ currentSection, rootRef }: {
+function SettingsSidebar({currentSection, rootRef}: {
     currentSection: string,
     rootRef: React.RefObject<HTMLDivElement>
 }) {
@@ -873,14 +879,14 @@ function SettingsSidebar({ currentSection, rootRef }: {
             className={"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 p-2 min-w-[20vw] overflow-x-auto md:overflow-y-auto"}
             ref={navRef}>
             <SettingsNavTitle title={"Preferences"}
-                icon={<SettingsIcon />} {...SettingsNavTitleSettings} />
+                              icon={<SettingsIcon/>} {...SettingsNavTitleSettings} />
             <Divider {...navDividerSettings} />
         </nav>
     )
 }
 
-function ThemeChangeButton({ theme }: { theme: string }) {
-    const { setTheme, theme: currentTheme } = useTheme()
+function ThemeChangeButton({theme}: { theme: string }) {
+    const {setTheme, theme: currentTheme} = useTheme()
 
     const ThemeIconClassName = 'w-6 h-6 text-foreground'
     return (
@@ -892,14 +898,14 @@ function ThemeChangeButton({ theme }: { theme: string }) {
             variant={"ghost"}
             size={"lg"}
         >
-            {theme === 'light' && <SunIcon className={ThemeIconClassName} />}
-            {theme === 'dark' && <MoonIcon className={ThemeIconClassName} />}
-            {theme === 'system' && <ComputerIcon className={ThemeIconClassName} />}
+            {theme === 'light' && <SunIcon className={ThemeIconClassName}/>}
+            {theme === 'dark' && <MoonIcon className={ThemeIconClassName}/>}
+            {theme === 'system' && <ComputerIcon className={ThemeIconClassName}/>}
         </Button>
     )
 }
 
-function SettingsCardSection({ title, children, setCurrentSection, root }: {
+function SettingsCardSection({title, children, setCurrentSection, root}: {
     title: string,
     children?: React.ReactNode,
     setCurrentSection?: React.Dispatch<SetStateAction<string>>,
@@ -936,7 +942,7 @@ interface SettingsNavTitleProps {
     icon?: React.ReactNode
 }
 
-function SettingsNavTitle({ currentSection, title, navbarRef, rootRef, isMobile, icon }: SettingsNavTitleProps) {
+function SettingsNavTitle({currentSection, title, navbarRef, rootRef, isMobile, icon}: SettingsNavTitleProps) {
     const ref = React.useRef<HTMLHeadingElement>(null)
 
     useEffect(() => {

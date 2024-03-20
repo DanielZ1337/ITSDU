@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron"
+import {BrowserWindow} from "electron"
 
 const DEFAULT_WINDOW_SCRAPER_OPTIONS = {
     show: false,
@@ -15,7 +15,7 @@ export function createScrapeWindow(...options: ConstructorParameters<typeof Brow
 }
 
 export function getCookiesForDomain(win: BrowserWindow, domain: string) {
-    return win.webContents.session.cookies.get({ url: domain })
+    return win.webContents.session.cookies.get({url: domain})
 }
 
 export function scrapePage(win: BrowserWindow, url: string) {

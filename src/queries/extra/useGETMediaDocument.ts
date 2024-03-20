@@ -1,7 +1,5 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import MediaDocuments from '../../routes/documents/media-documents';
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETMediaDocument(elementId: number | string, queryConfig?: UseQueryOptions<string, Error, string, string[]>) {
 

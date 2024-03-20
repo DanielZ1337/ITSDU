@@ -1,31 +1,36 @@
 import useGETcourses from '@/queries/course-cards/useGETcourses'
 import useGETcourseAllResources from '@/queries/courses/useGETcourseAllResources'
 import useGETcoursesv3 from '@/queries/courses/useGETcoursesv3'
-import { createContext, useContext, useState } from 'react'
+import {createContext, useContext, useState} from 'react'
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card"
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/components/ui/accordion"
+import {Button} from '@/components/ui/button'
 import {
-    Card,
-    CardContent,
-    CardDescription, CardHeader,
-    CardTitle
-} from "@/components/ui/card"
+    closestCenter,
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    UniqueIdentifier,
+    useSensor,
+    useSensors
+} from '@dnd-kit/core'
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Button } from '@/components/ui/button'
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier } from '@dnd-kit/core'
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { Loader } from '@/components/ui/loader'
-import { cn } from '@/lib/utils'
-import { Toggle } from '@/components/ui/toggle'
-import { useNavigate } from 'react-router-dom'
-import { isSupportedResourceInApp, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
-import { useToast } from '@/components/ui/use-toast'
-import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import {CSS} from '@dnd-kit/utilities'
+import {Loader} from '@/components/ui/loader'
+import {cn} from '@/lib/utils'
+import {Toggle} from '@/components/ui/toggle'
+import {useNavigate} from 'react-router-dom'
+import {isSupportedResourceInApp, useNavigateToResource} from '@/types/api-types/extra/learning-tool-id-types'
+import {useToast} from '@/components/ui/use-toast'
+import {
+    ItslearningRestApiEntitiesPersonalCourseCourseResource
+} from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 
 type SelectedDocument = {
     ElementId: number
@@ -40,9 +45,12 @@ const MergeDocumentsContext = createContext<{
     removeSelectedDocument: (selectedDocument: SelectedDocument) => void
 }>({
     selectedDocuments: null,
-    setSelectedDocuments: () => { },
-    addSelectedDocument: () => { },
-    removeSelectedDocument: () => { }
+    setSelectedDocuments: () => {
+    },
+    addSelectedDocument: () => {
+    },
+    removeSelectedDocument: () => {
+    }
 })
 
 const useMergeDocumentsContext = () => {
@@ -60,7 +68,7 @@ export default function MergeZIPDocuments() {
     const [isDownloading, setIsDownloading] = useState(false)
     const [isMerging, setIsMerging] = useState(false)
 
-    const { toast } = useToast()
+    const {toast} = useToast()
 
     const addSelectedDocument = (selectedDocument: SelectedDocument) => {
         setSelectedDocuments(new Map([...(selectedDocuments || new Map()), [selectedDocument.ElementId, selectedDocument]]))
@@ -72,9 +80,9 @@ export default function MergeZIPDocuments() {
         setSelectedDocuments(newSelectedDocuments)
     }
 
-    const { data, isLoading } = useGETcoursesv3({})
+    const {data, isLoading} = useGETcoursesv3({})
 
-    const { data: data2, isLoading: isLoading2 } = useGETcourses("All", {})
+    const {data: data2, isLoading: isLoading2} = useGETcourses("All", {})
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -84,7 +92,7 @@ export default function MergeZIPDocuments() {
     );
 
     const handleDragEnd = (event: { active: { id: UniqueIdentifier }; over: { id: UniqueIdentifier } | null }) => {
-        const { active, over } = event;
+        const {active, over} = event;
 
         if (over && active.id !== over.id) {
             setSelectedDocuments((currentSelectedDocuments) => {
@@ -105,7 +113,7 @@ export default function MergeZIPDocuments() {
 
     if (isLoading || isLoading2 || !data || !data2) {
         return (
-            <Loader className={"m-auto"} />
+            <Loader className={"m-auto"}/>
         )
     }
 
@@ -203,28 +211,35 @@ export default function MergeZIPDocuments() {
     }
 
     return (
-        <MergeDocumentsContext.Provider value={{ selectedDocuments, setSelectedDocuments, addSelectedDocument, removeSelectedDocument }}>
-            <div className='flex max-w-full w-full mx-auto justify-between p-20 h-full max-h-full flex-1 overflow-hidden gap-4'>
+        <MergeDocumentsContext.Provider
+            value={{selectedDocuments, setSelectedDocuments, addSelectedDocument, removeSelectedDocument}}>
+            <div
+                className='flex max-w-full w-full mx-auto justify-between p-20 h-full max-h-full flex-1 overflow-hidden gap-4'>
                 <Card className='flex flex-col justify-between max-h-full max-w-md w-full min-w-0'>
                     <div className="flex flex-col max-h-full h-full w-full overflow-hidden">
                         <CardHeader className='w-full'>
                             <CardTitle>Selected Documents</CardTitle>
                             <CardDescription>
                                 <span>These are the documents you have selected to merge</span>
-                                <div className='mt-2 flex gap-2 justify-end items-center w-full max-w-full overflow-auto'>
-                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled} onClick={() => setSelectedDocuments(null)}>Clear</Button>
-                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled || isMerging} onClick={handleMergePDF}>
-                                        {isMerging ? <Loader size={"sm"} /> : "Merge PDFs"}
+                                <div
+                                    className='mt-2 flex gap-2 justify-end items-center w-full max-w-full overflow-auto'>
+                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled}
+                                            onClick={() => setSelectedDocuments(null)}>Clear</Button>
+                                    <Button className='truncate' variant={"secondary"}
+                                            disabled={isButtonDisabled || isMerging} onClick={handleMergePDF}>
+                                        {isMerging ? <Loader size={"sm"}/> : "Merge PDFs"}
                                     </Button>
-                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled} onClick={downloadAsZip}>
-                                        {isDownloading ? <Loader size={"sm"} /> : "Download as ZIP"}
+                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled}
+                                            onClick={downloadAsZip}>
+                                        {isDownloading ? <Loader size={"sm"}/> : "Download as ZIP"}
                                     </Button>
                                 </div>
                             </CardDescription>
                         </CardHeader>
                         <CardContent className='overflow-y-auto overflow-x-hidden h-full gap-2 flex flex-col min-w-0'>
                             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                <SortableContext items={Array.from(selectedDocuments?.keys() || [])} strategy={verticalListSortingStrategy}>
+                                <SortableContext items={Array.from(selectedDocuments?.keys() || [])}
+                                                 strategy={verticalListSortingStrategy}>
                                     {selectedDocuments ? (
                                         Array.from(selectedDocuments.values()).map((document) => (
                                             <SortableItem key={document.ElementId} id={document.ElementId}>
@@ -252,20 +267,25 @@ export default function MergeZIPDocuments() {
                 <div className="flex flex-col items-center justify-center max-w-2xl w-full min-w-0">
                     <Card className='flex flex-col justify-between max-h-[50vh] w-full overflow-auto min-w-0'>
                         <CardContent className='pt-6'>
-                            <Accordion type='multiple' value={openedStarredUnstarred} onValueChange={setOpenedStarredUnstarred}>
+                            <Accordion type='multiple' value={openedStarredUnstarred}
+                                       onValueChange={setOpenedStarredUnstarred}>
                                 <AccordionItem value="starred">
                                     <AccordionTrigger>
                                         <h2>Starred Courses</h2>
                                     </AccordionTrigger>
                                     <AccordionContent>
                                         {starredCourses?.map((course) => (
-                                            <Accordion type='multiple' value={openedCourses} onValueChange={setOpenedCourses} key={course.CourseId}>
-                                                <AccordionItem value={String(course.CourseId)} className={cn(course === starredCourses[starredCourses.length - 1] && 'border-b-0')}>
+                                            <Accordion type='multiple' value={openedCourses}
+                                                       onValueChange={setOpenedCourses} key={course.CourseId}>
+                                                <AccordionItem value={String(course.CourseId)}
+                                                               className={cn(course === starredCourses[starredCourses.length - 1] && 'border-b-0')}>
                                                     <AccordionTrigger>
                                                         <h3>{course.Title}</h3>
                                                     </AccordionTrigger>
                                                     <AccordionContent>
-                                                        <CourseDocuments courseTitle={course.Title} courseId={course.CourseId} isDownloading={isDownloading} />
+                                                        <CourseDocuments courseTitle={course.Title}
+                                                                         courseId={course.CourseId}
+                                                                         isDownloading={isDownloading}/>
                                                     </AccordionContent>
                                                 </AccordionItem>
                                             </Accordion>
@@ -278,13 +298,17 @@ export default function MergeZIPDocuments() {
                                     </AccordionTrigger>
                                     <AccordionContent>
                                         {unstarredCourses?.map((course, index) => (
-                                            <Accordion type='multiple' value={openedCourses} onValueChange={setOpenedCourses} key={course.CourseId}>
-                                                <AccordionItem value={String(course.CourseId)} className={cn(index === unstarredCourses.length - 1 && 'border-b-0')}>
+                                            <Accordion type='multiple' value={openedCourses}
+                                                       onValueChange={setOpenedCourses} key={course.CourseId}>
+                                                <AccordionItem value={String(course.CourseId)}
+                                                               className={cn(index === unstarredCourses.length - 1 && 'border-b-0')}>
                                                     <AccordionTrigger>
                                                         <h3>{course.Title}</h3>
                                                     </AccordionTrigger>
                                                     <AccordionContent>
-                                                        <CourseDocuments courseTitle={course.Title} courseId={course.CourseId} isDownloading={isDownloading} />
+                                                        <CourseDocuments courseTitle={course.Title}
+                                                                         courseId={course.CourseId}
+                                                                         isDownloading={isDownloading}/>
                                                     </AccordionContent>
                                                 </AccordionItem>
                                             </Accordion>
@@ -295,20 +319,20 @@ export default function MergeZIPDocuments() {
                         </CardContent>
                     </Card>
                 </div>
-            </div >
-        </MergeDocumentsContext.Provider >
+            </div>
+        </MergeDocumentsContext.Provider>
     )
 }
 
 
-function SortableItem({ id, children }: { id: number, children: React.ReactNode }) {
+function SortableItem({id, children}: { id: number, children: React.ReactNode }) {
     const {
         attributes,
         listeners,
         setNodeRef,
         transform,
         transition,
-    } = useSortable({ id });
+    } = useSortable({id});
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -322,14 +346,18 @@ function SortableItem({ id, children }: { id: number, children: React.ReactNode 
     );
 }
 
-function CourseDocuments({ courseId, courseTitle, isDownloading }: { courseId: number, courseTitle?: string, isDownloading?: boolean }) {
-    const { data, isLoading } = useGETcourseAllResources(courseId)
-    const { setSelectedDocuments, selectedDocuments } = useMergeDocumentsContext()
+function CourseDocuments({courseId, courseTitle, isDownloading}: {
+    courseId: number,
+    courseTitle?: string,
+    isDownloading?: boolean
+}) {
+    const {data, isLoading} = useGETcourseAllResources(courseId)
+    const {setSelectedDocuments, selectedDocuments} = useMergeDocumentsContext()
 
     if (isLoading || !data) {
         return (
             <div className='flex justify-center text-center flex-col gap-2'>
-                <Loader className='m-auto' size={"sm"} />
+                <Loader className='m-auto' size={"sm"}/>
                 <span className='text-muted-foreground text-sm text-center'>
                     Loading documents...
                 </span>
@@ -379,17 +407,23 @@ function CourseDocuments({ courseId, courseTitle, isDownloading }: { courseId: n
                 {allDocumentsForCourseSelected ? "Deselect all" : "Select all"}
             </Toggle>
             <div className='flex w-1/2 my-2 items-center justify-center mx-auto'>
-                <div className='w-full bg-purple-500 h-0.5 rounded-full' />
+                <div className='w-full bg-purple-500 h-0.5 rounded-full'/>
             </div>
             {data.map((resource) => (
-                <SelectableDocumentCard key={resource.ElementId} resource={resource} courseId={courseId} courseTitle={courseTitle} isLoading={disabled} />
+                <SelectableDocumentCard key={resource.ElementId} resource={resource} courseId={courseId}
+                                        courseTitle={courseTitle} isLoading={disabled}/>
             ))}
         </div>
     )
 }
 
-function SelectableDocumentCard({ resource, courseId, courseTitle, isLoading }: { resource: ItslearningRestApiEntitiesPersonalCourseCourseResource, courseId: number, courseTitle?: string, isLoading: boolean }) {
-    const { addSelectedDocument, removeSelectedDocument, selectedDocuments } = useMergeDocumentsContext()
+function SelectableDocumentCard({resource, courseId, courseTitle, isLoading}: {
+    resource: ItslearningRestApiEntitiesPersonalCourseCourseResource,
+    courseId: number,
+    courseTitle?: string,
+    isLoading: boolean
+}) {
+    const {addSelectedDocument, removeSelectedDocument, selectedDocuments} = useMergeDocumentsContext()
     const navigate = useNavigate()
     const navigateToResource = useNavigateToResource(navigate)
 

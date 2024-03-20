@@ -3,7 +3,7 @@
 import {
     ItslearningRestApiEntitiesInstantMessageThread
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread.ts";
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils.ts";
 
 const GETinstantMessagesv3ApiEndpoint = "restapi/personal/instantmessages/messagethreads/v3?fromSortIndex={fromSortIndex}&pageSize={pageSize}"
 

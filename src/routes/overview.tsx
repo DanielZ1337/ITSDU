@@ -1,12 +1,10 @@
 import useGETcalendarEvents from '@/queries/calendar/useGETcalendarEvents'
-import useGETcourseLastThreeUpdatedResources from '@/queries/courses/useGETcourseLastThreeUpdatedResources'
-import { useParams } from 'react-router-dom'
-import { Calendar } from './calendar'
+import {Calendar} from './calendar'
 
 export default function Overview() {
     const fromDate = new Date()
     fromDate.setDate(fromDate.getDate() - 1)
-    const { data, isLoading } = useGETcalendarEvents({
+    const {data, isLoading} = useGETcalendarEvents({
         fromDate
     }, {
         keepPreviousData: true,
@@ -35,7 +33,8 @@ export default function Overview() {
                 <div className={"flex flex-col flex-1 gap-4 max-h-full overflow-hidden"}>
                     {/* schedule for today */}
                     <h1 className={"text-2xl font-bold"}>Your schedule for today</h1>
-                    <Calendar events={events} showHeader={false} showToolbar={false} isLoading={isLoading} defaultView='day' views={['day']} />
+                    <Calendar events={events} showHeader={false} showToolbar={false} isLoading={isLoading}
+                              defaultView='day' views={['day']}/>
                 </div>
                 <div className={"flex flex-col flex-1 gap-4"}>
                     {/* latest 3 announcements */}

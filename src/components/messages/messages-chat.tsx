@@ -1,19 +1,14 @@
 import MessageChatMessage from './message-chat-message'
-import { useUser } from '@/hooks/atoms/useUser.ts'
+import {useUser} from '@/hooks/atoms/useUser.ts'
 import useGETinstantMessagesForThread from '@/queries/messages/useGETinstantMessagesForThread'
 import useFetchNextPageOnInView from '@/hooks/useFetchNextPageOnView'
-import { Loader } from '../ui/loader'
-import { DEFAULT_PAGE_SIZE } from '@/lib/constants'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { GETinstantMessagesForThread } from '@/types/api-types/messages/GETinstantMessagesForThread'
-import { InfiniteData } from '@tanstack/react-query'
-import { currentChatAtom } from '../../atoms/current-chat';
-import { useAtom } from 'jotai'
+import {Loader} from '../ui/loader'
+import {DEFAULT_PAGE_SIZE} from '@/lib/constants'
 
-export default function MessageChat({ threadId }: {
+export default function MessageChat({threadId}: {
     threadId: number
 }) {
-    const { data: messages, isFetchingNextPage, fetchNextPage, hasNextPage } = useGETinstantMessagesForThread({
+    const {data: messages, isFetchingNextPage, fetchNextPage, hasNextPage} = useGETinstantMessagesForThread({
         threadId,
         pageSize: DEFAULT_PAGE_SIZE,
     }, {
@@ -51,12 +46,12 @@ export default function MessageChat({ threadId }: {
             )))}
 
             {hasNextPage && (
-                <div className="flex items-center justify-center" ref={ref} />
+                <div className="flex items-center justify-center" ref={ref}/>
             )}
 
             {isFetchingNextPage && (
                 <div className="m-auto h-10 w-10">
-                    <Loader className={"m-auto"} />
+                    <Loader className={"m-auto"}/>
                 </div>
             )}
         </>

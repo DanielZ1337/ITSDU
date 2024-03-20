@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils.ts";
 import {
     EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/EntityListOfItslearning.RestApi.Entities.Personal.Course.CourseResource.ts";

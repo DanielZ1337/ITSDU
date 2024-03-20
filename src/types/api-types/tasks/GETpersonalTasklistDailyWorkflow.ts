@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils.ts";
 import {
     ItslearningRestApiEntitiesTaskDailyWorkflowSection
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflowSection.ts";

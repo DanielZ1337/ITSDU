@@ -1,4 +1,4 @@
-import { ItslearningRestApiEntitiesElementType } from "./Itslearning.RestApi.Entities.ElementType"
+import {ItslearningRestApiEntitiesElementType} from "./Itslearning.RestApi.Entities.ElementType"
 
 export type ItslearningRestApiEntitiesPersonalCourseCourseResourceWithRole = {
     CourseCode: string,

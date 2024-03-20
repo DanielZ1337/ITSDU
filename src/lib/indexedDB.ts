@@ -53,18 +53,6 @@ class IndexedDB<T> {
         return this.db;
     }
 
-    private initializeSchema(): void {
-        try {
-            if (!this.db) {
-                throw new Error("Database is not open");
-            }
-
-            const store = this.db.createObjectStore(this.DB_STORE_NAME, { keyPath: this.keyPath }); // Use keyPath value
-        } catch (error) {
-            console.error("Failed to initialize schema:", error);
-        }
-    }
-
     public closeDB(): void {
         if (this.db) {
             this.db.close();
@@ -187,7 +175,7 @@ class IndexedDB<T> {
 
             request.onsuccess = () => {
                 const existingData = request.result as T;
-                const newData = { ...existingData, ...data };
+                const newData = {...existingData, ...data};
                 const updateRequest = objectStore.put(newData);
 
                 updateRequest.onsuccess = () => {
@@ -234,9 +222,9 @@ class IndexedDB<T> {
     }
 
     /**
-     * 
+     *
      * @param required required space in MB
-     * @returns 
+     * @returns
      */
     public async checkRemainingSpace(required?: number, {
         onStorageAvailable,
@@ -264,6 +252,18 @@ class IndexedDB<T> {
         } else {
             console.log('Storage is unavailable');
             onStorageUnavailable && onStorageUnavailable();
+        }
+    }
+
+    private initializeSchema(): void {
+        try {
+            if (!this.db) {
+                throw new Error("Database is not open");
+            }
+
+            const store = this.db.createObjectStore(this.DB_STORE_NAME, {keyPath: this.keyPath}); // Use keyPath value
+        } catch (error) {
+            console.error("Failed to initialize schema:", error);
         }
     }
 }

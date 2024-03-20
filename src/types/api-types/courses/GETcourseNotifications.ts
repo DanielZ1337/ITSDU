@@ -1,5 +1,5 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
-import { ItslearningRestApiEntitiesStreamItemV2 } from "../utils/Itslearning.RestApi.Entities.StreamItemV2";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils";
+import {ItslearningRestApiEntitiesStreamItemV2} from "../utils/Itslearning.RestApi.Entities.StreamItemV2";
 
 const GETcourseNotificationsApiEndpoint = 'restapi/personal/courses/{courseId}/stream/v1?showLightBulletins={showLightBulletins}&UseNewerThan={UseNewerThan}&FromId={FromId}&PageIndex={PageIndex}&PageSize={PageSize}';
 

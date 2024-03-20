@@ -1,11 +1,11 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils.ts";
 import {
     ItslearningRestApiEntitiesTaskStatusFilter
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter.ts";
 import {
     ItslearningRestApiEntitiesTaskDeadlineFilter
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDeadlineFilter.ts";
-import { ItslearningRestApiEntitiesTask } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Task.ts";
+import {ItslearningRestApiEntitiesTask} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Task.ts";
 
 const GETpersonalTasksApiEndpoint = "restapi/personal/tasks/v1?PageIndex={PageIndex}&PageSize={PageSize}&status={status}&deadline={deadline}&isHomework={isHomework}import {apiUrl} from \"@/lib/utils.ts\";"
 

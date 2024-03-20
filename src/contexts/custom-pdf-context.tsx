@@ -1,14 +1,14 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { FieldErrors, UseFormHandleSubmit, UseFormRegister, UseFormSetValue, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import {zodResolver} from '@hookform/resolvers/zod';
+import React, {createContext, useEffect, useState} from 'react';
+import {FieldErrors, useForm, UseFormHandleSubmit, UseFormRegister, UseFormSetValue} from 'react-hook-form';
+import {z} from 'zod';
 
 interface CustomPDFContextProps {
     numPages?: number
     currPage: number
     setNumPages: (value: React.SetStateAction<number | undefined>) => void,
     setCurrPage: (value: React.SetStateAction<number>) => void,
-    handlePageSubmit: ({ page }: {
+    handlePageSubmit: ({page}: {
         page: string;
     }) => void,
     handlePageIncrease: () => void,
@@ -31,7 +31,7 @@ export const CustomPDFContext = createContext<CustomPDFContextProps | undefined>
 
 const DEFAULT_PAGE = 1
 
-export function CustomPDFProvider({ children }: { children: React.ReactNode }) {
+export function CustomPDFProvider({children}: { children: React.ReactNode }) {
     const [numPages, setNumPages] = useState<number>()
     const [currPage, setCurrPage] = useState<number>(DEFAULT_PAGE)
 
@@ -50,7 +50,7 @@ export function CustomPDFProvider({ children }: { children: React.ReactNode }) {
     const {
         register,
         handleSubmit,
-        formState: { errors },
+        formState: {errors},
         setValue,
     } = useForm<TCustomPageValidator>({
         defaultValues: {
@@ -60,8 +60,8 @@ export function CustomPDFProvider({ children }: { children: React.ReactNode }) {
     })
 
     const handlePageSubmit = ({
-        page,
-    }: TCustomPageValidator) => {
+                                  page,
+                              }: TCustomPageValidator) => {
         setCurrPage(Number(page))
         setValue('page', String(page))
     }

@@ -1,21 +1,21 @@
-import { useState, lazy } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { cn } from "@/lib/utils";
-import { customCodeTheme } from "@/styles/custom-code-theme";
-import { useTheme } from "next-themes";
-import { AnimatePresence, m } from 'framer-motion';
+import {lazy, useState} from "react";
+import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
+import {cn} from "@/lib/utils";
+import {customCodeTheme} from "@/styles/custom-code-theme";
+import {useTheme} from "next-themes";
+import {AnimatePresence, m} from 'framer-motion';
 
 const LazyCopyButton = lazy(() => import("@/components/copy-button"));
 
 function CodeBlock({
-    language,
-    value,
-    preClass,
-    codeClass,
-    copyable = true,
-    codeWrap = false,
-    copyOnHover = false,
-}: {
+                       language,
+                       value,
+                       preClass,
+                       codeClass,
+                       copyable = true,
+                       codeWrap = false,
+                       copyOnHover = false,
+                   }: {
     language: string
     value: string
     preClass?: string
@@ -24,7 +24,7 @@ function CodeBlock({
     codeWrap?: boolean
     copyOnHover?: boolean
 }) {
-    const { resolvedTheme } = useTheme()
+    const {resolvedTheme} = useTheme()
     value = value || ""
     const [isBlockHovered, setIsBlockHovered] = useState(false)
 
@@ -49,9 +49,9 @@ function CodeBlock({
             <AnimatePresence>
                 {isBlockHovered && (
                     <m.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{opacity: 0}}
+                        animate={{opacity: 1}}
+                        exit={{opacity: 0}}
                     >
                         <LazyCopyButton
                             value={value}

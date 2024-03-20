@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {createContext, useContext, useState} from 'react';
 
 // Define the calendar context
 interface CalendarContextProps {
@@ -12,11 +12,16 @@ interface CalendarContextProps {
 
 const CalendarContext = createContext<CalendarContextProps | undefined>({
     selectedDate: new Date(),
-    setSelectedDate: () => { },
-    changeDateByDays: () => { },
-    changeDateByWeeks: () => { },
-    changeDateByMonths: () => { },
-    changeDateByYears: () => { },
+    setSelectedDate: () => {
+    },
+    changeDateByDays: () => {
+    },
+    changeDateByWeeks: () => {
+    },
+    changeDateByMonths: () => {
+    },
+    changeDateByYears: () => {
+    },
 });
 
 // Define the custom hook to access the calendar context
@@ -29,7 +34,7 @@ export const useCalendarContext = (): CalendarContextProps => {
 };
 
 // Define the calendar provider component
-export function CalendarProvider({ children }: { children: React.ReactNode }) {
+export function CalendarProvider({children}: { children: React.ReactNode }) {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const changeDateByDays = (days: number) => {
@@ -57,7 +62,14 @@ export function CalendarProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <CalendarContext.Provider value={{ selectedDate, setSelectedDate, changeDateByDays, changeDateByWeeks, changeDateByMonths, changeDateByYears }}>
+        <CalendarContext.Provider value={{
+            selectedDate,
+            setSelectedDate,
+            changeDateByDays,
+            changeDateByWeeks,
+            changeDateByMonths,
+            changeDateByYears
+        }}>
             {children}
         </CalendarContext.Provider>
     );

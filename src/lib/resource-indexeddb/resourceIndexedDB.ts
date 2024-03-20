@@ -1,6 +1,6 @@
-import { ResourceFileType } from "@/queries/resources/useResourceByElementID";
-import { IndexedDB } from "../indexedDB";
-import { GETcourseResourceInfo } from "@/types/api-types/courses/GETcourseResourceInfo";
+import {ResourceFileType} from "@/queries/resources/useResourceByElementID";
+import {IndexedDB} from "../indexedDB";
+import {GETcourseResourceInfo} from "@/types/api-types/courses/GETcourseResourceInfo";
 
 const DB_NAME = 'itsdu';
 const DB_VERSION = 3;

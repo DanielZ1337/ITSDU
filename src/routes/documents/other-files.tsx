@@ -1,6 +1,6 @@
-import React, { lazy, useEffect, memo } from 'react';
-import useResourceByElementID, { ResourceFileType } from '@/queries/resources/useResourceByElementID';
-import { useParams } from 'react-router-dom';
+import React, {lazy, memo, useEffect} from 'react';
+import useResourceByElementID, {ResourceFileType} from '@/queries/resources/useResourceByElementID';
+import {useParams} from 'react-router-dom';
 import Papa from 'papaparse';
 
 import {
@@ -15,18 +15,18 @@ import {
     useReactTable,
     VisibilityState,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import {ChevronDown} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
-import { Loader } from '@/components/ui/loader';
+import {Input} from "@/components/ui/input";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table";
+import {Loader} from '@/components/ui/loader';
 // import CodeBlock from '@/components/code-block';
 const CodeBlock = lazy(() => import("@/components/code-block"));
 
@@ -39,12 +39,12 @@ function createDataColumns(data: any[]): ColumnDef<any>[] {
             id: String(title),
             accessorKey: String(title),
             header: title,
-            cell: ({ row }) => row.getValue(title),
+            cell: ({row}) => row.getValue(title),
         }
     })
 }
 
-function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
+function TextFilesDataTable({headers, columns, data, resource, isLoading}: {
     headers?: string[],
     columns?: ColumnDef<any>[],
     data?: any[],
@@ -84,7 +84,7 @@ function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
                     onChange={(e) => table.setGlobalFilter(e.target.value)}
                     className='w-1/3'
                 />
-                <div className="flex-1" />
+                <div className="flex-1"/>
                 <div
                     className="flex space-x-2"
                 >
@@ -102,7 +102,7 @@ function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
                                     fields: headers,
                                     data: data,
                                 });
-                                const blob = new Blob([csv], { type: resource?.type ?? "text/csv" });
+                                const blob = new Blob([csv], {type: resource?.type ?? "text/csv"});
                                 url = window.URL.createObjectURL(blob);
                             }
 
@@ -120,9 +120,9 @@ function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="ml-auto"
-                                disabled={isLoading}
+                                    disabled={isLoading}
                             >
-                                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                                Columns <ChevronDown className="ml-2 h-4 w-4"/>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -237,11 +237,11 @@ function TextFilesDataTable({ headers, columns, data, resource, isLoading }: {
 
 
 function OtherFiles() {
-    const { elementId } = useParams();
+    const {elementId} = useParams();
     if (!elementId) {
         return <p className="text-primary">Invalid ID</p>;
     }
-    const { isLoading, isError, data } = useResourceByElementID(elementId);
+    const {isLoading, isError, data} = useResourceByElementID(elementId);
 
     useEffect(() => {
         if (data?.type === "text/csv") {
@@ -353,47 +353,52 @@ function OtherFiles() {
 
     const renderer = {
         "text/csv": <TextFilesDataTable headers={headers} columns={columns} data={rows} resource={data}
-            isLoading={isLoading} />,
-        "text/plain": <PlainText />,
-        "application/x-sql": <CodeBlock value={data?.text ?? ""} language="sql" />,
-        "application/x-python": <CodeBlock value={data?.text ?? ""} language="python" />,
-        "application/x-javascript": <CodeBlock value={data?.text ?? ""} language="javascript" />,
-        "application/x-typescript": <CodeBlock value={data?.text ?? ""} language="typescript" />,
-        "application/x-csharp": <CodeBlock value={data?.text ?? ""} language="csharp" />,
-        "application/x-java": <CodeBlock value={data?.text ?? ""} language="java" />,
-        "application/x-markdown": <CodeBlock value={data?.text ?? ""} language="markdown" />,
-        "application/x-yaml": <CodeBlock value={data?.text ?? ""} language="yaml" />,
-        "application/x-xml": <CodeBlock value={data?.text ?? ""} language="xml" />,
-        "application/x-html": <CodeBlock value={data?.text ?? ""} language="html" />,
-        "application/x-css": <CodeBlock value={data?.text ?? ""} language="css" />,
-        "application/x-c": <CodeBlock value={data?.text ?? ""} language="c" />,
-        "application/x-c++": <CodeBlock value={data?.text ?? ""} language="cpp" />,
-        "application/x-rust": <CodeBlock value={data?.text ?? ""} language="rust" />,
-        "application/x-go": <CodeBlock value={data?.text ?? ""} language="go" />,
-        "application/x-kotlin": <CodeBlock value={data?.text ?? ""} language="kotlin" />,
-        "application/x-scala": <CodeBlock value={data?.text ?? ""} language="scala" />,
-        "application/x-ruby": <CodeBlock value={data?.text ?? ""} language="ruby" />,
-        "application/x-php": <CodeBlock value={data?.text ?? ""} language="php" />,
-        "application/x-swift": <CodeBlock value={data?.text ?? ""} language="swift" />,
-        "application/x-dart": <CodeBlock value={data?.text ?? ""} language="dart" />,
-        "application/x-clojure": <CodeBlock value={data?.text ?? ""} language="clojure" />,
-        "application/x-haskell": <CodeBlock value={data?.text ?? ""} language="haskell" />,
-        "application/x-r": <CodeBlock value={data?.text ?? ""} language="r" />,
-        "text/x-java-source": <CodeBlock value={data?.text ?? ""} language="java" />,
-        "application/json": <CodeBlock value={data?.text ?? ""} language="json" />,
-        "image/png": <img loading="lazy" src={data?.url} alt={data?.name} className="max-h-full max-w-full object-contain" />,
-        "image/jpeg": <img loading="lazy" src={data?.url} alt={data?.name} className="max-h-full max-w-full flex-1 object-contain" />,
-        "image/gif": <img loading="lazy" src={data?.url} alt={data?.name} className="max-h-full max-w-full object-contain" />,
-        "image/webp": <img loading="lazy" src={data?.url} alt={data?.name} className="max-h-full max-w-full object-contain" />,
-        "image/svg+xml": <img loading="lazy" src={data?.url} alt={data?.name} className="max-h-full max-w-full object-contain" />,
-        "video/mp4": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/webm": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/ogg": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/quicktime": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/x-msvideo": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/x-flv": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/x-matroska": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
-        "video/x-ms-wmv": <video src={data?.url} controls className="max-h-full max-w-full object-contain" />,
+                                        isLoading={isLoading}/>,
+        "text/plain": <PlainText/>,
+        "application/x-sql": <CodeBlock value={data?.text ?? ""} language="sql"/>,
+        "application/x-python": <CodeBlock value={data?.text ?? ""} language="python"/>,
+        "application/x-javascript": <CodeBlock value={data?.text ?? ""} language="javascript"/>,
+        "application/x-typescript": <CodeBlock value={data?.text ?? ""} language="typescript"/>,
+        "application/x-csharp": <CodeBlock value={data?.text ?? ""} language="csharp"/>,
+        "application/x-java": <CodeBlock value={data?.text ?? ""} language="java"/>,
+        "application/x-markdown": <CodeBlock value={data?.text ?? ""} language="markdown"/>,
+        "application/x-yaml": <CodeBlock value={data?.text ?? ""} language="yaml"/>,
+        "application/x-xml": <CodeBlock value={data?.text ?? ""} language="xml"/>,
+        "application/x-html": <CodeBlock value={data?.text ?? ""} language="html"/>,
+        "application/x-css": <CodeBlock value={data?.text ?? ""} language="css"/>,
+        "application/x-c": <CodeBlock value={data?.text ?? ""} language="c"/>,
+        "application/x-c++": <CodeBlock value={data?.text ?? ""} language="cpp"/>,
+        "application/x-rust": <CodeBlock value={data?.text ?? ""} language="rust"/>,
+        "application/x-go": <CodeBlock value={data?.text ?? ""} language="go"/>,
+        "application/x-kotlin": <CodeBlock value={data?.text ?? ""} language="kotlin"/>,
+        "application/x-scala": <CodeBlock value={data?.text ?? ""} language="scala"/>,
+        "application/x-ruby": <CodeBlock value={data?.text ?? ""} language="ruby"/>,
+        "application/x-php": <CodeBlock value={data?.text ?? ""} language="php"/>,
+        "application/x-swift": <CodeBlock value={data?.text ?? ""} language="swift"/>,
+        "application/x-dart": <CodeBlock value={data?.text ?? ""} language="dart"/>,
+        "application/x-clojure": <CodeBlock value={data?.text ?? ""} language="clojure"/>,
+        "application/x-haskell": <CodeBlock value={data?.text ?? ""} language="haskell"/>,
+        "application/x-r": <CodeBlock value={data?.text ?? ""} language="r"/>,
+        "text/x-java-source": <CodeBlock value={data?.text ?? ""} language="java"/>,
+        "application/json": <CodeBlock value={data?.text ?? ""} language="json"/>,
+        "image/png": <img loading="lazy" src={data?.url} alt={data?.name}
+                          className="max-h-full max-w-full object-contain"/>,
+        "image/jpeg": <img loading="lazy" src={data?.url} alt={data?.name}
+                           className="max-h-full max-w-full flex-1 object-contain"/>,
+        "image/gif": <img loading="lazy" src={data?.url} alt={data?.name}
+                          className="max-h-full max-w-full object-contain"/>,
+        "image/webp": <img loading="lazy" src={data?.url} alt={data?.name}
+                           className="max-h-full max-w-full object-contain"/>,
+        "image/svg+xml": <img loading="lazy" src={data?.url} alt={data?.name}
+                              className="max-h-full max-w-full object-contain"/>,
+        "video/mp4": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/webm": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/ogg": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/quicktime": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/x-msvideo": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/x-flv": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/x-matroska": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
+        "video/x-ms-wmv": <video src={data?.url} controls className="max-h-full max-w-full object-contain"/>,
     } as Record<string, JSX.Element>
 
 
@@ -401,7 +406,7 @@ function OtherFiles() {
         return (
             <div className='flex h-full flex-col items-center p-6'>
                 <TextFilesDataTable headers={headers} columns={columns} data={rows} resource={data}
-                    isLoading={isLoading} />
+                                    isLoading={isLoading}/>
             </div>
         )
 
@@ -414,8 +419,8 @@ function OtherFiles() {
                 <div
                     className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-md">
                     {isLoading ? <div className="flex h-full items-center justify-center">
-                        <Loader size={"md"} className={"m-auto"} /></div> : null}
-                    {data ? renderer[data?.type ?? "text/plain"] ?? <PlainText /> : null}
+                        <Loader size={"md"} className={"m-auto"}/></div> : null}
+                    {data ? renderer[data?.type ?? "text/plain"] ?? <PlainText/> : null}
                 </div>
             </div>
         </div>
@@ -424,7 +429,7 @@ function OtherFiles() {
 
 export default memo(OtherFiles);
 
-function DownloadButton({ url, name }: { url?: string, name?: string }) {
+function DownloadButton({url, name}: { url?: string, name?: string }) {
     return (
         <Button
             variant="outline"

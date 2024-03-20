@@ -1,4 +1,4 @@
-import { IndexedDBResourceFileType } from "./resourceIndexedDB";
+import {IndexedDBResourceFileType} from "./resourceIndexedDB";
 
 export type SortOrder = 'normal' | 'reverse';
 

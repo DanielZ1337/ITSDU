@@ -1,13 +1,19 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { getAccessToken } from "@/lib/utils.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import { GETcourseFolderResourcesApiUrl } from "@/types/api-types/courses/GETcourseFolderResources";
-import { GETcourseRootResources, GETcourseRootResourcesApiUrl } from "@/types/api-types/courses/GETcourseRootResources";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
+import {getAccessToken} from "@/lib/utils.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
+import {GETcourseFolderResourcesApiUrl} from "@/types/api-types/courses/GETcourseFolderResources";
+import {GETcourseRootResources, GETcourseRootResourcesApiUrl} from "@/types/api-types/courses/GETcourseRootResources";
 import axios from "axios";
-import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
-import { ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType } from "@/types/api-types/utils/Itslearning.Platform.RestApi.Sdk.Common.Entities.LearningToolType";
-import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { isResourcePDFFromUrlOrElementType } from "@/types/api-types/extra/learning-tool-id-types";
+import {
+    ItsolutionsItslUtilsConstantsElementType
+} from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
+import {
+    ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType
+} from "@/types/api-types/utils/Itslearning.Platform.RestApi.Sdk.Common.Entities.LearningToolType";
+import {
+    ItslearningRestApiEntitiesPersonalCourseCourseResource
+} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
+import {isResourcePDFFromUrlOrElementType} from "@/types/api-types/extra/learning-tool-id-types";
 
 export default function useGETcourseAllResources(courseId: number, queryConfig?: UseQueryOptions<ItslearningRestApiEntitiesPersonalCourseCourseResource[], Error, ItslearningRestApiEntitiesPersonalCourseCourseResource[], string[]>) {
 

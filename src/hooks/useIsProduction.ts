@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 
 export const useEnvironment = () => {
     const [environment, setEnvironment] = useState<string | null>(null);
@@ -9,5 +9,5 @@ export const useEnvironment = () => {
         setEnvironment(currentEnvironment);
     }, []);
 
-    return { environment, isProduction };
+    return {environment, isProduction};
 };

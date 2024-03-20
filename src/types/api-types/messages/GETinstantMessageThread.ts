@@ -1,5 +1,7 @@
-import { apiUrl } from "@/lib/utils"
-import { ItslearningRestApiEntitiesInstantMessageThread } from "../utils/Itslearning.RestApi.Entities.InstantMessageThread"
+import {apiUrl} from "@/lib/utils"
+import {
+    ItslearningRestApiEntitiesInstantMessageThread
+} from "../utils/Itslearning.RestApi.Entities.InstantMessageThread"
 
 const GETinstantMessageThreadApiEndpoint = "restapi/personal/instantmessages/messagethreads/{threadId}/v2?maxMessages={maxMessages}&upperBoundInstantMessageId={upperBoundInstantMessageId}&lowerBoundInstantMessageId={lowerBoundInstantMessageId}"
 

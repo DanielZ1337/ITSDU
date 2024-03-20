@@ -1,12 +1,12 @@
-import { useUser } from "@/hooks/atoms/useUser.ts";
-import { usePOSTpersonUpdateProfileImage } from "@/queries/person/usePOSTpersonUpdateProfileImage";
+import {useUser} from "@/hooks/atoms/useUser.ts";
+import {usePOSTpersonUpdateProfileImage} from "@/queries/person/usePOSTpersonUpdateProfileImage";
 import ProfileAvatar from "@/components/profile-avatar";
-import { Helmet } from "react-helmet-async";
+import {Helmet} from "react-helmet-async";
 
 export default function UserProfile() {
     const user = useUser()!
 
-    const { mutate: updateProfilePicture } = usePOSTpersonUpdateProfileImage()
+    const {mutate: updateProfilePicture} = usePOSTpersonUpdateProfileImage()
 
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -52,15 +52,15 @@ export default function UserProfile() {
                             <div>{user.FullName}</div>
                         </div>
                     </div>
-                    <div className="my-8 h-px bg-foreground/20" />
+                    <div className="my-8 h-px bg-foreground/20"/>
                     <div className="grid grid-cols-2 gap-4 text-left text-sm text-gray-600">
-                        <UserItem title="ID" value={user.PersonId} />
-                        <UserItem title="Language" value={user.Language} />
-                        <UserItem title="Time Zone" value={user.TimeZoneId} />
-                        <UserItem title="Can Access Message System" value={user.CanAccessMessageSystem ? 'Yes' : 'No'} />
-                        <UserItem title="Can Access Calendar" value={user.CanAccessCalendar ? 'Yes' : 'No'} />
+                        <UserItem title="ID" value={user.PersonId}/>
+                        <UserItem title="Language" value={user.Language}/>
+                        <UserItem title="Time Zone" value={user.TimeZoneId}/>
+                        <UserItem title="Can Access Message System" value={user.CanAccessMessageSystem ? 'Yes' : 'No'}/>
+                        <UserItem title="Can Access Calendar" value={user.CanAccessCalendar ? 'Yes' : 'No'}/>
                         <UserItem title="Can Access Personal Settings"
-                            value={user.CanAccessPersonalSettings ? 'Yes' : 'No'} />
+                                  value={user.CanAccessPersonalSettings ? 'Yes' : 'No'}/>
                     </div>
                 </div>
             </div>
@@ -68,7 +68,7 @@ export default function UserProfile() {
     )
 }
 
-function UserItem({ title, value }: { title: string, value: string | boolean | number }) {
+function UserItem({title, value}: { title: string, value: string | boolean | number }) {
     return (
         <div className="flex items-center justify-between">
             <div className="font-semibold">{title}</div>

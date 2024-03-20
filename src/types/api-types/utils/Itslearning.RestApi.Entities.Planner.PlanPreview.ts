@@ -1,4 +1,4 @@
-import { ItslearningRestApiEntitiesLocationType } from "./Itslearning.RestApi.Entities.LocationType"
+import {ItslearningRestApiEntitiesLocationType} from "./Itslearning.RestApi.Entities.LocationType"
 
 export type ItslearningRestApiEntitiesPlannerPlanPreview = {
     PlanId: number

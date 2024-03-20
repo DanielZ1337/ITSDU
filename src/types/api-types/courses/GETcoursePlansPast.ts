@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils.ts";
 
 const GETcoursePlansPastApiEndpoint = 'restapi/personal/course/{courseId}/plans/past/v1?PageIndex={PageIndex}&PageSize={PageSize}&ChildId={ChildId}'
 

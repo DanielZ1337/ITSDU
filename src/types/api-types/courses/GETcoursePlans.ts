@@ -1,6 +1,5 @@
-import { ItslearningRestApiEntitiesCourse } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Course.ts";
-import { apiUrl } from "@/lib/utils.ts";
-import { ItslearningRestApiEntitiesPlannerPlanPreview } from "../utils/Itslearning.RestApi.Entities.Planner.PlanPreview";
+import {apiUrl} from "@/lib/utils.ts";
+import {ItslearningRestApiEntitiesPlannerPlanPreview} from "../utils/Itslearning.RestApi.Entities.Planner.PlanPreview";
 
 const GETcoursePlansApiEndpoint = 'restapi/personal/planner/v1?courseId={courseId}&startDate={startDate}&stopDate={stopDate}'
 

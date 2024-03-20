@@ -1,5 +1,5 @@
 const Store = require('electron-store');
-const { ipcMain } = require('electron');
+const {ipcMain} = require('electron');
 
 type SettingsOptions = {
     CustomPDFrenderer: boolean;

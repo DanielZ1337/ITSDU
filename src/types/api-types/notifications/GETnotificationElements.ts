@@ -1,5 +1,5 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
-import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils";
+import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 const GETnotificationElementsApiEndpoint = 'restapi/personal/notifications/{notificationId}/elements/v1?PageIndex={PageIndex}&PageSize={PageSize}';
 

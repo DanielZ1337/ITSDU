@@ -1,8 +1,12 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query";
+import {useQuery, UseQueryOptions} from "@tanstack/react-query";
 import axios from "axios";
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
-import { GETcoursePlansPast, GETcoursePlansPastApiUrl, GETcoursePlansPastParams } from "@/types/api-types/courses/GETcoursePlansPast.ts";
-import { TanstackKeys } from "@/types/tanstack-keys";
+import {getAccessToken, getQueryKeysFromParamsObject} from "@/lib/utils.ts";
+import {
+    GETcoursePlansPast,
+    GETcoursePlansPastApiUrl,
+    GETcoursePlansPastParams
+} from "@/types/api-types/courses/GETcoursePlansPast.ts";
+import {TanstackKeys} from "@/types/tanstack-keys";
 
 export default function useGETcoursePlansPast(params: GETcoursePlansPastParams, queryConfig?: UseQueryOptions<GETcoursePlansPast, Error, GETcoursePlansPast, string[]>) {
 

@@ -1,14 +1,14 @@
-import { useEffect, memo, useMemo, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import {memo, useCallback, useEffect, useMemo} from "react";
+import {useParams} from "react-router-dom";
 import useOfficeDocumentByElementId from '../../queries/resources/useOfficeDocumentByElementID';
-import { Loader } from "@/components/ui/loader";
+import {Loader} from "@/components/ui/loader";
 
 function OfficeDocuments() {
-    const { elementId } = useParams();
+    const {elementId} = useParams();
     if (!elementId) {
         return <p>Invalid ID</p>;
     }
-    const { isLoading, isError, data } = useOfficeDocumentByElementId(elementId)
+    const {isLoading, isError, data} = useOfficeDocumentByElementId(elementId)
 
     const handleSubmit = useCallback((accessToken: string, downloadUrl: string) => {
         const accessTokenInput = document.createElement('input');
@@ -74,7 +74,7 @@ function OfficeDocuments() {
     if (isLoading || !memoizedData) {
         return (
             <div className="flex h-full items-center justify-center">
-                <Loader size={"md"} className={"m-auto"} />
+                <Loader size={"md"} className={"m-auto"}/>
             </div>
         )
     }

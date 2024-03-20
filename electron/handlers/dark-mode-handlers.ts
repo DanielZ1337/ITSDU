@@ -1,5 +1,5 @@
-import { ipcMain, nativeTheme } from "electron";
-import { themeStore } from "../services/theme/theme-service";
+import {ipcMain, nativeTheme} from "electron";
+import {themeStore} from "../services/theme/theme-service";
 
 function darkModeToggleHandler() {
     ipcMain.handle('dark-mode:toggle', () => {

@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
+import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils";
 import {
     EntityListOfItslearningRestApiEntitiesInstantMessage
 } from "../utils/EntityListOfItslearning.RestApi.Entities.InstantMessage";

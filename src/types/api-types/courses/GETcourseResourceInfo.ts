@@ -1,5 +1,7 @@
-import { apiUrl } from "@/lib/utils.ts";
-import { ItslearningRestApiEntitiesPersonalCourseCourseResourceWithRole } from "../utils/Itslearning.RestApi.Entities.Personal.Course.CourseResourceWithRole";
+import {apiUrl} from "@/lib/utils.ts";
+import {
+    ItslearningRestApiEntitiesPersonalCourseCourseResourceWithRole
+} from "../utils/Itslearning.RestApi.Entities.Personal.Course.CourseResourceWithRole";
 
 const GETcourseResourceInfoApiEndpoint = 'restapi/personal/courses/resources/{resourceId}/v1'
 

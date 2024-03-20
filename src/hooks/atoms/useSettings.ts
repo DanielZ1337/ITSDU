@@ -1,6 +1,6 @@
-import { asyncSettingsAtom, settingsAtom } from '@/atoms/settings';
-import { SettingsOptions, defaultSettings } from '@/types/settings';
-import { useAtom } from 'jotai';
+import {settingsAtom} from '@/atoms/settings';
+import {defaultSettings, SettingsOptions} from '@/types/settings';
+import {useAtom} from 'jotai';
 
 export function useSettings() {
     const [settings, setSettings] = useAtom(settingsAtom);
@@ -15,7 +15,7 @@ export function useSettings() {
     const settingsKeys = Object.keys(settings);
     const missingKeys = settingsKeys.filter(key => !localStorageSettingsKeys.includes(key));
     if (missingKeys.length > 0) {
-        const newSettings = { ...localStorageSettings, ...defaultSettings };
+        const newSettings = {...localStorageSettings, ...defaultSettings};
         localStorage.setItem('settings', JSON.stringify(newSettings));
         setSettings(newSettings);
     }
@@ -23,7 +23,7 @@ export function useSettings() {
     const updateSettings = async (newSettings: Partial<SettingsOptions>) => {
         try {
             // update using localStorage
-            const mergedSettings = { ...settings, ...newSettings };
+            const mergedSettings = {...settings, ...newSettings};
             localStorage.setItem('settings', JSON.stringify(mergedSettings));
             setSettings(mergedSettings);
         } catch (error) {
@@ -31,5 +31,5 @@ export function useSettings() {
         }
     };
 
-    return { settings, updateSettings };
+    return {settings, updateSettings};
 }

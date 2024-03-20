@@ -2,14 +2,14 @@ import renderLink from '@/components/custom-render-link-linkify'
 import PersonHoverCard from '@/components/person/person-hover-card'
 import useGETnotificationsStream from '@/queries/notifications/useGETnotificationsStream'
 import Linkify from 'linkify-react'
-import { Helmet } from 'react-helmet-async'
-import { useParams } from 'react-router-dom'
+import {Helmet} from 'react-helmet-async'
+import {useParams} from 'react-router-dom'
 import useGETnotificationElements from '../../queries/notifications/useGETnotificationElements'
-import { isSupportedResourceInApp, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
+import {isSupportedResourceInApp, useNavigateToResource} from '@/types/api-types/extra/learning-tool-id-types'
 
 export default function NotificationID() {
-    const { notificationId } = useParams()
-    const { data: notification } = useGETnotificationsStream({
+    const {notificationId} = useParams()
+    const {data: notification} = useGETnotificationsStream({
         FromId: Number(notificationId),
         PageSize: 1,
         showLightBulletins: true,
@@ -19,7 +19,7 @@ export default function NotificationID() {
 
     const currentNotificaton = notification!.pages[0].EntityArray[0]
 
-    const { data: resources } = useGETnotificationElements({
+    const {data: resources} = useGETnotificationElements({
         notificationId: currentNotificaton.NotificationId,
         PageSize: 100,
     })
@@ -36,7 +36,8 @@ export default function NotificationID() {
             <div className="m-auto w-full overflow-auto px-20">
                 <div className="m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40">
                     <div className="mb-4 flex items-center">
-                        <img loading="lazy" src={currentNotificaton!.IconUrl} alt="Notification Icon" className="mr-2 h-6 w-6" />
+                        <img loading="lazy" src={currentNotificaton!.IconUrl} alt="Notification Icon"
+                             className="mr-2 h-6 w-6"/>
                         <h1 className="ml-2 text-lg font-bold">{currentNotificaton!.LocationTitle}</h1>
                     </div>
                     <p className="mb-4">{currentNotificaton!.Text}</p>
@@ -46,7 +47,7 @@ export default function NotificationID() {
                         <div className="border-t border-gray-300 pt-4">
                             <h2 className="mb-2 font-semibold text-md">Announcement:</h2>
                             <p className="whitespace-pre-wrap text-sm text-foreground/80">
-                                <Linkify options={{ render: renderLink }}>
+                                <Linkify options={{render: renderLink}}>
                                     {currentNotificaton!.LightBulletin.Text}
                                 </Linkify>
                             </p>
@@ -57,7 +58,8 @@ export default function NotificationID() {
                             <h2 className="mb-2 font-semibold text-md">Resources:</h2>
                             {resources?.EntityArray.map((resource) => (
                                 <div key={resource.ElementId} className="mb-2 flex items-center">
-                                    <img loading="lazy" src={resource.IconUrl} alt="Resource Icon" className="mr-2 h-6 w-6" />
+                                    <img loading="lazy" src={resource.IconUrl} alt="Resource Icon"
+                                         className="mr-2 h-6 w-6"/>
                                     <button
                                         onClick={async () => {
                                             if (isSupportedResourceInApp(resource)) {

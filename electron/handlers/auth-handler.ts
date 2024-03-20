@@ -1,10 +1,10 @@
-import { BrowserWindow, ipcMain } from "electron";
-import { AuthService } from "../services/itslearning/auth/auth-service.ts";
-import { store_keys } from '../services/itslearning/auth/types/store_keys.ts';
-import { createScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
-import { getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL } from "../services/itslearning/resources/resources.ts";
-import { getFormattedCookies } from "../utils/cookies.ts";
-import { createAuthWindow } from "../../electron/main.ts";
+import {BrowserWindow, ipcMain} from "electron";
+import {AuthService} from "../services/itslearning/auth/auth-service.ts";
+import {store_keys} from '../services/itslearning/auth/types/store_keys.ts';
+import {createScrapeWindow, getCookiesForDomain} from '../services/scrape/scraper';
+import {getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL} from "../services/itslearning/resources/resources.ts";
+import {getFormattedCookies} from "../utils/cookies.ts";
+import {createAuthWindow} from "../../electron/main.ts";
 import axios from "axios";
 
 const authService = AuthService.getInstance()
@@ -76,9 +76,9 @@ function scrapePageHandler() {
                 timeout: 1000,
             });
 
-            const { data, status, statusText } = response
+            const {data, status, statusText} = response
 
-            return { data, status, statusText }
+            return {data, status, statusText}
         } catch (error) {
             console.error(error)
             return null
