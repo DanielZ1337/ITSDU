@@ -10,7 +10,9 @@ const Store = require('electron-store');
 
 export const ITSLEARNING_CLIENT_ID = '10ae9d30-1853-48ff-81cb-47b58a325685'
 export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
-const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
+// const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
+// By using middleware, itslearning app uses this scope (presumably a scope for everything)
+const ITSLEARNING_SCOPES = ['SCOPE']
 const ITSLEARNING_OAUTH_URL = `${ITSLEARNING_URL}/oauth2/authorize.aspx`
 export const ITSLEARNING_OAUTH_TOKEN_URL = `${ITSLEARNING_URL}/restapi/oauth2/token`
 export const getItslearningOAuthUrl = () => {
