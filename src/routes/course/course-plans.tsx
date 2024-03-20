@@ -23,6 +23,8 @@ import useGETcoursePlansWithoutDate from "@/queries/courses/useGETcoursePlansWit
 import useGETcoursePlansTopics from "@/queries/courses/useGETcoursePlansTopics";
 import Linkify from "linkify-react";
 import useGETcoursePlansCount from "@/queries/courses/useGETcoursePlansCount";
+import { useTabButtonHover } from "@/hooks/useTabButtonHover";
+import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
 
 export default function CoursePlans() {
     const { id } = useParams();
@@ -59,31 +61,31 @@ export default function CoursePlans() {
         <div className="grid items-start gap-6 p-4 text-sm font-medium">
             <div className="flex justify-between mb-2">
                 <div className="flex">
-                    <CoursePlansTabButtonHoverProvider>
+                    <TabButtonHoverProvider initialValue={activeTab.id}>
                         {tabs.map((tab, index) => (
                             <CoursePlansTabButton
                                 key={index}
-                                id={tab.id as CoursePlanTab}
+                                id={tab.id}
                                 active={activeTab.id === tab.id}
                                 onClick={() => setTabIndex(tabs.indexOf(tab))}
                             >
                                 {tab.label} {isLoading ? <Loader size={"xs"} className="ml-2" /> : tab.value && `(${tab.value})`}
                             </CoursePlansTabButton>
                         ))}
-                    </CoursePlansTabButtonHoverProvider>
+                    </TabButtonHoverProvider>
                 </div>
                 {/* <Button variant="outline">Table view</Button> */}
             </div>
             <div className="max-w-5xl mx-auto w-full">
                 <Suspense fallback={<Loader />}>
-                    <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id as CoursePlanTab} />
+                    <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id} />
                 </Suspense>
             </div>
         </div >
     )
 }
 
-function CoursePlansTabContent({ courseId, activeTab }: { courseId: number, activeTab: CoursePlanTab }) {
+function CoursePlansTabContent({ courseId, activeTab }: { courseId: number, activeTab: string }) {
     switch (activeTab) {
         case "current":
             return <CoursePlansSwitched courseId={courseId} planType={"current"} />
@@ -362,28 +364,9 @@ function CoursePlanCard({ plan }: { plan: GETcoursePlansCurrent["entityArray"][n
     )
 }
 
-type CoursePlanTab = 'current' | 'past' | 'without-date' | 'topic' | null
+export function CoursePlansTabButton({ id, active, onClick, children }: { id: string, active: boolean, onClick: () => void, children: React.ReactNode }) {
 
-type CoursePlanTabContext = [CoursePlanTab, React.Dispatch<React.SetStateAction<CoursePlanTab>>]
-
-// CoursePlansTabButton Hover context
-const CoursePlansTabButtonHoverContext = createContext<CoursePlanTabContext>(['current', () => { }])
-
-const useCoursePlansTabButtonHover = () => useContext(CoursePlansTabButtonHoverContext)
-
-export function CoursePlansTabButtonHoverProvider({ children }: { children: React.ReactNode }) {
-    const [hoveredTab, setHoveredTab] = useState<CoursePlanTab>(null)
-
-    return (
-        <CoursePlansTabButtonHoverContext.Provider value={[hoveredTab, setHoveredTab]}>
-            {children}
-        </CoursePlansTabButtonHoverContext.Provider>
-    )
-}
-
-export function CoursePlansTabButton({ id, active, onClick, children }: { id: CoursePlanTab, active: boolean, onClick: () => void, children: React.ReactNode }) {
-
-    const [hoveredTab, setHoveredTab] = useCoursePlansTabButtonHover()
+    const [hoveredTab, setHoveredTab] = useTabButtonHover()
 
     return (
         <div className="relative flex items-center justify-center">
@@ -392,7 +375,7 @@ export function CoursePlansTabButton({ id, active, onClick, children }: { id: Co
                 onClick={onClick}
                 size={"sm"}
                 className={cn('capitalize h-11 relative hover:text-white transition-all duration-200 ease-in-out', active ? 'text-white' : 'text-gray-600')}
-                onMouseEnter={() => setHoveredTab(id as CoursePlanTab)}
+                onMouseEnter={() => setHoveredTab(id)}
                 onMouseLeave={() => setHoveredTab(null)}
             >
                 {children}

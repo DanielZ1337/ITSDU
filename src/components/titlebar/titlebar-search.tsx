@@ -29,6 +29,8 @@ import { GETstarredCourses } from '@/types/api-types/course-cards/GETstarredCour
 import { GETunstarredCourses } from '@/types/api-types/course-cards/GETunstarredCourses'
 import useGETcourseNotifications from '@/queries/courses/useGETcourseNotifications'
 import { CommandLoading } from 'cmdk'
+import { TabButtonHoverProvider } from '@/contexts/tab-button-hover-context'
+import { useTabButtonHover } from '@/hooks/useTabButtonHover'
 
 export default function TitlebarSearch() {
     const [isOpen, setIsOpen] = React.useState(false)
@@ -122,15 +124,18 @@ export default function TitlebarSearch() {
                     onValueChange={setQuery}
                 />
                 <div className="flex justify-center gap-0.5 mb-1">
-                    {tabs.map((tab) => (
-                        <TitlebarSearchTabButton
-                            key={tab}
-                            active={activeTab === tab}
-                            onClick={() => setTabIndex(tabs.indexOf(tab))}
-                        >
-                            {tab}
-                        </TitlebarSearchTabButton>
-                    ))}
+                    <TabButtonHoverProvider initialValue={activeTab}>
+                        {tabs.map((tab) => (
+                            <TitlebarSearchTabButton
+                                key={tab}
+                                active={activeTab === tab}
+                                onClick={() => setTabIndex(tabs.indexOf(tab))}
+                                id={tab}
+                            >
+                                {tab}
+                            </TitlebarSearchTabButton>
+                        ))}
+                    </TabButtonHoverProvider>
                 </div>
                 <CommandList className={"overflow-hidden min-h-fit max-h-[50dvh] h-[var(--cmdk-list-height)] transition-height scroll-py-2"}>
                     <motion.div
@@ -518,9 +523,9 @@ function CoursesCommandList({ isStarredFetching, isUnstarredFetching, starredCou
     )
 }
 
-export function TitlebarSearchTabButton({ active, onClick, children }: { active: boolean, onClick: () => void, children: React.ReactNode }) {
+export function TitlebarSearchTabButton({ id, active, onClick, children }: { id: string, active: boolean, onClick: () => void, children: React.ReactNode }) {
 
-    const [isHovered, setIsHovered] = useState(false)
+    const [hoveredTab, setIsHovered] = useTabButtonHover()
 
     return (
         <div className="relative flex items-center justify-center">
@@ -529,13 +534,20 @@ export function TitlebarSearchTabButton({ active, onClick, children }: { active:
                 onClick={onClick}
                 size={"sm"}
                 className={cn('capitalize h-11 relative hover:text-white transition-all duration-200 ease-in-out', active ? 'text-white' : 'text-gray-600')}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+                onMouseEnter={() => setIsHovered(id)}
+                onMouseLeave={() => setIsHovered(null)}
             >
                 {children}
-                {active && (
+                {hoveredTab === id && (
                     <motion.div
-                        layoutId="active-search-tab-indicator"
+                        layoutId="active-plans-tab-indicator"
+                        transition={{ duration: 0.2 }}
+                        className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
+                    />
+                )}
+                {active && !hoveredTab && (
+                    <motion.div
+                        layoutId="active-plans-tab-indicator"
                         transition={{ duration: 0.2 }}
                         className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                     />
