@@ -21,7 +21,7 @@ export default function NotificationID() {
 
     const { data: resources } = useGETnotificationElements({
         notificationId: currentNotificaton.NotificationId,
-        PageSize: 9999,
+        PageSize: 100,
     })
 
     const navigateToResource = useNavigateToResource()

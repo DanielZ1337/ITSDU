@@ -1,4 +1,4 @@
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 import {
     ItslearningRestApiEntitiesPersonCourseCardData
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.PersonCourseCardData.ts";
@@ -22,6 +22,6 @@ export type GETcoursesv3 = {
 
 export type GETcoursesv3Params = {
     PageIndex?: number
-    PageSize?: number
+    PageSize?: ITSLEARNING_API_MAX_SIZE
     filter?: string
 }

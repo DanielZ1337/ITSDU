@@ -1,7 +1,7 @@
 import {
     ItslearningRestApiEntitiesPersonSimple
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.PersonSimple.ts";
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 
 const GETmessagesApiEndpoint = "restapi/personal/messages/v1?UseNewerThan={UseNewerThan}&FromId={FromId}&PageIndex={PageIndex}&PageSize={PageSize}"
 
@@ -39,5 +39,5 @@ export type GETmessagesParams = {
     UseNewerThan?: boolean
     FromId?: number
     PageIndex?: number
-    PageSize?: number
+    PageSize?: ITSLEARNING_API_MAX_SIZE
 }

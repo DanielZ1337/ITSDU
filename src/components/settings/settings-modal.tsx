@@ -1,6 +1,6 @@
 import { Divider } from "@nextui-org/divider";
 import { useIntersectionObserver } from "@uidotdev/usehooks";
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { SetStateAction, useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { DividerProps } from "@nextui-org/react";
 import { ChevronDown, ComputerIcon, MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
@@ -14,11 +14,8 @@ import { LanguageCombobox } from "../language-combobox";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { ScrollArea } from "../ui/scroll-area";
-import { useAtom } from "jotai";
-import { customPDFrendererAtom } from "@/atoms/default-pdf-renderer";
 import { calculateShadowPosition, Shadow, ShadowPosition } from "../scroll-shadow";
 import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
-import SettingsSidebarButton from "./settings-sidebar-button";
 import SettingsCloseButton from "./settings-close-button";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { IndexedDBResourceFileType, ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
@@ -302,8 +299,8 @@ function IndexedDB() {
         }
     }
 
-    let totalSize = allResources && formatSize(allResources.reduce((acc, resource) => acc + resource.size, 0))
-    let filteredTotalSize = formatSize(filteredResources.reduce((acc, resource) => acc + resource.size, 0))
+    let totalSize = useCallback(() => allResources && formatSize(allResources.reduce((acc, resource) => acc + resource.size, 0)), [allResources])()
+    let filteredTotalSize = useCallback(() => formatSize(filteredResources.reduce((acc, resource) => acc + resource.size, 0)), [filteredResources])()
 
     if (allResources) {
         courses = allResources.reduce((acc: any, resource) => {
@@ -341,7 +338,7 @@ function IndexedDB() {
     }, [allResources?.length]);
 
 
-    const handleCourseSelect = (courseId: string) => {
+    const handleCourseSelect = useCallback((courseId: string) => {
         // check if the course is already selected
         const isSelected = selectedCourses?.includes(courseId);
 
@@ -352,7 +349,7 @@ function IndexedDB() {
             // add the course to the selected courses
             setSelectedCourses((selectedCourses || []).concat(courseId));
         }
-    };
+    }, [selectedCourses]);
 
     useEffect(() => {
         // Filter resources when selectedCourse changes

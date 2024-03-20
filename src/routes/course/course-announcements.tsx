@@ -1,3 +1,4 @@
+import { lazy, Suspense, memo } from "react";
 import { Skeleton } from "@nextui-org/react";
 import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
 import { useParams } from "react-router-dom";
@@ -5,11 +6,12 @@ import UpdatesTypeSelect, { useUpdatesTypeSelect } from "@/components/notificati
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
-import { FetchMoreInview } from "@/components/fetch-more-in-view";
+// import { FetchMoreInview } from "@/components/fetch-more-in-view";
+const FetchMoreInViewLazy = lazy(() => import("@/components/fetch-more-in-view").then((module) => ({ default: module.FetchMoreInview })));
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 
 
-export default function CourseAnnouncements() {
+function CourseAnnouncements() {
     const { id } = useParams();
     const { data: updates, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETcourseNotifications({
         courseId: Number(id),
@@ -48,14 +50,18 @@ export default function CourseAnnouncements() {
                         <NotificationCards filteredNotifications={filteredNotifications} />}
                 </div>
                 {!isLoading && (
-                    <FetchMoreInview
-                        hasNextPage={hasNextPage}
-                        fetchNextPage={fetchNextPage}
-                        isFetchingNextPage={isFetchingNextPage}>
-                        {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
-                    </FetchMoreInview>
+                    <Suspense fallback={null}>
+                        <FetchMoreInViewLazy
+                            hasNextPage={hasNextPage}
+                            fetchNextPage={fetchNextPage}
+                            isFetchingNextPage={isFetchingNextPage}>
+                            {isFetchingNextPage ? 'Fetching more notifications...' : 'End of notifications'}
+                        </FetchMoreInViewLazy>
+                    </Suspense>
                 )}
             </div>
         </>
     )
 }
+
+export default memo(CourseAnnouncements)

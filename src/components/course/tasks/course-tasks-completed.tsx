@@ -21,7 +21,7 @@ export function CourseTasksCompleted({ courseId, PageSize }: { courseId: number,
         courseId,
         PageIndex: 1,
         // disable the paramter, as itslearning says it is supported but it is not
-        PageSize: 9999,
+        PageSize: 100,
     });
 
 

@@ -1,6 +1,6 @@
 //{files: {elementId: number, timestamp: unknown, filename: string | null}[], pageIndex: number, pageSize: number}
 
-import { apiUrl } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 
 const GETpreviousChatsApiEndpoint = 'https://itsdu.danielz.dev/api/chats/{userId}?pageIndex={pageIndex}&pageSize={pageSize}'
 
@@ -15,7 +15,7 @@ export const GETpreviousChatsApiUrl = (params: GETpreviousChatsParams) => {
 export type GETpreviousChatsParams = {
     userId: number
     pageIndex?: number
-    pageSize?: number
+    pageSize?: ITSLEARNING_API_MAX_SIZE
 }
 
 export type GETpreviousChatsResponse = {

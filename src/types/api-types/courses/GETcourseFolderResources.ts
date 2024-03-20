@@ -7,7 +7,7 @@ import {
 import {
     EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/EntityListOfItslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 
 const GETcourseFolderResourcesApiEndpoint = "restapi/personal/courses/{courseId}/folders/{folderId}/resources/v1?PageIndex={PageIndex}&PageSize={PageSize}&elementType={elementType}&learningToolType={learningToolType}"
 
@@ -31,7 +31,7 @@ export type GETcourseFolderResourcesParams = {
     courseId: number
     folderId: number
     PageIndex?: number
-    PageSize?: number
+    PageSize?: ITSLEARNING_API_MAX_SIZE
     elementType?: ItsolutionsItslUtilsConstantsElementType
     learningToolType?: ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType
 }

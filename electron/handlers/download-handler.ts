@@ -124,7 +124,24 @@ function uploadDocumentForAI() {
         // if it does then return
         // else continue
 
-        const baseUrl = VITE_DEV_SERVER_URL ? 'http://localhost:3000' : 'https://itsdu.danielz.dev'
+        const production_url = 'https://itsdu.danielz.dev'
+        const dev_url = 'http://localhost:3000'
+
+        let baseUrl = VITE_DEV_SERVER_URL ? dev_url : production_url
+
+        // send a fetch request to localhost:3000 to see if dev server is running
+        if (VITE_DEV_SERVER_URL) {
+            try {
+                const res = await fetch(dev_url)
+
+                if (!res.ok) {
+                    baseUrl = production_url
+                }
+            } catch (e) {
+                console.error(e)
+                baseUrl = production_url
+            }
+        }
 
         const res = await fetch(`${baseUrl}/api/checkFile/${elementId}`)
         if (res.status === 200) throw new Error('File already exists for AI')

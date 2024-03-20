@@ -257,7 +257,7 @@ export function createColumns(isLoading: boolean, root: boolean): ColumnDef<Itsl
     ]
 }
 
-export function ResourcesDataTable({ data, isLoading, root = false }: {
+function ResourcesDataTable({ data, isLoading, root = false }: {
     data?: ItslearningRestApiEntitiesPersonalCourseCourseResource[],
     isLoading: boolean,
     root?: boolean
@@ -496,3 +496,5 @@ export function ResourcesDataTable({ data, isLoading, root = false }: {
         </div>
     )
 }
+
+export default React.memo(ResourcesDataTable)

@@ -8,12 +8,9 @@ import { useToast } from '@/components/ui/use-toast'
 import { useResizeDetector } from 'react-resize-detector'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 
-import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@/lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from '@/components/ui/dropdown-menu'
 import PdfFullscreen from './pdf-fullscreen'
@@ -58,14 +55,7 @@ export default function PdfRenderer({
     const [pageWidth, setPageWidth] = useState<number | null>(null)
     const { height: toolbarHeight, ref: toolbarRef } = useResizeDetector()
 
-    console.log('containerHeight', containerHeight)
-    console.log('containerWidth', containerWidth)
-    console.log('toolbarHeight', toolbarHeight)
-    console.log('aiSidepanelWidth', aiSidepanelWidth)
-    console.log('pageHeight', pageHeight)
-    console.log('pageWidth', pageWidth)
-
-    function getWidth() {
+    const getWidth = useCallback(() => {
 
         if (pageHeight && pageWidth && containerHeight && containerWidth && toolbarHeight) {
             const ratio = pageWidth / pageHeight
@@ -87,7 +77,7 @@ export default function PdfRenderer({
                 return null
             }
         }
-    }
+    }, [pageHeight, pageWidth, containerHeight, containerWidth, toolbarHeight, aiSidepanelWidth, aiSidepanel])
 
     const width = useMemo(() => getWidth(), [pageHeight, pageWidth, containerHeight, containerWidth, toolbarHeight, aiSidepanelWidth, aiSidepanel])
 
@@ -137,6 +127,7 @@ export default function PdfRenderer({
     return (
         <div className='flex h-full w-full flex-col items-center shadow bg-background'
             ref={ref}
+            key={url}
             style={{
                 maxWidth: aiSidepanel ? `calc(100% - ${aiSidepanelWidth}px)` : '100%',
             }}
@@ -197,22 +188,10 @@ export default function PdfRenderer({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                onSelect={() => setScale(1)}>
-                                100%
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => setScale(1.5)}>
-                                150%
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => setScale(2)}>
-                                200%
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onSelect={() => setScale(2.5)}>
-                                250%
-                            </DropdownMenuItem>
+                            <DropdownScaleList
+                                setScale={setScale}
+                                scales={[0.5, 0.75, 1, 1.25, 1.5, 2]}
+                            />
                         </DropdownMenuContent>
                     </DropdownMenu>
 
@@ -243,11 +222,11 @@ export default function PdfRenderer({
             >
                 {externalIsLoading ? (
                     <div className='flex h-full w-full justify-center'>
-                        <Loader size={"md"} className='m-auto' />
+                        <Loader size={"sm"} className='m-auto' />
                     </div>
                 ) : (
                     <Document
-                        loading={<Loader size={"md"} className='m-auto' />}
+                        loading={<Loader size={"sm"} className='m-auto' />}
                         onLoadError={() => {
                             toast({
                                 title: 'Error loading PDF',
@@ -277,7 +256,7 @@ export default function PdfRenderer({
                                 key={'@' + scale}
                                 loading={
                                     <div className='flex justify-center'>
-                                        <Loader size={"md"} className='my-24' />
+                                        <Loader size={"sm"} className='my-24' />
                                     </div>
                                 }
                                 onRenderSuccess={(page) => {
@@ -291,5 +270,17 @@ export default function PdfRenderer({
                 )}
             </div>
         </div>
+    )
+}
+
+function DropdownScaleList({ setScale, scales }: { setScale: (scale: number) => void, scales: number[] }) {
+    return (
+        scales.map((scale) => (
+            <DropdownMenuItem
+                key={scale}
+                onSelect={() => setScale(scale)}>
+                {scale * 100}%
+            </DropdownMenuItem>
+        ))
     )
 }

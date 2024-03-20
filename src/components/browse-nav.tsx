@@ -5,6 +5,7 @@ import { Input } from './ui/input'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 import { AnimatePresence, m } from 'framer-motion';
 import { useBrowseNavigation } from '@/hooks/atoms/useBrowseNavigation'
+import { queryClient } from '@/lib/tanstack-client'
 
 export default function BrowserNav() {
     const { showBrowseNavigation, toggleBrowseNavigation } = useBrowseNavigation()
@@ -40,6 +41,8 @@ export default function BrowserNav() {
                 }).catch(() => {
                     navigate(0)
                 })
+                queryClient.invalidateQueries()
+                queryClient.resetQueries()
             }
 
             if (e.ctrlKey && e.key === 'l') {
@@ -70,10 +73,10 @@ export default function BrowserNav() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="shrink-0"
+                    className="shrink-0 no-drag"
                 >
                     <div
-                        className='mt-2 mb-4 flex w-full items-center justify-center gap-1 border-y-2 px-2 py-4 drag border-foreground-50'>
+                        className='mt-2 mb-4 flex w-full items-center justify-center gap-1 border-y-2 px-2 py-4 drag border-foreground-50 no-drag'>
                         {/* Back button */}
                         <Button className='no-drag' variant={"ghost"} size={"icon"}
                             onClick={() => navigate(-1)}><ArrowLeftCircleIcon /></Button>

@@ -1,5 +1,5 @@
-import {ItslearningRestApiEntitiesComment} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
-import {apiUrl} from "@/lib/utils.ts";
+import { ItslearningRestApiEntitiesComment } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
 
 const GETlightbulletinAllCommentsApiEndpoint = "restapi/personal/lightbulletins/{lightBulletinId}/comments/v1?UseNewerThan={UseNewerThan}&FromId={FromId}&PageIndex={PageIndex}&PageSize={PageSize}"
 
@@ -25,5 +25,5 @@ export type GETlightbulletinAllCommentsParams = {
     UseNewerThan?: boolean
     FromId?: number
     PageIndex?: number
-    PageSize?: number
+    PageSize?: ITSLEARNING_API_MAX_SIZE
 }

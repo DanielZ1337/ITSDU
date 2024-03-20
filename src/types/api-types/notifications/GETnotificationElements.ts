@@ -1,5 +1,5 @@
-import {apiUrl} from "@/lib/utils";
-import {ItslearningRestApiEntitiesElementLink} from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils";
+import { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 const GETnotificationElementsApiEndpoint = 'restapi/personal/notifications/{notificationId}/elements/v1?PageIndex={PageIndex}&PageSize={PageSize}';
 
@@ -8,7 +8,7 @@ export const GETnotificationElementsApiUrl = (params: GETnotificationElementsPar
 export type GETnotificationElementsParams = {
     notificationId: number;
     PageIndex?: number;
-    PageSize?: number;
+    PageSize?: ITSLEARNING_API_MAX_SIZE;
 };
 
 export type GETnotificationElements = {
