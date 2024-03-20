@@ -14,7 +14,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, UniqueIdentifier } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -53,7 +53,7 @@ const useMergeDocumentsContext = () => {
     return context
 }
 
-export default function MergeDocuments() {
+export default function MergeZIPDocuments() {
     const [selectedDocuments, setSelectedDocuments] = useState<Map<number, SelectedDocument> | null>(null)
     const [openedStarredUnstarred, setOpenedStarredUnstarred] = useState<string[]>([])
     const [openedCourses, setOpenedCourses] = useState<string[]>([])

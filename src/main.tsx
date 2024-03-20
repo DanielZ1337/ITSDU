@@ -41,7 +41,7 @@ const OfficeDocuments = lazy(() => import("@/routes/documents/office-documents")
 const OtherFiles = lazy(() => import("@/routes/documents/other-files"));
 const Overview = lazy(() => import("@/routes/overview"));
 const AIChats = lazy(() => import("@/routes/ai-chats"));
-const MergeDocumentsLazy = lazy(() => import("@/routes/merge-documents"));
+const MergeZIPDocumentsLazy = lazy(() => import("@/routes/merge-zip-documents"));
 const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
 
 const router = createHashRouter([
@@ -195,8 +195,8 @@ const router = createHashRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: "/merge-documents",
-                element: <MergeDocumentsLazy />,
+                path: "/merge-zip-documents",
+                element: <MergeZIPDocumentsLazy />,
                 errorElement: <ErrorPage />,
             },
             {

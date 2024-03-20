@@ -54,6 +54,13 @@ export const navlinks = [
         href: '/ai-chats',
         end: true,
         disabled: false
+    },
+    {
+        title: 'Merge & ZIP',
+        icon: <AiOutlineFile className={cn("", defaultNavLinkClassName)} />,
+        href: '/merge-zip-documents',
+        end: true,
+        disabled: false
     }
     /* {
         title: 'Courses',
