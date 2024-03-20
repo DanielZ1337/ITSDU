@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 import { ItslearningRestApiEntitiesTaskDailyWorkflow } from "../utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
 
 const GETcourseTasklistDailyWorkflowCompletedApiEndpoint = "restapi/personal/tasklistdailyworkflow/{courseId}/completed/v1?PageIndex={PageIndex}&PageSize={PageSize}"
@@ -21,5 +21,5 @@ export type GETcourseTasklistDailyWorkflowCompleted = {
 export type GETcourseTasklistDailyWorkflowCompletedParams = {
     courseId: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }

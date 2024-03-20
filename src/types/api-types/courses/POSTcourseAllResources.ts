@@ -10,7 +10,7 @@ import {
 import {
     ItslearningPlatformRestApiSdkLearningToolAppEntitiesElementPermission
 } from "@/types/api-types/utils/Itslearning.Platform.RestApi.Sdk.LearningToolApp.Entities.ElementPermission.ts";
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 
 const POSTcourseAllResourcesApiEndpoint = "restapi/personal/courses/{courseId}/resources/extended/v1?PageIndex={PageIndex}&PageSize={PageSize}"
 
@@ -32,7 +32,7 @@ export type POSTcourseAllResources = {
 export type POSTcourseAllResourcesParams = {
     courseId: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }
 
 export type POSTcourseAllResourcesBody = {

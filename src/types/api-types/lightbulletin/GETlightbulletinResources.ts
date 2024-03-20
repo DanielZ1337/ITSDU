@@ -1,7 +1,7 @@
 import {
     ItslearningRestApiEntitiesElementLink
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink.ts";
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 
 const GETlightbulletinResourcesApiEndpoint = "restapi/personal/courses/bulletins/{bulletinId}/elements/v1?PageIndex={PageIndex}&PageSize={PageSize}"
 
@@ -23,5 +23,5 @@ export type GETlightbulletinResources = {
 export type GETlightbulletinResourcesParams = {
     bulletinId: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }

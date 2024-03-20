@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
 import {
     ItslearningRestApiEntitiesNotification
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Notification";
@@ -10,7 +10,7 @@ export const GETnotificationsApiUrl = (params: GETnotificationsParams) => apiUrl
 export type GETnotificationsParams = {
     FromId?: number;
     PageIndex?: number;
-    PageSize?: ITSLEARNING_API_MAX_SIZE;
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE;
     UseNewerThan?: boolean;
 };
 

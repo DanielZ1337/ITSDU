@@ -122,24 +122,15 @@ export default function TitlebarSearch() {
                     onValueChange={setQuery}
                 />
                 <div className="flex justify-center gap-0.5 mb-1">
-                    <TitlebarSearchTabButton
-                        active={activeTab === 'courses'}
-                        onClick={() => setTabIndex(tabs.indexOf('courses'))}
-                    >
-                        Courses
-                    </TitlebarSearchTabButton>
-                    <TitlebarSearchTabButton
-                        active={activeTab === 'resources'}
-                        onClick={() => setTabIndex(tabs.indexOf('resources'))}
-                    >
-                        Resources
-                    </TitlebarSearchTabButton>
-                    {/* <TitlebarSearchTabButton
-                        active={activeTab === 'updates'}
-                        onClick={() => setTabIndex(tabs.indexOf('updates'))}
-                    >
-                        Updates
-                    </TitlebarSearchTabButton> */}
+                    {tabs.map((tab) => (
+                        <TitlebarSearchTabButton
+                            key={tab}
+                            active={activeTab === tab}
+                            onClick={() => setTabIndex(tabs.indexOf(tab))}
+                        >
+                            {tab}
+                        </TitlebarSearchTabButton>
+                    ))}
                 </div>
                 <CommandList className={"overflow-hidden min-h-fit max-h-[50dvh] h-[var(--cmdk-list-height)] transition-height scroll-py-2"}>
                     <motion.div
@@ -537,7 +528,7 @@ export function TitlebarSearchTabButton({ active, onClick, children }: { active:
                 variant={"none"}
                 onClick={onClick}
                 size={"sm"}
-                className={cn('h-11 relative hover:text-white transition-all duration-200 ease-in-out', active ? 'text-white' : 'text-gray-600')}
+                className={cn('capitalize h-11 relative hover:text-white transition-all duration-200 ease-in-out', active ? 'text-white' : 'text-gray-600')}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >

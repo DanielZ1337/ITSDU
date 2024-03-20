@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 import {
     ItslearningRestApiEntitiesTaskDailyWorkflowSection
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflowSection.ts";
@@ -21,5 +21,5 @@ export type GETpersonalTasklistDailyWorkflow = {
 
 export type GETpersonalTasklistDailyWorkflowParams = {
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }

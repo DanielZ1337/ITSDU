@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 import {
     ItslearningRestApiEntitiesTaskStatusFilter
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter.ts";
@@ -28,7 +28,7 @@ export type GETpersonalTasks = {
 
 export type GETpersonalTasksParams = {
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
     status?: ItslearningRestApiEntitiesTaskStatusFilter
     deadline?: ItslearningRestApiEntitiesTaskDeadlineFilter
     isHomework?: boolean

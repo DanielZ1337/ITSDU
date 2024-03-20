@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
 
 const GETnotificationsTopMenuApiEndpoint = 'restapi/topmenu/notifications/v1?FromId={FromId}&PageSize={PageSize}&UseNewerThan={UseNewerThan}&UseOlderThan={UseOlderThan}&UseUnreadOnly={UseUnreadOnly}';
 
@@ -6,7 +6,7 @@ export const GETnotificationsTopMenuApiUrl = (params: GETnotificationsTopMenuApi
 
 export type GETnotificationsTopMenuApiParams = {
     FromId?: number;
-    PageSize?: ITSLEARNING_API_MAX_SIZE;
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE;
     UseNewerThan?: boolean;
     /* UseOlderThan?: string;
     UseUnreadOnly?: boolean; */

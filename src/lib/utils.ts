@@ -211,4 +211,4 @@ export type NumericRange<
     ? ACC | START | END
     : NumericRange<START, END, [...ARR, 1], ARR[START] extends undefined ? ACC : ACC | ARR['length']>
 
-export type ITSLEARNING_API_MAX_SIZE = NumericRange<0, 100>
+export type ITSLEARNING_API_MAX_PAGESIZE = NumericRange<0, 100>

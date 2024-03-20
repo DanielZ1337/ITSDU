@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 import {
     EntityListOfItslearningRestApiEntitiesPersonalCourseCourseResource
 } from "@/types/api-types/utils/EntityListOfItslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
@@ -29,7 +29,7 @@ export type GETcourseRootResources = {
 export type GETcourseRootResourcesParams = {
     courseId: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
     elementType?: ItsolutionsItslUtilsConstantsElementType
     learningToolType?: ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType
 }

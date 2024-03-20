@@ -4,7 +4,7 @@ import {
 import {
     ItslearningRestApiEntitiesLightBulletinsLightBulletinV2
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2.ts";
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 
 const GETlightbulletinsForCourseApiEndpoint = " restapi/personal/courses/{courseId}/bulletins/v1?timePeriod={timePeriod}&UseNewerThan={UseNewerThan}&FromId={FromId}&PageIndex={PageIndex}&PageSize={PageSize}"
 
@@ -32,5 +32,5 @@ export type GETlightbulletinsForCourseParams = {
     UseNewerThan?: boolean
     FromId?: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }

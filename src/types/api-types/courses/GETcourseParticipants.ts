@@ -1,7 +1,7 @@
 import {
     ItslearningRestApiEntitiesPersonalCourseCourseParticipant
 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseParticipant.ts";
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 
 const GETcourseParticipantsApiEndpoint = "restapi/personal/courses/{courseId}/participants/v3?PageIndex={PageIndex}&PageSize={PageSize}&courseProfileIds={courseProfileIds}&groupIds={groupIds}&searchText={searchText}&orderByField={orderByField}&orderAscending={orderAscending}"
 
@@ -28,7 +28,7 @@ export type GETcourseParticipants = {
 export type GETcourseParticipantsParams = {
     courseId: number
     PageIndex?: number
-    PageSize?: ITSLEARNING_API_MAX_SIZE
+    PageSize?: ITSLEARNING_API_MAX_PAGESIZE
     courseProfileIds?: number[]
     groupIds?: number[]
     hierarchyIds?: number[]

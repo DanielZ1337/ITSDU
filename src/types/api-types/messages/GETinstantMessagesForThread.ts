@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
 import {
     EntityListOfItslearningRestApiEntitiesInstantMessage
 } from "../utils/EntityListOfItslearning.RestApi.Entities.InstantMessage";
@@ -20,6 +20,6 @@ export type GETinstantMessagesForThread = {
 
 export type GETinstantMessagesForThreadParams = {
     threadId: number
-    pageSize?: ITSLEARNING_API_MAX_SIZE
+    pageSize?: ITSLEARNING_API_MAX_PAGESIZE
     fromId?: number
 }

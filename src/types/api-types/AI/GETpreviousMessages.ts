@@ -1,4 +1,4 @@
-import { apiUrl, ITSLEARNING_API_MAX_SIZE } from "@/lib/utils.ts";
+import { apiUrl, ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils.ts";
 
 const GETpreviousMessagesApiEndpoint = 'https://itsdu.danielz.dev/api/messages/{elementId}/{userId}?pageIndex={pageIndex}&pageSize={pageSize}'
 
@@ -15,7 +15,7 @@ export type GETpreviousMessagesParams = {
     elementId: number
     userId: number
     pageIndex?: number
-    pageSize?: ITSLEARNING_API_MAX_SIZE
+    pageSize?: ITSLEARNING_API_MAX_PAGESIZE
 }
 
 export type GETpreviousMessagesResponse = {
