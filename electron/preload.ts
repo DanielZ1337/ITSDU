@@ -186,7 +186,7 @@ declare global {
             openShell: (path: string) => Promise<void>
             openItem: (path: string) => Promise<void>
             openExternal: (url: string, sso?: boolean) => Promise<void>
-            mergePDFs: (elementIds: string[]) => Promise<void>
+            mergePDFs: (elementIds: string[]) => Promise<string>
             zipDownloadAllCourseResources: (elementIds: number[]) => Promise<string>
         },
         download: {

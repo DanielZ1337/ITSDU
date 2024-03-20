@@ -58,6 +58,7 @@ export default function MergeDocuments() {
     const [openedStarredUnstarred, setOpenedStarredUnstarred] = useState<string[]>([])
     const [openedCourses, setOpenedCourses] = useState<string[]>([])
     const [isDownloading, setIsDownloading] = useState(false)
+    const [isMerging, setIsMerging] = useState(false)
 
     const { toast } = useToast()
 
@@ -160,6 +161,47 @@ export default function MergeDocuments() {
 
     const isButtonDisabled = selectedDocuments?.size === 0 || !selectedDocuments || isDownloading
 
+    const handleMergePDF = () => {
+        if (isMerging) return
+
+        setIsMerging(true)
+
+        const selectedDocumentsArray = Array.from(selectedDocuments?.values() || [])
+
+        if (selectedDocumentsArray.length === 0 || !selectedDocuments) {
+            return
+        }
+
+        //map to strings
+
+        const allElementIds = selectedDocumentsArray.map((document) => String(document.ElementId))
+
+        window.app.mergePDFs(allElementIds).then((path) => {
+            if (!path) return
+
+            toast({
+                className: "text-white",
+                title: "Merged PDFs",
+                description: `The documents have been merged into a single PDF file at ${path}`,
+                duration: 5000,
+                variant: "success",
+                onClick: () => window.app.openItem(path)
+            })
+            setSelectedDocuments(null)
+        }).catch((error) => {
+            toast({
+                className: "text-white",
+                title: "Error",
+                description: `An error occurred while merging the documents: ${error.message}`,
+                duration: 5000,
+                variant: "destructive"
+            })
+            console.error(error)
+        }).finally(() => {
+            setIsMerging(false)
+        })
+    }
+
     return (
         <MergeDocumentsContext.Provider value={{ selectedDocuments, setSelectedDocuments, addSelectedDocument, removeSelectedDocument }}>
             <div className='flex max-w-full w-full mx-auto justify-between p-20 h-full max-h-full flex-1 overflow-hidden gap-4'>
@@ -171,7 +213,9 @@ export default function MergeDocuments() {
                                 <span>These are the documents you have selected to merge</span>
                                 <div className='mt-2 flex gap-2 justify-end items-center w-full max-w-full overflow-auto'>
                                     <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled} onClick={() => setSelectedDocuments(null)}>Clear</Button>
-                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled} onClick={() => console.log(selectedDocuments)}>Merge</Button>
+                                    <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled || isMerging} onClick={handleMergePDF}>
+                                        {isMerging ? <Loader size={"sm"} /> : "Merge PDFs"}
+                                    </Button>
                                     <Button className='truncate' variant={"secondary"} disabled={isButtonDisabled} onClick={downloadAsZip}>
                                         {isDownloading ? <Loader size={"sm"} /> : "Download as ZIP"}
                                     </Button>

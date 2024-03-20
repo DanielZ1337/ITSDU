@@ -243,18 +243,31 @@ async function downloadPDF(win: BrowserWindow, url: string) {
 }
 
 function mergePDFsHandler() {
-    ipcMain.handle("app:mergePDFs", async (event, { elementIds, filename }) => {
+    ipcMain.handle("app:mergePDFs", async (event, { elementIds }: { elementIds: string[] }) => {
         try {
+
+            const win = BrowserWindow.fromWebContents(event.sender)
+
+            if (!win) return
+
+            const Dialog = await import('electron').then(electron => electron.dialog)
+
+            const { filePath } = await Dialog.showSaveDialog(win, {
+                title: 'Save As',
+                defaultPath: path.join(app.getPath('downloads'), "merged.pdf"),
+                buttonLabel: 'Save',
+                filters: [
+                    { name: 'PDF Files', extensions: ['pdf'] }
+                ]
+            })
+
+            if (!filePath) return
 
             const pdfs = await Promise.all(elementIds.map(async (elementId: string | number) => {
                 const resourceByElementId = await getResourceLinkByElementID(elementId)
                 const fileLink = await getResourceDownloadLink(resourceByElementId)
                 return fileLink
             })) as string[]
-
-            const win = BrowserWindow.fromWebContents(event.sender)
-
-            if (!win) return
 
             const downloadPromises = pdfs.map(url => downloadPDF(win, url));
 
@@ -271,11 +284,10 @@ function mergePDFsHandler() {
                 });
             }
             const mergedPdfBytes = await mergedPdf.save();
-            const outputPath = path.join(app.getPath('downloads'), filename || "merged.pdf");
-            fs.writeFileSync(outputPath, mergedPdfBytes);
 
+            fs.writeFileSync(filePath, mergedPdfBytes);
 
-            return mergedPdfBytes;
+            return filePath;
         } catch (e) {
             if (e instanceof Error) {
                 console.error(e)
