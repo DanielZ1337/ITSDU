@@ -46,11 +46,11 @@ export default function CoursePlans() {
             label: "Without date",
             value: data?.withoutDatePlansCount,
         },
-        {
+        /* {
             id: "topic",
             label: "Topic",
             value: data?.topicsCount,
-        }
+        } */
     ]
 
     const [activeTab, setTabIndex] = useCycle(...tabs)
@@ -118,9 +118,27 @@ function CoursePlansSwitched({ courseId, planType }: { courseId: number; planTyp
 
     const { data: plans, isLoading: isLoadingPlans } = useGETCoursePlans({ courseId });
 
-    const sortedPlans = plans?.entityArray.sort((a, b) => {
-        return new Date(b.start).getTime() - new Date(a.start).getTime();
-    });
+    let sortedPlans
+
+    switch (planType) {
+        case 'current':
+            sortedPlans = plans?.entityArray.sort((a, b) => {
+                return new Date(a.start).getTime() - new Date(b.start).getTime();
+            });
+            break;
+        case 'past':
+            sortedPlans = plans?.entityArray.sort((a, b) => {
+                return new Date(b.start).getTime() - new Date(a.start).getTime();
+            });
+            break;
+        case 'withoutDate':
+            sortedPlans = plans?.entityArray.sort((a, b) => {
+                return new Date(b.activeFromDT).getTime() - new Date(a.activeFromDT).getTime();
+            });
+            break;
+        default:
+            throw new Error('Invalid plan type');
+    }
 
     return (
         <AnimatePresence mode="wait">
@@ -189,7 +207,7 @@ function CoursePlansByTopic({ courseId }: { courseId: number }) {
 function CoursePlanCard({ plan }: { plan: GETcoursePlansCurrent["entityArray"][number] }) {
     const dateFormatter = new Intl.DateTimeFormat("en-GB", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
     })
 
@@ -204,7 +222,7 @@ function CoursePlanCard({ plan }: { plan: GETcoursePlansCurrent["entityArray"][n
 
     const formattedTimeSpan = (start: Date, stop: Date) => {
         if (isSameDay(start, stop)) {
-            return `${dateFormatter.format(start)} ${timeFormatter.format(start)} - ${timeFormatter.format(stop)}`
+            return `${dateFormatter.format(start)} (${timeFormatter.format(start)} - ${timeFormatter.format(stop)})`
         } else {
             return `${dateFormatter.format(start)} - ${dateFormatter.format(stop)}`
         }
