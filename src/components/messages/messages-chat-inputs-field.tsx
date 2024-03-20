@@ -1,14 +1,14 @@
 import MessagesChatInputFileDialog from "@/components/messages/messages-chat-input-file-dialog.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import { Textarea } from "@/components/ui/textarea.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
 import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2";
 import usePOSTmessageAttachment from "@/queries/messages/usePOSTmessageAttachment";
-import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { useAtom } from "jotai";
-import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
-import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
+import {useQueryClient} from "@tanstack/react-query";
+import {useCallback, useEffect, useRef, useState} from "react";
+import {useToast} from "@/components/ui/use-toast";
+import {useAtom} from "jotai";
+import {currentChatAtom, currentChatEnum} from "@/atoms/current-chat";
+import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
 
 export default function MessagesChatInputsField() {
@@ -18,7 +18,7 @@ export default function MessagesChatInputsField() {
     const [currentChat] = useAtom(currentChatAtom)
     const isNewChat = currentChat === currentChatEnum.NEW
     const queryClient = useQueryClient()
-    const { toast } = useToast()
+    const {toast} = useToast()
     const [uploadProgress, setUploadProgress] = useState<number>(0)
     const [, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
 
@@ -52,7 +52,7 @@ export default function MessagesChatInputsField() {
         return interval
     }, [uploadProgress])
 
-    const { mutate: sendMessage, isLoading: isSendingMessage } = usePOSTinstantMessagev2({
+    const {mutate: sendMessage, isLoading: isSendingMessage} = usePOSTinstantMessagev2({
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["messagesv2"]
@@ -73,7 +73,7 @@ export default function MessagesChatInputsField() {
         },
     })
 
-    const { mutate: sendFile, isLoading: isSendingFile } = usePOSTmessageAttachment()
+    const {mutate: sendFile, isLoading: isSendingFile} = usePOSTmessageAttachment()
 
     const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement> | KeyboardEvent) => {
         e.preventDefault()
@@ -152,7 +152,7 @@ export default function MessagesChatInputsField() {
     }, [handleSubmit])
 
     // TODO: add some kind of check to see if the message can be replied to
-    const { data } = useGETinstantMessagesForThread({
+    const {data} = useGETinstantMessagesForThread({
         threadId: currentChat as number,
         pageSize: 1,
     }, {
@@ -183,22 +183,22 @@ export default function MessagesChatInputsField() {
             <form className="flex items-center gap-2" onSubmit={handleSubmit}>
                 <div className={"flex-1 relative"}>
                     <Textarea rows={1} className="max-h-48 w-full overflow-hidden min-h-[2.5rem]"
-                        ref={textareaRef}
-                        autoFocus
-                        onInput={(e) => {
-                            // resize textarea
-                            e.currentTarget.style.height = "auto"
-                            e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
-                        }}
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
-                        placeholder="Type your message..." />
+                              ref={textareaRef}
+                              autoFocus
+                              onInput={(e) => {
+                                  // resize textarea
+                                  e.currentTarget.style.height = "auto"
+                                  e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`
+                              }}
+                              value={message}
+                              onChange={(e) => setMessage(e.target.value)}
+                              placeholder="Type your message..."/>
                     <MessagesChatInputFileDialog files={files} setFiles={setFiles} isSendingFile={isSendingFile}
-                        uploadProgress={uploadProgress} />
+                                                 uploadProgress={uploadProgress}/>
                 </div>
                 <Button variant={"outline"}
-                    className="rounded-full" type="submit"
-                    disabled={isSendingMessage || message === '' && !files || isSendingFile}
+                        className="rounded-full" type="submit"
+                        disabled={isSendingMessage || message === '' && !files || isSendingFile}
                 >
                     {isSendingMessage || isSendingFile ? "Sending..." : "Send"}
                 </Button>

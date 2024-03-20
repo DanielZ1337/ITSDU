@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import {cn} from "@/lib/utils";
 import React from "react";
 
-export default function LightbulletinLink({ className, children, ...props }: {
+export default function LightbulletinLink({className, children, ...props}: {
     className?: string,
     children?: React.ReactNode
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {

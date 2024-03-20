@@ -1,5 +1,5 @@
-import { useAboutModal } from '@/hooks/atoms/useAboutModal'
-import { useEffect, useState } from 'react'
+import {useAboutModal} from '@/hooks/atoms/useAboutModal'
+import {useEffect, useState} from 'react'
 import {
     Dialog,
     DialogContent,
@@ -8,18 +8,17 @@ import {
     DialogHeader,
     DialogOverlay,
     DialogPortal,
-    DialogTitle,
-    DialogTrigger
+    DialogTitle
 } from './ui/dialog'
-import { useVersion } from '@/hooks/atoms/useVersion'
-import { UpdateCheckResult, UpdateInfo } from 'electron-updater'
-import { Badge, badgeVariants } from './ui/badge'
-import { cn } from '@/lib/utils'
+import {useVersion} from '@/hooks/atoms/useVersion'
+import {UpdateInfo} from 'electron-updater'
+import {badgeVariants} from './ui/badge'
+import {cn} from '@/lib/utils'
 
 export default function AboutModal() {
 
-    const { setShowAboutModal, showAboutModal } = useAboutModal()
-    const { version } = useVersion()
+    const {setShowAboutModal, showAboutModal} = useAboutModal()
+    const {version} = useVersion()
     const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false)
     const [updateResult, setUpdateResult] = useState<UpdateInfo | null>(null)
     const isUpdateAvailable = updateResult?.version !== version && updateResult?.version !== undefined
@@ -71,7 +70,7 @@ export default function AboutModal() {
             open={showAboutModal}
             onOpenChange={setShowAboutModal}
         >
-            <DialogOverlay />
+            <DialogOverlay/>
             <DialogPortal>
                 <DialogContent
                     className='md:w-fit'
@@ -98,7 +97,7 @@ export default function AboutModal() {
                                 {isUpdateAvailable && updateResult && (
                                     <button
                                         onClick={handleUpdateClick}
-                                        className={cn(badgeVariants({ variant: "success" }))}
+                                        className={cn(badgeVariants({variant: "success"}))}
                                         disabled={isDownloading || isError || !updateResult}
                                     >
                                         {updateResult?.version} - {isDownloading ? `${downloadProgress.toFixed(2)}%` : 'Download'}
@@ -113,19 +112,19 @@ export default function AboutModal() {
                     <div className="flex p-4">
                         <div className='mr-6 flex shrink-0 flex-col'>
                             <img loading="lazy" src="itsl-itslearning-file://i_logo_colored.png" alt="ITSDU Logo"
-                                className="mx-auto h-20 w-20" />
-                            <hr className="my-6" />
+                                 className="mx-auto h-20 w-20"/>
+                            <hr className="my-6"/>
                             <img loading="lazy" src="itsl-itslearning-file://icon.ico" alt="itslearning Logo"
-                                className="mx-auto h-20 w-20" />
+                                 className="mx-auto h-20 w-20"/>
                         </div>
                         <p className="text-sm text-gray-500">
                             ITSDU is a desktop app built for students at SDU to access itslearning in a more convenient
                             way.
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             ITSDU is not affiliated with itslearning or SDU in any way.
-                            <br />
-                            <br />
+                            <br/>
+                            <br/>
                             ITSDU is built by students for students.
                         </p>
                     </div>

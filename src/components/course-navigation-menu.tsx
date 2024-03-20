@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { cn, getRelativeTimeString } from "@/lib/utils"
+import {cn, getRelativeTimeString} from "@/lib/utils"
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -9,11 +9,11 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { Link, useLocation } from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
 
-export function CourseNavigationMenu({ title }: { title: string }) {
-    const { data: starredCourses } = useGETstarredCourses({
+export function CourseNavigationMenu({title}: { title: string }) {
+    const {data: starredCourses} = useGETstarredCourses({
         isShowMore: true,
         PageSize: 100,
     })
@@ -50,13 +50,13 @@ export function CourseNavigationMenu({ title }: { title: string }) {
     )
 }
 
-function ListItem({ title, courseId, children, className, ...props }: {
+function ListItem({title, courseId, children, className, ...props}: {
     title: string,
     courseId: string | number,
     children: React.ReactNode,
     className?: string
 }) {
-    const { pathname } = useLocation()
+    const {pathname} = useLocation()
 
     const updatedTo = `${pathname.replace(/\/courses\/\d+/, `/courses/${courseId}`)}`
 

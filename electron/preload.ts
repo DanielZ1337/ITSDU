@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { contextBridge, ipcRenderer } from 'electron'
-import { sendNotifcation } from "./handlers/notifcation-handler.ts";
+import {contextBridge, ipcRenderer} from 'electron'
+import {sendNotifcation} from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import { store_keys } from './services/itslearning/auth/types/store_keys.ts';
-import { UpdateCheckResult, UpdateInfo } from 'electron-updater';
+import {store_keys} from './services/itslearning/auth/types/store_keys.ts';
+import {UpdateInfo} from 'electron-updater';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -105,8 +105,8 @@ contextBridge.exposeInMainWorld('cookies', {
 contextBridge.exposeInMainWorld('resources', {
     officeDocuments: {
         get: async (elementId: number | string) => {
-            const { accessToken, downloadUrl } = await ipcRenderer.invoke('resources:get-office-document', elementId)
-            return { accessToken, downloadUrl }
+            const {accessToken, downloadUrl} = await ipcRenderer.invoke('resources:get-office-document', elementId)
+            return {accessToken, downloadUrl}
         }
     },
     file: {
@@ -128,8 +128,8 @@ contextBridge.exposeInMainWorld('resources', {
 
 contextBridge.exposeInMainWorld('scrape', {
     get: async (url: string) => {
-        const { data, status } = await ipcRenderer.invoke('scrape-page', url)
-        return { data, status }
+        const {data, status} = await ipcRenderer.invoke('scrape-page', url)
+        return {data, status}
     }
 })
 
@@ -322,7 +322,7 @@ function useLoading() {
     }
 }
 
-const { appendLoading, removeLoading } = useLoading()
+const {appendLoading, removeLoading} = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {

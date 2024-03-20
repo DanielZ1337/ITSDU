@@ -1,8 +1,8 @@
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { cn } from "@/lib/utils";
-import { MdMaximize, MdMinimize, MdOutlineClose } from "react-icons/md";
-import { BiWindows } from "react-icons/bi";
-import { Maximize2Icon, Minimize2Icon } from "lucide-react";
+import {useSettings} from "@/hooks/atoms/useSettings";
+import {cn} from "@/lib/utils";
+import {MdMinimize, MdOutlineClose} from "react-icons/md";
+import {BiWindows} from "react-icons/bi";
+import {Maximize2Icon, Minimize2Icon} from "lucide-react";
 
 export default function TitlebarButtons() {
 
@@ -18,7 +18,7 @@ export default function TitlebarButtons() {
         window.app.quit()
     }
 
-    const { settings } = useSettings()
+    const {settings} = useSettings()
 
     const showCustomTitlebar = settings.CustomTitleBarButtons
 
@@ -41,7 +41,7 @@ export default function TitlebarButtons() {
     );
 }
 
-function CustomTitlebarButtons({ handleMinimizeClick, handleMaximizeClick, handleCloseClick }: {
+function CustomTitlebarButtons({handleMinimizeClick, handleMaximizeClick, handleCloseClick}: {
     handleMinimizeClick: () => void,
     handleMaximizeClick: () => void,
     handleCloseClick: () => void,
@@ -52,26 +52,26 @@ function CustomTitlebarButtons({ handleMinimizeClick, handleMaximizeClick, handl
                 className="mr-2 text-yellow-500 hover:bg-yellow-800"
                 onClick={handleMinimizeClick}
             >
-                <Minimize2Icon className="h-3.5 w-3.5" />
+                <Minimize2Icon className="h-3.5 w-3.5"/>
             </TitlebarButton>
             <TitlebarButton
                 className="mr-2 text-green-500 hover:bg-green-800"
                 onClick={handleMaximizeClick}
             >
-                <Maximize2Icon className="h-3.5 w-3.5" />
+                <Maximize2Icon className="h-3.5 w-3.5"/>
             </TitlebarButton>
             <TitlebarButton
                 className="text-red-500 hover:bg-red-800"
                 onClick={handleCloseClick}
             >
-                <MdOutlineClose className="h-5 w-5" />
+                <MdOutlineClose className="h-5 w-5"/>
             </TitlebarButton>
         </>
     )
 }
 
 
-function TitlebarButton({ children, onClick, className }: {
+function TitlebarButton({children, onClick, className}: {
     children: React.ReactNode,
     onClick: () => void,
     className?: string
@@ -86,7 +86,7 @@ function TitlebarButton({ children, onClick, className }: {
     )
 }
 
-function DefaultWindowButtons({ handleMinimizeClick, handleMaximizeClick, handleCloseClick }: {
+function DefaultWindowButtons({handleMinimizeClick, handleMaximizeClick, handleCloseClick}: {
     handleMinimizeClick: () => void,
     handleMaximizeClick: () => void,
     handleCloseClick: () => void,
@@ -97,19 +97,19 @@ function DefaultWindowButtons({ handleMinimizeClick, handleMaximizeClick, handle
                 className="w-6 h-6 mr-2 flex justify-center items-center focus:outline-none hover:text-foreground/50"
                 onClick={handleMinimizeClick}
             >
-                <MdMinimize />
+                <MdMinimize/>
             </button>
             <button
                 className="w-6 h-6 mr-2 flex justify-center items-center focus:outline-none hover:text-foreground/50"
                 onClick={handleMaximizeClick}
             >
-                <BiWindows />
+                <BiWindows/>
             </button>
             <button
                 className="w-6 h-6 flex justify-center items-center focus:outline-none hover:bg-red-800 rounded-full "
                 onClick={handleCloseClick}
             >
-                <MdOutlineClose className="w-5 h-5 hover:text-white" />
+                <MdOutlineClose className="w-5 h-5 hover:text-white"/>
             </button>
         </>
     );

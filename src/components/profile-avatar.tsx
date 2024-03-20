@@ -1,8 +1,8 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { fallbackImage } from '@/lib/constants'
-import { cn, getPersonInitials } from '@/lib/utils'
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
+import {fallbackImage} from '@/lib/constants'
+import {cn, getPersonInitials} from '@/lib/utils'
 
-export default function ProfileAvatar({ src, name, className, classNameFallback, classNameFallbackAvatar, children }: {
+export default function ProfileAvatar({src, name, className, classNameFallback, classNameFallbackAvatar, children}: {
     src?: string,
     name?: string,
     className?: string,
@@ -13,14 +13,14 @@ export default function ProfileAvatar({ src, name, className, classNameFallback,
     return (
         <Avatar className={cn("flex-shrink-0", className)}>
             <AvatarImage src={src}
-                alt={name}
-                className={"object-cover"}
+                         alt={name}
+                         className={"object-cover"}
             />
             <AvatarFallback>
                 <Avatar className={cn("flex-shrink-0", classNameFallbackAvatar)}>
                     <AvatarImage src={fallbackImage}
-                        alt={name}
-                        className={"object-cover"}
+                                 alt={name}
+                                 className={"object-cover"}
                     />
                     <AvatarFallback className={classNameFallback}>
                         {children ?? getPersonInitials(name)}

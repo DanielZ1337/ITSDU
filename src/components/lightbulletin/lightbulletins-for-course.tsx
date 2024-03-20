@@ -2,11 +2,11 @@ import useGETlightbulletinsForCourse from "@/queries/lightbulletin-course/useGET
 import LightbulletinCard from "@/components/lightbulletin/lightbulletin-card.tsx";
 import * as linkify from 'linkifyjs';
 
-export default function LightbulletinsForCourse({ courseId }: {
+export default function LightbulletinsForCourse({courseId}: {
     courseId: number
 }) {
 
-    const { data } = useGETlightbulletinsForCourse({
+    const {data} = useGETlightbulletinsForCourse({
         courseId: courseId
     }, {
         suspense: true,
@@ -31,16 +31,19 @@ export default function LightbulletinsForCourse({ courseId }: {
                     <div key={bulletin.LightBulletinId}>
                         {shouldMakeNewHeader && hasNextBulletin && (
                             <div className={"flex items-center justify-center pb-6"}>
-                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />
+                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"}/>
                                 <div className={"bg-foreground/5 rounded-md px-4 py-1 mx-4"}>
                                     <div className={"text-xs font-medium text-foreground/50 text-nowrap"}>
-                                        {currentBulletinDate.toLocaleString('default', { month: 'long', year: showYear ? 'numeric' : undefined })}
+                                        {currentBulletinDate.toLocaleString('default', {
+                                            month: 'long',
+                                            year: showYear ? 'numeric' : undefined
+                                        })}
                                     </div>
                                 </div>
-                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"} />
+                                <div className={"h-[1px] w-full bg-foreground/20 rounded-full"}/>
                             </div>
                         )}
-                        <LightbulletinCard links={linkify.find(bulletin.Text)} bulletin={bulletin} />
+                        <LightbulletinCard links={linkify.find(bulletin.Text)} bulletin={bulletin}/>
                     </div>
                 )
             })}

@@ -1,10 +1,10 @@
 import useGETlightbulletinAllComments from "@/queries/lightbulletin/useGETlightbulletinAllComments.ts";
 import LightbulletinComment from "@/components/lightbulletin/lightbulletin-comment.tsx";
 
-export default function LightbulletinComments({ lightbulletinId }: {
+export default function LightbulletinComments({lightbulletinId}: {
     lightbulletinId: number
 }) {
-    const { data } = useGETlightbulletinAllComments({
+    const {data} = useGETlightbulletinAllComments({
         lightBulletinId: lightbulletinId,
     }, {
         suspense: true,
@@ -27,10 +27,10 @@ export default function LightbulletinComments({ lightbulletinId }: {
 
     return (
         <>
-            <div className="w-full h-0.5 bg-foreground/10" />
+            <div className="w-full h-0.5 bg-foreground/10"/>
             <div className="flex flex-col gap-4 pt-4">
                 {comments?.map((comment) => (
-                    <LightbulletinComment comment={comment} key={comment.Id} />
+                    <LightbulletinComment comment={comment} key={comment.Id}/>
                 ))}
             </div>
         </>

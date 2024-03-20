@@ -1,8 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { m, motion } from 'framer-motion';
+import {Button} from "@/components/ui/button";
+import {cn} from "@/lib/utils";
+import {motion} from 'framer-motion';
 
-export function CourseTaskTabButton({ active, onClick, children }: { active: boolean, onClick: () => void, children: React.ReactNode }) {
+export function CourseTaskTabButton({active, onClick, children}: {
+    active: boolean,
+    onClick: () => void,
+    children: React.ReactNode
+}) {
     return (
         <div className="relative flex items-center justify-center">
             <Button
@@ -15,7 +19,7 @@ export function CourseTaskTabButton({ active, onClick, children }: { active: boo
             {active && (
                 <motion.div
                     layoutId="active-tab-indicator"
-                    transition={{ duration: 0.2 }}
+                    transition={{duration: 0.2}}
                     className="z-10 absolute bottom-1 w-1/2 h-1 bg-purple-500 rounded-full"
                 />
             )}

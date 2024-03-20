@@ -1,17 +1,25 @@
-import React, { useState } from 'react'
-import { useToast } from '../ui/use-toast';
-import { useQueryClient } from '@tanstack/react-query';
+import React, {useState} from 'react'
+import {useToast} from '../ui/use-toast';
+import {useQueryClient} from '@tanstack/react-query';
 import useGETinstantMessagesv2 from '@/queries/messages/useGETinstantMessagesv2';
-import { useUser } from '@/hooks/atoms/useUser';
+import {useUser} from '@/hooks/atoms/useUser';
 import usePUTinstantMessageThread from '@/queries/messages/usePUTinstantMessageThread';
-import { useAtom } from 'jotai';
-import { currentChatAtom } from '@/atoms/current-chat';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { ItslearningRestApiEntitiesInstantMessageRecipient } from '@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient';
-import { Helmet } from 'react-helmet-async';
+import {useAtom} from 'jotai';
+import {currentChatAtom} from '@/atoms/current-chat';
+import {Input} from '../ui/input';
+import {Button} from '../ui/button';
+import {
+    ItslearningRestApiEntitiesInstantMessageRecipient
+} from '@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient';
+import {Helmet} from 'react-helmet-async';
 
-export default function MessageTitleForm({ isChatNew, isChatUndefined, recipientsSelected, setIsSettingNewThreadName, isSettingNewThreadName }: {
+export default function MessageTitleForm({
+                                             isChatNew,
+                                             isChatUndefined,
+                                             recipientsSelected,
+                                             setIsSettingNewThreadName,
+                                             isSettingNewThreadName
+                                         }: {
     isChatNew: boolean,
     isChatUndefined: boolean,
     recipientsSelected: ItslearningRestApiEntitiesInstantMessageRecipient[],
@@ -20,12 +28,12 @@ export default function MessageTitleForm({ isChatNew, isChatUndefined, recipient
 }) {
 
     const [currentChat] = useAtom(currentChatAtom);
-    const { toast } = useToast();
+    const {toast} = useToast();
     const user = useUser();
     const queryClient = useQueryClient();
     const [newThreadName, setNewThreadName] = useState<string>('');
 
-    const { data: messages, isLoading } = useGETinstantMessagesv2({
+    const {data: messages, isLoading} = useGETinstantMessagesv2({
         maxMessages: 1,
         threadPage: 0,
         maxThreadCount: 10,
@@ -48,7 +56,7 @@ export default function MessageTitleForm({ isChatNew, isChatUndefined, recipient
                 .join(', ');
     }
 
-    const { mutate: editThreadName, isLoading: isLoadingThreadName } = usePUTinstantMessageThread(
+    const {mutate: editThreadName, isLoading: isLoadingThreadName} = usePUTinstantMessageThread(
         {
             threadId: currentChat!,
         },
@@ -106,7 +114,7 @@ export default function MessageTitleForm({ isChatNew, isChatUndefined, recipient
             </Helmet>
             {!isChatNew && !isChatUndefined && isSettingNewThreadName ? (
                 <form className={"flex items-center space-x-2"} onSubmit={handleTreadNameSubmit}>
-                    <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)} />
+                    <Input value={newThreadName} onChange={(e) => setNewThreadName(e.target.value)}/>
                     <Button disabled={newThreadName === '' || isLoadingThreadName}>
                         {isLoadingThreadName ? "Saving..." : "Save"}
                     </Button>

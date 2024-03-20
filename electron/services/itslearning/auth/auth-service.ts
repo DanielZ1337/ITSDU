@@ -1,8 +1,7 @@
-import { BrowserWindow, safeStorage } from "electron";
-import { GrantType } from "./types/grant_type"
-import { ITSLEARNING_SCOPES_ENUM } from "./types/scopes"
-import { store_keys } from "./types/store_keys";
-import { ITSLEARNING_URL } from "../itslearning.ts";
+import {BrowserWindow, safeStorage} from "electron";
+import {GrantType} from "./types/grant_type"
+import {store_keys} from "./types/store_keys";
+import {ITSLEARNING_URL} from "../itslearning.ts";
 
 const Store = require('electron-store');
 
@@ -41,7 +40,7 @@ export class AuthService {
             throw new Error("New instance cannot be created!!");
         }
 
-        const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
+        const {VITE_ITSLEARNING_STORE_KEY} = import.meta.env
 
         if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
 
@@ -134,7 +133,7 @@ export class AuthService {
         if (!current_refresh_token) throw new Error('No refresh token')
         const axios = (await import('axios')).default
 
-        const { data } = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+        const {data} = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
             "grant_type": GrantType.REFRESH_TOKEN,
             "refresh_token": current_refresh_token,
             "client_id": ITSLEARNING_CLIENT_ID,
@@ -144,7 +143,7 @@ export class AuthService {
             }
         })
 
-        const { access_token, refresh_token } = data
+        const {access_token, refresh_token} = data
         if (!access_token || !refresh_token) throw new Error('Invalid refresh token')
         this.setToken('access_token', access_token)
         this.setToken('refresh_token', refresh_token)

@@ -1,25 +1,25 @@
-import { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogTrigger, } from '../../ui/dialog'
-import { Button } from '../../ui/button'
-import { Expand } from 'lucide-react'
-import { Document, Page } from 'react-pdf'
-import { useToast } from '../../ui/use-toast'
-import { useResizeDetector } from 'react-resize-detector'
-import { Loader } from '@/components/ui/loader'
-import { useCustomPDFContext } from '../../../hooks/useCustomPDF'
-import { useInView } from 'react-intersection-observer'
+import {useState} from 'react'
+import {Dialog, DialogContent, DialogTrigger,} from '../../ui/dialog'
+import {Button} from '../../ui/button'
+import {Expand} from 'lucide-react'
+import {Document, Page} from 'react-pdf'
+import {useToast} from '../../ui/use-toast'
+import {useResizeDetector} from 'react-resize-detector'
+import {Loader} from '@/components/ui/loader'
+import {useCustomPDFContext} from '../../../hooks/useCustomPDF'
+import {useInView} from 'react-intersection-observer'
 
 interface PdfFullscreenProps {
     fileUrl?: string
 }
 
-const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
+const PdfFullscreen = ({fileUrl}: PdfFullscreenProps) => {
     const [isOpen, setIsOpen] = useState(false)
-    const { setNumPages, numPages } = useCustomPDFContext()
+    const {setNumPages, numPages} = useCustomPDFContext()
 
-    const { toast } = useToast()
+    const {toast} = useToast()
 
-    const { width, ref } = useResizeDetector()
+    const {width, ref} = useResizeDetector()
     const [isLoading, setIsLoading] = useState(true)
 
     return (
@@ -37,7 +37,7 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
                     variant='ghost'
                     className='gap-1.5'
                     aria-label='fullscreen'>
-                    <Expand className='h-4 w-4' />
+                    <Expand className='h-4 w-4'/>
                 </Button>
             </DialogTrigger>
             <DialogContent className='w-full max-w-7xl no-drag'>
@@ -45,7 +45,7 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
                     <Document
                         loading={
                             <div className='flex justify-center'>
-                                <Loader className='my-24' />
+                                <Loader className='my-24'/>
                             </div>
                         }
                         onLoadError={() => {
@@ -55,7 +55,7 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
                                 variant: 'destructive',
                             })
                         }}
-                        onLoadSuccess={({ numPages }) => {
+                        onLoadSuccess={({numPages}) => {
                             setNumPages(numPages)
                             setIsLoading(false)
                         }}
@@ -72,7 +72,7 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
                                     width={width}
                                 />
                                 {numPages && index !== numPages - 1 && (
-                                    <div className="h-2 bg-gray-200 absolute bottom-0 left-0 right-0" />
+                                    <div className="h-2 bg-gray-200 absolute bottom-0 left-0 right-0"/>
                                 )}
                             </InViewPage>
                         ))}
@@ -85,9 +85,13 @@ const PdfFullscreen = ({ fileUrl }: PdfFullscreenProps) => {
 
 export default PdfFullscreen
 
-function InViewPage({ children, pageNumber, isLoading }: { children: React.ReactNode, pageNumber: number, isLoading: boolean }) {
-    const { setCurrPage, } = useCustomPDFContext()
-    const { ref } = useInView({
+function InViewPage({children, pageNumber, isLoading}: {
+    children: React.ReactNode,
+    pageNumber: number,
+    isLoading: boolean
+}) {
+    const {setCurrPage,} = useCustomPDFContext()
+    const {ref} = useInView({
         threshold: 0.5,
         onChange: (inView) => {
             if (inView && !isLoading) {

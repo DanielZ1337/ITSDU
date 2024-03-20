@@ -1,10 +1,10 @@
-import { BrowserWindow, Cookie } from "electron";
+import {BrowserWindow, Cookie} from "electron";
 import axios from "axios";
-import { GET_ITSLEARNING_URL } from "../itslearning.ts";
-import { createScrapeWindow } from "../../scrape/scraper.ts";
-import { apiUrl } from "../../../../src/lib/utils.ts";
-import { AuthService } from "../auth/auth-service.ts";
-import { getFormattedCookies } from "../../../utils/cookies.ts";
+import {GET_ITSLEARNING_URL} from "../itslearning.ts";
+import {createScrapeWindow} from "../../scrape/scraper.ts";
+import {apiUrl} from "../../../../src/lib/utils.ts";
+import {AuthService} from "../auth/auth-service.ts";
+import {getFormattedCookies} from "../../../utils/cookies.ts";
 
 const ITSLEARNING_RESOURCE_SUBDOMAIN = 'resource'
 export const ITSLEARNING_RESOURCE_URL = GET_ITSLEARNING_URL(ITSLEARNING_RESOURCE_SUBDOMAIN)
@@ -24,7 +24,7 @@ export async function getResourceIdsBySSOLink(win: BrowserWindow, url: string) {
     const LearningObjectId = matches[1]
     const LearningObjectInstanceId = matches[2]
 
-    return { LearningObjectId, LearningObjectInstanceId }
+    return {LearningObjectId, LearningObjectInstanceId}
 }
 
 export function getResourceFileLinkByIds(LearningObjectId: string | number, LearningObjectInstanceId: string | number) {
@@ -38,7 +38,7 @@ export function getResourceFileLinkByIds(LearningObjectId: string | number, Lear
 
 export async function getResourceDownloadLink(url: string, customWin?: BrowserWindow) {
     const win = customWin || createScrapeWindow()
-    const { LearningObjectId, LearningObjectInstanceId } = await getResourceIdsBySSOLink(win, url);
+    const {LearningObjectId, LearningObjectInstanceId} = await getResourceIdsBySSOLink(win, url);
     win.close()
     return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId);
 }
@@ -62,13 +62,13 @@ export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(url: string, c
     const downloadUrl = await win.webContents.executeJavaScript(`document.querySelectorAll('form')[1].action`)
     win.close()
     if (!accessToken || !downloadUrl) throw new Error('Could not get microsoft office document')
-    return { accessToken, downloadUrl }
+    return {accessToken, downloadUrl}
 }
 
 export async function getResourceAsFile(url: string, cookies: Cookie[]) {
     // fetch url with cookies
     const cookiesFormatted = getFormattedCookies(cookies)
-    const { data, headers } = await axios.get(url, {
+    const {data, headers} = await axios.get(url, {
         headers: {
             Cookie: cookiesFormatted,
         },
@@ -103,7 +103,7 @@ export async function getResourceLinkByElementID(elementId: string | number) {
 
 export async function getSSOLink(url: string) {
     const authService = AuthService.getInstance()
-    const { data } = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
+    const {data} = await axios.get(apiUrl(`restapi/personal/sso/url/v1`), {
         params: {
             'access_token': authService.getToken('access_token'),
             'url': url
