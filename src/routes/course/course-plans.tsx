@@ -1,30 +1,30 @@
-import {useNavigate, useParams} from "react-router-dom";
-import {AnimatePresence, m, motion, useCycle} from 'framer-motion';
-import {Suspense} from "react";
-import {Loader} from "@/components/ui/loader";
-import {Button} from "@/components/ui/button";
-import {CalendarIcon} from "lucide-react";
-import {isSupportedResourceInApp, useNavigateToResource} from "@/types/api-types/extra/learning-tool-id-types";
-import {CoursePlansSkeletonsAnimated} from "@/components/course/plans/course-plans-card-skeletons-animated";
+import { useNavigate, useParams } from "react-router-dom";
+import { AnimatePresence, m, motion, useCycle } from 'framer-motion';
+import { Suspense } from "react";
+import { Loader } from "@/components/ui/loader";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { isSupportedResourceInApp, useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
+import { CoursePlansSkeletonsAnimated } from "@/components/course/plans/course-plans-card-skeletons-animated";
 import useGETcoursePlansCurrent from "@/queries/courses/useGETcoursePlansCurrent";
-import {cn} from "@/lib/utils";
-import {Badge} from "@/components/ui/badge";
-import {Card, CardContent} from "@/components/ui/card";
-import {Progress} from "@/components/ui/progress";
-import {GETcoursePlansCurrent} from "@/types/api-types/courses/GETcoursePlansCurrent";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { GETcoursePlansCurrent } from "@/types/api-types/courses/GETcoursePlansCurrent";
 import useGETcoursePlansPast from "@/queries/courses/useGETcoursePlansPast";
 import useGETcoursePlansWithoutDate from "@/queries/courses/useGETcoursePlansWithoutDate";
 import useGETcoursePlansTopics from "@/queries/courses/useGETcoursePlansTopics";
 import Linkify from "linkify-react";
 import useGETcoursePlansCount from "@/queries/courses/useGETcoursePlansCount";
-import {useTabButtonHover} from "@/hooks/useTabButtonHover";
-import {TabButtonHoverProvider} from "@/contexts/tab-button-hover-context";
+import { useTabButtonHover } from "@/hooks/useTabButtonHover";
+import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
 
 export default function CoursePlans() {
-    const {id} = useParams();
+    const { id } = useParams();
     const courseId = Number(id);
 
-    const {data, isLoading} = useGETcoursePlansCount({courseId})
+    const { data, isLoading } = useGETcoursePlansCount({ courseId })
 
     const tabs = [
         {
@@ -55,7 +55,7 @@ export default function CoursePlans() {
         <div className="grid items-start gap-6 p-4 text-sm font-medium">
             <div className="flex justify-between mb-2">
                 <div className="flex">
-                    <TabButtonHoverProvider initialValue={activeTab.id}>
+                    <TabButtonHoverProvider>
                         {tabs.map((tab, index) => (
                             <CoursePlansTabButton
                                 key={index}
@@ -64,7 +64,7 @@ export default function CoursePlans() {
                                 onClick={() => setTabIndex(tabs.indexOf(tab))}
                             >
                                 {tab.label} {isLoading ?
-                                <Loader size={"xs"} className="ml-2"/> : tab.value && `(${tab.value})`}
+                                    <Loader size={"xs"} className="ml-2" /> : tab.value && `(${tab.value})`}
                             </CoursePlansTabButton>
                         ))}
                     </TabButtonHoverProvider>
@@ -72,31 +72,31 @@ export default function CoursePlans() {
                 {/* <Button variant="outline">Table view</Button> */}
             </div>
             <div className="max-w-5xl mx-auto w-full">
-                <Suspense fallback={<Loader/>}>
-                    <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id}/>
+                <Suspense fallback={<Loader />}>
+                    <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id} />
                 </Suspense>
             </div>
         </div>
     )
 }
 
-function CoursePlansTabContent({courseId, activeTab}: { courseId: number, activeTab: string }) {
+function CoursePlansTabContent({ courseId, activeTab }: { courseId: number, activeTab: string }) {
     switch (activeTab) {
         case "current":
-            return <CoursePlansSwitched courseId={courseId} planType={"current"}/>
+            return <CoursePlansSwitched courseId={courseId} planType={"current"} />
         case "past":
-            return <CoursePlansSwitched courseId={courseId} planType={"past"}/>
+            return <CoursePlansSwitched courseId={courseId} planType={"past"} />
         case "without-date":
-            return <CoursePlansSwitched courseId={courseId} planType={"withoutDate"}/>
+            return <CoursePlansSwitched courseId={courseId} planType={"withoutDate"} />
         case "topic":
-            return <CoursePlansByTopic courseId={courseId}/>
+            return <CoursePlansByTopic courseId={courseId} />
         default:
             return null
     }
 }
 
 
-function CoursePlansSwitched({courseId, planType}: { courseId: number; planType: string }) {
+function CoursePlansSwitched({ courseId, planType }: { courseId: number; planType: string }) {
     // Determine which API hook to use based on the planType
     let useGETCoursePlans;
     switch (planType) {
@@ -113,7 +113,7 @@ function CoursePlansSwitched({courseId, planType}: { courseId: number; planType:
             throw new Error('Invalid plan type');
     }
 
-    const {data: plans, isLoading: isLoadingPlans} = useGETCoursePlans({courseId});
+    const { data: plans, isLoading: isLoadingPlans } = useGETCoursePlans({ courseId });
 
     let sortedPlans
 
@@ -140,24 +140,24 @@ function CoursePlansSwitched({courseId, planType}: { courseId: number; planType:
     return (
         <AnimatePresence mode="wait">
             {isLoadingPlans ? (
-                <CoursePlansSkeletonsAnimated PageSize={10}/>
+                <CoursePlansSkeletonsAnimated PageSize={10} />
             ) : (
                 <m.div className="flex flex-col gap-4"
-                       key={"plans"}
-                       initial={{opacity: 0, y: -20}}
-                       animate={{opacity: 1, y: 0}}
-                       transition={{delay: 0.2}}
-                       layout
+                    key={"plans"}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    layout
                 >
                     {sortedPlans?.map((plan, index) => (
                         <m.div
                             key={index}
-                            initial={{opacity: 0, y: -20}}
-                            animate={{opacity: 1, y: 0}}
-                            transition={{delay: index * 0.1}}
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
                             layout
                         >
-                            <CoursePlanCard plan={plan}/>
+                            <CoursePlanCard plan={plan} />
                         </m.div>
                     ))}
                 </m.div>
@@ -166,29 +166,29 @@ function CoursePlansSwitched({courseId, planType}: { courseId: number; planType:
     );
 }
 
-function CoursePlansByTopic({courseId}: { courseId: number }) {
-    const {data: plans, isLoading: isLoadingPlans} = useGETcoursePlansTopics({
+function CoursePlansByTopic({ courseId }: { courseId: number }) {
+    const { data: plans, isLoading: isLoadingPlans } = useGETcoursePlansTopics({
         courseId,
     })
 
     return (
         <AnimatePresence mode="wait">
             {isLoadingPlans ? (
-                <CoursePlansSkeletonsAnimated PageSize={10}/>
+                <CoursePlansSkeletonsAnimated PageSize={10} />
             ) : (
                 <m.div className="flex flex-col gap-4"
-                       key={"plans"}
-                       initial={{opacity: 0, y: -20}}
-                       animate={{opacity: 1, y: 0}}
-                       transition={{delay: 0.2}}
-                       layout
+                    key={"plans"}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    layout
                 >
                     {plans?.map((plan, index) => (
                         <m.div
                             key={index}
-                            initial={{opacity: 0, y: -20}}
-                            animate={{opacity: 1, y: 0}}
-                            transition={{delay: index * 0.1}}
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
                             layout
                         >
                             {/* <CoursePlanCard plan={plan} /> */}
@@ -201,7 +201,7 @@ function CoursePlansByTopic({courseId}: { courseId: number }) {
     )
 }
 
-function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][number] }) {
+function CoursePlanCard({ plan }: { plan: GETcoursePlansCurrent["entityArray"][number] }) {
     const dateFormatter = new Intl.DateTimeFormat("en-GB", {
         year: "numeric",
         month: "short",
@@ -238,10 +238,10 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
 
     return (
         <Card className={cn("p-2")}
-              style={{
-                  backgroundColor: plan.topic ? `hsl(from ${plan.topic.color} h s l / 60%)` : "hsl(var(--foreground)/10%)",
-                  borderColor: plan.topic && plan.topic.borderColor
-              }}
+            style={{
+                backgroundColor: plan.topic ? `hsl(from ${plan.topic.color} h s l / 60%)` : "hsl(var(--foreground)/10%)",
+                borderColor: plan.topic && plan.topic.borderColor
+            }}
         >
             <CardContent className="p-4">
                 <div className="flex justify-between">
@@ -250,10 +250,10 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
                             {plan.title}
                             {plan.topic && (
                                 <Badge variant="secondary" className="ml-2 rounded-small"
-                                       style={{
-                                           backgroundColor: plan.topic.color,
-                                           color: 'black',
-                                       }}>
+                                    style={{
+                                        backgroundColor: plan.topic.color,
+                                        color: 'black',
+                                    }}>
                                     {plan.topic.name}
                                 </Badge>
                             )}
@@ -261,8 +261,8 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
                         {plan.description && (
                             <p className="text-sm mb-2">
                                 <Linkify options={{
-                                    render: ({attributes, content}) => {
-                                        const {href, ...props} = attributes;
+                                    render: ({ attributes, content }) => {
+                                        const { href, ...props } = attributes;
                                         return <a
                                             target={"_blank"}
                                             rel={"noopener noreferrer"}
@@ -313,7 +313,7 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
                 <div className="mt-4">
                     <ul
                         className="grid grid-cols-1 gap-2"
-                        style={{gridTemplateColumns: "repeat(auto-fill, minmax(300px, 30fr))"}}
+                        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 30fr))" }}
                     >
                         {plan.elements.map((element, index) => (
                             <li key={index} className="hover:cursor-pointer pr-2">
@@ -323,7 +323,7 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
                                     <img
                                         loading="lazy"
                                         className="inline-block w-6 h-6 mr-2 shrink-0"
-                                        src={element.iconUrl} alt={element.title}/>
+                                        src={element.iconUrl} alt={element.title} />
                                     <a
                                         className="text-foreground hover:underline truncate"
                                         target="_blank"
@@ -359,7 +359,7 @@ function CoursePlanCard({plan}: { plan: GETcoursePlansCurrent["entityArray"][num
     )
 }
 
-export function CoursePlansTabButton({id, active, onClick, children}: {
+export function CoursePlansTabButton({ id, active, onClick, children }: {
     id: string,
     active: boolean,
     onClick: () => void,
@@ -382,14 +382,14 @@ export function CoursePlansTabButton({id, active, onClick, children}: {
                 {hoveredTab === id && (
                     <motion.div
                         layoutId="active-plans-tab-indicator"
-                        transition={{duration: 0.2}}
+                        transition={{ duration: 0.2 }}
                         className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                     />
                 )}
                 {active && !hoveredTab && (
                     <motion.div
                         layoutId="active-plans-tab-indicator"
-                        transition={{duration: 0.2}}
+                        transition={{ duration: 0.2 }}
                         className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                     />
                 )}

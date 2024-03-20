@@ -1,8 +1,8 @@
-import React, {useCallback, useEffect, useState} from 'react'
-import {Button} from '@/components/ui/button'
-import {DownloadIcon} from 'lucide-react'
-import {cn} from '@/lib/utils'
-import {Skeleton} from '@/components/ui/skeleton'
+import React, { useCallback, useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { DownloadIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
     CommandDialog,
     CommandEmpty,
@@ -11,36 +11,36 @@ import {
     CommandItem,
     CommandList
 } from '@/components/ui/command'
-import {useDebounce} from '@uidotdev/usehooks'
-import {useToast} from '../ui/use-toast'
+import { useDebounce } from '@uidotdev/usehooks'
+import { useToast } from '../ui/use-toast'
 import useGETcourseResourceBySearch from '@/queries/courses/useGETcourseResourceBySearch'
-import {useCourse} from '@/hooks/atoms/useCourse'
+import { useCourse } from '@/hooks/atoms/useCourse'
 import {
     ItsolutionsItslUtilsConstantsLocationType
 } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType'
-import {isResourceFile, useNavigateToResource} from '@/types/api-types/extra/learning-tool-id-types'
-import {NavigateFunction, useNavigate} from 'react-router-dom'
+import { isResourceFile, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
+import { NavigateFunction, useNavigate } from 'react-router-dom'
 import useGETstarredCourses from '@/queries/course-cards/useGETstarredCourses'
 import useGETunstarredCourses from '@/queries/course-cards/useGETunstarredCourses'
-import {isSupportedResourceInApp} from '../../types/api-types/extra/learning-tool-id-types'
+import { isSupportedResourceInApp } from '../../types/api-types/extra/learning-tool-id-types'
 import TitlebarButton from './titlebar-button'
-import {motion, useCycle} from 'framer-motion'
-import {GETstarredCourses} from '@/types/api-types/course-cards/GETstarredCourses'
-import {GETunstarredCourses} from '@/types/api-types/course-cards/GETunstarredCourses'
+import { motion, useCycle } from 'framer-motion'
+import { GETstarredCourses } from '@/types/api-types/course-cards/GETstarredCourses'
+import { GETunstarredCourses } from '@/types/api-types/course-cards/GETunstarredCourses'
 import useGETcourseNotifications from '@/queries/courses/useGETcourseNotifications'
-import {CommandLoading} from 'cmdk'
-import {TabButtonHoverProvider} from '@/contexts/tab-button-hover-context'
-import {useTabButtonHover} from '@/hooks/useTabButtonHover'
+import { CommandLoading } from 'cmdk'
+import { TabButtonHoverProvider } from '@/contexts/tab-button-hover-context'
+import { useTabButtonHover } from '@/hooks/useTabButtonHover'
 
 export default function TitlebarSearch() {
     const [isOpen, setIsOpen] = React.useState(false)
     const [query, setQuery] = React.useState("")
     const debouncedQuery = useDebounce(query, 300)
-    const {courseId} = useCourse()
+    const { courseId } = useCourse()
     const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(undefined)
     const navigate = useNavigate()
 
-    const {data: starredCourses, isLoading: isStarredFetching} = useGETstarredCourses({
+    const { data: starredCourses, isLoading: isStarredFetching } = useGETstarredCourses({
         PageIndex: 0,
         PageSize: 100,
         searchText: debouncedQuery,
@@ -50,7 +50,7 @@ export default function TitlebarSearch() {
         keepPreviousData: true
     })
 
-    const {data: unstarredCourses, isLoading: isUnstarredFetching} = useGETunstarredCourses({
+    const { data: unstarredCourses, isLoading: isUnstarredFetching } = useGETunstarredCourses({
         PageIndex: 0,
         PageSize: 100,
         searchText: debouncedQuery,
@@ -109,13 +109,13 @@ export default function TitlebarSearch() {
     }, [isOpen])
 
     const variants = {
-        hidden: {opacity: 0},
-        visible: {opacity: 1},
+        hidden: { opacity: 0 },
+        visible: { opacity: 1 },
     };
 
     return (
         <>
-            <TitlebarButton onClick={() => setIsOpen(true)}/>
+            <TitlebarButton onClick={() => setIsOpen(true)} />
             <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
                 <CommandInput
                     autoFocus
@@ -124,7 +124,7 @@ export default function TitlebarSearch() {
                     onValueChange={setQuery}
                 />
                 <div className="flex justify-center gap-0.5 mb-1">
-                    <TabButtonHoverProvider initialValue={activeTab}>
+                    <TabButtonHoverProvider>
                         {tabs.map((tab) => (
                             <TitlebarSearchTabButton
                                 key={tab}
@@ -199,14 +199,14 @@ export default function TitlebarSearch() {
     )
 }
 
-function UpdatesCommandList({courseId, isResourcesFetching, handleSelect, navigateToResource}: {
+function UpdatesCommandList({ courseId, isResourcesFetching, handleSelect, navigateToResource }: {
     courseId?: number,
     isResourcesFetching: boolean,
     handleSelect: (callback: () => unknown) => void,
     navigateToResource: (resource: any) => void
 }) {
 
-    const {data: updates, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage} = useGETcourseNotifications({
+    const { data: updates, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useGETcourseNotifications({
         courseId: courseId ?? 0,
         showLightBulletins: true,
         PageIndex: 0,
@@ -228,9 +228,9 @@ function UpdatesCommandList({courseId, isResourcesFetching, handleSelect, naviga
             {isLoading && (
                 <CommandLoading>
                     <div className="overflow-hidden px-1 py-2 space-y-1">
-                        <Skeleton className="h-4 w-10 rounded"/>
-                        <Skeleton className="h-8 rounded-sm"/>
-                        <Skeleton className="h-8 rounded-sm"/>
+                        <Skeleton className="h-4 w-10 rounded" />
+                        <Skeleton className="h-8 rounded-sm" />
+                        <Skeleton className="h-8 rounded-sm" />
                     </div>
                 </CommandLoading>
             )}
@@ -260,18 +260,18 @@ function UpdatesCommandList({courseId, isResourcesFetching, handleSelect, naviga
     )
 }
 
-function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
+function ResourcesCommandList({ courseId, navigate, handleSelect, query }: {
     courseId?: number,
     navigate: any,
     handleSelect: (callback: () => unknown) => void,
     query: string
 }) {
     const navigateToResource = useNavigateToResource(navigate)
-    const {toast, dismiss} = useToast()
+    const { toast, dismiss } = useToast()
 
     const isEnabled = courseId !== undefined && query.length > 2
 
-    const {data: resources, isLoading} = useGETcourseResourceBySearch({
+    const { data: resources, isLoading } = useGETcourseResourceBySearch({
         searchText: query,
         locationId: courseId ?? 0,
         locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
@@ -314,7 +314,7 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
                                         await new Promise<void>((resolve) => {
                                             window.addEventListener('mouseup', () => {
                                                 resolve()
-                                            }, {once: true})
+                                            }, { once: true })
                                         })
 
                                         // if the mouse was pressed for less than 500ms, open the file
@@ -360,9 +360,9 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
             {isLoading && isEnabled && (
                 <CommandLoading>
                     <div className="overflow-hidden px-1 py-2 space-y-1">
-                        <Skeleton className="h-4 w-10 rounded"/>
-                        <Skeleton className="h-8 rounded-sm"/>
-                        <Skeleton className="h-8 rounded-sm"/>
+                        <Skeleton className="h-4 w-10 rounded" />
+                        <Skeleton className="h-8 rounded-sm" />
+                        <Skeleton className="h-8 rounded-sm" />
                     </div>
                 </CommandLoading>
             )}
@@ -376,7 +376,7 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
             {resources && resources.Resources.EntityArray[0]?.CourseId === courseId && (
                 <CommandGroup
                     heading={`${resources?.Resources.EntityArray.length
-                    } resources found`}
+                        } resources found`}
                 >
                     <>
                         {resources.Resources.EntityArray.map((resource) => (
@@ -425,7 +425,7 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
                                                             await new Promise<void>((resolve) => {
                                                                 window.addEventListener('mouseup', () => {
                                                                     resolve()
-                                                                }, {once: true})
+                                                                }, { once: true })
                                                             })
 
                                                             // if the mouse was pressed for less than 500ms, open the file
@@ -450,12 +450,12 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
                                                 })
                                             }}
                                         >
-                                            <DownloadIcon className={"w-6 h-6"}/>
+                                            <DownloadIcon className={"w-6 h-6"} />
                                         </Button>)}
                                     <div
                                         className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10">
                                         <img loading="lazy" src={resource.IconUrl} alt={resource.Title}
-                                             className={"w-6 h-6"}/>
+                                            className={"w-6 h-6"} />
                                     </div>
                                 </div>
                             </CommandItem>
@@ -469,13 +469,13 @@ function ResourcesCommandList({courseId, navigate, handleSelect, query}: {
 
 
 function CoursesCommandList({
-                                isStarredFetching,
-                                isUnstarredFetching,
-                                starredCourses,
-                                unstarredCourses,
-                                navigate,
-                                handleSelect
-                            }: {
+    isStarredFetching,
+    isUnstarredFetching,
+    starredCourses,
+    unstarredCourses,
+    navigate,
+    handleSelect
+}: {
     isStarredFetching: boolean,
     isUnstarredFetching: boolean,
     starredCourses?: GETstarredCourses,
@@ -493,9 +493,9 @@ function CoursesCommandList({
             <div className="my-2 overflow-hidden overflow-y-auto pr-1 space-y-1 max-h-[40dvh]">
                 {isStarredFetching || isUnstarredFetching ? (
                     <div className="overflow-hidden px-1 py-2 space-y-1">
-                        <Skeleton className="h-4 w-10 rounded"/>
-                        <Skeleton className="h-8 rounded-sm"/>
-                        <Skeleton className="h-8 rounded-sm"/>
+                        <Skeleton className="h-4 w-10 rounded" />
+                        <Skeleton className="h-8 rounded-sm" />
+                        <Skeleton className="h-8 rounded-sm" />
                     </div>
                 ) : (
                     starredCourses && unstarredCourses && (
@@ -548,7 +548,7 @@ function CoursesCommandList({
     )
 }
 
-export function TitlebarSearchTabButton({id, active, onClick, children}: {
+export function TitlebarSearchTabButton({ id, active, onClick, children }: {
     id: string,
     active: boolean,
     onClick: () => void,
@@ -571,14 +571,14 @@ export function TitlebarSearchTabButton({id, active, onClick, children}: {
                 {hoveredTab === id && (
                     <motion.div
                         layoutId="active-plans-tab-indicator"
-                        transition={{duration: 0.2}}
+                        transition={{ duration: 0.2 }}
                         className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                     />
                 )}
                 {active && !hoveredTab && (
                     <motion.div
                         layoutId="active-plans-tab-indicator"
-                        transition={{duration: 0.2}}
+                        transition={{ duration: 0.2 }}
                         className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                     />
                 )}
