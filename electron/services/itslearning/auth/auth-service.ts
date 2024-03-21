@@ -12,8 +12,8 @@ export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
 // const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
 // By using middleware, itslearning app uses this scope (presumably a scope for everything)
 const ITSLEARNING_SCOPES = ['SCOPE']
-const ITSLEARNING_OAUTH_URL = `${ITSLEARNING_URL}/oauth2/authorize.aspx`
-export const ITSLEARNING_OAUTH_TOKEN_URL = `${ITSLEARNING_URL}/restapi/oauth2/token`
+const ITSLEARNING_OAUTH_URL = new URL('oauth2/authorize.aspx',ITSLEARNING_URL)
+export const ITSLEARNING_OAUTH_TOKEN_URL = new URL('restapi/oauth2/token', ITSLEARNING_URL)
 export const getItslearningOAuthUrl = () => {
     const url = new URL(ITSLEARNING_OAUTH_URL)
     url.searchParams.append('client_id', ITSLEARNING_CLIENT_ID)
@@ -66,7 +66,7 @@ export class AuthService {
         } catch (error) {
             console.error(error)
             const appPath = require('electron').app.getPath("userData")
-            const authStorePath = `${appPath}\\itsdu-auth-store.json`
+            const authStorePath = require('path').join(appPath,'itsdu-auth-store.json') 
             console.error(`Could not create auth store at ${authStorePath}`)
             console.error(`Make sure you have the correct ENV variables set in your .env file`)
             // delete the auth store file on the local machine
