@@ -1,7 +1,7 @@
-import {BrowserWindow, safeStorage} from "electron";
-import {GrantType} from "./types/grant_type"
-import {store_keys} from "./types/store_keys";
-import {ITSLEARNING_URL} from "../itslearning.ts";
+import { BrowserWindow, ipcMain, safeStorage } from "electron";
+import { GrantType } from "./types/grant_type"
+import { StoreKey } from "./types/store_keys";
+import { ITSLEARNING_URL } from "../itslearning.ts";
 
 const Store = require('electron-store');
 
@@ -12,10 +12,10 @@ export const ITSLEARNING_REDIRECT_URI = 'itsl-itslearning://login'
 // const ITSLEARNING_SCOPES = Object.keys(ITSLEARNING_SCOPES_ENUM).map((key) => ITSLEARNING_SCOPES_ENUM[key as keyof typeof ITSLEARNING_SCOPES_ENUM])
 // By using middleware, itslearning app uses this scope (presumably a scope for everything)
 const ITSLEARNING_SCOPES = ['SCOPE']
-const ITSLEARNING_OAUTH_URL = new URL('oauth2/authorize.aspx',ITSLEARNING_URL)
-export const ITSLEARNING_OAUTH_TOKEN_URL = new URL('restapi/oauth2/token', ITSLEARNING_URL)
-export const getItslearningOAuthUrl = () => {
-    const url = new URL(ITSLEARNING_OAUTH_URL)
+const ITSLEARNING_OAUTH_URL = (baseUrl?: string) => new URL('/oauth2/authorize.aspx', baseUrl ?? ITSLEARNING_URL()).toString()
+export const ITSLEARNING_OAUTH_TOKEN_URL = () => new URL('/restapi/oauth2/token', ITSLEARNING_URL()).toString()
+export const getItslearningOAuthUrl = (oauthUrl?: string) => {
+    const url = new URL(oauthUrl ?? ITSLEARNING_OAUTH_URL())
     url.searchParams.append('client_id', ITSLEARNING_CLIENT_ID)
 
     const STATE = import.meta.env.VITE_ITSLEARNING_OAUTH_STATE
@@ -32,6 +32,18 @@ export const REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45 // 45 minutes
 
 let instance: AuthService | null = null
 
+export const initializeLoginHandler = () => {
+    try {
+        ipcMain.removeHandler('itslearning:login')
+    } catch (error) {
+        console.error(error)
+    }
+    ipcMain.handle('itslearning:login', async (event, baseUrl) => {
+        const authService = AuthService.getInstance()
+        await authService.loadSigninPage(undefined, baseUrl)
+    })
+}
+
 export class AuthService {
     private store: typeof Store
 
@@ -40,7 +52,7 @@ export class AuthService {
             throw new Error("New instance cannot be created!!");
         }
 
-        const {VITE_ITSLEARNING_STORE_KEY} = import.meta.env
+        const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
 
         if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
 
@@ -66,7 +78,7 @@ export class AuthService {
         } catch (error) {
             console.error(error)
             const appPath = require('electron').app.getPath("userData")
-            const authStorePath = require('path').join(appPath,'itsdu-auth-store.json') 
+            const authStorePath = require('path').join(appPath, 'itsdu-auth-store.json')
             console.error(`Could not create auth store at ${authStorePath}`)
             console.error(`Make sure you have the correct ENV variables set in your .env file`)
             // delete the auth store file on the local machine
@@ -105,19 +117,18 @@ export class AuthService {
         this.store.clear()
     }
 
-    public setToken(key: store_keys, token: string) {
+    public setToken(key: StoreKey, token: string) {
         const buffer = safeStorage.encryptString(token);
         this.store.set(key, buffer.toString('latin1'));
     }
 
-    public deleteToken(key: store_keys) {
+    public deleteToken(key: StoreKey) {
         this.store.delete(key);
     }
 
-    public getToken(key: store_keys): string | null {
+    public getToken(key: StoreKey): string | null {
         try {
-            const token = safeStorage.decryptString(Buffer.from(this.store.get(key), 'latin1'));
-            return token
+            return safeStorage.decryptString(Buffer.from(this.store.get(key), 'latin1'));
         } catch (error) {
             console.error(error)
             return null
@@ -133,7 +144,7 @@ export class AuthService {
         if (!current_refresh_token) throw new Error('No refresh token')
         const axios = (await import('axios')).default
 
-        const {data} = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+        const { data } = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL(), {
             "grant_type": GrantType.REFRESH_TOKEN,
             "refresh_token": current_refresh_token,
             "client_id": ITSLEARNING_CLIENT_ID,
@@ -143,7 +154,7 @@ export class AuthService {
             }
         })
 
-        const {access_token, refresh_token} = data
+        const { access_token, refresh_token } = data
         if (!access_token || !refresh_token) throw new Error('Invalid refresh token')
         this.setToken('access_token', access_token)
         this.setToken('refresh_token', refresh_token)
@@ -164,8 +175,31 @@ export class AuthService {
         return null;
     }
 
-    public async loadSigninPage(win?: BrowserWindow | null) {
-        await win?.loadURL(getItslearningOAuthUrl())
+    public async loadSigninPage(win?: BrowserWindow | null, baseUrl?: string) {
+        if (!win) {
+            win = new BrowserWindow({
+                icon: require('path').join(process.env.VITE_PUBLIC, 'icon.ico'),
+                width: 800,
+                height: 600,
+                webPreferences: {
+                    nodeIntegration: false,
+                    contextIsolation: true,
+                    sandbox: true,
+                    devTools: false,
+                },
+                alwaysOnTop: true,
+                autoHideMenuBar: true,
+                title: 'itslearning Login',
+                resizable: false,
+                acceptFirstMouse: true,
+                focusable: true,
+                show: true,
+                skipTaskbar: true,
+                parent: BrowserWindow.getFocusedWindow() || undefined,
+            })
+        }
+
+        await win?.loadURL(getItslearningOAuthUrl(baseUrl))
         await win?.webContents.executeJavaScript(`__doPostBack('ctl00$ContentPlaceHolder1$federatedLoginButtons$ctl00$ctl00','')`)
         setTimeout(async () => {
             await win?.webContents.executeJavaScript(`document.getElementsByClassName('table')[0].click()`)

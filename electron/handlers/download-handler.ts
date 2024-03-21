@@ -1,7 +1,7 @@
-import {app, BrowserWindow, ipcMain, shell} from "electron";
+import { app, BrowserWindow, ipcMain, shell } from "electron";
 import axios from "axios";
-import {AuthService} from "../services/itslearning/auth/auth-service.ts";
-import {createScrapeWindow, getCookiesForDomain} from "../../electron/services/scrape/scraper.ts";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { createScrapeWindow, getCookiesForDomain } from "../../electron/services/scrape/scraper.ts";
 import {
     getMicrosoftOfficeDocumentAccessTokenAndUrl,
     getResourceAsFile,
@@ -10,9 +10,9 @@ import {
     getSSOLink,
     ITSLEARNING_RESOURCE_URL
 } from "../../electron/services/itslearning/resources/resources.ts";
-import {VITE_DEV_SERVER_URL} from "../main.ts";
-import {getFormattedCookies} from "../utils/cookies.ts";
-import {ITSLEARNING_URL} from "../../electron/services/itslearning/itslearning.ts";
+import { VITE_DEV_SERVER_URL } from "../main.ts";
+import { getFormattedCookies } from "../utils/cookies.ts";
+import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 import * as fs from 'fs';
 import path from "path";
 
@@ -20,7 +20,7 @@ const authService = AuthService.getInstance()
 
 export async function openLinkInBrowser(url: string, sso: boolean = true) {
     if (sso) {
-        const {data} = await axios.get(`https://sdu.itslearning.com/restapi/personal/sso/url/v1`, {
+        const { data } = await axios.get(new URL('/restapi/personal/sso/url/v1', ITSLEARNING_URL()).toString(), {
             params: {
                 'access_token': authService.getToken('access_token'),
                 'url': url
@@ -74,7 +74,7 @@ async function getBlobFromUrl() {
         const cookiesFormatted = getFormattedCookies(cookies)
         const resourceLink = await getResourceDownloadLink(ssoLink, win)
 
-        const {data} = await axios.get(resourceLink, {
+        const { data } = await axios.get(resourceLink, {
             headers: {
                 Cookie: cookiesFormatted,
             },
@@ -105,8 +105,8 @@ async function getMicrosoftOfficeDocument() {
             const win = createScrapeWindow()
             const ssoLink = await getResourceLinkByElementID(elementId)
             await win.loadURL(ssoLink)
-            const {downloadUrl, accessToken} = await getMicrosoftOfficeDocumentAccessTokenAndUrl(ssoLink)
-            return {downloadUrl, accessToken}
+            const { downloadUrl, accessToken } = await getMicrosoftOfficeDocumentAccessTokenAndUrl(ssoLink)
+            return { downloadUrl, accessToken }
         } catch (error) {
             console.error(error)
         }
@@ -114,7 +114,7 @@ async function getMicrosoftOfficeDocument() {
 }
 
 function uploadDocumentForAI() {
-    ipcMain.handle('uploadfile-for-ai', async (event, {url, elementId}: {
+    ipcMain.handle('uploadfile-for-ai', async (event, { url, elementId }: {
         url: string,
         elementId: string | number
     }) => {
@@ -143,7 +143,7 @@ function uploadDocumentForAI() {
             }
         }
 
-        const res = await fetch(`${baseUrl}/api/checkFile/${elementId}`)
+        const res = await fetch(new URL(baseUrl, `/api/checkFile/${elementId}`).toString())
         if (res.status === 200) throw new Error('File already exists for AI')
         if (res.status !== 404) throw new Error('Could not check if file exists for AI')
         const win = BrowserWindow.fromWebContents(event.sender)
@@ -157,7 +157,7 @@ function uploadDocumentForAI() {
         const cookiesFormatted = getFormattedCookies(cookies)
 
         //send cookies to the server so that the server can download the file with the cookies
-        const uploadRes = await axios.post(`${baseUrl}/api/uploadFile/${elementId}`, {
+        const uploadRes = await axios.post(new URL(baseUrl, `/api/uploadFile/${elementId}`).toString(), {
             cookies: cookiesFormatted,
             url
         })
@@ -167,7 +167,7 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-    ipcMain.handle("itslearning-element:download", async (event, {url, resourceLink, filename}) => {
+    ipcMain.handle("itslearning-element:download", async (event, { url, resourceLink, filename }) => {
         try {
 
             const win = BrowserWindow.fromWebContents(event.sender)
@@ -175,7 +175,7 @@ function itslearningElementDownload() {
             if (!win) return
             console.log('download# ' + url)
 
-            const cookies = await win.webContents.session.cookies.get({url: ITSLEARNING_RESOURCE_URL})
+            const cookies = await win.webContents.session.cookies.get({ url: ITSLEARNING_RESOURCE_URL })
 
             axios.get(url, {
                 responseType: 'stream',
@@ -220,7 +220,7 @@ function itslearningElementDownload() {
 }
 
 async function downloadPDF(win: BrowserWindow, url: string) {
-    let cookies = await win.webContents.session.cookies.get({url: ITSLEARNING_RESOURCE_URL});
+    let cookies = await win.webContents.session.cookies.get({ url: ITSLEARNING_RESOURCE_URL });
 
     if (!cookies) {
         cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
@@ -243,7 +243,7 @@ async function downloadPDF(win: BrowserWindow, url: string) {
 }
 
 function mergePDFsHandler() {
-    ipcMain.handle("app:mergePDFs", async (event, {elementIds}: { elementIds: string[] }) => {
+    ipcMain.handle("app:mergePDFs", async (event, { elementIds }: { elementIds: string[] }) => {
         try {
 
             const win = BrowserWindow.fromWebContents(event.sender)
@@ -252,12 +252,12 @@ function mergePDFsHandler() {
 
             const Dialog = await import('electron').then(electron => electron.dialog)
 
-            const {filePath} = await Dialog.showSaveDialog(win, {
+            const { filePath } = await Dialog.showSaveDialog(win, {
                 title: 'Save As',
                 defaultPath: path.join(app.getPath('downloads'), "merged.pdf"),
                 buttonLabel: 'Save',
                 filters: [
-                    {name: 'PDF Files', extensions: ['pdf']}
+                    { name: 'PDF Files', extensions: ['pdf'] }
                 ]
             })
 
@@ -273,7 +273,7 @@ function mergePDFsHandler() {
 
             const pdfArrayBuffers = await Promise.all(downloadPromises);
 
-            const {PDFDocument} = await import('pdf-lib')
+            const { PDFDocument } = await import('pdf-lib')
 
             const mergedPdf = await PDFDocument.create();
             for (const pdfArrayBuffer of pdfArrayBuffers) {
@@ -298,7 +298,7 @@ function mergePDFsHandler() {
 }
 
 function zipDownloadAllCourseResourcesHandler() {
-    ipcMain.handle("app:zipDownloadAllCourseResources", async (event, {elementIds, filename}) => {
+    ipcMain.handle("app:zipDownloadAllCourseResources", async (event, { elementIds, filename }) => {
         try {
             const win = BrowserWindow.fromWebContents(event.sender)
 
@@ -306,12 +306,12 @@ function zipDownloadAllCourseResourcesHandler() {
 
             const Dialog = await import('electron').then(electron => electron.dialog)
 
-            const {filePath} = await Dialog.showSaveDialog(win, {
+            const { filePath } = await Dialog.showSaveDialog(win, {
                 title: 'Save As',
                 defaultPath: path.join(app.getPath('downloads'), filename || "resources.zip"),
                 buttonLabel: 'Save',
                 filters: [
-                    {name: 'Zip Files', extensions: ['zip']}
+                    { name: 'Zip Files', extensions: ['zip'] }
                 ]
             })
 
@@ -354,11 +354,11 @@ function zipDownloadAllCourseResourcesHandler() {
 
             const zip = new JSZIP();
 
-            fileArrayBuffers.forEach(({filename, buffer}) => {
+            fileArrayBuffers.forEach(({ filename, buffer }) => {
                 zip.file(filename, buffer);
             });
 
-            const zipBlob = await zip.generateAsync({type: "nodebuffer"});
+            const zipBlob = await zip.generateAsync({ type: "nodebuffer" });
 
             const outputPath = path.join(filePath);
 
@@ -375,7 +375,7 @@ function zipDownloadAllCourseResourcesHandler() {
 }
 
 function downloadExternalHandler() {
-    ipcMain.handle("download:external", async (event, {url, filename}) => {
+    ipcMain.handle("download:external", async (event, { url, filename }) => {
         try {
             console.log(url, filename)
 
@@ -384,7 +384,7 @@ function downloadExternalHandler() {
             if (!win) return
 
             // download the file
-            const {download} = await import('electron-dl')
+            const { download } = await import('electron-dl')
             const downloadItem = await download(win, url, {
                 // directory: app.getPath('downloads'),
                 showProgressBar: true,
@@ -632,9 +632,9 @@ function getCoursePlanElementsHandler() {
             const payloadUrl = getPlannerPayloadUrl(courseId)
             const ssoLink = await getSSOLink(payloadUrl)
             await win.loadURL(ssoLink)
-            const cookies = await getCookiesForDomain(win, ITSLEARNING_URL)
+            const cookies = await getCookiesForDomain(win, ITSLEARNING_URL())
             win.close()
-            const {data} = await axios.post('https://sdu.itslearning.com/RestApi/planner/plan/multiple/forTopic', {
+            const { data } = await axios.post('https://sdu.itslearning.com/RestApi/planner/plan/multiple/forTopic', {
                 isSearching: false,
                 searchText: null,
                 pageNumber: 1,
@@ -657,7 +657,7 @@ function getCoursePlanElementsHandler() {
                 },
             })
 
-            const {gridData} = data
+            const { gridData } = data
 
             const coursePlanElements = await getCoursePlansElements(gridData)
 
@@ -698,7 +698,7 @@ function parseDateAndTime(dateString: string) {
         toDate = null;
     }
 
-    return {from: fromDate, to: toDate};
+    return { from: fromDate, to: toDate };
 }
 
 function streamFileHandler() {

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import path from 'node:path'
-import electron from 'vite-plugin-electron/simple'
+// import electron from 'vite-plugin-electron/simple'
+import electron from 'vite-plugin-electron'
 import react from '@vitejs/plugin-react'
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
@@ -9,20 +10,27 @@ import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 export default defineConfig({
   plugins: [
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
-    electron({
-      main: {
-        // Shortcut of `build.lib.entry`.
+    electron([
+      {
         entry: 'electron/main.ts',
       },
-      preload: {
-        // Shortcut of `build.rollupOptions.input`.
-        // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
-        input: path.join(__dirname, 'electron/preload.ts'),
+      {
+        entry: 'electron/preload.ts',
+        onstart({ reload }) {
+          // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+          // instead of restarting the entire Electron App.
+          reload()
+        },
       },
-      // Ployfill the Electron and Node.js built-in modules for Renderer process.
-      // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
-      renderer: {},
-    }),
+      {
+        entry: 'electron/login_preload.ts',
+        onstart({ reload }) {
+          // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+          // instead of restarting the entire Electron App.
+          reload()
+        },
+      }
+    ]),
   ],
   resolve: {
     alias: {

@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray} from "electron";
+import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from "electron";
 import path from 'path';
 
 process.env.DIST = path.join(__dirname, '../dist')
@@ -25,12 +25,12 @@ async function createMainWindow() {
     if (allWindows.length > 0) {
         allWindows.forEach(w => w.close())
     }
-    const {WindowOptionsService} = await import('./services/window-options/window-options-service');
+    const { WindowOptionsService } = await import('./services/window-options/window-options-service');
 
     const windowService = new WindowOptionsService()
     const windowOptions = windowService.getWindowOptions()
 
-    const {themeStore} = await import("./services/theme/theme-service.ts");
+    const { themeStore } = await import("./services/theme/theme-service.ts");
 
 
     const startUpTheme = themeStore.get('theme')
@@ -52,6 +52,7 @@ async function createMainWindow() {
         // darkTheme: nativeTheme.shouldUseDarkColors,
         backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
         frame: false,
+        roundedCorners: true,
         ...windowOptions,
     })
 
@@ -66,7 +67,7 @@ async function createMainWindow() {
             console.error(e)
         }
         if (origin.hostname === 'eu1wopi.itslearning.com' || referrer?.hostname.includes('officeapps.live.com')) {
-            if (!win) return {action: 'deny'}
+            if (!win) return { action: 'deny' }
 
             return {
                 action: 'allow',
@@ -83,14 +84,15 @@ async function createMainWindow() {
                     darkTheme: startUpTheme === 'dark',
                     backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
                     frame: false,
+                    roundedCorners: true,
                 }
             }
         } else {
             if (origin.hostname.includes('itslearning.com')) {
                 // open external in default browser
-                import("./handlers/download-handler.ts").then(({openLinkInBrowser}) => openLinkInBrowser(handler.url, true))
+                import("./handlers/download-handler.ts").then(({ openLinkInBrowser }) => openLinkInBrowser(handler.url, true))
             }
-            return {action: 'deny'}
+            return { action: 'deny' }
         }
     });
 
@@ -140,7 +142,8 @@ async function createMainWindow() {
 }
 
 export async function createAuthWindow() {
-    const {themeStore} = await import("./services/theme/theme-service.ts");
+    const wins = BrowserWindow.getAllWindows()
+    const { themeStore } = await import("./services/theme/theme-service.ts");
 
 
     const startUpTheme = themeStore.get('theme')
@@ -148,21 +151,43 @@ export async function createAuthWindow() {
 
     authWindow = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
-        autoHideMenuBar: true,
-        resizable: false,
-        height: 600,
+        webPreferences: {
+            preload: path.join(__dirname, 'login_preload.js'),
+        },
         width: 800,
-        // alwaysOnTop: true,
+        height: 600,
+        autoHideMenuBar: true,
         darkTheme: startUpTheme === 'dark',
         backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
+        resizable: false,
+        /* 
+        alwaysOnTop: true,
         focusable: true,
+        roundedCorners: true,
+        show: true, */
     })
 
-    const {AuthService} = await import("./services/itslearning/auth/auth-service.ts");
+    try {
+        const { initializeLoginHandler } = await import("./services/itslearning/auth/auth-service.ts");
 
-    const authService = AuthService.getInstance()
+        initializeLoginHandler()
 
-    await authService.loadSigninPage(authWindow)
+        const { initializeItslearningPreload } = await import("./services/itslearning/itslearning-service.ts");
+
+        initializeItslearningPreload()
+    } catch (error) {
+        console.error(error)
+    }
+
+    if (VITE_DEV_SERVER_URL) {
+        await authWindow.loadURL(new URL('/login', VITE_DEV_SERVER_URL).toString())
+    } else {
+        await authWindow.loadFile(path.join(process.env.DIST, 'login.html'))
+    }
+
+    if (wins.length > 0) {
+        wins.forEach(w => w.destroy())
+    }
 
     return authWindow
 }
@@ -253,7 +278,7 @@ async function initializeAllHandlers() {
     const appHandlerInitializer = (await import("./handlers/app-handler.ts")).default;
     const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts")).default;
     const initDownloadHandlers = (await import("./handlers/download-handler.ts")).default;
-    const {autoUpdater} = await import("electron-updater");
+    const { autoUpdater } = await import("electron-updater");
     autoUpdater.autoRunAppAfterInstall = true
     autoUpdater.autoInstallOnAppQuit = false
     autoUpdater.autoDownload = false
@@ -266,7 +291,7 @@ async function initializeAllHandlers() {
 app.whenReady().then(async () => {
     await initializeAllHandlers()
     if (VITE_DEV_SERVER_URL) {
-        const {startProxyDevServer} = await import("./utils/proxy-dev-server.ts");
+        const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
 
         await startProxyDevServer()
     }
@@ -296,7 +321,7 @@ app.whenReady().then(async () => {
             } else if (extension === '.webp') {
                 mimeType = 'image/webp'
             }
-            callback({mimeType, data})
+            callback({ mimeType, data })
         })
     })
 
@@ -312,10 +337,10 @@ app.whenReady().then(async () => {
         const code = authService.getAuthCodeFromURI(req.url);
         if (code) {
             try {
-                const {GrantType} = await import("./services/itslearning/auth/types/grant_type.ts");
+                const { GrantType } = await import("./services/itslearning/auth/types/grant_type.ts");
                 const axios = (await import("axios")).default;
 
-                const res = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL, {
+                const res = await axios.post(ITSLEARNING_OAUTH_TOKEN_URL(), {
                     "grant_type": GrantType.AUTHORIZATION_CODE,
                     "code": code,
                     "client_id": ITSLEARNING_CLIENT_ID,
@@ -324,7 +349,7 @@ app.whenReady().then(async () => {
                         "Content-Type": "application/x-www-form-urlencoded",
                     }
                 })
-                const {access_token, refresh_token} = res.data
+                const { access_token, refresh_token } = res.data
                 console.log(access_token, refresh_token)
                 authService.setToken('access_token', access_token)
                 authService.setToken('refresh_token', refresh_token)
@@ -341,7 +366,7 @@ app.whenReady().then(async () => {
                 await createAuthWindow()
             }
         } else {
-            authService.loadSigninPage(authWindow)
+            authService.loadSigninPage()
         }
     })
 
@@ -353,7 +378,7 @@ app.whenReady().then(async () => {
 
         const authService = AuthService.getInstance()
 
-        const {access_token, refresh_token} = authService.getTokens()
+        const { access_token, refresh_token } = authService.getTokens()
         if (!access_token || !refresh_token) {
             authService.clearTokens()
             throw new Error('Invalid refresh token')

@@ -1,28 +1,28 @@
-import {BrowserWindow, ipcMain} from "electron";
-import {AuthService} from "../services/itslearning/auth/auth-service.ts";
-import {store_keys} from '../services/itslearning/auth/types/store_keys.ts';
-import {createScrapeWindow, getCookiesForDomain} from '../services/scrape/scraper';
-import {getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL} from "../services/itslearning/resources/resources.ts";
-import {getFormattedCookies} from "../utils/cookies.ts";
-import {createAuthWindow} from "../../electron/main.ts";
+import { BrowserWindow, ipcMain } from "electron";
+import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { StoreKey } from '../services/itslearning/auth/types/store_keys.ts';
+import { createScrapeWindow, getCookiesForDomain } from '../services/scrape/scraper';
+import { getResourceLinkByElementID, ITSLEARNING_RESOURCE_URL } from "../services/itslearning/resources/resources.ts";
+import { getFormattedCookies } from "../utils/cookies.ts";
+import { createAuthWindow } from "../../electron/main.ts";
 import axios from "axios";
 
 const authService = AuthService.getInstance()
 
 function getTokenHandler() {
-    ipcMain.handle('itslearning-store:get', (_, val: store_keys) => {
+    ipcMain.handle('itslearning-store:get', (_, val: StoreKey) => {
         return authService.getToken(val)
     });
 }
 
 function setTokenHandler() {
-    ipcMain.handle('itslearning-store:set', (_, key: store_keys, val) => {
+    ipcMain.handle('itslearning-store:set', (_, key: StoreKey, val) => {
         authService.setToken(key, val)
     });
 }
 
 function deleteTokenHandler() {
-    ipcMain.handle('itslearning-store:delete', (_, key: store_keys) => {
+    ipcMain.handle('itslearning-store:delete', (_, key: StoreKey) => {
         authService.deleteToken(key)
     })
 }
@@ -34,8 +34,12 @@ function clearTokensHandler() {
 }
 
 function refreshTokensHandler() {
-    ipcMain.handle('itslearning-store:refresh', () => {
-        authService.refreshAccessToken()
+    ipcMain.handle('itslearning-store:refresh', async () => {
+        try {
+            await authService.refreshAccessToken()
+        } catch (error) {
+            console.error(error)
+        }
     });
 }
 
@@ -60,7 +64,9 @@ function logoutHandler() {
         authService.clearTokens()
         const wins = BrowserWindow.getAllWindows()
         const newWin = await createAuthWindow()
-        wins.forEach(win => win.destroy())
+        if (wins.length > 0) {
+            wins.forEach(win => win.destroy())
+        }
         newWin.setTitle('itslearning - Sign in')
     });
 }
@@ -76,9 +82,9 @@ function scrapePageHandler() {
                 timeout: 1000,
             });
 
-            const {data, status, statusText} = response
+            const { data, status, statusText } = response
 
-            return {data, status, statusText}
+            return { data, status, statusText }
         } catch (error) {
             console.error(error)
             return null

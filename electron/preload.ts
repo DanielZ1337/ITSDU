@@ -1,20 +1,20 @@
 /* eslint-disable no-unused-vars */
-import {contextBridge, ipcRenderer} from 'electron'
-import {sendNotifcation} from "./handlers/notifcation-handler.ts";
+import { contextBridge, ipcRenderer } from 'electron'
+import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import slugify from "slugify";
-import {store_keys} from './services/itslearning/auth/types/store_keys.ts';
-import {UpdateInfo} from 'electron-updater';
+import { StoreKey } from './services/itslearning/auth/types/store_keys.ts';
+import { UpdateInfo } from 'electron-updater';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
 contextBridge.exposeInMainWorld('auth', {
     store: {
-        get: (key: store_keys) => ipcRenderer.invoke('itslearning-store:get', key),
-        set: (key: store_keys, data: any) => ipcRenderer.invoke('electron-store:set', key, data),
+        get: (key: StoreKey) => ipcRenderer.invoke('itslearning-store:get', key),
+        set: (key: StoreKey, data: any) => ipcRenderer.invoke('electron-store:set', key, data),
         clear: () => ipcRenderer.invoke('itslearning-store:clear'),
     },
     logout: () => ipcRenderer.invoke('itslearning-store:logout'),
-    refresh: () => ipcRenderer.invoke('itslearning-store:refresh'),
+    refresh: async () => await ipcRenderer.invoke('itslearning-store:refresh'),
 })
 
 contextBridge.exposeInMainWorld('darkMode', {
@@ -26,8 +26,8 @@ contextBridge.exposeInMainWorld('darkMode', {
     }*/
 })
 contextBridge.exposeInMainWorld('notification', {
-    send: (title: string, body: string) => {
-        sendNotifcation(title, body)
+    send: (title: string, body: string, onClick?: () => void) => {
+        sendNotifcation(title, body, onClick)
     },
 })
 contextBridge.exposeInMainWorld('app', {
@@ -105,8 +105,8 @@ contextBridge.exposeInMainWorld('cookies', {
 contextBridge.exposeInMainWorld('resources', {
     officeDocuments: {
         get: async (elementId: number | string) => {
-            const {accessToken, downloadUrl} = await ipcRenderer.invoke('resources:get-office-document', elementId)
-            return {accessToken, downloadUrl}
+            const { accessToken, downloadUrl } = await ipcRenderer.invoke('resources:get-office-document', elementId)
+            return { accessToken, downloadUrl }
         }
     },
     file: {
@@ -128,8 +128,8 @@ contextBridge.exposeInMainWorld('resources', {
 
 contextBridge.exposeInMainWorld('scrape', {
     get: async (url: string) => {
-        const {data, status} = await ipcRenderer.invoke('scrape-page', url)
-        return {data, status}
+        const { data, status } = await ipcRenderer.invoke('scrape-page', url)
+        return { data, status }
     }
 })
 
@@ -169,7 +169,7 @@ declare global {
             get: () => Promise<boolean>
         },
         notification: {
-            send: (title: string, body: string) => void
+            send: (title: string, body: string, onClick?: () => void) => void
         },
         app: {
             exit: () => Promise<void>
@@ -198,8 +198,8 @@ declare global {
         },
         auth: {
             store: {
-                get: (key: store_keys) => Promise<string>
-                set: (key: store_keys, data: any) => Promise<void>
+                get: (key: StoreKey) => Promise<string>
+                set: (key: StoreKey, data: any) => Promise<void>
                 clear: () => Promise<void>
             }
             logout: () => Promise<void>
@@ -322,7 +322,7 @@ function useLoading() {
     }
 }
 
-const {appendLoading, removeLoading} = useLoading()
+const { appendLoading, removeLoading } = useLoading()
 domReady().then(appendLoading)
 
 window.onmessage = ev => {
