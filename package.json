@@ -59,9 +59,10 @@
     "win": "vite build && electron-builder --win",
     "linux": "vite build && electron-builder --linux",
     "wl": "vite build && electron-builder -wl",
+    "mwl": "vite build && electron-builder -mwl",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "release": "vite build && electron-builder -p always",
+    "release": "vite build && electron-builder -mwl -p always",
     "tsc": "tsc"
   },
   "dependencies": {
