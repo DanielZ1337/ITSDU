@@ -13,7 +13,7 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     target: 'esnext',
-    minify: false,
+    minify: 'esbuild',
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),

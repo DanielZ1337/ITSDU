@@ -1,13 +1,14 @@
-import {Input} from "@/components/ui/input.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {Plus} from "lucide-react";
-import {AiOutlineSearch} from "react-icons/ai";
-import {currentChatAtom, currentChatEnum} from "@/atoms/current-chat";
-import {useAtom} from "jotai";
-import React, {Suspense, useEffect, useState} from "react";
+import { Input } from "@/components/ui/input.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Plus } from "lucide-react";
+import { AiOutlineSearch } from "react-icons/ai";
+import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
+import { useAtom } from "jotai";
+import React, { Suspense, useEffect, useState } from "react";
 import MessagesSidebarChat from "./messages-sidebar-chat";
 import MessageSidebarChatFallback from "./fallbacks/message-sidebar-chat-fallback";
 import MessagesSidebarChatList from "./messages-sidebar-chat-list";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default function MessagesSidebar() {
     const [currentChat, setCurrentChat] = useAtom(currentChatAtom)
@@ -48,12 +49,12 @@ export default function MessagesSidebar() {
                         }}
                     />
                     <div className="absolute top-1/2 left-3 -translate-y-1/2 transform">
-                        <AiOutlineSearch className="h-5 w-5 text-gray-500"/>
+                        <AiOutlineSearch className="h-5 w-5 text-gray-500" />
                     </div>
                 </div>
                 <Button onClick={() => setCurrentChat(currentChatEnum.NEW)} variant={"outline"} size={"icon"}
-                        className={"shrink-0"}>
-                    <Plus className={"h-5 w-5 text-gray-500"}/>
+                    className={"shrink-0"}>
+                    <Plus className={"h-5 w-5 text-gray-500"} />
                 </Button>
             </div>
             <div className="overflow-y-auto overflow-x-hidden">
@@ -67,13 +68,23 @@ export default function MessagesSidebar() {
                         />
                     </div>
                 )}
-                <Suspense fallback={[...Array(10)].map((_, i) => (
-                    <div key={i} className={"animate-in slide-in-from-left-32"}>
-                        <MessageSidebarChatFallback/>
-                    </div>
-                ))}>
-                    <MessagesSidebarChatList query={search}/>
-                </Suspense>
+                <ErrorBoundary
+                    fallback={<>
+                        {[...Array(10)].map((_, i) => (
+                            <div key={i} className={"animate-in slide-in-from-left-32"}>
+                                <MessageSidebarChatFallback />
+                            </div>
+                        ))}
+                    </>}
+                >
+                    <Suspense fallback={[...Array(10)].map((_, i) => (
+                        <div key={i} className={"animate-in slide-in-from-left-32"}>
+                            <MessageSidebarChatFallback />
+                        </div>
+                    ))}>
+                        <MessagesSidebarChatList query={search} />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
         </div>
     )
