@@ -143,7 +143,7 @@ function uploadDocumentForAI() {
             }
         }
 
-        const res = await fetch(new URL(baseUrl, `/api/checkFile/${elementId}`).toString())
+        const res = await fetch(new URL(`/api/checkFile/${elementId}`, baseUrl).toString())
         if (res.status === 200) throw new Error('File already exists for AI')
         if (res.status !== 404) throw new Error('Could not check if file exists for AI')
         const win = BrowserWindow.fromWebContents(event.sender)
@@ -157,7 +157,7 @@ function uploadDocumentForAI() {
         const cookiesFormatted = getFormattedCookies(cookies)
 
         //send cookies to the server so that the server can download the file with the cookies
-        const uploadRes = await axios.post(new URL(baseUrl, `/api/uploadFile/${elementId}`).toString(), {
+        const uploadRes = await axios.post(new URL(`/api/uploadFile/${elementId}`, baseUrl).toString(), {
             cookies: cookiesFormatted,
             url
         })
