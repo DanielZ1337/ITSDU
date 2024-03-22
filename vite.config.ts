@@ -8,6 +8,19 @@ import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    sourcemap: true,
+    target: 'esnext',
+    minify: false,
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        login: path.resolve(__dirname, 'login.html'),
+      },
+    },
+  },
   plugins: [
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     electron([
