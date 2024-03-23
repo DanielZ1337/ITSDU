@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import React, { Suspense } from 'react'
 import {
     ContextMenu,
     ContextMenuContent,
@@ -8,15 +8,15 @@ import {
     ContextMenuSubTrigger,
     ContextMenuTrigger
 } from "@/components/ui/context-menu"
-import {useNavigate} from 'react-router-dom'
-import {courseNavLinks} from '@/lib/routes'
+import { useNavigate } from 'react-router-dom'
+import { courseNavLinks } from '@/lib/routes'
 import useGETcourseRootResources from '@/queries/courses/useGETcourseRootResources'
 import useGETcourseFolderResources from '@/queries/courses/useGETcourseFolderResources'
-import {useNavigateToResource} from '@/types/api-types/extra/learning-tool-id-types'
+import { useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
 
 const filteredCourseNavLinks = courseNavLinks.filter((route) => route.end === false)
 
-export default function CourseCardContextMenu({courseId, children}: { courseId: number, children: React.ReactNode }) {
+export default function CourseCardContextMenu({ courseId, children }: { courseId: number, children: React.ReactNode }) {
 
     const navigate = useNavigate()
 
@@ -31,19 +31,20 @@ export default function CourseCardContextMenu({courseId, children}: { courseId: 
             </ContextMenuTrigger>
             <ContextMenuContent>
                 {filteredCourseNavLinks.map((route) => {
-                    if (route.title === "Resources") {
-                        return (
+                    switch (route.title) {
+                        case "Resources": return (
                             <ContextMenuSub key={route.title}>
                                 <ContextMenuSubTrigger
-                                    onClick={() => handleItemClick(route.title)}>{route.title}</ContextMenuSubTrigger>
+                                    onClick={() => handleItemClick(route.href)}>{route.title}</ContextMenuSubTrigger>
                                 <Suspense fallback={null}>
-                                    <RootFolderResources courseId={courseId}/>
+                                    <RootFolderResources courseId={courseId} />
                                 </Suspense>
                             </ContextMenuSub>
                         )
-                    } else {
-                        return <ContextMenuItem key={route.title}
-                                                onClick={() => handleItemClick(route.title)}>{route.title}</ContextMenuItem>
+                        default: return (
+                            <ContextMenuItem key={route.title}
+                                onClick={() => handleItemClick(route.href)}>{route.title}</ContextMenuItem>
+                        )
                     }
                 })}
             </ContextMenuContent>
@@ -51,13 +52,13 @@ export default function CourseCardContextMenu({courseId, children}: { courseId: 
     )
 }
 
-function RootFolderResources({courseId}: { courseId: number }) {
+function RootFolderResources({ courseId }: { courseId: number }) {
 
     const navigate = useNavigate()
 
     const navigatetoResource = useNavigateToResource(navigate)
 
-    const {data} = useGETcourseRootResources({
+    const { data } = useGETcourseRootResources({
         courseId: courseId
     }, {
         suspense: true,
@@ -65,7 +66,7 @@ function RootFolderResources({courseId}: { courseId: number }) {
 
 
     if (data?.Resources.EntityArray.length === 0) {
-        return <EmptyFolder/>
+        return <EmptyFolder />
     }
 
     return (
@@ -77,26 +78,26 @@ function RootFolderResources({courseId}: { courseId: number }) {
                             <ContextMenuSubTrigger
                                 onClick={() => navigatetoResource(parent)}>{parent.Title}</ContextMenuSubTrigger>
                             <Suspense fallback={null}>
-                                <FolderResources courseId={courseId} folderId={parent.ElementId}/>
+                                <FolderResources courseId={courseId} folderId={parent.ElementId} />
                             </Suspense>
                         </ContextMenuSub>
                     )
                 } else {
                     return <ContextMenuItem key={parent.ElementId}
-                                            onClick={() => navigatetoResource(parent)}>{parent.Title}</ContextMenuItem>
+                        onClick={() => navigatetoResource(parent)}>{parent.Title}</ContextMenuItem>
                 }
             })}
         </ContextMenuSubContent>
     )
 }
 
-function FolderResources({courseId, folderId}: { courseId: number, folderId: number }) {
+function FolderResources({ courseId, folderId }: { courseId: number, folderId: number }) {
 
     const navigate = useNavigate()
 
     const navigatetoResource = useNavigateToResource(navigate)
 
-    const {data} = useGETcourseFolderResources({
+    const { data } = useGETcourseFolderResources({
         courseId,
         folderId
     }, {
@@ -105,7 +106,7 @@ function FolderResources({courseId, folderId}: { courseId: number, folderId: num
 
 
     if (data?.Resources.EntityArray.length === 0) {
-        return <EmptyFolder/>
+        return <EmptyFolder />
     }
 
     return (
@@ -117,13 +118,13 @@ function FolderResources({courseId, folderId}: { courseId: number, folderId: num
                             <ContextMenuSubTrigger
                                 onClick={() => navigatetoResource(parent)}>{parent.Title}</ContextMenuSubTrigger>
                             <Suspense fallback={null}>
-                                <FolderResources courseId={courseId} folderId={parent.ElementId}/>
+                                <FolderResources courseId={courseId} folderId={parent.ElementId} />
                             </Suspense>
                         </ContextMenuSub>
                     )
                 } else {
                     return <ContextMenuItem onClick={() => navigatetoResource(parent)}
-                                            key={parent.ElementId}>{parent.Title}</ContextMenuItem>
+                        key={parent.ElementId}>{parent.Title}</ContextMenuItem>
                 }
             })}
         </ContextMenuSubContent>

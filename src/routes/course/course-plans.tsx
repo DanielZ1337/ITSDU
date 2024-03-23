@@ -19,6 +19,7 @@ import Linkify from "linkify-react";
 import useGETcoursePlansCount from "@/queries/courses/useGETcoursePlansCount";
 import { useTabButtonHover } from "@/hooks/useTabButtonHover";
 import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
+import { ErrorBoundary } from "react-error-boundary";
 
 export default function CoursePlans() {
     const { id } = useParams();
@@ -72,9 +73,11 @@ export default function CoursePlans() {
                 {/* <Button variant="outline">Table view</Button> */}
             </div>
             <div className="max-w-5xl mx-auto w-full">
-                <Suspense fallback={<Loader />}>
-                    <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id} />
-                </Suspense>
+                <ErrorBoundary fallback={<Loader />}>
+                    <Suspense fallback={<Loader />}>
+                        <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id} />
+                    </Suspense>
+                </ErrorBoundary>
             </div>
         </div>
     )
