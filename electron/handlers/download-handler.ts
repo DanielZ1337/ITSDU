@@ -263,21 +263,24 @@ function mergePDFsHandler() {
 
             if (!filePath) return
 
-            const pdfs = await Promise.all(elementIds.map(async (elementId: string | number) => {
-                const resourceByElementId = await getResourceLinkByElementID(elementId)
-                const fileLink = await getResourceDownloadLink(resourceByElementId)
-                return fileLink
-            })) as string[]
-
-            const downloadPromises = pdfs.map(url => downloadPDF(win, url));
-
-            const pdfArrayBuffers = await Promise.all(downloadPromises);
-
             const { PDFDocument } = await import('pdf-lib')
 
+            const loadedPdfs = await Promise.all(elementIds.map(async (elementId) => {
+                // Fetch the resource link based on the element ID
+                const resourceByElementId = await getResourceLinkByElementID(elementId);
+
+                // Get the file link for the resource
+                const fileLink = await getResourceDownloadLink(resourceByElementId);
+
+                // Download the PDF
+                const pdfArrayBuffer = await downloadPDF(win, fileLink);
+
+                // Load the PDF document from the downloaded array buffer
+                return PDFDocument.load(pdfArrayBuffer);
+            }));
+
             const mergedPdf = await PDFDocument.create();
-            for (const pdfArrayBuffer of pdfArrayBuffers) {
-                const pdf = await PDFDocument.load(pdfArrayBuffer);
+            for (const pdf of loadedPdfs) {
                 const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
                 copiedPages.forEach((page) => {
                     mergedPdf.addPage(page);
@@ -317,54 +320,56 @@ function zipDownloadAllCourseResourcesHandler() {
 
             if (!filePath) return
 
+            const JSZIP = (await import('jszip')).default
+
+            const zip = new JSZIP();
+
             const downloadPromises = elementIds.map(async (elementId: string | number) => {
                 const resourceByElementId = await getResourceLinkByElementID(elementId)
                 const fileLink = await getResourceDownloadLink(resourceByElementId)
                 const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
                 const res = await axios.get(fileLink, {
-                    responseType: 'arraybuffer', // Use arraybuffer to handle binary data
+                    responseType: 'stream', // Use arraybuffer to handle binary data
                     headers: {
                         Cookie: getFormattedCookies(cookies),
                     },
-                    onDownloadProgress: (progress) => {
+                    /* onDownloadProgress: (progress) => {
                         if (progress.progress) {
                             const percent = Math.round(progress.progress * 100);
                             console.log(`Downloaded ${percent}%`);
                         }
-                    },
+                    }, */
                 });
 
                 // get the filename from the headers
                 const headerFilename = res.headers['content-disposition']
                 const filenameRegex = /filename\*?=["']([^"']+)["']/i;
-                const match = headerFilename.match(filenameRegex);
-                const decodedFilename = match ? decodeURIComponent(match[1]) : null;
-                const saveFilename = decodedFilename || filename
-                let finalFilename = saveFilename;
+                const match = headerFilename.match(filenameRegex)?.[1];
+                const saveFilename = decodeURIComponent(match ?? `file_${elementId}.bin`);
 
-                return {
-                    filename: finalFilename,
-                    buffer: Buffer.from(res.data, 'binary')
-                }
+                return new Promise((resolve, reject) => {
+                    const stream = res.data;
+                    const chunks: Buffer[] = [];
+                    stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+                    stream.on('end', () => {
+                        zip.file(saveFilename, Buffer.concat(chunks), { binary: true });
+                        resolve(null);
+                    });
+                    stream.on('error', reject);
+                });
             });
 
-            const fileArrayBuffers = await Promise.all(downloadPromises);
+            await Promise.all(downloadPromises);
 
-            const JSZIP = (await import('jszip')).default
-
-            const zip = new JSZIP();
-
-            fileArrayBuffers.forEach(({ filename, buffer }) => {
-                zip.file(filename, buffer);
+            // Generate the zip file
+            const outputPath = await new Promise((resolve, reject) => {
+                zip.generateNodeStream({ type: 'nodebuffer', streamFiles: true, compression: "DEFLATE", compressionOptions: { level: 1 } })
+                    .pipe(fs.createWriteStream(filePath))
+                    .on('finish', () => resolve(filePath))
+                    .on('error', reject);
             });
 
-            const zipBlob = await zip.generateAsync({ type: "nodebuffer" });
-
-            const outputPath = path.join(filePath);
-
-            fs.writeFileSync(outputPath, zipBlob);
-
-            return outputPath;
+            return outputPath
         } catch (e) {
             if (e instanceof Error) {
                 console.error(e)

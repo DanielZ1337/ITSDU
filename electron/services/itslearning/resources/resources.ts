@@ -17,7 +17,7 @@ export async function getResourceIdsBySSOLink(win: BrowserWindow, url: string) {
     await win.loadURL(iframeSrc)
     const downloadHref = await win.webContents.executeJavaScript(`document.querySelector('#aspnetForm').action`)
 
-    const regex = /LearningObjectId=([0-9]*)&LearningObjectInstanceId=([0-9]*)/gm;
+    const regex = /LearningObjectId=(\d*)&LearningObjectInstanceId=(\d*)/gm;
     const matches = regex.exec(downloadHref)
 
     if (!matches) throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')

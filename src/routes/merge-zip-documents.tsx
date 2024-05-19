@@ -1,7 +1,7 @@
 import useGETcourses from '@/queries/course-cards/useGETcourses'
 import useGETcourseAllResources from '@/queries/courses/useGETcourseAllResources'
 import useGETcoursesv3 from '@/queries/courses/useGETcoursesv3'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button'
@@ -21,7 +21,7 @@ import {
     useSortable,
     verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { CSS as CSSDND } from '@dnd-kit/utilities'
 import { Loader } from '@/components/ui/loader'
 import { cn } from '@/lib/utils'
 import { Toggle } from '@/components/ui/toggle'
@@ -79,6 +79,13 @@ export default function MergeZIPDocuments() {
         newSelectedDocuments.delete(selectedDocument.ElementId)
         setSelectedDocuments(newSelectedDocuments)
     }
+
+    const contextValue = useMemo(() => ({
+        selectedDocuments,
+        setSelectedDocuments,
+        addSelectedDocument,
+        removeSelectedDocument
+    }), [selectedDocuments, setSelectedDocuments, addSelectedDocument, removeSelectedDocument]);
 
     const { data, isLoading } = useGETcoursesv3({})
 
@@ -150,7 +157,7 @@ export default function MergeZIPDocuments() {
                 description: `The documents have been downloaded as a ZIP file to ${path}`,
                 duration: 5000,
                 variant: "success",
-                onClick: () => window.app.openItem(path)
+                onClick: () => void window.app.openItem(path)
             })
             setSelectedDocuments(null)
         }).catch((error) => {
@@ -193,7 +200,7 @@ export default function MergeZIPDocuments() {
                 description: `The documents have been merged into a single PDF file at ${path}`,
                 duration: 5000,
                 variant: "success",
-                onClick: () => window.app.openItem(path)
+                onClick: () => void window.app.openItem(path)
             })
             setSelectedDocuments(null)
         }).catch((error) => {
@@ -212,7 +219,7 @@ export default function MergeZIPDocuments() {
 
     return (
         <MergeDocumentsContext.Provider
-            value={{ selectedDocuments, setSelectedDocuments, addSelectedDocument, removeSelectedDocument }}>
+            value={contextValue}>
             <div
                 className='flex max-w-full w-full mx-auto justify-between p-20 h-full max-h-full flex-1 overflow-hidden gap-4'>
                 <Card className='flex flex-col justify-between max-h-full max-w-md w-full min-w-0'>
@@ -271,7 +278,15 @@ export default function MergeZIPDocuments() {
                                 onValueChange={setOpenedStarredUnstarred}>
                                 <AccordionItem value="starred">
                                     <AccordionTrigger>
-                                        <h2>Starred Courses</h2>
+                                        <h2>
+                                            Starred Courses
+                                            {/* <Button className='ml-2' variant={"secondary"}
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                }}>
+                                                Download all
+                                            </Button> */}
+                                        </h2>
                                     </AccordionTrigger>
                                     <AccordionContent>
                                         {starredCourses?.map((course) => (
@@ -335,7 +350,7 @@ function SortableItem({ id, children }: { id: number, children: React.ReactNode 
     } = useSortable({ id });
 
     const style = {
-        transform: CSS.Transform.toString(transform),
+        transform: CSSDND.Transform.toString(transform),
         transition,
     };
 
@@ -392,7 +407,7 @@ function CourseDocuments({ courseId, courseTitle, isDownloading }: {
         }
     }
 
-    const allDocumentsForCourseSelected = data.every((resource) => selectedDocuments?.has(resource.ElementId)) && data.length > 0 ? true : false
+    const allDocumentsForCourseSelected = data.every((resource) => selectedDocuments?.has(resource.ElementId)) && data.length > 0
 
     const disabled = isDownloading || isLoading
 
@@ -443,19 +458,25 @@ function SelectableDocumentCard({ resource, courseId, courseTitle, isLoading }: 
         }
     }
 
+    const openResource = () => {
+        if (isSupportedResourceInApp(resource)) {
+            navigateToResource(resource)
+        } else {
+            window.app.openExternal(resource.ContentUrl)
+        }
+    }
+
+    const selectedDocumentsArray = Array.from(selectedDocuments?.values() || [])
+
+    const selected = selectedDocumentsArray.some((document) => document.ElementId === resource.ElementId)
+
     return (
         <Card className='overflow-hidden p-2 bg-secondary border-none'>
             <CardDescription className='flex justify-between items-center text-white'>
 
                 <button
                     disabled={isLoading}
-                    onClick={() => {
-                        if (isSupportedResourceInApp(resource)) {
-                            navigateToResource(resource)
-                        } else {
-                            window.app.openExternal(resource.ContentUrl)
-                        }
-                    }}
+                    onClick={openResource}
                     className='px-4 text-white truncate w-fit cursor-pointer hover:text-white hover:underline transition-colors duration-200 ease-in-out'
                 >
                     {resource.Title}
@@ -464,7 +485,7 @@ function SelectableDocumentCard({ resource, courseId, courseTitle, isLoading }: 
                 <Toggle
                     disabled={isLoading}
                     variant={"outline"}
-                    pressed={selectedDocuments?.has(resource.ElementId) || false}
+                    pressed={selected}
                     onPressedChange={(checked) => handleOnCheckedChange(checked, resource)}
                     className='group data-[state=on]:bg-destructive data-[state=on]:text-destructive-foreground data-[state=off]:bg-success data-[state=off]:hover:bg-success-foreground data-[state=off]:hover:bg-success/50 data-[state=off]:hover:text-white data-[state=off]:text-white data-[state=on]:hover:bg-destructive data-[state=on]:hover:text-destructive-foreground border-none'
                 >

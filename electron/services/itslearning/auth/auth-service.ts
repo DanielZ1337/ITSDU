@@ -48,58 +48,35 @@ export class AuthService {
     private store: typeof Store
 
     constructor() {
-        if (instance) {
-            throw new Error("New instance cannot be created!!");
-        }
+        this.initializeStore();
+    }
 
-        const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env
+    private initializeStore() {
+        const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env;
+        if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file');
 
-        if (!VITE_ITSLEARNING_STORE_KEY) throw new Error('Missing VITE_ITSLEARNING_STORE_KEY in .env file')
-
-        if (!require("electron").app.isPackaged) {
-            this.store = new Store({
-                name: 'itsdu-auth-store-dev',
-                watch: true,
-                encryptionKey: VITE_ITSLEARNING_STORE_KEY,
-            })
-
-            instance = this
-
-            return
-        }
+        const storeName = require("electron").app.isPackaged ? 'itsdu-auth-store' : 'itsdu-auth-store-dev';
 
         try {
             this.store = new Store({
-                name: 'itsdu-auth-store',
+                name: storeName,
                 watch: true,
                 encryptionKey: VITE_ITSLEARNING_STORE_KEY,
-            })
-
+            });
         } catch (error) {
-            console.error(error)
-            const appPath = require('electron').app.getPath("userData")
-            const authStorePath = require('path').join(appPath, 'itsdu-auth-store.json')
-            console.error(`Could not create auth store at ${authStorePath}`)
-            console.error(`Make sure you have the correct ENV variables set in your .env file`)
-            // delete the auth store file on the local machine
-            const fs = require('fs')
-            fs.unlinkSync(authStorePath)
-
-            // create a new store again
-            try {
-                this.store = new Store({
-                    name: 'itsdu-auth-store',
-                    watch: true,
-                    encryptionKey: VITE_ITSLEARNING_STORE_KEY,
-                })
-            } catch (error) {
-                console.error(error)
-                require('electron').app.exit(1)
-            }
-
+            console.error(error);
+            AuthService.clearAuthStore(storeName);
+            this.initializeStore(); // Retry initialization
         }
+    }
 
-        instance = this
+    private static clearAuthStore(storeName: string) {
+        const appPath = require('electron').app.getPath('userData');
+        const authStorePath = require('path').join(appPath, `${storeName}.json`);
+        const fs = require('fs');
+        fs.unlinkSync(authStorePath);
+        console.error(`Deleted auth store at ${authStorePath}`);
+        console.error('Make sure you have the correct ENV variables set in your .env file');
     }
 
     public static getInstance(): AuthService {
