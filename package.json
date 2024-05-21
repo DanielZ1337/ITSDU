@@ -98,6 +98,7 @@
 		"@tanstack/react-virtual": "^3.5.1",
 		"@uidotdev/usehooks": "^2.4.1",
 		"axios": "^1.6.8",
+		"babel-plugin-react-compiler": "^0.0.0-experimental-592953e-20240517",
 		"cheerio": "^1.0.0-rc.12",
 		"class-variance-authority": "^0.7.0",
 		"cmdk": "^1.0.0",
@@ -109,6 +110,7 @@
 		"electron-settings": "^4.0.2",
 		"electron-store": "^8.2.0",
 		"electron-updater": "^6.1.8",
+		"eslint-plugin-react-compiler": "^0.0.0-experimental-c8b3f72-20240517",
 		"framer-motion": "^11.0.20",
 		"he": "^1.2.0",
 		"html-to-text": "^9.0.5",
@@ -122,10 +124,10 @@
 		"next-themes": "^0.3.0",
 		"papaparse": "^5.4.1",
 		"pdf-lib": "^1.17.1",
-		"react": "^18.2.0",
+		"react": "^19.0.0-beta-26f2496093-20240514",
 		"react-big-calendar": "^1.11.2",
 		"react-day-picker": "^8.10.0",
-		"react-dom": "^18.2.0",
+		"react-dom": "^19.0.0-beta-26f2496093-20240514",
 		"react-error-boundary": "^4.0.13",
 		"react-helmet-async": "^2.0.4",
 		"react-hook-form": "^7.51.1",
@@ -154,9 +156,9 @@
 		"@types/html-to-text": "^9.0.4",
 		"@types/node": "^20.11.30",
 		"@types/papaparse": "^5.3.14",
-		"@types/react": "^18.2.69",
+		"@types/react": "npm:types-react@beta",
 		"@types/react-big-calendar": "^1.8.9",
-		"@types/react-dom": "^18.2.22",
+		"@types/react-dom": "npm:types-react-dom@beta",
 		"@types/react-helmet": "^6.1.11",
 		"@types/react-syntax-highlighter": "^15.5.11",
 		"@types/superagent": "^8.1.6",
@@ -187,6 +189,10 @@
 		"vite": "^5.2.4",
 		"vite-plugin-electron": "^0.28.4",
 		"vite-plugin-electron-renderer": "^0.14.5"
+	},
+	"overrides": {
+		"@types/react": "npm:types-react@beta",
+		"@types/react-dom": "npm:types-react-dom@beta"
 	},
 	"main": "dist-electron/main.js"
 }
