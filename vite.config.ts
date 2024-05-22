@@ -7,19 +7,38 @@ import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 import babelReactPlugin from 'babel-plugin-react-compiler'
 
+const excludedPaths = [
+	'src/main.tsx',
+	'src/lib',
+	'src/queries',
+	'src/types',
+	'src/components/scroll-shadow.tsx',
+	'src/components/titlebar/titlebar-search.tsx',
+]
+
+function isExcluded(filename: string) {
+	const resolvedFilename = path.resolve(__dirname, filename)
+	return excludedPaths.some((excludedPath) => {
+		const resolvedExcludedPath = path.resolve(excludedPath)
+		return resolvedFilename.includes(resolvedExcludedPath)
+	})
+}
+
 const ReactCompilerConfig = {
 	compilationMode: 'all',
-	sources: (filename) => {
-		return (
-			filename.indexOf('src') !== -1 &&
-			filename !== path.resolve(__dirname, 'src/main.tsx') &&
-			filename !== path.resolve(__dirname, 'src/lib/routes.tsx') &&
-			!filename.includes('src\\lib') &&
-			!filename.includes('src\\queries') &&
-			!filename.includes('src\\types') &&
-			!filename.includes('src\\components\\scroll-shadow.tsx') &&
-			!filename.includes('src\\components\\titlebar\\titlebar-search.tsx')
-		)
+	sources: (filename: string) => {
+		// return (
+		// 	filename.indexOf('src') !== -1 &&
+		// 	filename !== path.resolve(__dirname, 'src/main.tsx') &&
+		// 	filename !== path.resolve(__dirname, 'src/lib/routes.tsx') &&
+		// 	!filename.includes('src\\lib') &&
+		// 	!filename.includes('src\\queries') &&
+		// 	!filename.includes('src\\types') &&
+		// 	!filename.includes('src\\components\\scroll-shadow.tsx') &&
+		// 	!filename.includes('src\\components\\titlebar\\titlebar-search.tsx')
+		// )
+
+		return filename.indexOf('src') !== -1 && !isExcluded(filename)
 	},
 }
 
