@@ -19,7 +19,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import ReactLoading from "react-loading";
+import { ReactLoading } from './react-loading-new/react-loading'
 import { toast as sonnerToast } from "sonner";
 import { Button } from "./ui/button";
 import type { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink";
@@ -275,4 +275,3 @@ export function ResourceContextMenu({
       </ContextMenuContent>
     </ContextMenu>
   );
-}

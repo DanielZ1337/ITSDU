@@ -12,7 +12,7 @@ import {
 import { Suspense, useCallback, useState } from "react";
 import ErrorPage from "@/error-page.tsx";
 import { ErrorBoundary } from "react-error-boundary";
-import ReactLoading from "react-loading";
+import { ReactLoading } from "./react-loading-new/react-loading";
 import "@/styles/3-dots-loading.css";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 import {
