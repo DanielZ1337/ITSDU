@@ -14,6 +14,9 @@ const excludedPaths = [
 	'src/types',
 	'src/components/scroll-shadow.tsx',
 	'src/components/titlebar/titlebar-search.tsx',
+	// 'node_modules/react-loading',
+	// 'node_modules/.vite/deps/react-loading.js',
+	// 'react-loading',
 ]
 
 function isExcluded(filename: string) {
