@@ -12,7 +12,6 @@ import {
 import { Suspense, useCallback, useState } from "react";
 import ErrorPage from "@/error-page.tsx";
 import { ErrorBoundary } from "react-error-boundary";
-import { ReactLoading } from "./react-loading-new/react-loading";
 import "@/styles/3-dots-loading.css";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 import {
@@ -23,6 +22,7 @@ import {
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { useSearch } from "../ui/search-input";
 import { Highlight } from "../ui/hightlight";
+import { ReactLoading } from "../react-loading-new/react-loading";
 
 type NestedItem = {
   [key: string]: boolean;
