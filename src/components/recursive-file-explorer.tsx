@@ -5,7 +5,6 @@ import useGETcourseFolderResources from '@/queries/courses/useGETcourseFolderRes
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorPage from '@/error-page.tsx'
 import { useToast } from '@/components/ui/use-toast.ts'
-import ReactLoading from 'react-loading'
 import '@/styles/3-dots-loading.css'
 import { ItsolutionsItslUtilsConstantsElementType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts'
 import {
@@ -16,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import { ReactLoading } from './react-loading-new/react-loading'
 
 type NestedItem = {
 	[key: string]: boolean

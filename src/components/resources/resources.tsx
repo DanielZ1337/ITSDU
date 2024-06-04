@@ -6,7 +6,6 @@ import { Suspense, useCallback, useState } from 'react'
 import ErrorPage from '@/error-page.tsx'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useToast } from '@/components/ui/use-toast.ts'
-import ReactLoading from 'react-loading'
 import '@/styles/3-dots-loading.css'
 import { ItsolutionsItslUtilsConstantsElementType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts'
 import {
@@ -16,6 +15,7 @@ import {
 } from '@/types/api-types/extra/learning-tool-id-types'
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 import { useNavigate } from 'react-router-dom'
+import { ReactLoading } from '../react-loading-new/react-loading'
 
 type NestedItem = {
 	[key: string]: boolean
