@@ -232,7 +232,7 @@ export default function MergeZIPDocuments() {
 	return (
 		<MergeDocumentsContext.Provider value={contextValue}>
 			<div className='flex max-w-full w-full mx-auto justify-between p-10 lg:p-20 h-full max-h-full flex-1 overflow-hidden gap-4 transition-all'>
-				<Card className='flex flex-col justify-between max-h-full max-w-lg w-full min-w-0'>
+				<Card className='flex flex-col justify-between max-h-full max-w-xl w-full min-w-0'>
 					<div className='flex flex-col max-h-full h-full w-full overflow-hidden'>
 						<CardHeader className='w-full'>
 							<CardTitle>Selected Documents</CardTitle>
@@ -240,7 +240,7 @@ export default function MergeZIPDocuments() {
 								<span>These are the documents you have selected to merge</span>
 								<div className='mt-2 flex gap-2 justify-end items-center w-full max-w-full overflow-auto transition-all'>
 									<Button
-										className='truncate'
+										className='line-clamp-1 w-fit truncate'
 										variant={'secondary'}
 										disabled={isButtonDisabled}
 										onClick={() => setSelectedDocuments(null)}
@@ -248,7 +248,7 @@ export default function MergeZIPDocuments() {
 										Clear
 									</Button>
 									<Button
-										className='truncate'
+										className='line-clamp-1 w-fit truncate'
 										variant={'secondary'}
 										disabled={isButtonDisabled || isMerging}
 										onClick={handleMergePDF}
@@ -256,7 +256,7 @@ export default function MergeZIPDocuments() {
 										{isMerging ? <Loader size={'sm'} /> : 'Merge PDFs'}
 									</Button>
 									<Button
-										className='truncate'
+										className='line-clamp-1 w-fit truncate'
 										variant={'secondary'}
 										disabled={isButtonDisabled}
 										onClick={downloadAsZip}
@@ -280,7 +280,7 @@ export default function MergeZIPDocuments() {
 												organizeByCourse: value,
 											})
 										}
-										className='group data-[state=on]:bg-success-200 text-white  data-[state=off]:bg-destructive data-[state=off]:hover:bg-destructive/75 data-[state=on]:hover:bg-success/75 data-[state=on]:hover:text-success-900 data-[state=off]:hover:text-muted-foreground'
+										className='line-clamp-1 w-fit truncate group data-[state=on]:bg-success-200 text-white  data-[state=off]:bg-destructive data-[state=off]:hover:bg-destructive/75 data-[state=on]:hover:bg-success/75 data-[state=on]:hover:text-success-900 data-[state=off]:hover:text-muted-foreground'
 									>
 										<span className='group-data-[state=off]:visible group-data-[state=off]:hidden'>
 											Sorted by course
