@@ -1,15 +1,21 @@
 import useGETcourseRootResources from '@/queries/courses/useGETcourseRootResources.ts'
-import RecursiveFileExplorer from '@/components/recursive-file-explorer.tsx'
+import RecursiveFileExplorer, { ResourceContextMenu, useDownloadToast } from '@/components/recursive-file-explorer.tsx'
 // eslint-disable-next-line no-redeclare
-import { File, FolderClosedIcon, FolderOpenIcon } from 'lucide-react'
-import { Suspense, useState } from 'react'
+import { File, FolderClosedIcon, FolderOpenIcon, MoreHorizontal } from 'lucide-react'
+import { Suspense, useCallback, useState } from 'react'
 import ErrorPage from '@/error-page.tsx'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useToast } from '@/components/ui/use-toast.ts'
+import ReactLoading from 'react-loading'
 import '@/styles/3-dots-loading.css'
 import { ItsolutionsItslUtilsConstantsElementType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts'
-import { isResourceFile } from '@/types/api-types/extra/learning-tool-id-types'
-import { ReactLoading } from '../react-loading-new/react-loading'
+import {
+	isResourceFile,
+	isSupportedResourceInApp,
+	useNavigateToResource,
+} from '@/types/api-types/extra/learning-tool-id-types'
+import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
+import { useNavigate } from 'react-router-dom'
 
 type NestedItem = {
 	[key: string]: boolean
@@ -32,6 +38,19 @@ export default function Resources({ courseId }: { courseId: number }) {
 	const toggleNested = (name: string | number) => {
 		setShowNested({ ...showNested, [name]: !showNested[name] })
 	}
+
+	const navigateToResource = useNavigateToResource()
+
+	const handleResourceNavigation = useCallback(
+		(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource) => {
+			if (isSupportedResourceInApp(resource)) {
+				navigateToResource(resource)
+			} else {
+				window.app.openExternal(resource.ContentUrl)
+			}
+		},
+		[navigateToResource]
+	)
 
 	return (
 		<div className={'block flex-wrap p-2'}>
@@ -60,70 +79,17 @@ export default function Resources({ courseId }: { courseId: number }) {
 						{/* rendering files */}
 						{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 						{parent.ElementType !==
-							ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] &&
-							(isResourceFile(parent) ? (
+							ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
+							<ResourceContextMenu resource={parent}>
 								<button
-									className={'inline-flex gap-2'}
-									onClick={async () => {
-										toast({
-											title: 'Downloading...',
-											description: parent.Title,
-											duration: 3000,
-										})
-										await window.download.start(parent.ElementId, parent.Title)
-										window.ipcRenderer.once('download:complete', (_, args) => {
-											console.log(args)
-											toast({
-												title: 'Downloaded',
-												description: parent.Title,
-												duration: 3000,
-												variant: 'success',
-												onMouseDown: async () => {
-													// if the user clicks on the toast, open the file
-													// get the time that the mouse was pressed
-													const mouseDownTime = new Date().getTime()
-													// wait for the mouse to be released
-													await new Promise<void>((resolve) => {
-														window.addEventListener(
-															'mouseup',
-															() => {
-																resolve()
-															},
-															{ once: true }
-														)
-													})
-
-													// if the mouse was pressed for less than 500ms, open the file
-													if (new Date().getTime() - mouseDownTime < 100) {
-														console.log('Opening shell')
-														await window.app.openShell(args)
-														dismiss()
-													} else {
-														console.log('Not opening shell')
-													}
-												},
-											})
-										})
-										window.ipcRenderer.once('download:error', (_, args) => {
-											console.log(args)
-											toast({
-												title: 'Download error',
-												description: parent.Title,
-												duration: 3000,
-												variant: 'destructive',
-											})
-										})
-									}}
+									className={'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300'}
+									onClick={() => handleResourceNavigation(parent)}
 								>
 									<File className={'shrink-0 inline-block'} />
 									<p className={'text-left'}>{parent.Title}</p>
 								</button>
-							) : (
-								<div className={'inline-flex gap-2'}>
-									<File className={'shrink-0 inline-block'} />
-									<p className={'text-left'}>{parent.Title}</p>
-								</div>
-							))}
+							</ResourceContextMenu>
+						)}
 						<ErrorBoundary fallback={<ErrorPage />}>
 							<Suspense
 								fallback={
