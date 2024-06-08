@@ -1,6 +1,6 @@
 # ITSDU
 
-**Unofficial** Desktop application for interacting with itslearning.
+**Unofficial** desktop application for interacting with itslearning.
 
 ## Features
 - **Streamlined Course Navigation:** Quickly access courses and assignments.
