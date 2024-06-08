@@ -1,4 +1,4 @@
-# itsdu
+# ITSDU
 
 Desktop application for interacting with SDU itslearning.
 
