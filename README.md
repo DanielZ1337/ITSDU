@@ -3,13 +3,13 @@
 Desktop application for interacting with SDU itslearning.
 
 ## Features
-- Streamlined Course Navigation: Quickly access courses and assignments.
-- Quick Resource Management: Easily find, download, and open resources.
-- Instant Notifications: Receive real-time updates and announcements.
-- Personalized Dashboard: Customize the dashboard to display important information.
-- Offline Access: Access previously loaded materials without an internet connection.
-- User Settings: Customize notification preferences and interface settings.
-- Performance Enhancements: Optimized for faster load times and smoother interactions.
+- **Streamlined Course Navigation:** Quickly access courses and assignments.
+- **Quick Resource Management:** Easily find, download, and open resources.
+- **Instant Notifications:** Receive real-time updates and announcements.
+- **Personalized Dashboard:** Customize the dashboard to display important information.
+- **Offline Access:** Access previously loaded materials without an internet connection.
+- **User Settings:** Customize notification preferences and interface settings.
+- **Performance Enhancements:** Optimized for faster load times and smoother interactions.
 
 ## Installation
 1. Clone the repository:
