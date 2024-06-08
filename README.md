@@ -1,6 +1,6 @@
 # ITSDU
 
-Desktop application for interacting with SDU itslearning.
+Desktop application for interacting with itslearning.
 
 ## Features
 - **Streamlined Course Navigation:** Quickly access courses and assignments.
