@@ -10,7 +10,7 @@ Desktop application for interacting with SDU itslearning.
 - Offline Access: Access previously loaded materials without an internet connection.
 - User Settings: Customize notification preferences and interface settings.
 - Performance Enhancements: Optimized for faster load times and smoother interactions.
-- 
+
 ## Installation
 1. Clone the repository:
 ```bash
