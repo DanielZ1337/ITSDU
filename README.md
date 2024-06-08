@@ -40,7 +40,7 @@ npm start
 5. Create a new Pull Request
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](https://github.com/danielz1337/itsdu/LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/DanielZ1337/ITSDU/blob/main/LICENSE) file for details.
 
 ## More Information
 For detailed features and release notes, visit the [official site](https://itsdu.danielz.dev) and [releases page](https://itsdu.danielz.dev/releases)
