@@ -53,11 +53,9 @@ npm run mac
 ```
 
 2. Run the application
-Built application will be in ```/releases/v{version}```
-
-Run setup executable.
-
-Executable for running without installing will be in ```{platform}-unpacked```
+- Built application will be in ```/releases/v{version}```
+- Run setup executable.
+- Executable for running without installing will be in ```{platform}-unpacked```
 
 ## Contributing
 1. Fork the repository
