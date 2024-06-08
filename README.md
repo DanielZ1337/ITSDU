@@ -26,11 +26,38 @@ npm install
 ```
 
 ## Usage
-Run the application:
+Run the application in development mode:
 
 ```bash
 npm dev
 ```
+
+## Build
+How to build and run production application:
+
+1. Build application
+
+Linux:
+```bash
+npm run linux
+```
+
+Windows:
+```bash
+npm run win
+```
+
+macOS:
+```bash
+npm run mac
+```
+
+2. Run the application
+Built application will be in ```/releases/v{version}```
+
+Run setup executable.
+
+Executable for running without installing will be in ```{platform}-unpacked```
 
 ## Contributing
 1. Fork the repository
