@@ -13,6 +13,7 @@ import { courseNavLinks } from '@/lib/routes'
 import useGETcourseRootResources from '@/queries/courses/useGETcourseRootResources'
 import useGETcourseFolderResources from '@/queries/courses/useGETcourseFolderResources'
 import { useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
+import { ResourceContextMenu } from '@/components/recursive-file-explorer'
 
 export default function CourseCardContextMenu({ courseId, children }: { courseId: number; children: React.ReactNode }) {
 	const filteredCourseNavLinks = courseNavLinks.filter((route) => route.end === false)
@@ -90,12 +91,18 @@ function RootFolderResources({ courseId }: { courseId: number }) {
 					)
 				} else {
 					return (
-						<ContextMenuItem
+						<ResourceContextMenu
+							resource={parent}
 							key={parent.ElementId}
-							onClick={() => navigatetoResource(parent)}
+							asChild={false}
 						>
-							{parent.Title}
-						</ContextMenuItem>
+							<ContextMenuItem
+								key={parent.ElementId}
+								onClick={() => navigatetoResource(parent)}
+							>
+								{parent.Title}
+							</ContextMenuItem>
+						</ResourceContextMenu>
 					)
 				}
 			})}
@@ -139,12 +146,14 @@ function FolderResources({ courseId, folderId }: { courseId: number; folderId: n
 					)
 				} else {
 					return (
-						<ContextMenuItem
-							onClick={() => navigatetoResource(parent)}
-							key={parent.ElementId}
-						>
-							{parent.Title}
-						</ContextMenuItem>
+						<ResourceContextMenu resource={parent}>
+							<ContextMenuItem
+								onClick={() => navigatetoResource(parent)}
+								key={parent.ElementId}
+							>
+								{parent.Title}
+							</ContextMenuItem>
+						</ResourceContextMenu>
 					)
 				}
 			})}
