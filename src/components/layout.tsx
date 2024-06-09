@@ -35,6 +35,7 @@ const SonnerLazy = lazy(() =>
 export default function Layout() {
 	const { sidebarActive } = useSidebar()
 	const ref = useRef<HTMLDivElement>(null)
+	useDownloadToastListener()
 
 	const { pathname } = useLocation()
 
