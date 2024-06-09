@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { cn } from '../lib/utils'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Link, Outlet, useLocation } from 'react-router-dom'
@@ -6,6 +6,8 @@ import { Spinner } from '@nextui-org/spinner'
 import MessagesDropDownSkeleton from '@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback'
 import NotificationsDropDownSkeleton from '@/components/notifications/fallback/notifications-dropdown-fallback'
 import { useSidebar } from '@/hooks/atoms/useSidebar'
+import { useToast } from './ui/use-toast'
+import { useDownloadToast } from './recursive-file-explorer'
 
 const ToasterLazy = lazy(() => import('@/components/ui/toaster').then((module) => ({ default: module.Toaster })))
 const ScrollToTopButtonLazy = lazy(() => import('@/components/scroll-to-top-button'))
@@ -24,6 +26,7 @@ const SuspenseWrapperLazy = lazy(() => import('./suspense-wrapper'))
 export default function Layout() {
 	const { sidebarActive } = useSidebar()
 	const ref = useRef<HTMLDivElement>(null)
+	useDownloadToastListener()
 
 	const { pathname } = useLocation()
 
@@ -138,4 +141,118 @@ export default function Layout() {
 			</div>
 		</div>
 	)
+}
+
+// function ToasterListener() {
+// 	const { toast } = useToast()
+
+// 	useEffect(() => {
+// 		const handleToastClose = (toastId: string) => {
+// 			toast.dismiss(toastId)
+// 		}
+
+// 		window.ipcRenderer.on('toast:close', handleToastClose)
+
+// 		return () => {
+// 			window.ipcRenderer.removeListener('toast:close', handleToastClose)
+// 		}
+// 	}, [toast])
+
+// 	return null
+// }
+
+function useDownloadToastListener() {
+	const { toast, dismiss, toasts } = useToast()
+
+	useEffect(() => {
+		window.ipcRenderer.addListener('download:complete', (_, args) => {
+			console.log(args)
+			toast({
+				title: 'Downloaded',
+				description: args,
+				duration: 3000,
+				variant: 'success',
+				onMouseDown: async () => {
+					// if the user clicks on the toast, open the file
+					// get the time that the mouse was pressed
+					const mouseDownTime = Date.now()
+					// wait for the mouse to be released
+					await new Promise<void>((resolve) => {
+						window.addEventListener(
+							'mouseup',
+							() => {
+								resolve()
+							},
+							{ once: true }
+						)
+					})
+
+					// if the mouse was pressed for less than 500ms, open the file
+					if (Date.now() - mouseDownTime < 80) {
+						console.log('Opening shell')
+						await window.app.openShell(args)
+						dismiss()
+					} else {
+						console.log('Not opening shell')
+					}
+				},
+			})
+		})
+
+		window.ipcRenderer.once('download:error', (_, args) => {
+			console.log(args)
+			toast({
+				title: 'Download error',
+				description: args,
+				duration: 3000,
+				variant: 'destructive',
+			})
+		})
+
+		return () => {
+			window.ipcRenderer.removeListener('download:complete', (_, args) => {
+				console.log(args)
+				toast({
+					title: 'Downloaded',
+					description: args,
+					duration: 3000,
+					variant: 'success',
+					onMouseDown: async () => {
+						// if the user clicks on the toast, open the file
+						// get the time that the mouse was pressed
+						const mouseDownTime = Date.now()
+						// wait for the mouse to be released
+						await new Promise<void>((resolve) => {
+							window.addEventListener(
+								'mouseup',
+								() => {
+									resolve()
+								},
+								{ once: true }
+							)
+						})
+
+						// if the mouse was pressed for less than 500ms, open the file
+						if (Date.now() - mouseDownTime < 80) {
+							console.log('Opening shell')
+							await window.app.openShell(args)
+							dismiss()
+						} else {
+							console.log('Not opening shell')
+						}
+					},
+				})
+			})
+
+			window.ipcRenderer.removeListener('download:error', (_, args) => {
+				console.log(args)
+				toast({
+					title: 'Download error',
+					description: args,
+					duration: 3000,
+					variant: 'destructive',
+				})
+			})
+		}
+	}, [])
 }

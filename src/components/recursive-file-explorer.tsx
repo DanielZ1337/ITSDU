@@ -126,72 +126,43 @@ export default function RecursiveFileExplorer({
 export function useDownloadToast({ resource }: { resource: ItslearningRestApiEntitiesPersonalCourseCourseResource }) {
 	const { toast, dismiss } = useToast()
 
-	return async () => {
-		toast({
-			title: 'Downloading...',
-			description: resource.Title,
-			duration: 3000,
-		})
-		await window.download.start(resource.ElementId, resource.Title)
-		window.ipcRenderer.once('download:complete', (_, args) => {
-			console.log(args)
+	return {
+		downloadToast: async () => {
 			toast({
-				title: 'Downloaded',
+				title: 'Downloading...',
 				description: resource.Title,
 				duration: 3000,
-				variant: 'success',
-				onMouseDown: async () => {
-					// if the user clicks on the toast, open the file
-					// get the time that the mouse was pressed
-					const mouseDownTime = Date.now()
-					// wait for the mouse to be released
-					await new Promise<void>((resolve) => {
-						window.addEventListener(
-							'mouseup',
-							() => {
-								resolve()
-							},
-							{ once: true }
-						)
-					})
-
-					// if the mouse was pressed for less than 500ms, open the file
-					if (Date.now() - mouseDownTime < 80) {
-						console.log('Opening shell')
-						await window.app.openShell(args)
-						dismiss()
-					} else {
-						console.log('Not opening shell')
-					}
-				},
 			})
-		})
-		window.ipcRenderer.once('download:error', (_, args) => {
-			console.log(args)
-			toast({
-				title: 'Download error',
-				description: resource.Title,
-				duration: 3000,
-				variant: 'destructive',
+			await window.download.start(resource.ElementId, resource.Title)
+			window.ipcRenderer.once('download:error', (_, args) => {
+				console.log(args)
+				toast({
+					title: 'Download error',
+					description: resource.Title,
+					duration: 3000,
+					variant: 'destructive',
+				})
 			})
-		})
+		},
 	}
 }
 
 export function ResourceContextMenu({
 	resource,
 	children,
+	asChild = true,
 }: {
 	resource: ItslearningRestApiEntitiesPersonalCourseCourseResource
 	children: React.ReactNode
+	asChild?: boolean
 }) {
 	const navigateToResource = useNavigateToResource()
 
-	const downloadToast = useDownloadToast({ resource })
+	const { downloadToast } = useDownloadToast({ resource })
 
 	return (
 		<ContextMenu>
-			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+			<ContextMenuTrigger asChild={asChild}>{children}</ContextMenuTrigger>
 			<ContextMenuContent>
 				<ContextMenuItem
 					onClick={(e) => {
@@ -205,7 +176,6 @@ export function ResourceContextMenu({
 					<ContextMenuItem
 						onClick={(e) => {
 							e.stopPropagation()
-							console.log(resource)
 							// window.download.start(resource.ElementId, resource.Title)
 							downloadToast()
 						}}
