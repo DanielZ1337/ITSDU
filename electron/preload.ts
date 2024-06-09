@@ -4,6 +4,7 @@ import { sendNotifcation } from './handlers/notifcation-handler.ts'
 import slugify from 'slugify'
 import { StoreKey } from './services/itslearning/auth/types/store_keys.ts'
 import { UpdateInfo } from 'electron-updater'
+import type { FileRepository } from './services/itslearning/resources/resources.ts'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
@@ -119,6 +120,9 @@ contextBridge.exposeInMainWorld('resources', {
 		stream: {
 			start: async (elementId: number | string) => await ipcRenderer.invoke('resources:stream-start', elementId),
 		},
+		getDirectFileRepository: async (elementId: number | string) =>
+			await ipcRenderer.invoke('resources:get-direct-file-repository', elementId),
+		getDirectUrl: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-direct-url', elementId),
 	},
 	media: {
 		get: async (elementId: number | string) => await ipcRenderer.invoke('resources:get-media', elementId),
@@ -158,6 +162,8 @@ declare global {
 				stream: {
 					start: (elementId: number | string) => Promise<void>
 				}
+				getDirectFileRepository: (elementId: number | string) => Promise<FileRepository>
+				getDirectUrl: (elementId: number | string) => Promise<string>
 			}
 			media: {
 				get: (elementId: number | string) => Promise<string>

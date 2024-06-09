@@ -18,19 +18,68 @@ export const GET_ITSLEARNING_ELEMENT_URL = (elementId: string) =>
 		ITSLEARNING_URL()
 	).toString()
 
-export async function getResourceIdsBySSOLink(win: BrowserWindow, url: string) {
-	await win.loadURL(url)
-	const iframeSrc = await win.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
-	await win.loadURL(iframeSrc)
-	const downloadHref = await win.webContents.executeJavaScript(`document.querySelector('#aspnetForm').action`)
+export interface FileRepository {
+	fileId: string
+	bucket: string
+	filePath: string
+	fileName: string
+	fileSize: number
+	mimeType: string
+	created: string
+	createdPersonId: number
+	createdCustomerId: number
+	modified: string
+	modifiedPersonId: number
+	modifiedCustomerId: number
+	anonymousRead: boolean
+	isTempFile: boolean
+	directUrl: string
+	status: string
+}
 
-	const regex = /LearningObjectId=(\d*)&LearningObjectInstanceId=(\d*)/gm
-	const matches = regex.exec(downloadHref)
+export async function getFileRepositoryBySSOLink(win: BrowserWindow): Promise<FileRepository> {
+	const InitASPXsrc = await win.webContents.executeJavaScript(
+		`document.querySelectorAll('iframe')[1].contentWindow.document.querySelectorAll('iframe')[0].contentWindow.document.querySelectorAll('iframe')[0].src`
+	)
 
-	if (!matches) throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')
+	const fileInfoUrl = new URL(InitASPXsrc).searchParams.get('FileInfoUrl')
 
-	const LearningObjectId = matches[1]
-	const LearningObjectInstanceId = matches[2]
+	if (!fileInfoUrl) throw new Error('Could not find file info url')
+
+	return (await axios.get(fileInfoUrl)).data
+}
+
+export async function getDirectUrlBySSOLink(win: BrowserWindow) {
+	return await win.webContents.executeJavaScript(
+		`document.querySelectorAll('iframe')[1].contentWindow.document.querySelectorAll('iframe')[0].contentWindow.document.querySelectorAll('form')[0].querySelector('[src]').src`
+	)
+}
+
+export async function getResourceIdsBySSOLink(win: BrowserWindow) {
+	const downloadHref = await win.webContents.executeJavaScript(`
+		(function() {
+		  const iframe = document.querySelectorAll('iframe')[1];
+		  if (iframe) {
+			const iframeDoc = iframe.contentWindow.document;
+			const form = iframeDoc.querySelector('form');
+			if (form) {
+			  return form.getAttribute('action');
+			}
+		  }
+		  return null;
+		})()
+	  `)
+
+	if (!downloadHref) throw new Error('Could not find download href')
+
+	const downloadUrl = new URL(downloadHref, ITSLEARNING_RESOURCE_URL)
+
+	const searchParams = Object.fromEntries(downloadUrl.searchParams.entries())
+
+	const { LearningObjectId, LearningObjectInstanceId } = searchParams
+
+	if (!LearningObjectId || !LearningObjectInstanceId)
+		throw new Error('Could not find LearningObjectId and LearningObjectInstanceId')
 
 	return { LearningObjectId, LearningObjectInstanceId }
 }
@@ -45,35 +94,52 @@ export function getResourceFileLinkByIds(LearningObjectId: string | number, Lear
 }
 
 export async function getResourceDownloadLink(url: string, customWin?: BrowserWindow) {
-	const win = customWin || createScrapeWindow()
-	const { LearningObjectId, LearningObjectInstanceId } = await getResourceIdsBySSOLink(win, url)
+	const win =
+		customWin ||
+		createScrapeWindow({
+			webPreferences: {
+				webSecurity: false,
+			},
+		})
+	await win.loadURL(url)
+	const { LearningObjectId, LearningObjectInstanceId } = await getResourceIdsBySSOLink(win)
 	win.close()
 	return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId)
 }
 
-export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(url: string, customWin?: BrowserWindow) {
+export async function getMicrosoftOfficeDocumentAccessTokenAndUrl(customWin?: BrowserWindow) {
 	const win =
 		customWin ||
 		createScrapeWindow({
-			show: false,
 			webPreferences: {
-				nodeIntegration: true,
-				javascript: false,
+				webSecurity: false,
 			},
 		})
-	await win.loadURL(url)
-	// document.getElementById('ctl00_ContentPlaceHolder_ExtensionIframe')
-	const iframeSrc = await win.webContents.executeJavaScript(`document.querySelectorAll('iframe')[1].src`)
-	await win.loadURL(iframeSrc)
-	// document.getElementById('ctl00_ctl00_MainFormContent_PreviewIframe_FilePreviewIframe')
-	const previewIframeSrc = await win.webContents.executeJavaScript(`document.querySelector('iframe').src`)
-	await win.loadURL(previewIframeSrc)
-	const accessToken = await win.webContents.executeJavaScript(
-		`document.querySelector('input[name="access_token"]').value`
-	)
-	const downloadUrl = await win.webContents.executeJavaScript(`document.querySelectorAll('form')[1].action`)
-	win.close()
+
+	const result = await win.webContents.executeJavaScript(`
+		(function() {
+		let error = null;
+
+		  try {
+			const platformIframeDoc = document.querySelectorAll('iframe')[1].contentWindow.document;
+			const viewFileIframe = platformIframeDoc.querySelectorAll('iframe')[0].contentWindow.document;
+			const form = viewFileIframe.querySelectorAll('form')[1];
+		  
+			return {
+				accessToken: form.querySelector('input[name="access_token"]').value,
+				downloadUrl: form.action
+			};
+		  } catch (e) {
+			error = e;
+		  }
+		  return error;
+		})()
+	  `)
+
+	const { accessToken, downloadUrl } = result
+
 	if (!accessToken || !downloadUrl) throw new Error('Could not get microsoft office document')
+
 	return { accessToken, downloadUrl }
 }
 
