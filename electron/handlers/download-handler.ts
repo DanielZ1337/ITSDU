@@ -1,9 +1,13 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import axios from 'axios'
-import { AuthService } from '../services/itslearning/auth/auth-service.ts'
-import { createScrapeWindow, getCookiesForDomain } from '../../electron/services/scrape/scraper.ts'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import * as fs from 'fs'
+import type JSZip from 'jszip'
+import path from 'path'
+import { ITSLEARNING_URL } from '../../electron/services/itslearning/itslearning.ts'
 import {
 	getCourseByElementId,
+	getDirectUrlBySSOLink,
+	getFileRepositoryBySSOLink,
 	getMicrosoftOfficeDocumentAccessTokenAndUrl,
 	getResourceAsFile,
 	getResourceDownloadLink,
@@ -11,12 +15,10 @@ import {
 	getSSOLink,
 	ITSLEARNING_RESOURCE_URL,
 } from '../../electron/services/itslearning/resources/resources.ts'
+import { createScrapeWindow, getCookiesForDomain } from '../../electron/services/scrape/scraper.ts'
 import { VITE_DEV_SERVER_URL } from '../main.ts'
+import { AuthService } from '../services/itslearning/auth/auth-service.ts'
 import { getFormattedCookies } from '../utils/cookies.ts'
-import { ITSLEARNING_URL } from '../../electron/services/itslearning/itslearning.ts'
-import * as fs from 'fs'
-import path from 'path'
-import type JSZip from 'jszip'
 
 const authService = AuthService.getInstance()
 
@@ -69,7 +71,9 @@ function getResourceDownloadLinkForElementId() {
 
 async function getBlobFromUrl() {
 	ipcMain.handle('get-blob-from-element-id', async (_, elementId: string | number) => {
-		const win = createScrapeWindow()
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		})
 		const ssoLink = await getResourceLinkByElementID(elementId)
 		await win.loadURL(ssoLink)
 		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
@@ -83,30 +87,74 @@ async function getBlobFromUrl() {
 			responseType: 'arraybuffer',
 		})
 
+		win.close()
+
 		return data
 	})
 }
 
 async function getResourceAsFileHandler() {
 	ipcMain.handle('resources:get-file', async (_, elementId: string | number) => {
-		const win = createScrapeWindow()
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		})
 		const ssoLink = await getResourceLinkByElementID(elementId)
 		await win.loadURL(ssoLink)
 		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
-		const resourceLink = await getResourceDownloadLink(ssoLink, win)
+		let resourceLink: string
+		try {
+			resourceLink = (await getFileRepositoryBySSOLink(win)).directUrl
+		} catch (error) {
+			console.error(error)
+			resourceLink = await getResourceDownloadLink(ssoLink, win)
+		}
+
+		if (!resourceLink) throw new Error('Could not get resource link')
+
 		const resource = await getResourceAsFile(resourceLink, cookies)
 
+		win.close()
+
 		return resource
+	})
+}
+
+async function getResourceDirectFileRepositoryHandler() {
+	ipcMain.handle('resources:get-direct-file-repository', async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		})
+		const ssoLink = await getResourceLinkByElementID(elementId)
+		await win.loadURL(ssoLink)
+		const fileRepository = await getFileRepositoryBySSOLink(win)
+		win.close()
+		return fileRepository
+	})
+}
+
+async function getResourceDirectUrlHandler() {
+	ipcMain.handle('resources:get-direct-url', async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		})
+		const ssoLink = await getResourceLinkByElementID(elementId)
+		await win.loadURL(ssoLink)
+		const directUrl = await getDirectUrlBySSOLink(win)
+		win.close()
+		return directUrl
 	})
 }
 
 async function getMicrosoftOfficeDocument() {
 	ipcMain.handle('resources:get-office-document', async (_, elementId: string | number) => {
 		try {
-			const win = createScrapeWindow()
+			const win = createScrapeWindow({
+				webPreferences: { webSecurity: false },
+			})
 			const ssoLink = await getResourceLinkByElementID(elementId)
 			await win.loadURL(ssoLink)
-			const { downloadUrl, accessToken } = await getMicrosoftOfficeDocumentAccessTokenAndUrl(ssoLink)
+			const { downloadUrl, accessToken } = await getMicrosoftOfficeDocumentAccessTokenAndUrl(win)
+			win.close()
 			return { downloadUrl, accessToken }
 		} catch (error) {
 			console.error(error)
@@ -815,4 +863,6 @@ export default function initDownloadHandlers() {
 	getResourceAsFileHandler()
 	mergePDFsHandler()
 	zipDownloadAllCourseResourcesHandler()
+	getResourceDirectFileRepositoryHandler()
+	getResourceDirectUrlHandler()
 }

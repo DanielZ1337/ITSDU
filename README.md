@@ -1,6 +1,6 @@
 # ITSDU
 
-Desktop application for interacting with itslearning.
+**Unofficial** desktop application for interacting with itslearning.
 
 ## Features
 - **Streamlined Course Navigation:** Quickly access courses and assignments.
@@ -69,3 +69,6 @@ This project is licensed under the MIT License. See the [LICENSE](https://github
 
 ## More Information
 For detailed features and release notes, visit the [official site](https://itsdu.danielz.dev) and [releases page](https://itsdu.danielz.dev/releases)
+
+## Note
+ITSDU is in no way affiliated with itslearning.
