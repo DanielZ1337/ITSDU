@@ -20,6 +20,7 @@ import { Button } from './ui/button'
 import type { ItslearningRestApiEntitiesElementLink } from '@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink'
 import { useSearch } from './ui/search-input'
 import { Highlight } from './ui/hightlight'
+import { getFormattedSize } from '@/lib/utils'
 
 type NestedItem = {
 	[key: string]: boolean
@@ -161,10 +162,10 @@ export function useDownloadToast({
 			if (!resourceArg) return
 
 			const toastId = sonnerToast.loading(`Downloading ${resourceArg.Title}...`)
-			const { path, filename } = await window.download.start(resourceArg.ElementId, resourceArg.Title)
+			const { path, size } = await window.download.start(resourceArg.ElementId, resourceArg.Title)
 			sonnerToast.success(`Downloaded ${resourceArg.Title}`, {
 				id: toastId,
-				description: filename,
+				description: `${path} (${getFormattedSize(size)})`,
 				richColors: true,
 				duration: 2000,
 				dismissible: true,

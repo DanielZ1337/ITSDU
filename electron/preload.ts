@@ -214,7 +214,7 @@ declare global {
 				elementId: number | string,
 				filename: string,
 				options?: { overwrite?: boolean; id?: string | number }
-			) => Promise<{ path: string; filename: string; id: string }>
+			) => Promise<{ path: string; filename: string; id: string; size: number }>
 			external: (
 				url: string,
 				filename: string,
