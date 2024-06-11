@@ -121,7 +121,7 @@ export default function CourseIndex() {
 						ref={ref}
 						collapsible
 						minSize={5}
-						className={cn(!longPress && 'transition-all')}
+						// className={cn(!longPress && 'transition-all')}
 					>
 						{isMounted && (
 							<SearchProvider>
