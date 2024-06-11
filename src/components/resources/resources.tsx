@@ -52,6 +52,25 @@ export default function Resources({ courseId }: { courseId: number }) {
 		[navigateToResource]
 	)
 
+	const handleArrowKey = useCallback(
+		(keyPressed: string, treeKey: string | number) => {
+			const nested = showNested[treeKey]
+
+			if (keyPressed === 'ArrowLeft') {
+				if (nested) {
+					toggleNested(treeKey)
+				}
+			}
+
+			if (keyPressed === 'ArrowRight') {
+				if (!nested) {
+					toggleNested(treeKey)
+				}
+			}
+		},
+		[showNested]
+	)
+
 	return (
 		<div className={'block flex-wrap p-2 shrink-0'}>
 			{data!.Resources.EntityArray.map((parent) => {
@@ -64,6 +83,7 @@ export default function Resources({ courseId }: { courseId: number }) {
 							<button
 								className={'inline-flex justify-center items-center pr-2'}
 								onClick={() => toggleNested(parent.ElementId)}
+								onKeyDown={(e) => handleArrowKey(e.key, parent.ElementId)}
 							>
 								{showNested[parent.ElementId] ? (
 									<FolderOpenIcon className={'shrink-0'} />
@@ -88,6 +108,7 @@ export default function Resources({ courseId }: { courseId: number }) {
 										'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300 justify-center items-center pr-2'
 									}
 									onClick={() => handleResourceNavigation(parent)}
+									onKeyDown={(e) => handleArrowKey(e.key, parent.ElementId)}
 								>
 									<File className={'shrink-0 inline-block'} />
 									<p className={'text-left'}>
