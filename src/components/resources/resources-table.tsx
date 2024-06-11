@@ -31,6 +31,7 @@ import { cn } from '@/lib/utils.ts'
 import { Link, useMatch, useNavigate } from 'react-router-dom'
 import { isResourceFile, isResourcePDFFromUrlOrElementType } from '@/types/api-types/extra/learning-tool-id-types'
 import { isSupportedResourceInApp, useNavigateToResource } from '../../types/api-types/extra/learning-tool-id-types'
+import { useDownloadToast } from '../recursive-file-explorer'
 
 const COLUMN_IDS = {
 	select: 'select',
@@ -253,6 +254,7 @@ export function createColumns(
 			cell: ({ row }) => {
 				const resource = row.original
 				const navigateToResource = useNavigateToResource()
+				const { downloadToast } = useDownloadToast()
 
 				return (
 					<DropdownMenu>
@@ -280,8 +282,7 @@ export function createColumns(
 								<DropdownMenuItem
 									onClick={(e) => {
 										e.stopPropagation()
-										console.log(resource)
-										window.download.start(resource.ElementId, resource.Title)
+										downloadToast(resource)
 									}}
 								>
 									Download
