@@ -146,7 +146,10 @@ function FolderResources({ courseId, folderId }: { courseId: number; folderId: n
 					)
 				} else {
 					return (
-						<ResourceContextMenu resource={parent}>
+						<ResourceContextMenu
+							resource={parent}
+							key={parent.ElementId}
+						>
 							<ContextMenuItem
 								onClick={() => navigatetoResource(parent)}
 								key={parent.ElementId}

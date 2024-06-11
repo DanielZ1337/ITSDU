@@ -1,11 +1,9 @@
 import useGETcourseRootResources from '@/queries/courses/useGETcourseRootResources.ts'
 import RecursiveFileExplorer, { ResourceContextMenu, useDownloadToast } from '@/components/recursive-file-explorer.tsx'
-// eslint-disable-next-line no-redeclare
 import { File, FolderClosedIcon, FolderOpenIcon, MoreHorizontal } from 'lucide-react'
 import { Suspense, useCallback, useState } from 'react'
 import ErrorPage from '@/error-page.tsx'
 import { ErrorBoundary } from 'react-error-boundary'
-import { useToast } from '@/components/ui/use-toast.ts'
 import '@/styles/3-dots-loading.css'
 import { ItsolutionsItslUtilsConstantsElementType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts'
 import {
@@ -16,6 +14,8 @@ import {
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 import { useNavigate } from 'react-router-dom'
 import { ReactLoading } from '../react-loading-new/react-loading'
+import { useSearch } from '../ui/search-input'
+import { Highlight } from '../ui/hightlight'
 
 type NestedItem = {
 	[key: string]: boolean
@@ -31,7 +31,7 @@ export default function Resources({ courseId }: { courseId: number }) {
 		}
 	)
 
-	const { toast, dismiss } = useToast()
+	const { value: searchValue } = useSearch()
 
 	const [showNested, setShowNested] = useState<NestedItem>({})
 
@@ -53,19 +53,16 @@ export default function Resources({ courseId }: { courseId: number }) {
 	)
 
 	return (
-		<div className={'block flex-wrap p-2'}>
+		<div className={'block flex-wrap p-2 shrink-0'}>
 			{data!.Resources.EntityArray.map((parent) => {
 				return (
-					<div
-						key={parent.ElementId}
-						className={''}
-					>
+					<div key={parent.ElementId}>
 						{/* rendering folders */}
 						{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 						{parent.ElementType ===
 							ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
 							<button
-								className={'inline-flex'}
+								className={'inline-flex justify-center items-center pr-2'}
 								onClick={() => toggleNested(parent.ElementId)}
 							>
 								{showNested[parent.ElementId] ? (
@@ -73,7 +70,12 @@ export default function Resources({ courseId }: { courseId: number }) {
 								) : (
 									<FolderClosedIcon className={'shrink-0'} />
 								)}
-								<span className={'ml-2 text-left'}>{parent.Title}</span>
+								<span className={'ml-2 text-left'}>
+									<Highlight
+										highlight={searchValue}
+										text={parent.Title}
+									/>
+								</span>
 							</button>
 						)}
 						{/* rendering files */}
@@ -82,11 +84,18 @@ export default function Resources({ courseId }: { courseId: number }) {
 							ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
 							<ResourceContextMenu resource={parent}>
 								<button
-									className={'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300'}
+									className={
+										'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300 justify-center items-center pr-2'
+									}
 									onClick={() => handleResourceNavigation(parent)}
 								>
 									<File className={'shrink-0 inline-block'} />
-									<p className={'text-left'}>{parent.Title}</p>
+									<p className={'text-left'}>
+										<Highlight
+											highlight={searchValue}
+											text={parent.Title}
+										/>
+									</p>
 								</button>
 							</ResourceContextMenu>
 						)}

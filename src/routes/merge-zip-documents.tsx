@@ -27,9 +27,8 @@ import { cn } from '@/lib/utils'
 import { Toggle } from '@/components/ui/toggle'
 import { useNavigate } from 'react-router-dom'
 import { isSupportedResourceInApp, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
-import { useToast } from '@/components/ui/use-toast'
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
-import { Switch } from '@/components/ui/switch'
+import { toast } from 'sonner'
 
 type SelectedDocument = {
 	ElementId: number
@@ -68,8 +67,6 @@ export default function MergeZIPDocuments() {
 	}>({
 		organizeByCourse: true,
 	})
-
-	const { toast } = useToast()
 
 	const addSelectedDocument = (selectedDocument: SelectedDocument) => {
 		setSelectedDocuments(new Map([...(selectedDocuments || new Map()), [selectedDocument.ElementId, selectedDocument]]))
@@ -157,24 +154,16 @@ export default function MergeZIPDocuments() {
 			.then((path) => {
 				if (!path) return
 
-				toast({
-					className: 'text-white',
-					title: 'Downloaded as ZIP',
-					description: `The documents have been downloaded as a ZIP file to ${path}`,
-					duration: 5000,
-					variant: 'success',
-					onClick: () => void window.app.openItem(path),
+				toast.success(`The documents have been downloaded as a ZIP file to ${path}`, {
+					action: {
+						label: 'Open',
+						onClick: () => void window.app.openItem(path),
+					},
 				})
 				setSelectedDocuments(null)
 			})
 			.catch((error) => {
-				toast({
-					className: 'text-white',
-					title: 'Error',
-					description: `An error occurred while downloading the documents as a ZIP file: ${error.message}`,
-					duration: 5000,
-					variant: 'destructive',
-				})
+				toast.error(`An error occurred while downloading the documents as a ZIP file: ${error.message}`)
 				setSelectedDocuments(null)
 			})
 			.finally(() => {
@@ -204,24 +193,16 @@ export default function MergeZIPDocuments() {
 			.then((path) => {
 				if (!path) return
 
-				toast({
-					className: 'text-white',
-					title: 'Merged PDFs',
-					description: `The documents have been merged into a single PDF file at ${path}`,
-					duration: 5000,
-					variant: 'success',
-					onClick: () => void window.app.openItem(path),
+				toast.success(`The documents have been merged into a single PDF file at ${path}`, {
+					action: {
+						label: 'Open',
+						onClick: () => void window.app.openItem(path),
+					},
 				})
 				setSelectedDocuments(null)
 			})
 			.catch((error) => {
-				toast({
-					className: 'text-white',
-					title: 'Error',
-					description: `An error occurred while merging the documents: ${error.message}`,
-					duration: 5000,
-					variant: 'destructive',
-				})
+				toast.error(`An error occurred while merging the documents: ${error.message}`)
 				console.error(error)
 			})
 			.finally(() => {

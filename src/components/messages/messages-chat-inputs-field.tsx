@@ -5,11 +5,11 @@ import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2"
 import usePOSTmessageAttachment from "@/queries/messages/usePOSTmessageAttachment";
 import {useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {useToast} from "@/components/ui/use-toast";
 import {useAtom} from "jotai";
 import {currentChatAtom, currentChatEnum} from "@/atoms/current-chat";
 import {messageSelectedRecipientsAtom} from "@/atoms/message-selected-recipients";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
+import { toast } from "sonner";
 
 export default function MessagesChatInputsField() {
     const [files, setFiles] = useState<File[] | null>(null)
@@ -18,7 +18,6 @@ export default function MessagesChatInputsField() {
     const [currentChat] = useAtom(currentChatAtom)
     const isNewChat = currentChat === currentChatEnum.NEW
     const queryClient = useQueryClient()
-    const {toast} = useToast()
     const [uploadProgress, setUploadProgress] = useState<number>(0)
     const [, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom)
 
@@ -64,12 +63,7 @@ export default function MessagesChatInputsField() {
             setRecipientsSelected([])
         },
         onError: (error) => {
-            toast({
-                title: "Error",
-                description: error.message,
-                variant: "destructive",
-                duration: 3000,
-            })
+            toast.error(error.message)
         },
     })
 
@@ -128,13 +122,7 @@ export default function MessagesChatInputsField() {
             Text: message
         }, {
             onError: (error) => {
-                toast({
-                    title: "Error",
-                    description: error.message,
-                    variant: "destructive",
-                    duration: 3000,
-                })
-
+                toast.error(error.message)
             }
         })
     }
@@ -166,12 +154,7 @@ export default function MessagesChatInputsField() {
         const messageCanReply = !data?.pages[0].Messages.EntityArray[0].IsBroadcastMassMessage || data?.pages[0].Messages.EntityArray[0].MessageThreadParticipants !== null
 
         if (!messageCanReply) {
-            toast({
-                title: "Error",
-                description: "This message cannot be replied to",
-                variant: "destructive",
-                duration: 3000,
-            })
+            toast.error("This message cannot be replied to")
             showRef.current = false
         }
     }, [data])

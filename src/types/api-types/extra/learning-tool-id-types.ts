@@ -2,6 +2,7 @@
 
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
+import type { ItslearningRestApiEntitiesElementLink } from '../utils/Itslearning.RestApi.Entities.ElementLink'
 
 export enum LearningToolIdTypes {
 	LINK = 50010,
@@ -11,7 +12,9 @@ export enum LearningToolIdTypes {
 
 // TODO: add mp4, mkv (maybe other video formats as well) + JPG, PNG, GIF, SVG, etc. (maybe other image formats as well)
 
-export function isResourceFile(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | number) {
+export function isResourceFile(
+	resource: (ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink) | number
+) {
 	if (typeof resource === 'number') {
 		return resource === LearningToolIdTypes.FILE
 	} else {

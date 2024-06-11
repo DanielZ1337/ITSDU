@@ -1,5 +1,5 @@
 import React, { lazy, memo, useEffect } from 'react'
-import useResourceByElementID, { ResourceFileTypeIndexedDB } from '@/queries/resources/useResourceByElementID'
+import useResourceByElementID, { ResourceFileType } from '@/queries/resources/useResourceByElementID'
 import { useParams } from 'react-router-dom'
 import Papa from 'papaparse'
 
@@ -53,7 +53,7 @@ function TextFilesDataTable({
 	headers?: string[]
 	columns?: ColumnDef<any>[]
 	data?: any[]
-	resource?: ResourceFileTypeIndexedDB
+	resource?: ResourceFileType
 	isLoading?: boolean
 }) {
 	const [sorting, setSorting] = React.useState<SortingState>([])
@@ -398,6 +398,12 @@ function OtherFiles() {
 			<CodeBlock
 				value={data?.text ?? ''}
 				language='yaml'
+			/>
+		),
+		'application/xml': (
+			<CodeBlock
+				value={data?.text ?? ''}
+				language='xml'
 			/>
 		),
 		'application/x-xml': (
