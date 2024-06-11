@@ -124,10 +124,10 @@
 		"next-themes": "^0.3.0",
 		"papaparse": "^5.4.1",
 		"pdf-lib": "^1.17.1",
-		"react": "^19.0.0-beta-26f2496093-20240514",
+		"react": "^19.0.0-rc-6230622a1a-20240610",
 		"react-big-calendar": "^1.11.2",
 		"react-day-picker": "^8.10.0",
-		"react-dom": "^19.0.0-beta-26f2496093-20240514",
+		"react-dom": "^19.0.0-rc-6230622a1a-20240610",
 		"react-error-boundary": "^4.0.13",
 		"react-helmet-async": "^2.0.4",
 		"react-hook-form": "^7.51.1",
@@ -156,9 +156,9 @@
 		"@types/html-to-text": "^9.0.4",
 		"@types/node": "^20.11.30",
 		"@types/papaparse": "^5.3.14",
-		"@types/react": "npm:types-react@beta",
+		"@types/react": "npm:types-react@rc",
 		"@types/react-big-calendar": "^1.8.9",
-		"@types/react-dom": "npm:types-react-dom@beta",
+		"@types/react-dom": "npm:types-react-dom@rc",
 		"@types/react-helmet": "^6.1.11",
 		"@types/react-syntax-highlighter": "^15.5.11",
 		"@types/superagent": "^8.1.6",
@@ -191,8 +191,8 @@
 		"vite-plugin-electron-renderer": "^0.14.5"
 	},
 	"overrides": {
-		"@types/react": "npm:types-react@beta",
-		"@types/react-dom": "npm:types-react-dom@beta"
+		"@types/react": "npm:types-react@rc",
+		"@types/react-dom": "npm:types-react-dom@rc"
 	},
 	"main": "dist-electron/main.js"
 }
