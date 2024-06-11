@@ -225,49 +225,66 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-	ipcMain.handle('itslearning-element:download', async (event, { url, resourceLink, filename }) => {
+	ipcMain.handle('itslearning-element:download', async (event, { url, resourceLink, filename, overwrite, id }) => {
 		try {
 			const win = BrowserWindow.fromWebContents(event.sender)
 
 			if (!win) return
-			console.log('download# ' + url)
 
-			const cookies = await win.webContents.session.cookies.get({ url: ITSLEARNING_RESOURCE_URL })
+			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
 
-			axios
-				.get(url, {
-					responseType: 'stream',
-					headers: {
-						Cookie: getFormattedCookies(cookies),
-					},
-					onDownloadProgress: (progress) => {
-						if (progress.progress) {
-							const percent = Math.round(progress.progress * 100)
-							console.log(`Downloaded ${percent}%`)
-						}
-					},
-				})
-				.then((res) => {
-					const headerFilename = res.headers['content-disposition']
-					const filenameRegex = /filename\*?=["']([^"']+)["']/i
-					const match = headerFilename.match(filenameRegex)
-					const decodedFilename = match ? decodeURIComponent(match[1]) : null
-					const saveFilename = decodedFilename || filename
-					let finalFilename = saveFilename
-
-					let i = 1
-					while (fs.existsSync(path.join(app.getPath('downloads'), finalFilename))) {
-						const extension = path.extname(saveFilename)
-						const basename = path.basename(saveFilename, extension)
-						finalFilename = `${basename} (${i})${extension}`
-						i++
-					}
-
-					res.data.pipe(fs.createWriteStream(path.join(app.getPath('downloads'), finalFilename)))
-					res.data.on('end', () => {
-						event.sender.send('download:complete', path.join(app.getPath('downloads'), finalFilename))
+			return await new Promise<{ path: string; filename: string; id: string }>((resolve, reject) => {
+				axios
+					.get(url, {
+						responseType: 'stream',
+						headers: {
+							Cookie: getFormattedCookies(cookies),
+						},
+						onDownloadProgress: (progress) => {
+							if (progress.progress) {
+								const percent = Math.round(progress.progress * 100)
+								console.log(`Downloaded ${percent}%`)
+							}
+						},
 					})
-				})
+					.then((res) => {
+						const headerFilename = res.headers['content-disposition']
+						const filenameRegex = /filename\*?=["']([^"']+)["']/i
+						const match = headerFilename.match(filenameRegex)
+						const decodedFilename = match ? decodeURIComponent(match[1]) : null
+						const saveFilename = decodedFilename ?? filename
+						let finalFilename = saveFilename
+
+						const directory = app.getPath('downloads')
+
+						let i = 1
+						while (fs.existsSync(path.join(directory, finalFilename))) {
+							const extension = path.extname(saveFilename)
+							const basename = path.basename(saveFilename, extension)
+							finalFilename = `${basename} (${i})${extension}`
+							i++
+						}
+
+						const downloadedFilePath = path.join(directory, finalFilename)
+
+						const writeStream = fs.createWriteStream(downloadedFilePath)
+						res.data.pipe(writeStream)
+
+						res.data.on('end', () => {
+							resolve({ path: downloadedFilePath, filename: finalFilename, id })
+							event.sender.send('download:complete', {
+								path: downloadedFilePath,
+								filename: finalFilename,
+								id,
+							})
+						})
+
+						res.data.on('error', (err) => {
+							reject(err)
+							event.sender.send('download:error', err)
+						})
+					})
+			})
 			// logEverywhere('download# ' + downloadItem.getSavePath())
 		} catch (e) {
 			if (e instanceof Error) {
@@ -469,7 +486,7 @@ function zipDownloadAllCourseResourcesHandler() {
 }
 
 function downloadExternalHandler() {
-	ipcMain.handle('download:external', async (event, { url, filename }) => {
+	ipcMain.handle('download:external', async (event, { url, filename, id }) => {
 		try {
 			console.log(url, filename)
 
@@ -484,7 +501,13 @@ function downloadExternalHandler() {
 				showProgressBar: true,
 				showBadge: true,
 			})
-			event.sender.send('download:complete', downloadItem.getSavePath())
+			// event.sender.send('download:complete', downloadItem.getSavePath())
+
+			return {
+				path: downloadItem.getSavePath(),
+				filename: downloadItem.getFilename(),
+				id,
+			}
 		} catch (e) {
 			console.error(e)
 			event.sender.send('download:error', null)

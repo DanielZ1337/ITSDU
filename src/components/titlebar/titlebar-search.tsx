@@ -12,7 +12,6 @@ import {
 	CommandList,
 } from '@/components/ui/command'
 import { useDebounce } from '@uidotdev/usehooks'
-import { useToast } from '../ui/use-toast'
 import useGETcourseResourceBySearch from '@/queries/courses/useGETcourseResourceBySearch'
 import { useCourse } from '@/hooks/atoms/useCourse'
 import { ItsolutionsItslUtilsConstantsLocationType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType'
@@ -29,6 +28,7 @@ import useGETcourseNotifications from '@/queries/courses/useGETcourseNotificatio
 import { CommandLoading } from 'cmdk'
 import { TabButtonHoverProvider } from '@/contexts/tab-button-hover-context'
 import { useTabButtonHover } from '@/hooks/useTabButtonHover'
+import { useDownloadToast } from '../recursive-file-explorer'
 
 export default function TitlebarSearch() {
 	const [isOpen, setIsOpen] = React.useState(false)
@@ -287,7 +287,6 @@ function ResourcesCommandList({
 	query: string
 }) {
 	const navigateToResource = useNavigateToResource(navigate)
-	const { toast, dismiss } = useToast()
 
 	const isEnabled = courseId !== undefined && query.length > 2
 
@@ -304,6 +303,8 @@ function ResourcesCommandList({
 		}
 	)
 
+	const { downloadToast } = useDownloadToast()
+
 	useEffect(() => {
 		const handleDownloadShortcut = (e: KeyboardEvent) => {
 			if (e.key === 'd' && (e.metaKey || e.ctrlKey)) {
@@ -314,54 +315,7 @@ function ResourcesCommandList({
 					const resource = resources?.Resources.EntityArray.find((resource) => resource.ElementId === elementId)
 					if (resource) {
 						if (isResourceFile(resource)) {
-							toast({
-								title: 'Downloading...',
-								description: resource.Title,
-								duration: 3000,
-							})
-							window.download.start(resource.ElementId, resource.Title)
-							window.ipcRenderer.once('download:complete', (_, args) => {
-								console.log(args)
-								toast({
-									title: 'Downloaded',
-									description: resource.Title,
-									duration: 3000,
-									variant: 'success',
-									onMouseDown: async () => {
-										// if the user clicks on the toast, open the file
-										// get the time that the mouse was pressed
-										const mouseDownTime = new Date().getTime()
-										// wait for the mouse to be released
-										await new Promise<void>((resolve) => {
-											window.addEventListener(
-												'mouseup',
-												() => {
-													resolve()
-												},
-												{ once: true }
-											)
-										})
-
-										// if the mouse was pressed for less than 500ms, open the file
-										if (new Date().getTime() - mouseDownTime < 100) {
-											console.log('Opening shell')
-											await window.app.openShell(args)
-											dismiss()
-										} else {
-											console.log('Not opening shell')
-										}
-									},
-								})
-							})
-							window.ipcRenderer.once('download:error', (_, args) => {
-								console.log(args)
-								toast({
-									title: 'Download error',
-									description: resource.Title,
-									duration: 3000,
-									variant: 'destructive',
-								})
-							})
+							downloadToast(resource)
 						}
 					}
 				}
@@ -373,7 +327,7 @@ function ResourcesCommandList({
 		return () => {
 			window.removeEventListener('keydown', handleDownloadShortcut)
 		}
-	}, [dismiss, resources, toast])
+	}, [resources])
 
 	return (
 		<>
@@ -418,54 +372,7 @@ function ResourcesCommandList({
 											size={'icon'}
 											onClick={(e) => {
 												e.stopPropagation()
-												toast({
-													title: 'Downloading...',
-													description: resource.Title,
-													duration: 3000,
-												})
-												window.download.start(resource.ElementId, resource.Title)
-												window.ipcRenderer.once('download:complete', (_, args) => {
-													console.log(args)
-													toast({
-														title: 'Downloaded',
-														description: resource.Title,
-														duration: 3000,
-														variant: 'success',
-														onMouseDown: async () => {
-															// if the user clicks on the toast, open the file
-															// get the time that the mouse was pressed
-															const mouseDownTime = new Date().getTime()
-															// wait for the mouse to be released
-															await new Promise<void>((resolve) => {
-																window.addEventListener(
-																	'mouseup',
-																	() => {
-																		resolve()
-																	},
-																	{ once: true }
-																)
-															})
-
-															// if the mouse was pressed for less than 500ms, open the file
-															if (new Date().getTime() - mouseDownTime < 100) {
-																console.log('Opening shell')
-																await window.app.openShell(args)
-																dismiss()
-															} else {
-																console.log('Not opening shell')
-															}
-														},
-													})
-												})
-												window.ipcRenderer.once('download:error', (_, args) => {
-													console.log(args)
-													toast({
-														title: 'Download error',
-														description: resource.Title,
-														duration: 3000,
-														variant: 'destructive',
-													})
-												})
+												downloadToast(resource)
 											}}
 										>
 											<DownloadIcon className={'w-6 h-6'} />

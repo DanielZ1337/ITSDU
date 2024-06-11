@@ -4,8 +4,6 @@ import { File, FolderClosedIcon, FolderOpenIcon } from 'lucide-react'
 import useGETcourseFolderResources from '@/queries/courses/useGETcourseFolderResources.ts'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorPage from '@/error-page.tsx'
-import { useToast } from '@/components/ui/use-toast.ts'
-import ReactLoading from 'react-loading'
 import '@/styles/3-dots-loading.css'
 import { ItsolutionsItslUtilsConstantsElementType } from '@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts'
 import {
@@ -16,6 +14,12 @@ import {
 import { useNavigate } from 'react-router-dom'
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from '@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource'
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from '@/components/ui/context-menu'
+import ReactLoading from 'react-loading'
+import { toast as sonnerToast } from 'sonner'
+import { Button } from './ui/button'
+import type { ItslearningRestApiEntitiesElementLink } from '@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink'
+import { useSearch } from './ui/search-input'
+import { Highlight } from './ui/hightlight'
 
 type NestedItem = {
 	[key: string]: boolean
@@ -31,17 +35,11 @@ export default function RecursiveFileExplorer({
 	isOpen: boolean
 }) {
 	const [showNested, setShowNested] = useState<NestedItem>({})
-	const { toast, dismiss } = useToast()
 
-	const { data } = useGETcourseFolderResources(
-		{
-			courseId: courseId,
-			folderId: folderId,
-		},
-		{
-			suspense: true,
-		}
-	)
+	const { data, isLoading } = useGETcourseFolderResources({
+		courseId: courseId,
+		folderId: folderId,
+	})
 
 	const toggleNested = (name: string | number) => {
 		setShowNested({ ...showNested, [name]: !showNested[name] })
@@ -60,138 +58,143 @@ export default function RecursiveFileExplorer({
 		[navigateToResource]
 	)
 
+	const hasResources = (data?.Resources?.EntityArray?.length ?? 0) > 0
+
+	const { value: searchValue } = useSearch()
+
 	return (
-		<div className={'ml-5'}>
-			{data!.Resources.EntityArray.map((parent) => {
-				return (
-					<div key={parent.ElementId}>
-						{/* rendering folders */}
-						<ErrorBoundary fallback={<ErrorPage />}>
-							<Suspense
-								fallback={
-									<ReactLoading
-										className={'loading-dots -ml-0.5 -mt-2'}
-										height={30}
-										width={30}
-										type={'bubbles'}
-									/>
-								}
-							>
-								{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-								{parent.ElementType ===
+		<div className={'ml-2 pl-3 my-2 border-l-2 border-border py-1'}>
+			{!isLoading && !hasResources && <span className={'text-zinc-400'}>No resources found</span>}
+			{isLoading && (
+				<ReactLoading
+					className={'loading-dots -ml-0.5 -mt-2'}
+					height={30}
+					width={30}
+					type={'bubbles'}
+				/>
+			)}
+			{!isLoading &&
+				data!.Resources.EntityArray.map((parent) => {
+					return (
+						<div
+							key={parent.ElementId}
+							className='h-hit flex items-center justify-start gap-2 py-1'
+						>
+							{/* rendering folders */}
+							<ErrorBoundary fallback={<ErrorPage />}>
+								<Suspense
+									fallback={
+										<ReactLoading
+											className={'loading-dots -ml-0.5 -mt-2'}
+											height={30}
+											width={30}
+											type={'bubbles'}
+										/>
+									}
+								>
+									{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
+									{parent.ElementType ===
+										ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
+										<button
+											className={'inline-flex justify-center items-start pr-2 flex-col'}
+											onClick={() => toggleNested(parent.ElementId)}
+										>
+											<span className={'text-left flex gap-2'}>
+												{showNested[parent.ElementId] ? (
+													<FolderOpenIcon className={'shrink-0'} />
+												) : (
+													<FolderClosedIcon className={'shrink-0'} />
+												)}
+
+												<Highlight
+													highlight={searchValue}
+													text={parent.Title}
+												/>
+											</span>
+											{showNested[parent.ElementId] && (
+												<RecursiveFileExplorer
+													isOpen={showNested[parent.ElementId]}
+													courseId={courseId}
+													folderId={parent.ElementId}
+												/>
+											)}
+										</button>
+									)}
+								</Suspense>
+							</ErrorBoundary>
+							{/* rendering files */}
+							{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
+							{isOpen &&
+								parent.ElementType !==
 									ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
-									<button
-										className={'inline-flex'}
-										onClick={() => toggleNested(parent.ElementId)}
-									>
-										{showNested[parent.ElementId] ? (
-											<FolderOpenIcon className={'shrink-0'} />
-										) : (
-											<FolderClosedIcon className={'shrink-0'} />
-										)}
-										<span className={'ml-2 text-left'}>
-											{parent.Title}
-											<RecursiveFileExplorer
-												courseId={courseId}
-												folderId={parent.ElementId}
-												isOpen={showNested[parent.ElementId]}
-											/>
-										</span>
-									</button>
+									<ResourceContextMenu resource={parent}>
+										<button
+											className={
+												'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300 justify-center items-center pr-2'
+											}
+											onClick={() => handleResourceNavigation(parent)}
+										>
+											<File className={'shrink-0 inline-block'} />
+											<p className={'text-left'}>
+												<Highlight
+													highlight={searchValue}
+													text={parent.Title}
+												/>
+											</p>
+										</button>
+									</ResourceContextMenu>
 								)}
-							</Suspense>
-						</ErrorBoundary>
-						{/* rendering files */}
-						{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
-						{isOpen &&
-							parent.ElementType !==
-								ItsolutionsItslUtilsConstantsElementType[ItsolutionsItslUtilsConstantsElementType.Folder] && (
-								<ResourceContextMenu resource={parent}>
-									<button
-										className={'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300'}
-										onClick={() => handleResourceNavigation(parent)}
-									>
-										<File className={'shrink-0 inline-block'} />
-										<p className={'text-left'}>{parent.Title}</p>
-									</button>
-								</ResourceContextMenu>
-							)}
-					</div>
-				)
-			})}
+						</div>
+					)
+				})}
 		</div>
 	)
 }
 
-export function useDownloadToast({ resource }: { resource: ItslearningRestApiEntitiesPersonalCourseCourseResource }) {
-	const { toast, dismiss } = useToast()
+export function useDownloadToast({
+	resource,
+}: {
+	resource?: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink
+} = {}) {
+	return {
+		async downloadToast(resourceArg = resource) {
+			if (!resourceArg) return
 
-	return async () => {
-		toast({
-			title: 'Downloading...',
-			description: resource.Title,
-			duration: 3000,
-		})
-		await window.download.start(resource.ElementId, resource.Title)
-		window.ipcRenderer.once('download:complete', (_, args) => {
-			console.log(args)
-			toast({
-				title: 'Downloaded',
-				description: resource.Title,
-				duration: 3000,
-				variant: 'success',
-				onMouseDown: async () => {
-					// if the user clicks on the toast, open the file
-					// get the time that the mouse was pressed
-					const mouseDownTime = Date.now()
-					// wait for the mouse to be released
-					await new Promise<void>((resolve) => {
-						window.addEventListener(
-							'mouseup',
-							() => {
-								resolve()
-							},
-							{ once: true }
-						)
-					})
-
-					// if the mouse was pressed for less than 500ms, open the file
-					if (Date.now() - mouseDownTime < 80) {
-						console.log('Opening shell')
-						await window.app.openShell(args)
-						dismiss()
-					} else {
-						console.log('Not opening shell')
-					}
+			const toastId = sonnerToast.loading(`Downloading ${resourceArg.Title}...`)
+			const { path, filename } = await window.download.start(resourceArg.ElementId, resourceArg.Title)
+			sonnerToast.success(`Downloaded ${resourceArg.Title}`, {
+				id: toastId,
+				description: filename,
+				richColors: true,
+				duration: 2000,
+				dismissible: true,
+				action: {
+					label: 'Open',
+					onClick: () => {
+						window.app.openShell(path)
+					},
 				},
 			})
-		})
-		window.ipcRenderer.once('download:error', (_, args) => {
-			console.log(args)
-			toast({
-				title: 'Download error',
-				description: resource.Title,
-				duration: 3000,
-				variant: 'destructive',
-			})
-		})
+		},
 	}
 }
 
 export function ResourceContextMenu({
 	resource,
 	children,
+	asChild = true,
 }: {
-	resource: ItslearningRestApiEntitiesPersonalCourseCourseResource
+	resource: ItslearningRestApiEntitiesPersonalCourseCourseResource | ItslearningRestApiEntitiesElementLink
 	children: React.ReactNode
+	asChild?: boolean
 }) {
 	const navigateToResource = useNavigateToResource()
 
-	const downloadToast = useDownloadToast({ resource })
+	const { downloadToast } = useDownloadToast({ resource })
 
 	return (
 		<ContextMenu>
-			<ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+			<ContextMenuTrigger asChild={asChild}>{children}</ContextMenuTrigger>
 			<ContextMenuContent>
 				<ContextMenuItem
 					onClick={(e) => {
@@ -205,7 +208,6 @@ export function ResourceContextMenu({
 					<ContextMenuItem
 						onClick={(e) => {
 							e.stopPropagation()
-							console.log(resource)
 							// window.download.start(resource.ElementId, resource.Title)
 							downloadToast()
 						}}

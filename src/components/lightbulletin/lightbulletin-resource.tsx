@@ -4,6 +4,7 @@ import {useNavigateToResource} from '../../types/api-types/extra/learning-tool-i
 import {useNavigate} from "react-router-dom";
 import LightbulletinLink from "./lightbulletin-link";
 import {ItslearningRestApiEntitiesElementType} from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
+import { ResourceContextMenu } from "../recursive-file-explorer";
 
 export default function LightbulletinResource({resource, courseId}: {
     resource: ItslearningRestApiEntitiesElementLink,
@@ -12,6 +13,7 @@ export default function LightbulletinResource({resource, courseId}: {
     const navigate = useNavigate()
     const navigateToResource = useNavigateToResource(navigate)
     return (
+        <ResourceContextMenu resource={resource}>
         <LightbulletinLink
             onClick={() => {
                 if (isSupportedResourceInApp(resource)) {
@@ -25,5 +27,7 @@ export default function LightbulletinResource({resource, courseId}: {
             }}>
             <img loading="lazy" src={resource.IconUrl} alt={resource.Title} className={"w-6 h-6"}/>
             <span className="truncate">{resource.Title}</span>
-        </LightbulletinLink>)
+        </LightbulletinLink>
+        </ResourceContextMenu>
+    )
 }

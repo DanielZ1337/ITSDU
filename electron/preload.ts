@@ -83,20 +83,23 @@ contextBridge.exposeInMainWorld('ai', {
 })
 
 contextBridge.exposeInMainWorld('download', {
-	external: async (url: string, filename: string) => {
-		await ipcRenderer.invoke('download:external', {
+	external: async (url: string, filename: string, options?: { id?: string | number }) => {
+		return await ipcRenderer.invoke('download:external', {
 			url,
 			filename: slugify(filename),
+			id: options?.id,
 		})
 	},
-	start: async (elementId: number, filename: string) => {
+	start: async (elementId: number, filename: string, options?: { overwrite?: boolean; id?: string | number }) => {
 		const downloadLink = await ipcRenderer.invoke('get-resource-download-link', elementId)
 		const scrapedResourceDownloadLink = await ipcRenderer.invoke('download:start', downloadLink)
 
-		await ipcRenderer.invoke('itslearning-element:download', {
+		return await ipcRenderer.invoke('itslearning-element:download', {
 			url: scrapedResourceDownloadLink,
 			resourceLink: downloadLink,
 			filename: slugify(filename),
+			overwrite: options?.overwrite,
+			id: options?.id,
 		})
 	},
 })
@@ -207,8 +210,16 @@ declare global {
 			) => Promise<string>
 		}
 		download: {
-			start: (elementId: number | string, filename: string) => Promise<void>
-			external: (url: string, filename: string) => Promise<void>
+			start: (
+				elementId: number | string,
+				filename: string,
+				options?: { overwrite?: boolean; id?: string | number }
+			) => Promise<{ path: string; filename: string; id: string }>
+			external: (
+				url: string,
+				filename: string,
+				options?: { id?: string | number }
+			) => Promise<{ path: string; filename: string; id: string }>
 		}
 		itslearning_file_scraping: {
 			start: (elementId: number | string, filename: string) => Promise<void>

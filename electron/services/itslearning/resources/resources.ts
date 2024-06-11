@@ -103,7 +103,6 @@ export async function getResourceDownloadLink(url: string, customWin?: BrowserWi
 		})
 	await win.loadURL(url)
 	const { LearningObjectId, LearningObjectInstanceId } = await getResourceIdsBySSOLink(win)
-	win.close()
 	return getResourceFileLinkByIds(LearningObjectId, LearningObjectInstanceId)
 }
 
