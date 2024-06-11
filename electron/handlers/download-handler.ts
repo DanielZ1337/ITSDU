@@ -233,7 +233,7 @@ function itslearningElementDownload() {
 
 			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL)
 
-			return await new Promise<{ path: string; filename: string; id: string }>((resolve, reject) => {
+			return await new Promise<{ path: string; filename: string; id: string; size: number }>((resolve, reject) => {
 				axios
 					.get(url, {
 						responseType: 'stream',
@@ -271,12 +271,16 @@ function itslearningElementDownload() {
 						res.data.pipe(writeStream)
 
 						res.data.on('end', () => {
-							resolve({ path: downloadedFilePath, filename: finalFilename, id })
-							event.sender.send('download:complete', {
+							const size = res.headers['content-length'] ?? fs.statSync(downloadedFilePath).size
+							const data = {
 								path: downloadedFilePath,
 								filename: finalFilename,
 								id,
-							})
+								size,
+							}
+
+							resolve(data)
+							event.sender.send('download:complete', data)
 						})
 
 						res.data.on('error', (err) => {

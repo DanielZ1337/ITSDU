@@ -165,6 +165,10 @@ export default function MessageChatMessage({
 											toast.success(`Downloaded ${filename}`, {
 												duration: 2000,
 												id,
+												action: {
+													label: 'Open',
+													onClick: () => window.app.openShell(path),
+												},
 											})
 										})
 										.catch((error) => {
@@ -222,6 +226,10 @@ export default function MessageChatMessage({
 														toast.success(`Downloaded ${filename}`, {
 															duration: 2000,
 															id,
+															action: {
+																label: 'Open',
+																onClick: () => window.app.openShell(path),
+															},
 														})
 													})
 													.catch((error) => {
