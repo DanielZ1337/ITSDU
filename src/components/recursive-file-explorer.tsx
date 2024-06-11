@@ -63,6 +63,25 @@ export default function RecursiveFileExplorer({
 
 	const { value: searchValue } = useSearch()
 
+	const handleArrowKey = useCallback(
+		(keyPressed: string, treeKey: string | number) => {
+			const nested = showNested[treeKey]
+
+			if (keyPressed === 'ArrowLeft') {
+				if (nested) {
+					toggleNested(treeKey)
+				}
+			}
+
+			if (keyPressed === 'ArrowRight') {
+				if (!nested) {
+					toggleNested(treeKey)
+				}
+			}
+		},
+		[showNested]
+	)
+
 	return (
 		<div className={'ml-2 pl-3 my-2 border-l-2 border-border py-1'}>
 			{!isLoading && !hasResources && <span className={'text-zinc-400'}>No resources found</span>}
@@ -99,6 +118,7 @@ export default function RecursiveFileExplorer({
 										<button
 											className={'inline-flex justify-center items-start pr-2 flex-col'}
 											onClick={() => toggleNested(parent.ElementId)}
+											onKeyDown={(e) => handleArrowKey(e.key, parent.ElementId)}
 										>
 											<span className={'text-left flex gap-2'}>
 												{showNested[parent.ElementId] ? (
@@ -134,6 +154,7 @@ export default function RecursiveFileExplorer({
 												'inline-flex gap-2 hover:underline  transition-all duration-200 hover:text-zinc-300 justify-center items-center pr-2'
 											}
 											onClick={() => handleResourceNavigation(parent)}
+											onKeyDown={(e) => handleArrowKey(e.key, parent.ElementId)}
 										>
 											<File className={'shrink-0 inline-block'} />
 											<p className={'text-left'}>

@@ -121,6 +121,7 @@ export default function TitlebarSearch() {
 		<>
 			<TitlebarButton onClick={() => setIsOpen(true)} />
 			<CommandDialog
+				modal
 				open={isOpen}
 				onOpenChange={setIsOpen}
 			>

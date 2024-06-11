@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import LightbulletinsForCourseLoader from '@/components/lightbulletin/lightbulletins-for-course-loader.tsx'
 import LightbulletinsForCourse from '@/components/lightbulletin/lightbulletins-for-course.tsx'
 import { Skeleton } from '@/components/ui/skeleton.tsx'
@@ -136,6 +136,9 @@ export default function CourseIndex() {
 }
 
 function ResourcesPanel({ courseId, shouldAutoSearch = true }: { courseId: number; shouldAutoSearch?: boolean }) {
+	const inputs = document.querySelectorAll('input')
+	const isInputFocused = Array.from(inputs).some((input) => input === document.activeElement)
+
 	const { value, handleChange, clearValue } = useSearch()
 
 	const MultiSkeleton = ({ count }: { count: number }) => {
@@ -153,7 +156,7 @@ function ResourcesPanel({ courseId, shouldAutoSearch = true }: { courseId: numbe
 				<Files className='shrink-0' /> Resources
 			</h2>
 			<SearchInput
-				autoFocus={shouldAutoSearch}
+				autoFocus={!isInputFocused && shouldAutoSearch}
 				className='font-normal'
 				value={value}
 				onChange={handleChange}
