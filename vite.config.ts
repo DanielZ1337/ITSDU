@@ -8,12 +8,12 @@ import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 import babelReactPlugin from 'babel-plugin-react-compiler'
 
 const excludedPaths = [
-	'src/main.tsx',
+	//'src/main.tsx',
 	'src/lib',
-	'src/queries',
-	'src/types',
-	'src/components/scroll-shadow.tsx',
-	'src/components/titlebar/titlebar-search.tsx',
+	//'src/queries',
+	//'src/types',
+	//'src/components/scroll-shadow.tsx',
+	//'src/components/titlebar/titlebar-search.tsx',
 	// 'node_modules/react-loading',
 	// 'node_modules/.vite/deps/react-loading.js',
 	// 'react-loading',
