@@ -1,30 +1,37 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import {
-  GETcurrentUser,
-  GETcurrentUserApiUrl,
+	GETcurrentUser,
+	GETcurrentUserApiUrl,
 } from "@/types/api-types/person/GETcurrentUser.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
 import { getAccessToken } from "@/lib/utils";
 
 export default async function useGETcurrentUser(
-  queryConfig?: UseQueryOptions<GETcurrentUser, Error, GETcurrentUser, string[]>
+	queryConfig?: UseQueryOptions<
+		GETcurrentUser,
+		Error,
+		GETcurrentUser,
+		string[]
+	>,
 ) {
-  const access_token = await getAccessToken();
+	const access_token = await getAccessToken();
 
-  return useQuery({
-    queryKey: [TanstackKeys.CurrentUser, access_token],
-    queryFn: async () => {
-      const res = await axios.get(GETcurrentUserApiUrl(), {
-        params: {
-          access_token: await getAccessToken(),
-        },
-      });
+	return useQuery(
+		[TanstackKeys.CurrentUser, access_token],
+		async () => {
+			const res = await axios.get(GETcurrentUserApiUrl(), {
+				params: {
+					access_token: await getAccessToken(),
+				},
+			});
 
-      if (res.status !== 200) throw new Error(res.statusText);
+			if (res.status !== 200) throw new Error(res.statusText);
 
-      return res.data;
-    },
-    ...queryConfig,
-  });
+			return res.data;
+		},
+		{
+			...queryConfig,
+		},
+	);
 }

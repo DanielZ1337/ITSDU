@@ -1,31 +1,33 @@
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import {
-  GETmessages,
-  GETmessagesApiUrl,
-  GETmessagesParams,
+	GETmessages,
+	GETmessagesApiUrl,
+	GETmessagesParams,
 } from "@/types/api-types/messages/GETmessages.ts";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETmessages(
-  params: GETmessagesParams,
-  queryConfig?: UseQueryOptions<GETmessages, Error, GETmessages, string[]>
+	params: GETmessagesParams,
+	queryConfig?: UseQueryOptions<GETmessages, Error, GETmessages, string[]>,
 ) {
-  return useQuery({
-    queryKey: [TanstackKeys.Messages, ...getQueryKeysFromParamsObject(params)],
-    queryFn: async () => {
-      console.log("useGETmessages");
-      const res = await axios.get(GETmessagesApiUrl(params), {
-        params: {
-          access_token: (await getAccessToken()) || "",
-        },
-      });
+	return useQuery(
+		[TanstackKeys.Messages, ...getQueryKeysFromParamsObject(params)],
+		async () => {
+			console.log("useGETmessages");
+			const res = await axios.get(GETmessagesApiUrl(params), {
+				params: {
+					access_token: (await getAccessToken()) || "",
+				},
+			});
 
-      if (res.status !== 200) throw new Error(res.statusText);
+			if (res.status !== 200) throw new Error(res.statusText);
 
-      return res.data;
-    },
-    ...queryConfig,
-  });
+			return res.data;
+		},
+		{
+			...queryConfig,
+		},
+	);
 }

@@ -5,25 +5,27 @@ import { PUTnotificationsMarkAllAsReadApiUrl } from "@/types/api-types/notificat
 import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function usePUTnotificationsMarkAllAsRead(
-  queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>
+	queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>,
 ) {
-  return useMutation({
-    mutationKey: [TanstackKeys.PUTnotificationsMarkAllAsRead],
-    mutationFn: async () => {
-      const res = await axios.put(
-        PUTnotificationsMarkAllAsReadApiUrl(),
-        undefined,
-        {
-          params: {
-            access_token: (await getAccessToken()) || "",
-          },
-        }
-      );
+	return useMutation(
+		[TanstackKeys.PUTnotificationsMarkAllAsRead],
+		async () => {
+			const res = await axios.put(
+				PUTnotificationsMarkAllAsReadApiUrl(),
+				undefined,
+				{
+					params: {
+						access_token: (await getAccessToken()) || "",
+					},
+				},
+			);
 
-      if (res.status !== 200) throw new Error(res.statusText);
+			if (res.status !== 200) throw new Error(res.statusText);
 
-      return res.data;
-    },
-    ...queryConfig,
-  });
+			return res.data;
+		},
+		{
+			...queryConfig,
+		},
+	);
 }

@@ -3,42 +3,44 @@ import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import { TanstackKeys } from "../../types/tanstack-keys";
 import {
-  GETlightbulletinAllComments,
-  GETlightbulletinAllCommentsApiUrl,
-  GETlightbulletinAllCommentsParams,
+	GETlightbulletinAllComments,
+	GETlightbulletinAllCommentsApiUrl,
+	GETlightbulletinAllCommentsParams,
 } from "@/types/api-types/lightbulletin/GETlightbulletinAllComments.ts";
 
 export default function useGETlightbulletinAllComments(
-  params: GETlightbulletinAllCommentsParams,
-  queryConfig?: UseQueryOptions<
-    GETlightbulletinAllComments,
-    Error,
-    GETlightbulletinAllComments,
-    string[]
-  >
+	params: GETlightbulletinAllCommentsParams,
+	queryConfig?: UseQueryOptions<
+		GETlightbulletinAllComments,
+		Error,
+		GETlightbulletinAllComments,
+		string[]
+	>,
 ) {
-  return useQuery({
-    queryKey: [
-      TanstackKeys.LightbulletinAllComments,
-      ...getQueryKeysFromParamsObject(params),
-    ],
-    queryFn: async () => {
-      const res = await axios.get(
-        GETlightbulletinAllCommentsApiUrl({
-          ...params,
-        }),
-        {
-          params: {
-            access_token: (await getAccessToken()) || "",
-            ...params,
-          },
-        }
-      );
+	return useQuery(
+		[
+			TanstackKeys.LightbulletinAllComments,
+			...getQueryKeysFromParamsObject(params),
+		],
+		async () => {
+			const res = await axios.get(
+				GETlightbulletinAllCommentsApiUrl({
+					...params,
+				}),
+				{
+					params: {
+						access_token: (await getAccessToken()) || "",
+						...params,
+					},
+				},
+			);
 
-      if (res.status !== 200) throw new Error(res.statusText);
+			if (res.status !== 200) throw new Error(res.statusText);
 
-      return res.data;
-    },
-    ...queryConfig,
-  });
+			return res.data;
+		},
+		{
+			...queryConfig,
+		},
+	);
 }
