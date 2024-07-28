@@ -1,0 +1,3 @@
+.loading-dots {
+    fill: hsl(var(--foreground)) !important;
+}

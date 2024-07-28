@@ -1,27 +1,24 @@
-import type { UserConfig } from "@farmfe/core";
+import { defineConfig } from "@farmfe/core";
+import farmPostcssPlugin from "@farmfe/js-plugin-postcss";
+import path from "node:path";
 
-const config: UserConfig = {
-  plugins: ["@farmfe/plugin-react"],
-  compilation: {
-    input: {
-      index: "./index.html",
-    },
-    output: {
-      path: "build",
-      publicPath: "/",
-      targetEnv: "browser",
-    },
-  },
-  clearScreen: false,
-  server: {
-    port: 1420,
-    strictPort: true,
-    hmr: {
-      watchOptions: {
-        ignored: ["**/src-tauri/**"],
-      },
-    },
-  },
-};
-
-export default config;
+export default defineConfig({
+	plugins: ["@farmfe/plugin-react", farmPostcssPlugin()],
+	compilation: {
+		resolve: {
+			alias: {
+				"@/": path.resolve(process.cwd(), "src"),
+			},
+		},
+	},
+	clearScreen: false,
+	server: {
+		port: 1420,
+		strictPort: true,
+		hmr: {
+			watchOptions: {
+				ignored: ["**/src-tauri/**"],
+			},
+		},
+	},
+});
