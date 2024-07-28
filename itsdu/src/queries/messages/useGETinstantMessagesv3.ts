@@ -2,37 +2,38 @@ import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
-	GETinstantMessagesv3,
-	GETinstantMessagesv3ApiUrl,
-	GETinstantMessagesv3Params,
+  GETinstantMessagesv3,
+  GETinstantMessagesv3ApiUrl,
+  GETinstantMessagesv3Params,
 } from "@/types/api-types/messages/GETinstantMessagesv3.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETinstantMessagesv3(
-	params: GETinstantMessagesv3Params,
-	queryConfig?: UseQueryOptions<
-		GETinstantMessagesv3,
-		Error,
-		GETinstantMessagesv3,
-		string[]
-	>,
+  params: GETinstantMessagesv3Params,
+  queryConfig?: UseQueryOptions<
+    GETinstantMessagesv3,
+    Error,
+    GETinstantMessagesv3,
+    string[]
+  >
 ) {
-	return useQuery(
-		[TanstackKeys.Messagesv3, ...getQueryKeysFromParamsObject(params)],
-		async () => {
-			console.log("useGETmessages");
-			const res = await axios.get(GETinstantMessagesv3ApiUrl(params), {
-				params: {
-					access_token: (await getAccessToken()) || "",
-				},
-			});
+  return useQuery({
+    queryKey: [
+      TanstackKeys.Messagesv3,
+      ...getQueryKeysFromParamsObject(params),
+    ],
+    queryFn: async () => {
+      console.log("useGETmessages");
+      const res = await axios.get(GETinstantMessagesv3ApiUrl(params), {
+        params: {
+          access_token: (await getAccessToken()) || "",
+        },
+      });
 
-			if (res.status !== 200) throw new Error(res.statusText);
+      if (res.status !== 200) throw new Error(res.statusText);
 
-			return res.data;
-		},
-		{
-			...queryConfig,
-		},
-	);
+      return res.data;
+    },
+    ...queryConfig,
+  });
 }

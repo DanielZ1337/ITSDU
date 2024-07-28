@@ -4,38 +4,31 @@ import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexe
 import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
 import axios from "axios";
 import {
-	GETcourseResourceInfo,
-	GETcourseResourceInfoApiUrl,
+  GETcourseResourceInfo,
+  GETcourseResourceInfoApiUrl,
 } from "@/types/api-types/courses/GETcourseResourceInfo";
 import { getAccessToken } from "@/lib/utils";
 import type { FileRepository } from "electron/services/itslearning/resources/resources";
 
 export default function useFileRepositoryResourceByElementID(
-	elementId: number | string,
-	queryConfig?: UseQueryOptions<
-		FileRepository,
-		Error,
-		FileRepository,
-		string[]
-	>,
+  elementId: number | string,
+  queryConfig?: UseQueryOptions<FileRepository, Error, FileRepository, string[]>
 ) {
-	return useQuery(
-		[
-			"fileRepositoryResourceByElementID",
-			TanstackKeys.ResourceByElementID,
-			elementId.toString(),
-		],
-		async () => {
-			return await window.resources.file.getDirectFileRepository(elementId);
-		},
-		{
-			...queryConfig,
-			// complete caching of resources
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchIntervalInBackground: false,
-		},
-	);
+  return useQuery({
+    queryKey: [
+      "fileRepositoryResourceByElementID",
+      TanstackKeys.ResourceByElementID,
+      elementId.toString(),
+    ],
+    queryFn: async () => {
+      return await window.resources.file.getDirectFileRepository(elementId);
+    },
+    ...queryConfig,
+    // complete caching of resources
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchIntervalInBackground: false,
+  });
 }
