@@ -1,5 +1,5 @@
 [package]
-name = "itsdu"
+name = "ITSDU"
 version = "0.0.0"
 description = "A Tauri App"
 authors = ["you"]
@@ -15,4 +15,10 @@ tauri = { version = "2.0.0-beta", features = [] }
 tauri-plugin-shell = "2.0.0-beta"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-
+actix-web = "4.8.0"
+actix-cors = "0.7.0"
+awc = { version = "3.5.0", features = ["rustls"] }
+tokio = { version = "1.39.2", features = ["full", "macros", "rt-multi-thread"] }
+url = "2.5.2"
+tauri-plugin-deep-link = "0.1.2"
+dotenv = "0.15.0"

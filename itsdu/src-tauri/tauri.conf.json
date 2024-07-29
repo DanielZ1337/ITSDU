@@ -30,5 +30,12 @@
 			"icons/icon.icns",
 			"icons/icon.ico"
 		]
+	},
+	"plugins": {
+		"deep-link": {
+			"desktop": {
+				"schemes": ["something", "my-tauri-app"]
+			}
+		}
 	}
 }

@@ -35,8 +35,8 @@
 		"@radix-ui/react-toast": "^1.2.1",
 		"@radix-ui/react-toggle": "^1.1.0",
 		"@radix-ui/react-tooltip": "^1.1.2",
-		"@tanstack/react-query": "^5.51.15",
-		"@tanstack/react-query-devtools": "^5.51.15",
+		"@tanstack/react-query": "^4.36.1",
+		"@tanstack/react-query-devtools": "^4.36.1",
 		"@tanstack/react-table": "^8.19.3",
 		"@tanstack/react-virtual": "^3.8.3",
 		"@tauri-apps/api": ">=2.0.0-beta.0",
@@ -95,6 +95,7 @@
 		"@farmfe/core": "^1.3.11",
 		"@farmfe/js-plugin-postcss": "^1.8.0",
 		"@farmfe/plugin-react": "^1.2.0",
+		"@farmfe/plugin-sass": "^1.1.0",
 		"@tanstack/eslint-plugin-query": "^5.51.15",
 		"@tauri-apps/cli": ">=2.0.0-beta.0",
 		"@types/he": "^1.2.3",
@@ -124,5 +125,6 @@
 		"tailwindcss-animate": "^1.0.7",
 		"tree-kill": "^1.2.2",
 		"typescript": "^5.5.4"
-	}
+	},
+	"trustedDependencies": ["@biomejs/biome", "core-js"]
 }

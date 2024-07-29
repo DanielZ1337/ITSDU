@@ -37,7 +37,9 @@ export const getQueryKeysFromParamsObject = (params: {
 }) => {
 	// eslint-disable-next-line no-unused-vars
 	params = Object.fromEntries(
-		Object.entries(params).filter(([_, value]) => value !== undefined),
+		Object.entries(params).filter(
+			([_, value]) => value !== undefined || value !== null || value !== "",
+		),
 	);
 
 	if (Object.keys(params).length === 0) return [];
@@ -52,7 +54,7 @@ export const getQueryKeysFromParamsObject = (params: {
 		} else if (Array.isArray(params[key])) {
 			return (params[key]! as []).join(",");
 		} else {
-			return params[key]!.toString();
+			return encodeURIComponent(String(params[key]?.toString()));
 		}
 	});
 };
@@ -77,9 +79,10 @@ export function getFormattedSize(size: number) {
 	return `${size.toFixed(2)} ${units[i]}`;
 }
 
-export const baseUrl = import.meta.env.DEV
-	? "http://localhost:8080/"
-	: "https://sdu.itslearning.com/";
+// export const baseUrl = import.meta.env.DEV
+// 	? "http://localhost:8080/"
+// 	: "https://sdu.itslearning.com/";
+export const baseUrl = "http://localhost:1420/";
 
 export const apiUrl = (
 	route: string,
@@ -167,7 +170,7 @@ export function getRelativeTimeString(
 }
 
 export async function getAccessToken() {
-	return window.auth.store.get("access_token");
+	return "btsmRtp4k8Urgo12gJT5lGQSG_lHMGwYcrc1NiHwS82FBvrK5pEOHBKrJcPWoE6993LQ3lJvOQgQQYHmgq8-XCTqlw0mR9YwO9k8uT-Xut0-IhXNw8jUwnb8_c0iwb_YqmrAcI16E863I415oiy95g..";
 }
 
 export function isMacOS() {

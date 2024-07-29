@@ -21,7 +21,7 @@ export default function useGETstarredCourses(
 		string[]
 	>,
 ) {
-	return useSuspenseQuery({
+	return useQuery({
 		queryKey: [
 			TanstackKeys.StarredCourses,
 			...getQueryKeysFromParamsObject(params),
