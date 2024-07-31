@@ -15,7 +15,8 @@ fn greet(name: &str) -> String {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    auth::auth::handle_itslearning_auth_redirect();
+    auth::auth::itslearning_deeplink_handler();
+
     let proxy_handle = tokio::spawn(async {
         if let Err(e) = proxy::start_proxy_server().await {
             eprintln!("Proxy server error: {}", e);
@@ -23,6 +24,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_stronghold::Builder::new(|pass| todo!()).build())
+        .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![greet])
         .run(tauri::generate_context!())

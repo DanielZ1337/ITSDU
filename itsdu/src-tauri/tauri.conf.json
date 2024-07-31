@@ -1,41 +1,42 @@
 {
-	"productName": "itsdu",
-	"version": "0.0.0",
-	"identifier": "com.tauri.dev",
-	"build": {
-		"beforeDevCommand": "bun run dev",
-		"devUrl": "http://localhost:1420",
-		"beforeBuildCommand": "bun run build",
-		"frontendDist": "../dist"
-	},
-	"app": {
-		"windows": [
-			{
-				"title": "itsdu",
-				"width": 800,
-				"height": 600
-			}
-		],
-		"security": {
-			"csp": null
-		}
-	},
-	"bundle": {
-		"active": true,
-		"targets": "all",
-		"icon": [
-			"icons/32x32.png",
-			"icons/128x128.png",
-			"icons/128x128@2x.png",
-			"icons/icon.icns",
-			"icons/icon.ico"
-		]
-	},
-	"plugins": {
-		"deep-link": {
-			"desktop": {
-				"schemes": ["something", "my-tauri-app"]
-			}
-		}
-	}
+  "productName": "ITSDU",
+  "version": "0.0.0",
+  "identifier": "itsdu.danielz.dev",
+  "build": {
+    "beforeDevCommand": "bun run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "bun run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "ITSDU",
+        "width": 800,
+        "height": 600,
+        "decorations": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["something", "my-tauri-app"]
+      }
+    }
+  }
 }

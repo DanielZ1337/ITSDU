@@ -22,3 +22,7 @@ tokio = { version = "1.39.2", features = ["full", "macros", "rt-multi-thread"] }
 url = "2.5.2"
 tauri-plugin-deep-link = "0.1.2"
 dotenv = "0.15.0"
+serde_qs = "0.13.0"
+tauri-plugin-process = "2.0.0-beta.8"
+tauri-plugin-stronghold = "2.0.0-beta.8"
+reqwest = "0.12.5"
