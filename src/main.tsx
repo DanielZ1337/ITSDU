@@ -11,6 +11,7 @@ import { GlobalErrorBoundaryProvider } from './contexts/global-error-boundary-co
 import { useQuery } from '@tanstack/react-query'
 import useGETssoUrl from './queries/sso/useGETssoUrl'
 import { Loader } from './components/ui/loader'
+import { GlobalShortcuts } from './components/global-shortcuts'
 
 const RouterProvider = lazy(() => import('react-router-dom').then((module) => ({ default: module.RouterProvider })))
 const Providers = lazy(() => import('@/components/providers.tsx'))
@@ -250,6 +251,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 						buttonPosition='top-left'
 					/>
 					{/* </React.StrictMode> */}
+					<GlobalShortcuts />
 				</Providers>
 			</SuspenseWrapper>
 		</ErrorBoundary>

@@ -30,9 +30,15 @@ export default function SettingsDropdown({
 }) {
 	const navigate = useNavigate()
 	const { theme, setTheme } = useTheme()
+
+	const handleDarkModeToggle = useCallback(async () => {
+		const isDarkMode = await window.darkMode.toggle()
+		setTheme(isDarkMode ? 'dark' : 'light')
+	}, [setTheme])
+
+	const { toggleSettingsModal } = useShowSettingsModal()
 	const { version } = useVersion()
 	const [showBrowseNav, setShowBrowseNav] = useAtom(showBrowseNavAtom)
-	const { toggleSettingsModal } = useShowSettingsModal()
 	const { toggleAboutModal } = useAboutModal()
 	const commandOrControl = () => {
 		if (isMacOS()) {
@@ -47,37 +53,6 @@ export default function SettingsDropdown({
 	useEffect(() => {
 		onOpenChange?.(isOpen)
 	}, [isOpen, onOpenChange])
-
-	const handleDarkModeToggle = useCallback(async () => {
-		const isDarkMode = await window.darkMode.toggle()
-		setTheme(isDarkMode ? 'dark' : 'light')
-	}, [setTheme])
-
-	useEffect(() => {
-		function handleKeyDown(e: KeyboardEvent) {
-			if (e.ctrlKey && e.key === 't') {
-				e.preventDefault()
-				handleDarkModeToggle()
-			}
-
-			if (e.ctrlKey && e.key === 'q') {
-				e.preventDefault()
-				window.app.exit().then((r) => {
-					console.log(r)
-				})
-			}
-			if (e.ctrlKey && e.key === 's') {
-				e.preventDefault()
-				toggleSettingsModal()
-			}
-		}
-
-		window.addEventListener('keydown', handleKeyDown)
-
-		return () => {
-			window.removeEventListener('keydown', handleKeyDown)
-		}
-	}, [handleDarkModeToggle, navigate])
 
 	function dropdownItemOnClick(
 		e: React.MouseEvent<HTMLButtonElement | HTMLDivElement, MouseEvent>,
