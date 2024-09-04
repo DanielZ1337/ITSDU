@@ -304,6 +304,10 @@ function ResourcesCommandList({
 		}
 	)
 
+	console.log({
+		resources,
+	})
+
 	const { downloadToast } = useDownloadToast()
 
 	useEffect(() => {

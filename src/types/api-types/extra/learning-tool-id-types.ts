@@ -5,9 +5,10 @@ import { NavigateFunction, useNavigate } from 'react-router-dom'
 import type { ItslearningRestApiEntitiesElementLink } from '../utils/Itslearning.RestApi.Entities.ElementLink'
 
 export enum LearningToolIdTypes {
-	LINK = 50010,
+	LINK = 5010,
 	FILE = 5009,
 	BOOK = 5,
+	REGISTRATION = 4,
 }
 
 // TODO: add mp4, mkv (maybe other video formats as well) + JPG, PNG, GIF, SVG, etc. (maybe other image formats as well)
@@ -26,6 +27,10 @@ enum IconTypesForResources {
 	DOCX = 1,
 	XLSX = 2,
 	PPTX = 3,
+	// ODP is basically powerpoint
+	ODP = 34,
+	// ODT is basically word
+	ODT = 32,
 	PDF = 12,
 	MP4 = 13,
 	JPEG = 11,
@@ -36,6 +41,8 @@ type ResourceObject = {
 	Url?: string
 	Title?: string
 	IconUrl?: string
+	ContentUrl?: string
+	LearningToolId?: LearningToolIdTypes
 }
 
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
@@ -79,10 +86,15 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
 					navigate(`/documents/other/${elementId}`)
 					break
 			}
-		} else {
+		} else if (isResourceCustom(resource)) {
 			if (typeof resource === 'number') return
-			const url = typeof resource === 'string' ? resource : resource.Url
-			if (url) window.app.openExternal(url, true)
+			const url = typeof resource === 'string' ? resource : resource.ContentUrl ?? resource.Url
+
+			navigate({
+				pathname: `/sso`,
+				search: `?url=${url}`,
+			})
+			// if (url) window.app.openExternal(url, true)
 		}
 	}
 
@@ -118,22 +130,62 @@ export function isResourceWithFileExtension(resource: ResourceObject | string | 
 	}
 }
 
+export function isResourceFromUrlOnItslearning(resource: ResourceObject | string) {
+	// @ts-expect-error can't be bothered to fix the types. the resourceobject will not be undefined, but the contenturl or url might be
+	const url = new URL(typeof resource === 'string' ? resource : resource.ContentUrl ?? resource.Url)
+
+	return url.origin.includes('itslearning.com')
+}
+
 function getFileExtension(fileName: string) {
 	const lastDotIndex = fileName.lastIndexOf('.')
 	return fileName.substring(lastDotIndex + 1).toLowerCase()
+}
+
+export function isResourceItslearningResourceWithLink(resource: ResourceObject | string) {
+	let urlToParse: string | undefined
+
+	if (typeof resource === 'string') {
+		urlToParse = resource
+	} else {
+		urlToParse = resource.IconUrl
+	}
+
+	if (!urlToParse) return false
+
+	return Number(new URL(urlToParse).searchParams.get('ExtensionId')) === LearningToolIdTypes.LINK
 }
 
 export function isSupportedResourceInApp(resource: ResourceObject | string | number) {
 	return (
 		isResourceMicrosoftOfficeDocument(resource) ||
 		isResourcePDFFromUrlOrElementType(resource) ||
-		isResourceWithFileExtension(resource)
+		isResourceWithFileExtension(resource) ||
+		isResourceCustom(resource)
+		// (typeof resource !== 'number' && isResourceFromUrlOnItslearning(resource)) don't do this atm, because links are not gonna open if it has links inside, so just do this and maybe manually add things like quizzes and such
+	)
+}
+
+export function isResourceCustom(resource: ResourceObject | string | number) {
+	if (typeof resource === 'number' || typeof resource === 'string') {
+		return false
+	}
+
+	return (
+		resource.LearningToolId === LearningToolIdTypes.REGISTRATION ||
+		(resource.IconUrl && Number(getExtensionIdFromUrl(resource.IconUrl)) === LearningToolIdTypes.REGISTRATION)
 	)
 }
 
 export function isResourceMicrosoftOfficeDocument(resource: ResourceObject | string | number) {
 	// IconTypeId 1, 2 and 3 are DOCX, XLSX and PPTX respectively (this is the only way to find out whether or not a resource is a Microsoft Office Document)
-	const OfficeDocumentIconTypeIds = [IconTypesForResources.DOCX, IconTypesForResources.XLSX, IconTypesForResources.PPTX]
+	const OfficeDocumentIconTypeIds = [
+		IconTypesForResources.DOCX,
+		IconTypesForResources.XLSX,
+		IconTypesForResources.PPTX,
+		IconTypesForResources.ODP,
+		IconTypesForResources.ODT,
+	]
 	if (typeof resource === 'number') {
 		return OfficeDocumentIconTypeIds.includes(resource)
 	} else if (typeof resource === 'string') {
@@ -160,4 +212,8 @@ export function isResourcePDFFromUrlOrElementType(resource: ResourceObject | str
 function getIconTypeIdFromUrl(url: string) {
 	const urlParams = new URLSearchParams(url)
 	return parseInt(urlParams.get('IconTypeId') ?? '')
+}
+
+function getExtensionIdFromUrl(url: string) {
+	return Number(new URL(url).searchParams.get('ExtensionId'))
 }
