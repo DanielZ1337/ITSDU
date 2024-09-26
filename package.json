@@ -53,7 +53,7 @@
   "publisher": "DanielZ1337",
   "scripts": {
     "dev": "farm start",
-    "build": "tsc && farm build",
+    "build": "npm run biome:check && farm build",
     "preview": "farm preview",
     "clean": "farm clean",
     "tauri": "tauri",
