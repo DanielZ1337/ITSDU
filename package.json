@@ -1,0 +1,86 @@
+{
+  "name": "itsdu",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "description": "An electron app for students to interact with itslearning",
+  "author": {
+    "name": "Daniel Bermann Schmidt",
+    "email": "danielz@danielz.dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DanielZ1337/itsdu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "electron",
+    "react",
+    "vite",
+    "typescript",
+    "tailwindcss",
+    "electron-builder",
+    "itsdu",
+    "itslearning",
+    "sdu",
+    "sdu.dk",
+    "sdu itslearning",
+    "sdu itsdu",
+    "sdu itslearning itsdu",
+    "sdu itslearning itsdu electron",
+    "sdu itslearning itsdu electron app",
+    "sdu itslearning itsdu electron app danielz",
+    "sdu itslearning itsdu electron app danielz1337",
+    "daniel bermann schmidt",
+    "daniel bermann schmidt itsdu",
+    "daniel bermann schmidt itsdu electron",
+    "daniel bermann schmidt itsdu electron app",
+    "daniel bermann schmidt itsdu electron app danielz",
+    "daniel bermann schmidt itsdu electron app danielz1337",
+    "danielz",
+    "danielz itsdu",
+    "danielz itsdu electron",
+    "sdu itslearning itsdu daniel bermann schmidt",
+    "sdu itslearning itsdu daniel bermann schmidt electron",
+    "sdu itslearning itsdu daniel bermann schmidt electron app",
+    "sdu itslearning itsdu daniel bermann schmidt electron app danielz",
+    "sdu itslearning itsdu daniel bermann schmidt oauth",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron app",
+    "sdu itslearning itsdu daniel bermann schmidt oauth electron app danielz"
+  ],
+  "homepage": "https://itsdu.danielz.dev/",
+  "publisher": "DanielZ1337",
+  "scripts": {
+    "dev": "farm start",
+    "build": "tsc && farm build",
+    "preview": "farm preview",
+    "clean": "farm clean",
+    "tauri": "tauri",
+    "biome:format": "biome format --write ./src",
+    "biome:lint": "biome lint --write ./src",
+    "biome:check": "biome check --write ./src"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-shell": ">=2.0.0-rc.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.2",
+    "@farmfe/cli": "^1.0.2",
+    "@farmfe/core": "^1.3.0",
+    "@farmfe/plugin-react": "^1.2.0",
+    "@tauri-apps/cli": ">=2.0.0-rc.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "core-js": "^3.36.1",
+    "react-refresh": "^0.14.0",
+    "typescript": "^5.2.2"
+  },
+  "trustedDependencies": [
+    "@biomejs/biome",
+    "core-js"
+  ]
+}

@@ -10,8 +10,6 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-dist-electron
-release
 *.local
 
 # Editor directories and files
@@ -24,18 +22,3 @@ release
 *.njsproj
 *.sln
 *.sw?
-
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-*.env
-*.env.local
-*.env.development
-*.env.development.local
-*.env.test
-*.env.test.local
-*.env.production
-*.env.production.local
-.env

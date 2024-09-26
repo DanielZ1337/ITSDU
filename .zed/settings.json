@@ -1,9 +1,0 @@
-{
-	"lsp": {
-		"rust-analyzer": {
-			"settings": {
-				"linkedProjects": ["${workspaceFolder}/itsdu/src-tauri/Cargo.toml"]
-			}
-		}
-	}
-}
