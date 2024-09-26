@@ -2,7 +2,11 @@ import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 // import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 export const Route = createRootRoute({
-  component: () => (
+  component: RouteComp,
+});
+
+function RouteComp() {
+  return (
     <>
       <div className="p-2 flex gap-2">
         <Link to="/" className="[&.active]:font-bold">
@@ -15,5 +19,5 @@ export const Route = createRootRoute({
       <hr />
       <Outlet />
     </>
-  ),
-});
+  );
+}
