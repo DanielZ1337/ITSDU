@@ -1,4 +1,8 @@
-use tauri_plugin_deep_link::DeepLinkExt;
+use std::path::PathBuf;
+
+use tauri::{Manager, Wry};
+use tauri_plugin_store::{with_store, StoreCollection};
+use serde_json::json;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -25,11 +29,34 @@ pub fn run() {
             {
                 use tauri_plugin_deep_link::DeepLinkExt;
                 app.deep_link().register_all()?;
-            }
 
-            app.deep_link().on_open_url(|event| {
-                println!("deep link URLs: {:?}", event.urls());
+                app.deep_link().on_open_url(|event| {
+                    println!("deep link URLs: {:?}", event.urls());
+                });
+            }
+            Ok(())
+        })
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .setup(|app| {
+            let stores = app.handle().try_state::<StoreCollection<Wry>>().ok_or("Store not found")?;
+            let path = PathBuf::from("store.bin");
+
+            with_store(app.handle().clone(), stores, path, |store| {
+                // Note that values must be serde_json::Value instances,
+                // otherwise, they will not be compatible with the JavaScript bindings.
+                store.insert("some-key".to_string(), json!({ "value": 5 }))?;
+
+                // Get a value from the store.
+                let value = store.get("some-key").expect("Failed to get value from store");
+                println!("{}", value); // {"value":5}
+
+                // You can manually save the store after making changes.
+                // Otherwise, it will save upon graceful exit as described above.
+                store.save()?;
+
+                Ok(())
             });
+
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
