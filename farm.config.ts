@@ -1,11 +1,12 @@
 import { defineConfig } from "@farmfe/core";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import farmJsPluginPostcss from "@farmfe/js-plugin-postcss";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
-  plugins: ["@farmfe/plugin-react"],
+  plugins: ["@farmfe/plugin-react", farmJsPluginPostcss()],
   vitePlugins: [TanStackRouterVite()],
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
