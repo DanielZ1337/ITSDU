@@ -1,2 +1,2 @@
 pub mod auth;
-mod auth_env;
+pub mod env;

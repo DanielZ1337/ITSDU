@@ -1,8 +1,9 @@
+mod auth;
 use std::path::PathBuf;
 
+use serde_json::json;
 use tauri::{Manager, Wry};
 use tauri_plugin_store::{with_store, StoreCollection};
-use serde_json::json;
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -37,8 +38,12 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(auth::auth::init())
         .setup(|app| {
-            let stores = app.handle().try_state::<StoreCollection<Wry>>().ok_or("Store not found")?;
+            let stores = app
+                .handle()
+                .try_state::<StoreCollection<Wry>>()
+                .ok_or("Store not found")?;
             let path = PathBuf::from("store.bin");
 
             with_store(app.handle().clone(), stores, path, |store| {
@@ -47,7 +52,9 @@ pub fn run() {
                 store.insert("some-key".to_string(), json!({ "value": 5 }))?;
 
                 // Get a value from the store.
-                let value = store.get("some-key").expect("Failed to get value from store");
+                let value = store
+                    .get("some-key")
+                    .expect("Failed to get value from store");
                 println!("{}", value); // {"value":5}
 
                 // You can manually save the store after making changes.
