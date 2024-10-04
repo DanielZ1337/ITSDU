@@ -1,4 +1,3 @@
-use serde::Deserialize;
 use tauri::{
     plugin::{Builder, TauriPlugin},
     Runtime, Url,
@@ -55,8 +54,8 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
         .setup(|app, _api| {
             let config = app.config().plugins.0.get("deep-link");
             let desktop = config.unwrap().get("desktop").unwrap().as_object().unwrap();
-            let desktopSchemes = desktop.get("schemes").unwrap().as_array().unwrap();
-            println!("schemes: {:?}", desktopSchemes);
+            let desktop_schemes = desktop.get("schemes").unwrap().as_array().unwrap();
+            println!("schemes: {:?}", desktop_schemes);
             Ok(())
         })
         .on_navigation(|_webview, url| {
@@ -65,6 +64,10 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
             // Spawn the async task using `tauri::async_runtime::spawn`
             let url_string = String::from(url.as_str());
             tauri::async_runtime::spawn(async move {
+                if !url_string.starts_with(itslearning::SCHEME) {
+                    return;
+                }
+
                 if let Err(e) = handle_itslearning_auth_callback(url_string).await {
                     eprintln!("Error handling auth callback: {}", e);
                 }
