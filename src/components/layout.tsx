@@ -45,7 +45,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Suspense fallback={<IsOnlineIndicatorLazy />}>
         <IsOnlineIndicatorLazy />
       </Suspense>
-      <div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
+      <div
+        data-tauri-drag-region
+        className="flex items-center justify-between border-b px-4 py-2 drag border-background/40"
+      >
         <Link className="shrink-0 no-drag" to={"/"}>
           <img
             loading="eager"
