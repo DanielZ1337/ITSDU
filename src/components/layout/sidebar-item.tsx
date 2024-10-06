@@ -1,6 +1,7 @@
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
+import { Link,useMatch,useMatches } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 
@@ -13,10 +14,23 @@ export default function SidebarItem({
 }: NavigationType) {
   const { sidebarActive } = useSidebar();
 
+  // ({ isActive, isPending }) =>
+  //
+
+  const match = useMatch({
+    from: href,
+    shouldThrow: false,
+  });
+
+  const isActive = !!match;
+  // todo: not correct
+  const isPending = match?.isFetching;
+
+
   return (
-    <NavLink
+    <Link
       onClick={(e) => disabled && e.preventDefault()}
-      className={({ isActive, isPending }) =>
+      className={
         cn(
           "animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground",
           isActive ? "text-foreground" : "text-foreground/60",
@@ -50,6 +64,6 @@ export default function SidebarItem({
           </span>
         </>
       )}
-    </NavLink>
+    </Link>
   );
 }

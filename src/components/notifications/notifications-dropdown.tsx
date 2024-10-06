@@ -16,9 +16,9 @@ import usePUTnotificationsMarkAllAsRead from "@/queries/notifications/usePUTnoti
 import { ScrollShadow } from "@nextui-org/react";
 import { ArrowRightIcon } from "lucide-react";
 import { AiOutlineNotification } from "react-icons/ai";
-import { Link } from "react-router-dom";
 import NotificationsDropdownInfiniteFallback from "./fallback/notifications-dropdown-infinite-fallback";
 import NotificationsDropdownInfiniteEnd from "./notifications-dropdown-infinite-end";
+import { Link } from "@tanstack/react-router";
 
 export default function NotificationsDropdown() {
   const {
@@ -97,7 +97,8 @@ export default function NotificationsDropdown() {
           {notifications?.pages.map((page) =>
             page.EntityArray.map((notification) => (
               <Link
-                to={`/updates/${notification.NotificationId}`}
+                to={"/updates/$id"}
+                params={{ id: String(notification.NotificationId) }}
                 className={"flex hover:bg-foreground/10 rounded-md my-1"}
                 key={notification.NotificationId}
               >

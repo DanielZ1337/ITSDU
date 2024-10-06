@@ -26,7 +26,7 @@ export default function Sidebar() {
     >
       <div className="flex h-full flex-col gap-1 overflow-x-hidden scrollbar-hide">
         <SidebarGroupTitle title="General" />
-        {/* {navlinks.map((link) => (
+        {navlinks.map((link) => (
           <Suspense fallback={null} key={link.href}>
             <LazySidebarItem
               href={link.href}
@@ -36,7 +36,7 @@ export default function Sidebar() {
               disabled={link.disabled}
             />
           </Suspense>
-        ))} */}
+        ))}
         <AnimatePresence>
           {courseActive && (
             <m.div
@@ -47,7 +47,7 @@ export default function Sidebar() {
             >
               <hr className="my-3" />
               <SidebarGroupTitle title="Course" />
-              {/* {courseNavLinks.map((link) => (
+              {courseNavLinks.map((link) => (
                 <Suspense fallback={null} key={link.href}>
                   <LazySidebarItem
                     href={`/courses/${courseId}${link.end ? "" : "/" + link.href}`}
@@ -57,7 +57,7 @@ export default function Sidebar() {
                     disabled={link.disabled}
                   />
                 </Suspense>
-              ))} */}
+              ))}
             </m.div>
           )}
         </AnimatePresence>

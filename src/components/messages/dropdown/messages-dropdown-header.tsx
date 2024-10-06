@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread.ts";
+import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
 
 export default function MessagesDropdownHeader({
   disabled,
@@ -16,8 +16,13 @@ export default function MessagesDropdownHeader({
 }) {
   return (
     <>
-      <Link to={"/messages"} className={"group flex gap-1 items-center justify-center"}>
-        <span className={"text-base font-medium group-hover:underline"}>Messages</span>
+      <Link
+        to={"/messages"}
+        className={"group flex gap-1 items-center justify-center"}
+      >
+        <span className={"text-base font-medium group-hover:underline"}>
+          Messages
+        </span>
         <ArrowRightIcon
           className={
             "stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"

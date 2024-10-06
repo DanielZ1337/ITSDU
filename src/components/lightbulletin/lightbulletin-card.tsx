@@ -12,7 +12,6 @@ import Linkify from "linkify-react";
 import { BellOff, BellRing } from "lucide-react";
 import React, { Suspense, useState } from "react";
 import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import renderLink from "../custom-render-link-linkify";
 import HoverDate from "../hover-date";
@@ -22,6 +21,7 @@ import LightbulletinImage from "./lightbulletin-image";
 import LightbulletinLink from "./lightbulletin-link";
 import LightbulletinLinkPreview from "./lightbulletin-link-preview";
 import LightbulletinResource from "./lightbulletin-resource";
+import { Link } from "@tanstack/react-router";
 
 export default function LightbulletinCard({
   bulletin,
@@ -73,7 +73,10 @@ export default function LightbulletinCard({
               showTitle={false}
             >
               <Link
-                to={`/person/${bulletin.PublishedBy.PersonId}`}
+                to={"/person/$id"}
+                params={{
+                  id: String(bulletin.PublishedBy.PersonId),
+                }}
                 className="font-semibold text-blue-500 hover:underline"
               >
                 {bulletin.PublishedBy.FullName}{" "}
@@ -177,23 +180,37 @@ export default function LightbulletinCard({
         <>
           {bulletin.CommentsCount > 0 && (
             <Suspense
-              fallback={<Loader className={"stroke-current text-gray-500 m-auto my-4"} />}
+              fallback={
+                <Loader
+                  className={"stroke-current text-gray-500 m-auto my-4"}
+                />
+              }
             >
-              <LightbulletinComments lightbulletinId={bulletin.LightBulletinId} />
+              <LightbulletinComments
+                lightbulletinId={bulletin.LightBulletinId}
+              />
             </Suspense>
           )}
-          <LightbulletinCommentForm lightbulletinId={bulletin.LightBulletinId} />
+          <LightbulletinCommentForm
+            lightbulletinId={bulletin.LightBulletinId}
+          />
         </>
       )}
       <div className="mt-2 flex gap-4 truncate text-lg">
         {/*{bulletin.CommentsCount > 0 && (*/}
-        <Badge onClick={() => setShowComments(!showComments)} variant={"purple"}>
+        <Badge
+          onClick={() => setShowComments(!showComments)}
+          variant={"purple"}
+        >
           {bulletin.CommentsCount}
           <BsChatSquareTextFill className={"mt-1"} />
         </Badge>
         {/*)}*/}
         {bulletin.ResourcesCount > 0 && (
-          <Badge onClick={() => setShowResources(!showResources)} variant={"purple"}>
+          <Badge
+            onClick={() => setShowResources(!showResources)}
+            variant={"purple"}
+          >
             {bulletin.ResourcesCount}
             <BsFileEarmarkFill />
           </Badge>

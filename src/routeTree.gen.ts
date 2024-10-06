@@ -11,25 +11,33 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as CalendarImport } from './routes/calendar'
 import { Route as ProfileRouteImport } from './routes/profile.route'
 import { Route as OverviewRouteImport } from './routes/overview.route'
 import { Route as MergeZipDocumentsRouteImport } from './routes/merge-zip-documents.route'
 import { Route as IndexRouteImport } from './routes/index.route'
 import { Route as UpdatesIndexRouteImport } from './routes/updates/index.route'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index.route'
-import { Route as CoursesIndexRouteImport } from './routes/courses/index.route'
+import { Route as CoursesIdImport } from './routes/courses.$id'
 import { Route as UpdatesIdRouteImport } from './routes/updates/$id.route'
 import { Route as PersonIdRouteImport } from './routes/person.$id.route'
 import { Route as MessagesIdRouteImport } from './routes/messages/$id.route'
-import { Route as CoursesUpdatesRouteImport } from './routes/courses/updates.route'
-import { Route as CoursesTasksRouteImport } from './routes/courses/tasks.route'
-import { Route as CoursesScheduleRouteImport } from './routes/courses/schedule.route'
-import { Route as CoursesPlansRouteImport } from './routes/courses/plans.route'
-import { Route as CoursesParticipantsRouteImport } from './routes/courses/participants.route'
-import { Route as CoursesInfoRouteImport } from './routes/courses/info.route'
-import { Route as CoursesIdRouteImport } from './routes/courses/$id.route'
+import { Route as CoursesIdIndexRouteImport } from './routes/courses/$id/index.route'
+import { Route as CoursesIdUpdatesRouteImport } from './routes/courses/$id/updates.route'
+import { Route as CoursesIdTasksRouteImport } from './routes/courses/$id/tasks.route'
+import { Route as CoursesIdScheduleRouteImport } from './routes/courses/$id/schedule.route'
+import { Route as CoursesIdResourcesRouteImport } from './routes/courses/$id/resources.route'
+import { Route as CoursesIdPlansRouteImport } from './routes/courses/$id/plans.route'
+import { Route as CoursesIdParticipantsRouteImport } from './routes/courses/$id/participants.route'
+import { Route as CoursesIdInfoRouteImport } from './routes/courses/$id/info.route'
+import { Route as CoursesIdResourcesFolderIdRouteImport } from './routes/courses/$id/resources.$folderId.route'
 
 // Create/Update Routes
+
+const CalendarRoute = CalendarImport.update({
+  path: '/calendar',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const ProfileRouteRoute = ProfileRouteImport.update({
   path: '/profile',
@@ -61,8 +69,8 @@ const MessagesIndexRouteRoute = MessagesIndexRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const CoursesIndexRouteRoute = CoursesIndexRouteImport.update({
-  path: '/courses/',
+const CoursesIdRoute = CoursesIdImport.update({
+  path: '/courses/$id',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -81,40 +89,53 @@ const MessagesIdRouteRoute = MessagesIdRouteImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const CoursesUpdatesRouteRoute = CoursesUpdatesRouteImport.update({
-  path: '/courses/updates',
-  getParentRoute: () => rootRoute,
+const CoursesIdIndexRouteRoute = CoursesIdIndexRouteImport.update({
+  path: '/',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesTasksRouteRoute = CoursesTasksRouteImport.update({
-  path: '/courses/tasks',
-  getParentRoute: () => rootRoute,
+const CoursesIdUpdatesRouteRoute = CoursesIdUpdatesRouteImport.update({
+  path: '/updates',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesScheduleRouteRoute = CoursesScheduleRouteImport.update({
-  path: '/courses/schedule',
-  getParentRoute: () => rootRoute,
+const CoursesIdTasksRouteRoute = CoursesIdTasksRouteImport.update({
+  path: '/tasks',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesPlansRouteRoute = CoursesPlansRouteImport.update({
-  path: '/courses/plans',
-  getParentRoute: () => rootRoute,
+const CoursesIdScheduleRouteRoute = CoursesIdScheduleRouteImport.update({
+  path: '/schedule',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesParticipantsRouteRoute = CoursesParticipantsRouteImport.update({
-  path: '/courses/participants',
-  getParentRoute: () => rootRoute,
+const CoursesIdResourcesRouteRoute = CoursesIdResourcesRouteImport.update({
+  path: '/resources',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesInfoRouteRoute = CoursesInfoRouteImport.update({
-  path: '/courses/info',
-  getParentRoute: () => rootRoute,
+const CoursesIdPlansRouteRoute = CoursesIdPlansRouteImport.update({
+  path: '/plans',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
 
-const CoursesIdRouteRoute = CoursesIdRouteImport.update({
-  path: '/courses/$id',
-  getParentRoute: () => rootRoute,
+const CoursesIdParticipantsRouteRoute = CoursesIdParticipantsRouteImport.update(
+  {
+    path: '/participants',
+    getParentRoute: () => CoursesIdRoute,
+  } as any,
+)
+
+const CoursesIdInfoRouteRoute = CoursesIdInfoRouteImport.update({
+  path: '/info',
+  getParentRoute: () => CoursesIdRoute,
 } as any)
+
+const CoursesIdResourcesFolderIdRouteRoute =
+  CoursesIdResourcesFolderIdRouteImport.update({
+    path: '/$folderId',
+    getParentRoute: () => CoursesIdResourcesRouteRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -148,53 +169,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRoute
     }
-    '/courses/$id': {
-      id: '/courses/$id'
-      path: '/courses/$id'
-      fullPath: '/courses/$id'
-      preLoaderRoute: typeof CoursesIdRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/info': {
-      id: '/courses/info'
-      path: '/courses/info'
-      fullPath: '/courses/info'
-      preLoaderRoute: typeof CoursesInfoRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/participants': {
-      id: '/courses/participants'
-      path: '/courses/participants'
-      fullPath: '/courses/participants'
-      preLoaderRoute: typeof CoursesParticipantsRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/plans': {
-      id: '/courses/plans'
-      path: '/courses/plans'
-      fullPath: '/courses/plans'
-      preLoaderRoute: typeof CoursesPlansRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/schedule': {
-      id: '/courses/schedule'
-      path: '/courses/schedule'
-      fullPath: '/courses/schedule'
-      preLoaderRoute: typeof CoursesScheduleRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/tasks': {
-      id: '/courses/tasks'
-      path: '/courses/tasks'
-      fullPath: '/courses/tasks'
-      preLoaderRoute: typeof CoursesTasksRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/courses/updates': {
-      id: '/courses/updates'
-      path: '/courses/updates'
-      fullPath: '/courses/updates'
-      preLoaderRoute: typeof CoursesUpdatesRouteImport
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarImport
       parentRoute: typeof rootRoute
     }
     '/messages/$id': {
@@ -218,11 +197,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesIdRouteImport
       parentRoute: typeof rootRoute
     }
-    '/courses/': {
-      id: '/courses/'
-      path: '/courses'
-      fullPath: '/courses'
-      preLoaderRoute: typeof CoursesIndexRouteImport
+    '/courses/$id': {
+      id: '/courses/$id'
+      path: '/courses/$id'
+      fullPath: '/courses/$id'
+      preLoaderRoute: typeof CoursesIdImport
       parentRoute: typeof rootRoute
     }
     '/messages/': {
@@ -239,29 +218,135 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UpdatesIndexRouteImport
       parentRoute: typeof rootRoute
     }
+    '/courses/$id/info': {
+      id: '/courses/$id/info'
+      path: '/info'
+      fullPath: '/courses/$id/info'
+      preLoaderRoute: typeof CoursesIdInfoRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/participants': {
+      id: '/courses/$id/participants'
+      path: '/participants'
+      fullPath: '/courses/$id/participants'
+      preLoaderRoute: typeof CoursesIdParticipantsRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/plans': {
+      id: '/courses/$id/plans'
+      path: '/plans'
+      fullPath: '/courses/$id/plans'
+      preLoaderRoute: typeof CoursesIdPlansRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/resources': {
+      id: '/courses/$id/resources'
+      path: '/resources'
+      fullPath: '/courses/$id/resources'
+      preLoaderRoute: typeof CoursesIdResourcesRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/schedule': {
+      id: '/courses/$id/schedule'
+      path: '/schedule'
+      fullPath: '/courses/$id/schedule'
+      preLoaderRoute: typeof CoursesIdScheduleRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/tasks': {
+      id: '/courses/$id/tasks'
+      path: '/tasks'
+      fullPath: '/courses/$id/tasks'
+      preLoaderRoute: typeof CoursesIdTasksRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/updates': {
+      id: '/courses/$id/updates'
+      path: '/updates'
+      fullPath: '/courses/$id/updates'
+      preLoaderRoute: typeof CoursesIdUpdatesRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/': {
+      id: '/courses/$id/'
+      path: '/'
+      fullPath: '/courses/$id/'
+      preLoaderRoute: typeof CoursesIdIndexRouteImport
+      parentRoute: typeof CoursesIdImport
+    }
+    '/courses/$id/resources/$folderId': {
+      id: '/courses/$id/resources/$folderId'
+      path: '/$folderId'
+      fullPath: '/courses/$id/resources/$folderId'
+      preLoaderRoute: typeof CoursesIdResourcesFolderIdRouteImport
+      parentRoute: typeof CoursesIdResourcesRouteImport
+    }
   }
 }
 
 // Create and export the route tree
+
+interface CoursesIdResourcesRouteRouteChildren {
+  CoursesIdResourcesFolderIdRouteRoute: typeof CoursesIdResourcesFolderIdRouteRoute
+}
+
+const CoursesIdResourcesRouteRouteChildren: CoursesIdResourcesRouteRouteChildren =
+  {
+    CoursesIdResourcesFolderIdRouteRoute: CoursesIdResourcesFolderIdRouteRoute,
+  }
+
+const CoursesIdResourcesRouteRouteWithChildren =
+  CoursesIdResourcesRouteRoute._addFileChildren(
+    CoursesIdResourcesRouteRouteChildren,
+  )
+
+interface CoursesIdRouteChildren {
+  CoursesIdInfoRouteRoute: typeof CoursesIdInfoRouteRoute
+  CoursesIdParticipantsRouteRoute: typeof CoursesIdParticipantsRouteRoute
+  CoursesIdPlansRouteRoute: typeof CoursesIdPlansRouteRoute
+  CoursesIdResourcesRouteRoute: typeof CoursesIdResourcesRouteRouteWithChildren
+  CoursesIdScheduleRouteRoute: typeof CoursesIdScheduleRouteRoute
+  CoursesIdTasksRouteRoute: typeof CoursesIdTasksRouteRoute
+  CoursesIdUpdatesRouteRoute: typeof CoursesIdUpdatesRouteRoute
+  CoursesIdIndexRouteRoute: typeof CoursesIdIndexRouteRoute
+}
+
+const CoursesIdRouteChildren: CoursesIdRouteChildren = {
+  CoursesIdInfoRouteRoute: CoursesIdInfoRouteRoute,
+  CoursesIdParticipantsRouteRoute: CoursesIdParticipantsRouteRoute,
+  CoursesIdPlansRouteRoute: CoursesIdPlansRouteRoute,
+  CoursesIdResourcesRouteRoute: CoursesIdResourcesRouteRouteWithChildren,
+  CoursesIdScheduleRouteRoute: CoursesIdScheduleRouteRoute,
+  CoursesIdTasksRouteRoute: CoursesIdTasksRouteRoute,
+  CoursesIdUpdatesRouteRoute: CoursesIdUpdatesRouteRoute,
+  CoursesIdIndexRouteRoute: CoursesIdIndexRouteRoute,
+}
+
+const CoursesIdRouteWithChildren = CoursesIdRoute._addFileChildren(
+  CoursesIdRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRouteRoute
   '/merge-zip-documents': typeof MergeZipDocumentsRouteRoute
   '/overview': typeof OverviewRouteRoute
   '/profile': typeof ProfileRouteRoute
-  '/courses/$id': typeof CoursesIdRouteRoute
-  '/courses/info': typeof CoursesInfoRouteRoute
-  '/courses/participants': typeof CoursesParticipantsRouteRoute
-  '/courses/plans': typeof CoursesPlansRouteRoute
-  '/courses/schedule': typeof CoursesScheduleRouteRoute
-  '/courses/tasks': typeof CoursesTasksRouteRoute
-  '/courses/updates': typeof CoursesUpdatesRouteRoute
+  '/calendar': typeof CalendarRoute
   '/messages/$id': typeof MessagesIdRouteRoute
   '/person/$id': typeof PersonIdRouteRoute
   '/updates/$id': typeof UpdatesIdRouteRoute
-  '/courses': typeof CoursesIndexRouteRoute
+  '/courses/$id': typeof CoursesIdRouteWithChildren
   '/messages': typeof MessagesIndexRouteRoute
   '/updates': typeof UpdatesIndexRouteRoute
+  '/courses/$id/info': typeof CoursesIdInfoRouteRoute
+  '/courses/$id/participants': typeof CoursesIdParticipantsRouteRoute
+  '/courses/$id/plans': typeof CoursesIdPlansRouteRoute
+  '/courses/$id/resources': typeof CoursesIdResourcesRouteRouteWithChildren
+  '/courses/$id/schedule': typeof CoursesIdScheduleRouteRoute
+  '/courses/$id/tasks': typeof CoursesIdTasksRouteRoute
+  '/courses/$id/updates': typeof CoursesIdUpdatesRouteRoute
+  '/courses/$id/': typeof CoursesIdIndexRouteRoute
+  '/courses/$id/resources/$folderId': typeof CoursesIdResourcesFolderIdRouteRoute
 }
 
 export interface FileRoutesByTo {
@@ -269,19 +354,21 @@ export interface FileRoutesByTo {
   '/merge-zip-documents': typeof MergeZipDocumentsRouteRoute
   '/overview': typeof OverviewRouteRoute
   '/profile': typeof ProfileRouteRoute
-  '/courses/$id': typeof CoursesIdRouteRoute
-  '/courses/info': typeof CoursesInfoRouteRoute
-  '/courses/participants': typeof CoursesParticipantsRouteRoute
-  '/courses/plans': typeof CoursesPlansRouteRoute
-  '/courses/schedule': typeof CoursesScheduleRouteRoute
-  '/courses/tasks': typeof CoursesTasksRouteRoute
-  '/courses/updates': typeof CoursesUpdatesRouteRoute
+  '/calendar': typeof CalendarRoute
   '/messages/$id': typeof MessagesIdRouteRoute
   '/person/$id': typeof PersonIdRouteRoute
   '/updates/$id': typeof UpdatesIdRouteRoute
-  '/courses': typeof CoursesIndexRouteRoute
   '/messages': typeof MessagesIndexRouteRoute
   '/updates': typeof UpdatesIndexRouteRoute
+  '/courses/$id/info': typeof CoursesIdInfoRouteRoute
+  '/courses/$id/participants': typeof CoursesIdParticipantsRouteRoute
+  '/courses/$id/plans': typeof CoursesIdPlansRouteRoute
+  '/courses/$id/resources': typeof CoursesIdResourcesRouteRouteWithChildren
+  '/courses/$id/schedule': typeof CoursesIdScheduleRouteRoute
+  '/courses/$id/tasks': typeof CoursesIdTasksRouteRoute
+  '/courses/$id/updates': typeof CoursesIdUpdatesRouteRoute
+  '/courses/$id': typeof CoursesIdIndexRouteRoute
+  '/courses/$id/resources/$folderId': typeof CoursesIdResourcesFolderIdRouteRoute
 }
 
 export interface FileRoutesById {
@@ -290,19 +377,22 @@ export interface FileRoutesById {
   '/merge-zip-documents': typeof MergeZipDocumentsRouteRoute
   '/overview': typeof OverviewRouteRoute
   '/profile': typeof ProfileRouteRoute
-  '/courses/$id': typeof CoursesIdRouteRoute
-  '/courses/info': typeof CoursesInfoRouteRoute
-  '/courses/participants': typeof CoursesParticipantsRouteRoute
-  '/courses/plans': typeof CoursesPlansRouteRoute
-  '/courses/schedule': typeof CoursesScheduleRouteRoute
-  '/courses/tasks': typeof CoursesTasksRouteRoute
-  '/courses/updates': typeof CoursesUpdatesRouteRoute
+  '/calendar': typeof CalendarRoute
   '/messages/$id': typeof MessagesIdRouteRoute
   '/person/$id': typeof PersonIdRouteRoute
   '/updates/$id': typeof UpdatesIdRouteRoute
-  '/courses/': typeof CoursesIndexRouteRoute
+  '/courses/$id': typeof CoursesIdRouteWithChildren
   '/messages/': typeof MessagesIndexRouteRoute
   '/updates/': typeof UpdatesIndexRouteRoute
+  '/courses/$id/info': typeof CoursesIdInfoRouteRoute
+  '/courses/$id/participants': typeof CoursesIdParticipantsRouteRoute
+  '/courses/$id/plans': typeof CoursesIdPlansRouteRoute
+  '/courses/$id/resources': typeof CoursesIdResourcesRouteRouteWithChildren
+  '/courses/$id/schedule': typeof CoursesIdScheduleRouteRoute
+  '/courses/$id/tasks': typeof CoursesIdTasksRouteRoute
+  '/courses/$id/updates': typeof CoursesIdUpdatesRouteRoute
+  '/courses/$id/': typeof CoursesIdIndexRouteRoute
+  '/courses/$id/resources/$folderId': typeof CoursesIdResourcesFolderIdRouteRoute
 }
 
 export interface FileRouteTypes {
@@ -312,57 +402,65 @@ export interface FileRouteTypes {
     | '/merge-zip-documents'
     | '/overview'
     | '/profile'
-    | '/courses/$id'
-    | '/courses/info'
-    | '/courses/participants'
-    | '/courses/plans'
-    | '/courses/schedule'
-    | '/courses/tasks'
-    | '/courses/updates'
+    | '/calendar'
     | '/messages/$id'
     | '/person/$id'
     | '/updates/$id'
-    | '/courses'
+    | '/courses/$id'
     | '/messages'
     | '/updates'
+    | '/courses/$id/info'
+    | '/courses/$id/participants'
+    | '/courses/$id/plans'
+    | '/courses/$id/resources'
+    | '/courses/$id/schedule'
+    | '/courses/$id/tasks'
+    | '/courses/$id/updates'
+    | '/courses/$id/'
+    | '/courses/$id/resources/$folderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/merge-zip-documents'
     | '/overview'
     | '/profile'
-    | '/courses/$id'
-    | '/courses/info'
-    | '/courses/participants'
-    | '/courses/plans'
-    | '/courses/schedule'
-    | '/courses/tasks'
-    | '/courses/updates'
+    | '/calendar'
     | '/messages/$id'
     | '/person/$id'
     | '/updates/$id'
-    | '/courses'
     | '/messages'
     | '/updates'
+    | '/courses/$id/info'
+    | '/courses/$id/participants'
+    | '/courses/$id/plans'
+    | '/courses/$id/resources'
+    | '/courses/$id/schedule'
+    | '/courses/$id/tasks'
+    | '/courses/$id/updates'
+    | '/courses/$id'
+    | '/courses/$id/resources/$folderId'
   id:
     | '__root__'
     | '/'
     | '/merge-zip-documents'
     | '/overview'
     | '/profile'
-    | '/courses/$id'
-    | '/courses/info'
-    | '/courses/participants'
-    | '/courses/plans'
-    | '/courses/schedule'
-    | '/courses/tasks'
-    | '/courses/updates'
+    | '/calendar'
     | '/messages/$id'
     | '/person/$id'
     | '/updates/$id'
-    | '/courses/'
+    | '/courses/$id'
     | '/messages/'
     | '/updates/'
+    | '/courses/$id/info'
+    | '/courses/$id/participants'
+    | '/courses/$id/plans'
+    | '/courses/$id/resources'
+    | '/courses/$id/schedule'
+    | '/courses/$id/tasks'
+    | '/courses/$id/updates'
+    | '/courses/$id/'
+    | '/courses/$id/resources/$folderId'
   fileRoutesById: FileRoutesById
 }
 
@@ -371,17 +469,11 @@ export interface RootRouteChildren {
   MergeZipDocumentsRouteRoute: typeof MergeZipDocumentsRouteRoute
   OverviewRouteRoute: typeof OverviewRouteRoute
   ProfileRouteRoute: typeof ProfileRouteRoute
-  CoursesIdRouteRoute: typeof CoursesIdRouteRoute
-  CoursesInfoRouteRoute: typeof CoursesInfoRouteRoute
-  CoursesParticipantsRouteRoute: typeof CoursesParticipantsRouteRoute
-  CoursesPlansRouteRoute: typeof CoursesPlansRouteRoute
-  CoursesScheduleRouteRoute: typeof CoursesScheduleRouteRoute
-  CoursesTasksRouteRoute: typeof CoursesTasksRouteRoute
-  CoursesUpdatesRouteRoute: typeof CoursesUpdatesRouteRoute
+  CalendarRoute: typeof CalendarRoute
   MessagesIdRouteRoute: typeof MessagesIdRouteRoute
   PersonIdRouteRoute: typeof PersonIdRouteRoute
   UpdatesIdRouteRoute: typeof UpdatesIdRouteRoute
-  CoursesIndexRouteRoute: typeof CoursesIndexRouteRoute
+  CoursesIdRoute: typeof CoursesIdRouteWithChildren
   MessagesIndexRouteRoute: typeof MessagesIndexRouteRoute
   UpdatesIndexRouteRoute: typeof UpdatesIndexRouteRoute
 }
@@ -391,17 +483,11 @@ const rootRouteChildren: RootRouteChildren = {
   MergeZipDocumentsRouteRoute: MergeZipDocumentsRouteRoute,
   OverviewRouteRoute: OverviewRouteRoute,
   ProfileRouteRoute: ProfileRouteRoute,
-  CoursesIdRouteRoute: CoursesIdRouteRoute,
-  CoursesInfoRouteRoute: CoursesInfoRouteRoute,
-  CoursesParticipantsRouteRoute: CoursesParticipantsRouteRoute,
-  CoursesPlansRouteRoute: CoursesPlansRouteRoute,
-  CoursesScheduleRouteRoute: CoursesScheduleRouteRoute,
-  CoursesTasksRouteRoute: CoursesTasksRouteRoute,
-  CoursesUpdatesRouteRoute: CoursesUpdatesRouteRoute,
+  CalendarRoute: CalendarRoute,
   MessagesIdRouteRoute: MessagesIdRouteRoute,
   PersonIdRouteRoute: PersonIdRouteRoute,
   UpdatesIdRouteRoute: UpdatesIdRouteRoute,
-  CoursesIndexRouteRoute: CoursesIndexRouteRoute,
+  CoursesIdRoute: CoursesIdRouteWithChildren,
   MessagesIndexRouteRoute: MessagesIndexRouteRoute,
   UpdatesIndexRouteRoute: UpdatesIndexRouteRoute,
 }
@@ -422,17 +508,11 @@ export const routeTree = rootRoute
         "/merge-zip-documents",
         "/overview",
         "/profile",
-        "/courses/$id",
-        "/courses/info",
-        "/courses/participants",
-        "/courses/plans",
-        "/courses/schedule",
-        "/courses/tasks",
-        "/courses/updates",
+        "/calendar",
         "/messages/$id",
         "/person/$id",
         "/updates/$id",
-        "/courses/",
+        "/courses/$id",
         "/messages/",
         "/updates/"
       ]
@@ -449,26 +529,8 @@ export const routeTree = rootRoute
     "/profile": {
       "filePath": "profile.route.tsx"
     },
-    "/courses/$id": {
-      "filePath": "courses/$id.route.tsx"
-    },
-    "/courses/info": {
-      "filePath": "courses/info.route.tsx"
-    },
-    "/courses/participants": {
-      "filePath": "courses/participants.route.tsx"
-    },
-    "/courses/plans": {
-      "filePath": "courses/plans.route.tsx"
-    },
-    "/courses/schedule": {
-      "filePath": "courses/schedule.route.tsx"
-    },
-    "/courses/tasks": {
-      "filePath": "courses/tasks.route.tsx"
-    },
-    "/courses/updates": {
-      "filePath": "courses/updates.route.tsx"
+    "/calendar": {
+      "filePath": "calendar.tsx"
     },
     "/messages/$id": {
       "filePath": "messages/$id.route.tsx"
@@ -479,14 +541,63 @@ export const routeTree = rootRoute
     "/updates/$id": {
       "filePath": "updates/$id.route.tsx"
     },
-    "/courses/": {
-      "filePath": "courses/index.route.tsx"
+    "/courses/$id": {
+      "filePath": "courses.$id.tsx",
+      "children": [
+        "/courses/$id/info",
+        "/courses/$id/participants",
+        "/courses/$id/plans",
+        "/courses/$id/resources",
+        "/courses/$id/schedule",
+        "/courses/$id/tasks",
+        "/courses/$id/updates",
+        "/courses/$id/"
+      ]
     },
     "/messages/": {
       "filePath": "messages/index.route.tsx"
     },
     "/updates/": {
       "filePath": "updates/index.route.tsx"
+    },
+    "/courses/$id/info": {
+      "filePath": "courses/$id/info.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/participants": {
+      "filePath": "courses/$id/participants.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/plans": {
+      "filePath": "courses/$id/plans.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/resources": {
+      "filePath": "courses/$id/resources.route.tsx",
+      "parent": "/courses/$id",
+      "children": [
+        "/courses/$id/resources/$folderId"
+      ]
+    },
+    "/courses/$id/schedule": {
+      "filePath": "courses/$id/schedule.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/tasks": {
+      "filePath": "courses/$id/tasks.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/updates": {
+      "filePath": "courses/$id/updates.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/": {
+      "filePath": "courses/$id/index.route.tsx",
+      "parent": "/courses/$id"
+    },
+    "/courses/$id/resources/$folderId": {
+      "filePath": "courses/$id/resources.$folderId.route.tsx",
+      "parent": "/courses/$id/resources"
     }
   }
 }

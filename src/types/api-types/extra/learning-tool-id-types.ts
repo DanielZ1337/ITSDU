@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import type { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
+import { useNavigate } from "@tanstack/react-router";
 
 export enum LearningToolIdTypes {
   LINK = 50010,
@@ -45,7 +45,9 @@ type ResourceObject = {
 
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
 
-export function useNavigateToResource(navigater?: NavigateFunction) {
+export function useNavigateToResource(
+  navigater?: ReturnType<typeof useNavigate>,
+) {
   const navigate = navigater || useNavigate();
 
   const navigateToResource = (resource: ResourceObject | string | number) => {
@@ -54,9 +56,13 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
         ? resource
         : resource.ElementId;
     if (isResourceMicrosoftOfficeDocument(resource)) {
-      navigate(`/documents/office/${elementId}`);
+      navigate({
+        to: `/documents/office/${elementId}`,
+      });
     } else if (isResourcePDFFromUrlOrElementType(resource)) {
-      navigate(`/documents/pdf/${elementId}`);
+      navigate({
+        to: `/documents/pdf/${elementId}`,
+      });
     } else if (isResourceWithFileExtension(resource)) {
       // check file extension
       const fileName =
@@ -69,7 +75,8 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
         case FileExtensionTypes.MP4:
           // (itslearning doesn't support previewing mkv files, so we can't get the resource url from the scraped DOM)
           // case FileExtensionTypes.MKV:
-          navigate(`/documents/media/${elementId}`, {
+          navigate({
+            to: `/documents/media/${elementId}`,
             state: {
               type: "video",
             },
@@ -80,14 +87,17 @@ export function useNavigateToResource(navigater?: NavigateFunction) {
         case FileExtensionTypes.GIF:
         case FileExtensionTypes.SVG:
         case FileExtensionTypes.JPEG:
-          navigate(`/documents/media/${elementId}`, {
+          navigate({
+            to: `/documents/media/${elementId}`,
             state: {
               type: "image",
             },
           });
           break;
         default:
-          navigate(`/documents/other/${elementId}`);
+          navigate({
+            to: `/documents/other/${elementId}`,
+          });
           break;
       }
     } else {
@@ -117,7 +127,9 @@ enum FileExtensionTypes {
   // Add more file extensions here
 }
 
-export function isResourceWithFileExtension(resource: ResourceObject | string | number) {
+export function isResourceWithFileExtension(
+  resource: ResourceObject | string | number,
+) {
   const fileExtensions = Object.values(FileExtensionTypes) as string[];
   if (typeof resource === "number" || typeof resource === "string") {
     const fileExtension = getFileExtension(String(resource));
@@ -134,7 +146,9 @@ function getFileExtension(fileName: string) {
   return fileName.substring(lastDotIndex + 1).toLowerCase();
 }
 
-export function isSupportedResourceInApp(resource: ResourceObject | string | number) {
+export function isSupportedResourceInApp(
+  resource: ResourceObject | string | number,
+) {
   return (
     isResourceMicrosoftOfficeDocument(resource) ||
     isResourcePDFFromUrlOrElementType(resource) ||
@@ -157,7 +171,9 @@ export function isResourceMicrosoftOfficeDocument(
     return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource));
   } else {
     if (!resource.IconUrl) return false;
-    return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource.IconUrl));
+    return OfficeDocumentIconTypeIds.includes(
+      getIconTypeIdFromUrl(resource.IconUrl),
+    );
   }
 }
 
