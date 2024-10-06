@@ -1,0 +1,63 @@
+@import "react-big-calendar/lib/sass/styles.scss";
+
+.rbc-month-view {
+  border-radius: 6px !important;
+  border-color: rgb(43, 43, 43) !important;
+
+  & > *,
+  .rbc-header,
+  .rbc-day-bg {
+    border-color: rgb(43, 43, 43) !important;
+  }
+}
+
+.rbc-off-range-bg {
+  background-color: hsl(var(--foreground) / 0.0325) !important;
+}
+
+.rbc-event-content {
+  white-space: pre-wrap !important;
+}
+
+.rbc-today {
+  background-color: hsl(var(--foreground) / 0.13) !important;
+}
+
+.rbc-time-view .rbc-row {
+  box-sizing: border-box;
+  min-height: 50px;
+}
+
+.rbc-current-time-indicator {
+  background-color: indianred !important;
+  height: 2px !important;
+  z-index: 10 !important;
+}
+
+/* .rbc-time-content {
+    border-top: 10px !important;
+} */
+
+.rbc-button-link {
+  @apply h-full w-full;
+}
+
+.rbc-event {
+  border-radius: 6px !important;
+  @apply bg-purple-500;
+  @apply dark:!border-purple-800 !border-purple-200 !border-2;
+}
+
+.rbc-event.rbc-selected {
+  @apply dark:!bg-purple-600 !bg-purple-400;
+}
+
+/* .rbc-events-container {
+    margin-right: 0 !important;
+} */
+
+/*
+.rbc-month-row {
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+}*/
