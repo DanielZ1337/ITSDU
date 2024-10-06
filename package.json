@@ -187,6 +187,10 @@
   },
   "main": "dist-electron/main.js",
   "trustedDependencies": [
-    "electron-deeplink"
+    "@biomejs/biome",
+    "canvas",
+    "electron",
+    "electron-deeplink",
+    "esbuild"
   ]
 }

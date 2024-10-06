@@ -23,9 +23,8 @@ export default function Sidebar() {
         onMouseEnter={() => setSidebarActive(true)}
         onMouseLeave={() => setSidebarActive(false)}
         className={cn(
-          "will-change-auto overflow-hidden no-drag top-0 absolute transition-width h-full min-w-24 py-6 pb-4 px-4 z-20 bg-background flex flex-col justify-between",
+          "will-change-auto overflow-hidden no-drag top-0 transition-width h-full py-6 pb-4 px-2.5 z-20 bg-background flex flex-col justify-between",
           // sidebarActive ? 'w-64' : 'w-24'
-          "w-24",
         )}
       >
         <div className="flex h-full flex-col gap-1 overflow-x-hidden scrollbar-hide">
@@ -71,7 +70,7 @@ export default function Sidebar() {
           to={"/profile"}
           className={({ isActive }) =>
             cn(
-              "rounded-md flex py-2 px-3 text-left hover:bg-foreground/10 transition-all",
+              "rounded-md flex py-2 px-2.5 text-left hover:bg-foreground/10 transition-all",
               isActive && "bg-foreground/10",
             )
           }

@@ -26,7 +26,7 @@ export default function SidebarItem({
           onClick={(e) => disabled && e.preventDefault()}
           className={({ isActive, isPending }) =>
             cn(
-              // 'animate-in slide-in-from-left-6', old animation
+              "animate-in slide-in-from-left-6",
               "relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground",
               isActive ? "text-foreground" : "text-foreground/60",
               isPending && "opacity-50",
@@ -48,12 +48,12 @@ export default function SidebarItem({
                     mass: 0.8,
                   }}
                   className={cn(
-                    "inset-0 absolute bg-accent rounded-lg bg-gradient-to-tr from-accent to-background/60 transition-shadow",
+                    "-mx-2 inset-y-0 w-1 absolute rounded-full bg-primary/80 transition-shadow shadow-md shadow-primary",
                     sidebarActive && "shadow-md shadow-primary/5",
                   )}
                 />
               )}
-              <span className="relative z-10 p-1 ml-2.5">{icon}</span>
+              <span className="relative z-10 p-1 mx-auto">{icon}</span>
             </>
           )}
         </NavLink>

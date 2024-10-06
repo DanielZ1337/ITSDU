@@ -112,13 +112,13 @@ export default function Layout() {
       <Suspense fallback={null}>
         <BrowserNavLazy />
       </Suspense>
-      <div className="relative flex max-h-screen flex-1 flex-col overflow-hidden drag bg-background">
+      <div className="relative flex max-h-screen flex-1 overflow-hidden drag bg-background">
         <Suspense fallback={null}>
           <SidebarLazy />
         </Suspense>
         <div
           className={
-            "no-drag ml-24 h-full flex flex-1 overflow-hidden dark:bg-foreground/[2%] transition-all rounded-tl-md border-t border-l"
+            "no-drag h-full flex flex-1 overflow-hidden dark:bg-foreground/[2%] transition-all rounded-tl-md border-t border-l"
           }
         >
           <ErrorBoundary fallback={<div>ERROR</div>}>
