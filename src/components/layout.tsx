@@ -12,9 +12,7 @@ const ToasterLazy = lazy(() =>
     default: module.Toaster,
   })),
 );
-const ScrollToTopButtonLazy = lazy(
-  () => import("@/components/scroll-to-top-button"),
-);
+const ScrollToTopButtonLazy = lazy(() => import("@/components/scroll-to-top-button"));
 const MessagesDropdown = lazy(
   () => import("@/components/messages/dropdown/messages-dropdown"),
 );
@@ -22,19 +20,11 @@ const NotificationsDropdown = lazy(
   () => import("@/components/notifications/notifications-dropdown"),
 );
 const BrowserNavLazy = lazy(() => import("@/components/browse-nav"));
-const TitlebarButtonsLazy = lazy(
-  () => import("@/components/titlebar/titlebar"),
-);
-const TitlebarSearchLazy = lazy(
-  () => import("@/components/titlebar/titlebar-search"),
-);
-const SettingsModalLazy = lazy(
-  () => import("@/components/settings/settings-modal"),
-);
+const TitlebarButtonsLazy = lazy(() => import("@/components/titlebar/titlebar"));
+const TitlebarSearchLazy = lazy(() => import("@/components/titlebar/titlebar-search"));
+const SettingsModalLazy = lazy(() => import("@/components/settings/settings-modal"));
 const AboutModalLazy = lazy(() => import("@/components/about-modal"));
-const IsOnlineIndicatorLazy = lazy(
-  () => import("@/components/is-online-indicator"),
-);
+const IsOnlineIndicatorLazy = lazy(() => import("@/components/is-online-indicator"));
 const SidebarLazy = lazy(() => import("./layout/sidebar"));
 const TitlebarButtonLazy = lazy(() => import("./titlebar/titlebar-button"));
 const SuspenseWrapperLazy = lazy(() => import("./suspense-wrapper"));
@@ -80,9 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Suspense>
           </ErrorBoundary>
         </div>
-        <div
-          className={"no-drag flex flex-row items-center justify-center gap-4"}
-        >
+        <div className={"no-drag flex flex-row items-center justify-center gap-4"}>
           <ErrorBoundary
             fallback={
               <Suspense fallback={<MessagesDropDownSkeleton />}>

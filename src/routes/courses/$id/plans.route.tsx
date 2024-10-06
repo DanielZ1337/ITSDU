@@ -1,27 +1,27 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { AnimatePresence, m, motion, useCycle } from "framer-motion";
-import { Suspense } from "react";
-import { Loader } from "@/components/ui/loader";
+import { CoursePlansSkeletonsAnimated } from "@/components/course/plans/course-plans-card-skeletons-animated";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader } from "@/components/ui/loader";
+import { Progress } from "@/components/ui/progress";
+import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
+import { useTabButtonHover } from "@/hooks/useTabButtonHover";
+import { cn } from "@/lib/utils";
+import useGETcoursePlansCount from "@/queries/courses/useGETcoursePlansCount";
+import useGETcoursePlansCurrent from "@/queries/courses/useGETcoursePlansCurrent";
+import useGETcoursePlansPast from "@/queries/courses/useGETcoursePlansPast";
+import useGETcoursePlansTopics from "@/queries/courses/useGETcoursePlansTopics";
+import useGETcoursePlansWithoutDate from "@/queries/courses/useGETcoursePlansWithoutDate";
+import { GETcoursePlansCurrent } from "@/types/api-types/courses/GETcoursePlansCurrent";
 import {
   isSupportedResourceInApp,
   useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
-import { CoursePlansSkeletonsAnimated } from "@/components/course/plans/course-plans-card-skeletons-animated";
-import useGETcoursePlansCurrent from "@/queries/courses/useGETcoursePlansCurrent";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { GETcoursePlansCurrent } from "@/types/api-types/courses/GETcoursePlansCurrent";
-import useGETcoursePlansPast from "@/queries/courses/useGETcoursePlansPast";
-import useGETcoursePlansWithoutDate from "@/queries/courses/useGETcoursePlansWithoutDate";
-import useGETcoursePlansTopics from "@/queries/courses/useGETcoursePlansTopics";
+import { createFileRoute } from "@tanstack/react-router";
+import { AnimatePresence, m, motion, useCycle } from "framer-motion";
 import Linkify from "linkify-react";
-import useGETcoursePlansCount from "@/queries/courses/useGETcoursePlansCount";
-import { useTabButtonHover } from "@/hooks/useTabButtonHover";
-import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
+import { CalendarIcon } from "lucide-react";
+import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 export const Route = createFileRoute("/courses/$id/plans")({
@@ -87,10 +87,7 @@ function CoursePlans() {
       <div className="max-w-5xl mx-auto w-full">
         <ErrorBoundary fallback={<Loader />}>
           <Suspense fallback={<Loader />}>
-            <CoursePlansTabContent
-              courseId={courseId}
-              activeTab={activeTab.id}
-            />
+            <CoursePlansTabContent courseId={courseId} activeTab={activeTab.id} />
           </Suspense>
         </ErrorBoundary>
       </div>
@@ -111,9 +108,7 @@ function CoursePlansTabContent({
     case "past":
       return <CoursePlansSwitched courseId={courseId} planType={"past"} />;
     case "without-date":
-      return (
-        <CoursePlansSwitched courseId={courseId} planType={"withoutDate"} />
-      );
+      return <CoursePlansSwitched courseId={courseId} planType={"withoutDate"} />;
     case "topic":
       return <CoursePlansByTopic courseId={courseId} />;
     default:
@@ -163,10 +158,7 @@ function CoursePlansSwitched({
       break;
     case "withoutDate":
       sortedPlans = plans?.entityArray.sort((a, b) => {
-        return (
-          new Date(b.activeFromDT).getTime() -
-          new Date(a.activeFromDT).getTime()
-        );
+        return new Date(b.activeFromDT).getTime() - new Date(a.activeFromDT).getTime();
       });
       break;
     default:
@@ -316,9 +308,7 @@ function CoursePlanCard({
                         <a
                           target={"_blank"}
                           rel={"noopener noreferrer"}
-                          className={
-                            "text-foreground hover:underline cursor-pointer"
-                          }
+                          className={"text-foreground hover:underline cursor-pointer"}
                           onClick={(e) => {
                             e.stopPropagation();
                             window.app.openExternal(href, false);

@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import type { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
 import { useNavigate } from "@tanstack/react-router";
+import type { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
 
 export enum LearningToolIdTypes {
   LINK = 50010,
@@ -45,9 +45,7 @@ type ResourceObject = {
 
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
 
-export function useNavigateToResource(
-  navigater?: ReturnType<typeof useNavigate>,
-) {
+export function useNavigateToResource(navigater?: ReturnType<typeof useNavigate>) {
   const navigate = navigater || useNavigate();
 
   const navigateToResource = (resource: ResourceObject | string | number) => {
@@ -127,9 +125,7 @@ enum FileExtensionTypes {
   // Add more file extensions here
 }
 
-export function isResourceWithFileExtension(
-  resource: ResourceObject | string | number,
-) {
+export function isResourceWithFileExtension(resource: ResourceObject | string | number) {
   const fileExtensions = Object.values(FileExtensionTypes) as string[];
   if (typeof resource === "number" || typeof resource === "string") {
     const fileExtension = getFileExtension(String(resource));
@@ -146,9 +142,7 @@ function getFileExtension(fileName: string) {
   return fileName.substring(lastDotIndex + 1).toLowerCase();
 }
 
-export function isSupportedResourceInApp(
-  resource: ResourceObject | string | number,
-) {
+export function isSupportedResourceInApp(resource: ResourceObject | string | number) {
   return (
     isResourceMicrosoftOfficeDocument(resource) ||
     isResourcePDFFromUrlOrElementType(resource) ||
@@ -171,9 +165,7 @@ export function isResourceMicrosoftOfficeDocument(
     return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource));
   } else {
     if (!resource.IconUrl) return false;
-    return OfficeDocumentIconTypeIds.includes(
-      getIconTypeIdFromUrl(resource.IconUrl),
-    );
+    return OfficeDocumentIconTypeIds.includes(getIconTypeIdFromUrl(resource.IconUrl));
   }
 }
 

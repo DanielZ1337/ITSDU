@@ -27,5 +27,7 @@ export default defineConfig({
         "@": path.resolve(process.cwd(), "src"),
       },
     },
+    // TODO: about-modal depends on this atm, delete when it's fixed
+    external: ["electron-updater"],
   },
 });

@@ -14,11 +14,11 @@ import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotifications from "@/queries/notifications/useGETnotifications";
 import usePUTnotificationsMarkAllAsRead from "@/queries/notifications/usePUTnotificationsMarkAllAsRead";
 import { ScrollShadow } from "@nextui-org/react";
+import { Link } from "@tanstack/react-router";
 import { ArrowRightIcon } from "lucide-react";
 import { AiOutlineNotification } from "react-icons/ai";
 import NotificationsDropdownInfiniteFallback from "./fallback/notifications-dropdown-infinite-fallback";
 import NotificationsDropdownInfiniteEnd from "./notifications-dropdown-infinite-end";
-import { Link } from "@tanstack/react-router";
 
 export default function NotificationsDropdown() {
   const {

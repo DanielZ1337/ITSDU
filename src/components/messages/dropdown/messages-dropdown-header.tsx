@@ -16,13 +16,8 @@ export default function MessagesDropdownHeader({
 }) {
   return (
     <>
-      <Link
-        to={"/messages"}
-        className={"group flex gap-1 items-center justify-center"}
-      >
-        <span className={"text-base font-medium group-hover:underline"}>
-          Messages
-        </span>
+      <Link to={"/messages"} className={"group flex gap-1 items-center justify-center"}>
+        <span className={"text-base font-medium group-hover:underline"}>Messages</span>
         <ArrowRightIcon
           className={
             "stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"

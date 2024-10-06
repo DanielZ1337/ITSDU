@@ -45,12 +45,13 @@ import {
   isResourcePDFFromUrlOrElementType,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
-import { Link, useMatch, useNavigate } from "react-router-dom";
+// import { Link, useMatch, useNavigate } from "react-router-dom";
 import {
   isSupportedResourceInApp,
   useNavigateToResource,
 } from "../../types/api-types/extra/learning-tool-id-types";
 import { useDownloadToast } from "../recursive-file-explorer";
+import { Link, useMatch, useNavigate } from "@tanstack/react-router";
 
 const COLUMN_IDS = {
   select: "select",
@@ -96,7 +97,9 @@ export function createColumns(
             <Button
               disabled={isLoading}
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className={cn(column.getIsSorted() && "text-foreground-800")}
             >
               Type
@@ -192,7 +195,9 @@ export function createColumns(
             <Button
               disabled={isLoading}
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className={cn(column.getIsSorted() && "text-foreground-800")}
             >
               Path
@@ -234,7 +239,9 @@ export function createColumns(
             <Button
               disabled={isLoading}
               variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
               className={cn(column.getIsSorted() && "text-foreground-800")}
             >
               Published (ElementId)
@@ -262,7 +269,9 @@ export function createColumns(
         const original = row.original;
         return (
           <div className="flex items-center justify-center">
-            <div className="text-sm text-muted-foreground">{original.ElementId}</div>
+            <div className="text-sm text-muted-foreground">
+              {original.ElementId}
+            </div>
           </div>
         );
       },
@@ -336,8 +345,11 @@ function ResourcesDataTable({
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: COLUMN_IDS.published, desc: true },
   ]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = React.useMemo(
@@ -384,7 +396,10 @@ function ResourcesDataTable({
   });
 
   const navigate = useNavigate();
-  const isRoot = !useMatch("/course/:id/resources/:id");
+  const isRoot = !useMatch({
+    from: "/course/:id/resources/:id",
+    shouldThrow: false,
+  });
 
   return (
     <div className="w-full">
@@ -393,9 +408,14 @@ function ResourcesDataTable({
           <Input
             disabled={isLoading || !data?.length}
             placeholder="Filter resources..."
-            value={(table.getColumn(COLUMN_IDS.title)?.getFilterValue() as string) ?? ""}
+            value={
+              (table.getColumn(COLUMN_IDS.title)?.getFilterValue() as string) ??
+              ""
+            }
             onChange={(event) =>
-              table.getColumn(COLUMN_IDS.title)?.setFilterValue(event.target.value)
+              table
+                .getColumn(COLUMN_IDS.title)
+                ?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
@@ -413,15 +433,17 @@ function ResourcesDataTable({
           )}
           {table
             .getFilteredSelectedRowModel()
-            .flatRows.filter((row) => row.original.LearningToolId === 5009).length >
-            0 && (
+            .flatRows.filter((row) => row.original.LearningToolId === 5009)
+            .length > 0 && (
             <Button
               variant="outline"
               onClick={() => {
                 // @ts-ignore
                 const elements = table
                   .getFilteredSelectedRowModel()
-                  .flatRows.filter((row) => row.original.LearningToolId === 5009)
+                  .flatRows.filter(
+                    (row) => row.original.LearningToolId === 5009,
+                  )
                   .map((row) => {
                     return {
                       ElementId: row.original.ElementId,
@@ -501,7 +523,9 @@ function ResourcesDataTable({
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
                   >
                     {column.id}
                   </DropdownMenuCheckboxItem>
@@ -520,7 +544,10 @@ function ResourcesDataTable({
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(header.column.columnDef.header, header.getContext())}
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -530,7 +557,10 @@ function ResourcesDataTable({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   Loading...
                 </TableCell>
               </TableRow>
@@ -543,14 +573,20 @@ function ResourcesDataTable({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>

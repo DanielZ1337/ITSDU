@@ -132,7 +132,7 @@ export const courseNavLinks = [
   {
     title: "Course Information",
     icon: <AiOutlineInfoCircle className={cn("", defaultNavLinkClassName)} />,
-    href: "course-information",
+    href: "info",
     end: false,
     disabled: false,
   },

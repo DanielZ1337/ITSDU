@@ -1,7 +1,7 @@
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
-import { Link,useMatch,useMatches } from "@tanstack/react-router";
+import { Link, useMatch, useMatches } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { NavLink } from "react-router-dom";
 
@@ -26,18 +26,15 @@ export default function SidebarItem({
   // todo: not correct
   const isPending = match?.isFetching;
 
-
   return (
     <Link
       onClick={(e) => disabled && e.preventDefault()}
-      className={
-        cn(
-          "animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground",
-          isActive ? "text-foreground" : "text-foreground/60",
-          isPending && "opacity-50",
-          disabled && "opacity-50 cursor-not-allowed",
-        )
-      }
+      className={cn(
+        "animate-in slide-in-from-left-6 relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground",
+        isActive ? "text-foreground" : "text-foreground/60",
+        isPending && "opacity-50",
+        disabled && "opacity-50 cursor-not-allowed",
+      )}
       to={href}
       end={end}
     >

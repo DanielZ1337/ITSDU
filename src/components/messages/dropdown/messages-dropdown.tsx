@@ -22,12 +22,12 @@ import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.
 import { TanstackKeys } from "@/types/tanstack-keys.ts";
 import { ScrollShadow } from "@nextui-org/react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useAtom } from "jotai";
 import { MessageCircle } from "lucide-react";
 import { Fragment } from "react";
 import usePUTinstantMessageThreadUpdateIsRead from "../../../queries/messages/usePUTinstantMessageThreadUpdateIsRead.ts";
 import MessagesDropdownFallback from "./fallbacks/messages-dropdown-fallback.tsx";
-import { useNavigate } from "@tanstack/react-router";
 
 export default function MessagesDropdown() {
   const navigate = useNavigate();
@@ -43,20 +43,14 @@ export default function MessagesDropdown() {
       },
     );
 
-  const { mutate: markAsRead, isLoading } =
-    usePUTinstantMessageThreadUpdateIsRead();
+  const { mutate: markAsRead, isLoading } = usePUTinstantMessageThreadUpdateIsRead();
 
-  const ref = useFetchNextPageOnInView(
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  );
+  const ref = useFetchNextPageOnInView(hasNextPage, fetchNextPage, isFetchingNextPage);
 
   const threads = data!.pages.flatMap((page) => page.EntityArray);
   const total = data!.pages[data!.pages.length - 1].Total;
   const unreadMessages = threads?.filter(
-    (thread) =>
-      thread.LastMessage.MessageId !== thread.LastReadInstantMessageId,
+    (thread) => thread.LastMessage.MessageId !== thread.LastReadInstantMessageId,
   );
   const [, setCurrentChat] = useAtom(currentChatAtom);
   const queryClient = useQueryClient();
@@ -79,9 +73,8 @@ export default function MessagesDropdown() {
               threads?.forEach((thread) => {
                 markAsRead({
                   lastReadInstantMessageId:
-                    thread.Messages.EntityArray[
-                      thread.Messages.EntityArray.length - 1
-                    ].MessageId,
+                    thread.Messages.EntityArray[thread.Messages.EntityArray.length - 1]
+                      .MessageId,
                   threadId: thread.InstantMessageThreadId,
                 });
               });
@@ -136,10 +129,7 @@ export default function MessagesDropdown() {
                       <MessageDropdownItem thread={thread} />
                     </DropdownMenuItem>
                     <Separator
-                      className={cn(
-                        "my-2",
-                        idx === threads.length - 1 && "hidden",
-                      )}
+                      className={cn("my-2", idx === threads.length - 1 && "hidden")}
                     />
                   </div>
                 ))}

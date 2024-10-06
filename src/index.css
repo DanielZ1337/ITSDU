@@ -12,17 +12,22 @@
   -webkit-app-region: no-drag;
 }
 
-* {
+/* * {
   scrollbar-width: auto !important;
   scrollbar-color: #5e5e5e rgba(0, 0, 0, 0) !important;
-}
+} */
 
-*::-webkit-scrollbar {
+/* *::-webkit-scrollbar {
   width: 8px !important;
   height: 8px !important;
+} */
+
+::-webkit-scrollbar {
+  width: 0px;
+  display: none;
 }
 
-*::-webkit-scrollbar-track {
+/* *::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0) !important;
 }
 
@@ -42,7 +47,7 @@
 
 ::-webkit-scrollbar-corner {
   background-color: transparent;
-}
+} */
 
 :host,
 html {

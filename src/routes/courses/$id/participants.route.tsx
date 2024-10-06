@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
 import CourseParticipantsList from "@/components/course/participants/course-participants-list.tsx";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import CourseParticipantsRolesSelect from "@/components/course/participants/course-participants-roles-select.tsx";
+import { Input } from "@/components/ui/input";
 import useGETcourseParticipants from "@/queries/courses/useGETcourseParticipants";
 import { CourseParticipantRole } from "@/types/course-participants-roles";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 
 export const Route = createFileRoute("/courses/$id/participants")({
   component: CourseParticipants,
@@ -25,9 +25,9 @@ function CourseParticipants() {
   const roleIdsFromFilteredParticipants = [
     ...new Set(filteredParticipants.map((participant) => participant.RoleId)),
   ];
-  const [selectedRolesIds, setSelectedRolesIds] = useState<
-    CourseParticipantRole[]
-  >(roleIdsFromFilteredParticipants);
+  const [selectedRolesIds, setSelectedRolesIds] = useState<CourseParticipantRole[]>(
+    roleIdsFromFilteredParticipants,
+  );
   filteredParticipants = filteredParticipants.filter((participant) =>
     selectedRolesIds.includes(participant.RoleId),
   );

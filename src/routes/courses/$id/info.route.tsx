@@ -1,8 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
-import { cn, getRelativeTimeString } from "@/lib/utils.ts";
-import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { cn, getRelativeTimeString } from "@/lib/utils.ts";
+import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
+import { createFileRoute } from "@tanstack/react-router";
 import { ArrowUpRightIcon } from "lucide-react";
 
 export const Route = createFileRoute("/courses/$id/info")({
@@ -70,9 +70,7 @@ function CourseInformation() {
           </Label>
           <a
             className="text-base text-grey-darker hover:underline inline-flex hover:cursor-pointer"
-            onClick={() =>
-              window.app.openExternal(createSubjectDescriptionURL, false)
-            }
+            onClick={() => window.app.openExternal(createSubjectDescriptionURL, false)}
           >
             Open <ArrowUpRightIcon />
           </a>

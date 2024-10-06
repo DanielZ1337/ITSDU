@@ -3,6 +3,32 @@
 version = 3
 
 [[package]]
+name = "ITSDU"
+version = "0.2.0"
+dependencies = [
+ "actix-cors",
+ "actix-web",
+ "awc",
+ "dotenv",
+ "hex",
+ "keyring",
+ "reqwest",
+ "ring 0.17.8",
+ "secrecy",
+ "serde",
+ "serde_json",
+ "serde_qs",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-deep-link",
+ "tauri-plugin-shell",
+ "tauri-plugin-single-instance",
+ "tauri-plugin-store",
+ "tokio",
+ "url",
+]
+
+[[package]]
 name = "actix-codec"
 version = "0.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2164,32 +2190,6 @@ name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
-
-[[package]]
-name = "itsdu"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-web",
- "awc",
- "dotenv",
- "hex",
- "keyring",
- "reqwest",
- "ring 0.17.8",
- "secrecy",
- "serde",
- "serde_json",
- "serde_qs",
- "tauri",
- "tauri-build",
- "tauri-plugin-deep-link",
- "tauri-plugin-shell",
- "tauri-plugin-single-instance",
- "tauri-plugin-store",
- "tokio",
- "url",
-]
 
 [[package]]
 name = "javascriptcore-rs"

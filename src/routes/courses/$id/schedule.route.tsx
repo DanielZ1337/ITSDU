@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
-import useGETcourseCalendarEvents from "@/queries/courses/useGETcourseCalendarEvents";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
+import useGETcourseCalendarEvents from "@/queries/courses/useGETcourseCalendarEvents";
 import { Calendar } from "@/routes/calendar";
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/courses/$id/schedule")({
   component: CourseSchedule,

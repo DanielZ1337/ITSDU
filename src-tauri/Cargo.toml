@@ -1,9 +1,33 @@
 [package]
-name = "itsdu"
-version = "0.1.0"
-description = "A tauri app for students to interact with itslearning"
-authors = ["you"]
+name = "ITSDU"
+version = "0.2.0"
+description = "A Tauri app for students to interact with itslearning"
+authors = ["Daniel Bermann Schmidt <danielz@danielz.dev>"]
 edition = "2021"
+license = "MIT"
+homepage = "https://itsdu.danielz.dev/"
+repository = "https://github.com/DanielZ1337/ITSDU"
+
+# Add keywords for better discoverability on crates.io and other Rust registries
+keywords = [
+    "tauri",
+    "desktop",
+    "application",
+    "student",
+    "education",
+    "itslearning",
+    "sdu",
+    "productivity",
+    "cross-platform",
+    "rust",
+    "typescript",
+    "react",
+    "vite",
+    "tailwindcss",
+]
+
+# Optionally, add categories to further classify your crate
+categories = ["Application Frameworks", "Desktop Applications", "Education"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

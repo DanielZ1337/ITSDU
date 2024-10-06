@@ -1,25 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Calendar as ReactBigCalendar,
-  momentLocalizer,
-} from "react-big-calendar";
 import moment from "moment";
+import { Calendar as ReactBigCalendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "@/styles/calendar.css";
-import useGETcalendarEvents from "@/queries/calendar/useGETcalendarEvents";
-import { cn } from "@/lib/utils.ts";
-import { Spinner } from "@nextui-org/spinner";
-import { ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Calendar.CalendarEventV2.ts";
-import { convert } from "html-to-text";
-import he from "he";
 import { Button } from "@/components/ui/button.tsx";
-import { useEffect, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils.ts";
+import useGETcalendarEvents from "@/queries/calendar/useGETcalendarEvents";
+import { ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Calendar.CalendarEventV2.ts";
 import { ItslearningRestApiEntitiesPersonalCalendarEvent } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.CalendarEvent";
+import { Spinner } from "@nextui-org/spinner";
+import he from "he";
+import { convert } from "html-to-text";
+import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 
 export const Route = createFileRoute("/calendar")({
@@ -162,8 +155,7 @@ export function Calendar({
                   <div
                     className={cn(
                       "w-7 h-7 flex items-center justify-center",
-                      isCurrentDate &&
-                        "bg-primary text-primary-foreground rounded-full",
+                      isCurrentDate && "bg-primary text-primary-foreground rounded-full",
                     )}
                   >
                     <span className={cn("text-center text-sm font-semibold")}>
@@ -178,9 +170,7 @@ export function Calendar({
             const label = props.label;
             const event = props.event;
 
-            const [screenHeight, setScreenHeight] = useState(
-              window.innerHeight,
-            );
+            const [screenHeight, setScreenHeight] = useState(window.innerHeight);
 
             useEffect(() => {
               const onResize = () => {
@@ -215,9 +205,7 @@ export function Calendar({
                     >
                       {label && <span>{label}</span>}
                       <div className={"flex flex-col gap-2"}>
-                        <span
-                          className={cn("text-white font-semibold text-sm")}
-                        >
+                        <span className={cn("text-white font-semibold text-sm")}>
                           {convert(he.decode(event.LocationTitle))}
                         </span>
                         <span
@@ -238,11 +226,7 @@ export function Calendar({
                       {convert(he.decode(event.EventTitle))}
                     </span>
                     <span className={"text-white font-semibold text-sm"}>
-                      {convert(
-                        he.decode(
-                          event.ImportDescription.replace(/\\n/g, ", "),
-                        ),
-                      )}
+                      {convert(he.decode(event.ImportDescription.replace(/\\n/g, ", ")))}
                     </span>
                     <span className={"text-white font-semibold text-sm"}>
                       {convert(he.decode(event.LocationTitle))}
@@ -289,11 +273,7 @@ function EventCard({
   event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2;
 }) {
   return (
-    <div
-      className={
-        "flex flex-col p-2 bg-purple-500 rounded border-2 border-purple-800"
-      }
-    >
+    <div className={"flex flex-col p-2 bg-purple-500 rounded border-2 border-purple-800"}>
       <span className={"text-white font-semibold text-sm"}>
         {convert(he.decode(event.EventTitle))}
       </span>
