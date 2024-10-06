@@ -1,23 +1,23 @@
-import { defineConfig } from 'vite'
-import path from 'node:path'
+import { defineConfig } from "vite";
+import { resolve } from "node:path";
 // import electron from 'vite-plugin-electron/simple'
-import electron from 'vite-plugin-electron'
-import react from '@vitejs/plugin-react'
-import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
-import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
+import electron from "vite-plugin-electron";
+import react from "@vitejs/plugin-react";
+import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
+import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    outDir: 'dist',
+    outDir: "dist",
     emptyOutDir: true,
     sourcemap: true,
-    target: 'esnext',
-    minify: 'esbuild',
+    target: "esnext",
+    minify: "esbuild",
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'index.html'),
-        login: path.resolve(__dirname, 'login.html'),
+        main: resolve(process.cwd(), "index.html"),
+        login: resolve(process.cwd(), "login.html"),
       },
     },
   },
@@ -25,29 +25,29 @@ export default defineConfig({
     react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
     electron([
       {
-        entry: 'electron/main.ts',
+        entry: "electron/main.ts",
       },
       {
-        entry: 'electron/preload.ts',
+        entry: "electron/preload.ts",
         onstart({ reload }) {
-          // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+          // Notify the Renderer process to reload the page when the Preload scripts build is complete,
           // instead of restarting the entire Electron App.
-          reload()
+          reload();
         },
       },
       {
-        entry: 'electron/login_preload.ts',
+        entry: "electron/login_preload.ts",
         onstart({ reload }) {
-          // Notify the Renderer process to reload the page when the Preload scripts build is complete, 
+          // Notify the Renderer process to reload the page when the Preload scripts build is complete,
           // instead of restarting the entire Electron App.
-          reload()
+          reload();
         },
-      }
+      },
     ]),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": resolve(process.cwd(), "./src"),
     },
-  }
-})
+  },
+});
