@@ -71,8 +71,8 @@ mod itslearning {
 }
 
 #[derive(Deserialize, Serialize)]
-struct Tokens {
-    access_token: String,
+pub struct Tokens {
+    pub access_token: String,
     refresh_token: String,
 }
 
@@ -214,21 +214,22 @@ fn save_tokens<R: tauri::Runtime>(
     tokens: &Tokens,
     app_path: &tauri::path::PathResolver<R>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    // Encrypt the tokens
-    let encrypted_tokens = encrypt_tokens(tokens);
+    // // Encrypt the tokens
+    // let encrypted_tokens = encrypt_tokens(tokens);
 
     // Determine the file path where tokens will be saved
     let path = get_tokens_file_path(app_path)?;
 
     // Write the serialized tokens to the file
-    fs::write(&path, encrypted_tokens)?;
+    // fs::write(&path, encrypted_tokens)?;
+    fs::write(&path, serde_json::to_vec(tokens)?)?;
 
     println!("Tokens have been encrypted and saved to {:?}", path);
     Ok(())
 }
 
 /// Retrieves and decrypts the tokens from the file.
-fn get_tokens<R: tauri::Runtime>(
+pub fn get_tokens<R: tauri::Runtime>(
     app_path: &tauri::path::PathResolver<R>,
 ) -> Result<Tokens, Box<dyn std::error::Error>> {
     // Retrieve the path to the tokens file
@@ -245,19 +246,23 @@ fn get_tokens<R: tauri::Runtime>(
     // Read the encrypted data from the file
     let encrypted_data = fs::read(&path)?; // Use `?` to propagate errors instead of `expect`
 
-    // Decrypt the tokens
-    let tokens = decrypt_tokens(&encrypted_data); // Propagate decryption errors
+    let tokens: Tokens = serde_json::from_slice(&encrypted_data)?;
 
-    match tokens {
-        Some(tokens) => {
-            println!("Tokens have been decrypted and retrieved from {:?}", path);
-            Ok(tokens)
-        }
-        None => Err(Box::new(std::io::Error::new(
-            std::io::ErrorKind::InvalidData,
-            "Failed to decrypt tokens",
-        ))),
-    }
+    Ok(tokens)
+
+    // // Decrypt the tokens
+    // let tokens = decrypt_tokens(&encrypted_data); // Propagate decryption errors
+
+    // match tokens {
+    //     Some(tokens) => {
+    //         println!("Tokens have been decrypted and retrieved from {:?}", path);
+    //         Ok(tokens)
+    //     }
+    //     None => Err(Box::new(std::io::Error::new(
+    //         std::io::ErrorKind::InvalidData,
+    //         "Failed to decrypt tokens",
+    //     ))),
+    // }
 }
 
 // OAuth Handling

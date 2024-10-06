@@ -1,4 +1,5 @@
 mod auth;
+mod proxy;
 use std::path::PathBuf;
 
 use serde_json::json;
@@ -11,8 +12,18 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn get_access_token(app_handle: tauri::AppHandle) -> String {
+    let app_handle_path = app_handle.path();
+    let tokens = auth::auth::get_tokens(app_handle_path).expect("Failed to get tokens");
+    tokens.access_token
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    tauri::async_runtime::spawn(async move {
+        proxy::start_proxy_server().await;
+    });
     let mut builder = tauri::Builder::default();
 
     #[cfg(desktop)]
@@ -67,7 +78,7 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, get_access_token])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

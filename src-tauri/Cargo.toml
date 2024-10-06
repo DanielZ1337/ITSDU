@@ -32,6 +32,11 @@ keyring = { version = "3.3.0", features = [
 ] }
 ring = "0.17.8"
 secrecy = { version = "0.10.2", features = ["serde"] }
+url = "2.5.2"
+awc = { version = "3.5.1", features = ["rustls"] }
+actix-cors = "0.7.0"
+actix-web = "4.9.0"
+tokio = "1.40.0"
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
 tauri-plugin-single-instance = { version = "2.0.0-rc", features = [
     "deep-link",
