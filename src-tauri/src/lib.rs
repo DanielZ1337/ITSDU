@@ -22,7 +22,7 @@ fn get_access_token(app_handle: tauri::AppHandle) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::async_runtime::spawn(async move {
-        proxy::start_proxy_server().await;
+        (proxy::start_proxy_server().await).expect("Failed to start proxy server");
     });
     let mut builder = tauri::Builder::default();
 
