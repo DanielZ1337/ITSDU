@@ -1,8 +1,8 @@
-import {courseAtom} from "@/atoms/course"
-import {useAtom} from "jotai"
+import { courseAtom } from "@/atoms/course";
+import { useAtom } from "jotai";
 
 export const useCourse = () => {
-    const [courseId, setCourseId] = useAtom(courseAtom)
+	const [courseId, setCourseId] = useAtom(courseAtom);
 
-    return {courseId, setCourseId}
-}
+	return { courseId, setCourseId };
+};

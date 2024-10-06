@@ -1,44 +1,49 @@
-import React, {ChangeEvent, useState} from "react";
+import React, { ChangeEvent, useState } from "react";
 
-export default function useFileDrop({files, setFiles}: {
-    files: File[] | null,
-    setFiles: React.Dispatch<React.SetStateAction<File[] | null>>
+export default function useFileDrop({
+	files,
+	setFiles,
+}: {
+	files: File[] | null;
+	setFiles: React.Dispatch<React.SetStateAction<File[] | null>>;
 }) {
-    const [isOver, setIsOver] = useState(false);
+	const [isOver, setIsOver] = useState(false);
 
-    const handleDragOver = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(true);
-    };
+	const handleDragOver = (event: React.DragEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		setIsOver(true);
+	};
 
-    const handleDragLeave = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(false);
-    };
+	const handleDragLeave = (event: React.DragEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		setIsOver(false);
+	};
 
-    const handleDrop = (event: React.DragEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        setIsOver(false);
+	const handleDrop = (event: React.DragEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		setIsOver(false);
 
-        handleFiles(event);
-    }
+		handleFiles(event);
+	};
 
-    const handleFiles = (event: ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLButtonElement>) => {
-        let newFiles: File[] = []
-        if (event.type === 'drop') {
-            event = event as React.DragEvent<HTMLButtonElement>;
-            newFiles = Array.from(event.dataTransfer.files);
-        } else if (event.target instanceof HTMLInputElement) {
-            newFiles = Array.from(event.target.files || []);
-        }
+	const handleFiles = (
+		event: ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLButtonElement>,
+	) => {
+		let newFiles: File[] = [];
+		if (event.type === "drop") {
+			event = event as React.DragEvent<HTMLButtonElement>;
+			newFiles = Array.from(event.dataTransfer.files);
+		} else if (event.target instanceof HTMLInputElement) {
+			newFiles = Array.from(event.target.files || []);
+		}
 
-        if (files !== null) {
-            setFiles([...files, ...newFiles]);
-        } else {
-            setFiles(newFiles);
-        }
+		if (files !== null) {
+			setFiles([...files, ...newFiles]);
+		} else {
+			setFiles(newFiles);
+		}
 
-        /*// Use FileReader to read file content
+		/*// Use FileReader to read file content
         files?.forEach((file) => {
             const reader = new FileReader();
 
@@ -53,13 +58,13 @@ export default function useFileDrop({files, setFiles}: {
             reader.readAsDataURL(file);
             return reader;
         });*/
-    }
+	};
 
-    return {
-        isOver,
-        handleDragOver,
-        handleDragLeave,
-        handleDrop,
-        handleFiles
-    }
+	return {
+		isOver,
+		handleDragOver,
+		handleDragLeave,
+		handleDrop,
+		handleFiles,
+	};
 }

@@ -1,26 +1,32 @@
-import { cn } from '@/lib/utils'
-import React, { forwardRef, useCallback, useRef } from 'react'
-import useResizeObserver from 'use-resize-observer'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { Tree, Child, Entry, CollapseButton, TreeViewElement } from './tree-view-api'
+import { cn } from "@/lib/utils";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import React, { forwardRef, useCallback, useRef } from "react";
+import useResizeObserver from "use-resize-observer";
+import {
+	Child,
+	CollapseButton,
+	Entry,
+	Tree,
+	TreeViewElement,
+} from "./tree-view-api";
 
 interface TreeViewComponentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 type TreeViewProps = {
-	initialSelectedId?: string
-	elements: TreeViewElement[]
-	indicator?: boolean
+	initialSelectedId?: string;
+	elements: TreeViewElement[];
+	indicator?: boolean;
 } & (
 	| {
-			initialExpendedItems?: string[]
-			expandAll?: false
+			initialExpendedItems?: string[];
+			expandAll?: false;
 	  }
 	| {
-			initialExpendedItems?: undefined
-			expandAll: true
+			initialExpendedItems?: undefined;
+			expandAll: true;
 	  }
 ) &
-	TreeViewComponentProps
+	TreeViewComponentProps;
 
 export const TreeView = ({
 	elements,
@@ -30,70 +36,63 @@ export const TreeView = ({
 	expandAll,
 	indicator = false,
 }: TreeViewProps) => {
-	const containerRef = useRef<HTMLDivElement>(null)
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	const { getVirtualItems, getTotalSize } = useVirtualizer({
 		count: elements.length,
 		getScrollElement: () => containerRef.current,
 		estimateSize: useCallback(() => 40, []),
 		overscan: 5,
-	})
+	});
 
 	const { height = getTotalSize(), width } = useResizeObserver({
 		ref: containerRef,
-	})
+	});
 	return (
 		<div
 			ref={containerRef}
-			className={cn('w-full rounded-md overflow-hidden py-1 relative', className)}
+			className={cn(
+				"w-full rounded-md overflow-hidden py-1 relative",
+				className,
+			)}
 		>
 			<Tree
 				initialSelectedId={initialSelectedId}
 				initialExpendedItems={initialExpendedItems}
 				elements={elements}
 				style={{ height, width }}
-				className='w-full h-full overflow-y-auto'
+				className="w-full h-full overflow-y-auto"
 			>
 				{getVirtualItems().map((element) => (
 					<TreeItem
-						aria-label='Root'
+						aria-label="Root"
 						key={element.key}
 						elements={[elements[element.index]]}
 						indicator={indicator}
 					/>
 				))}
-				<CollapseButton
-					elements={elements}
-					expandAll={expandAll}
-				>
+				<CollapseButton elements={elements} expandAll={expandAll}>
 					<span>Expand All</span>
 				</CollapseButton>
 			</Tree>
 		</div>
-	)
-}
+	);
+};
 
-TreeView.displayName = 'TreeView'
+TreeView.displayName = "TreeView";
 
 export const TreeItem = forwardRef<
 	HTMLUListElement,
 	{
-		elements?: TreeViewElement[]
-		indicator?: boolean
+		elements?: TreeViewElement[];
+		indicator?: boolean;
 	} & React.HTMLAttributes<HTMLUListElement>
 >(({ className, elements, indicator, ...props }, ref) => {
 	return (
-		<ul
-			ref={ref}
-			className='w-full space-y-1 '
-			{...props}
-		>
+		<ul ref={ref} className="w-full space-y-1 " {...props}>
 			{elements &&
 				elements.map((element) => (
-					<li
-						key={element.id}
-						className='w-full'
-					>
+					<li key={element.id} className="w-full">
 						{element.children && element.children?.length > 0 ? (
 							<Child
 								element={element.name}
@@ -120,7 +119,7 @@ export const TreeItem = forwardRef<
 					</li>
 				))}
 		</ul>
-	)
-})
+	);
+});
 
-TreeItem.displayName = 'TreeItem'
+TreeItem.displayName = "TreeItem";

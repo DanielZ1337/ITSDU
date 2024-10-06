@@ -1,10 +1,10 @@
-import {sidebarActiveAtom} from "@/atoms/sidebar.ts";
-import {useAtom} from "jotai/index";
+import { sidebarActiveAtom } from "@/atoms/sidebar.ts";
+import { useAtom } from "jotai/index";
 
 export const useSidebar = () => {
-    const [sidebarActive, setSidebarActive] = useAtom(sidebarActiveAtom)
+	const [sidebarActive, setSidebarActive] = useAtom(sidebarActiveAtom);
 
-    const toggleSidebar = () => setSidebarActive(active => !active)
+	const toggleSidebar = () => setSidebarActive((active) => !active);
 
-    return {sidebarActive, setSidebarActive, toggleSidebar}
-}
+	return { sidebarActive, setSidebarActive, toggleSidebar };
+};

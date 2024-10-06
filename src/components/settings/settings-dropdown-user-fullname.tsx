@@ -1,11 +1,7 @@
-import {useUser} from '@/hooks/atoms/useUser.ts'
+import { useUser } from "@/hooks/atoms/useUser.ts";
 
 export default function SettingsDropdownUserFullname() {
-    const user = useUser()
+	const user = useUser();
 
-    return (
-        <span>
-            {user?.FullName}
-        </span>
-    )
+	return <span>{user?.FullName}</span>;
 }

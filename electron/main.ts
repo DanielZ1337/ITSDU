@@ -1,47 +1,59 @@
-import { app, BrowserWindow, Menu, nativeTheme, protocol, session, Tray } from 'electron'
-import path from 'path'
+import path from "path";
+import {
+	BrowserWindow,
+	Menu,
+	Tray,
+	app,
+	nativeTheme,
+	protocol,
+	session,
+} from "electron";
 
-process.env.DIST = path.join(__dirname, '../dist')
-process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
-const isDev = !app.isPackaged
+process.env.DIST = path.join(__dirname, "../dist");
+process.env.VITE_PUBLIC = app.isPackaged
+	? process.env.DIST
+	: path.join(process.env.DIST, "../public");
+const isDev = !app.isPackaged;
 
-let win: BrowserWindow | null
-let authWindow: BrowserWindow | null
+let win: BrowserWindow | null;
+let authWindow: BrowserWindow | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
-export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+export const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
 protocol.registerSchemesAsPrivileged([
 	{
-		scheme: 'itsl-itslearning-file',
+		scheme: "itsl-itslearning-file",
 		privileges: {
 			standard: true,
 			secure: true,
 		},
 	},
-])
+]);
 
 // to load the application, setup and stuff
 async function createMainWindow() {
-	const allWindows = BrowserWindow.getAllWindows()
+	const allWindows = BrowserWindow.getAllWindows();
 	if (allWindows.length > 0) {
-		allWindows.forEach((w) => w.close())
+		allWindows.forEach((w) => w.close());
 	}
-	const { WindowOptionsService } = await import('./services/window-options/window-options-service')
+	const { WindowOptionsService } = await import(
+		"./services/window-options/window-options-service"
+	);
 
-	const windowService = new WindowOptionsService()
-	const windowOptions = windowService.getWindowOptions()
+	const windowService = new WindowOptionsService();
+	const windowOptions = windowService.getWindowOptions();
 
-	const { themeStore } = await import('./services/theme/theme-service.ts')
+	const { themeStore } = await import("./services/theme/theme-service.ts");
 
-	const startUpTheme = themeStore.get('theme')
+	const startUpTheme = themeStore.get("theme");
 
 	win = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.js'),
+			preload: path.join(__dirname, "preload.js"),
 			nodeIntegration: true,
 			devTools: isDev,
-			v8CacheOptions: 'bypassHeatCheck',
+			v8CacheOptions: "bypassHeatCheck",
 			webviewTag: true,
 		},
 		autoHideMenuBar: true,
@@ -49,29 +61,32 @@ async function createMainWindow() {
 		minHeight: 640,
 		minWidth: 800,
 		// show: false,
-		darkTheme: startUpTheme === 'dark',
+		darkTheme: startUpTheme === "dark",
 		// darkTheme: nativeTheme.shouldUseDarkColors,
-		backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
+		backgroundColor: startUpTheme === "dark" ? "black" : "white",
 		frame: false,
 		roundedCorners: true,
 		...windowOptions,
-	})
+	});
 
 	win.webContents.setWindowOpenHandler((handler) => {
-		console.log(handler)
+		console.log(handler);
 		// handles office download links
-		const origin = new URL(handler.url)
-		let referrer
+		const origin = new URL(handler.url);
+		let referrer;
 		try {
-			referrer = new URL(handler.referrer.url)
+			referrer = new URL(handler.referrer.url);
 		} catch (e) {
-			console.error(e)
+			console.error(e);
 		}
-		if (origin.hostname === 'eu1wopi.itslearning.com' || referrer?.hostname.includes('officeapps.live.com')) {
-			if (!win) return { action: 'deny' }
+		if (
+			origin.hostname === "eu1wopi.itslearning.com" ||
+			referrer?.hostname.includes("officeapps.live.com")
+		) {
+			if (!win) return { action: "deny" };
 
 			return {
-				action: 'allow',
+				action: "allow",
 				overrideBrowserWindowOptions: {
 					modal: true,
 					parent: win,
@@ -82,151 +97,157 @@ async function createMainWindow() {
 					minHeight: 640,
 					minWidth: 800,
 					show: false,
-					darkTheme: startUpTheme === 'dark',
-					backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
+					darkTheme: startUpTheme === "dark",
+					backgroundColor: startUpTheme === "dark" ? "black" : "white",
 					frame: false,
 					roundedCorners: true,
 				},
-			}
+			};
 		} else {
-			if (origin.hostname.includes('itslearning.com')) {
+			if (origin.hostname.includes("itslearning.com")) {
 				// open external in default browser
-				import('./handlers/download-handler.ts').then(({ openLinkInBrowser }) => openLinkInBrowser(handler.url, true))
+				import("./handlers/download-handler.ts").then(({ openLinkInBrowser }) =>
+					openLinkInBrowser(handler.url, true),
+				);
 			}
-			return { action: 'deny' }
+			return { action: "deny" };
 		}
-	})
+	});
 
 	if (windowOptions.maximized) {
-		win.maximize()
+		win.maximize();
 	}
 
 	const debounce = (func: Function, wait: number) => {
-		let timeout: NodeJS.Timeout
+		let timeout: NodeJS.Timeout;
 		return function executedFunction(...args: any[]) {
 			const later = () => {
-				clearTimeout(timeout)
-				func(...args)
-			}
-			clearTimeout(timeout)
-			timeout = setTimeout(later, wait)
-		}
-	}
+				clearTimeout(timeout);
+				func(...args);
+			};
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		};
+	};
 
 	const saveWindowOptionsDebounced = debounce(() => {
-		if (!win) return
-		windowService.saveWindowOptions(win)
-	}, 500)
+		if (!win) return;
+		windowService.saveWindowOptions(win);
+	}, 500);
 
-	win.on('resize', saveWindowOptionsDebounced)
-	win.on('maximize', saveWindowOptionsDebounced)
-	win.on('unmaximize', saveWindowOptionsDebounced)
-	win.on('move', saveWindowOptionsDebounced)
+	win.on("resize", saveWindowOptionsDebounced);
+	win.on("maximize", saveWindowOptionsDebounced);
+	win.on("unmaximize", saveWindowOptionsDebounced);
+	win.on("move", saveWindowOptionsDebounced);
 
 	// Test active push message to Renderer-process.
-	win.webContents.on('did-finish-load', () => {
+	win.webContents.on("did-finish-load", () => {
 		// win?.show()
-		win?.webContents.send('main-process-message', new Date().toLocaleString())
-	})
+		win?.webContents.send("main-process-message", new Date().toLocaleString());
+	});
 
-	nativeTheme.on('updated', () => {
-		const backgroundColor = nativeTheme.shouldUseDarkColors ? 'black' : 'white'
-		win?.setBackgroundColor(backgroundColor)
-	})
+	nativeTheme.on("updated", () => {
+		const backgroundColor = nativeTheme.shouldUseDarkColors ? "black" : "white";
+		win?.setBackgroundColor(backgroundColor);
+	});
 
 	if (VITE_DEV_SERVER_URL) {
-		await win.loadURL(VITE_DEV_SERVER_URL)
+		await win.loadURL(VITE_DEV_SERVER_URL);
 	} else {
-		await win.loadFile(path.join(process.env.DIST, 'index.html'))
+		await win.loadFile(path.join(process.env.DIST, "index.html"));
 	}
 }
 
 export async function createAuthWindow() {
-	const wins = BrowserWindow.getAllWindows()
-	const { themeStore } = await import('./services/theme/theme-service.ts')
+	const wins = BrowserWindow.getAllWindows();
+	const { themeStore } = await import("./services/theme/theme-service.ts");
 
-	const startUpTheme = themeStore.get('theme')
+	const startUpTheme = themeStore.get("theme");
 
 	authWindow = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 		webPreferences: {
-			preload: path.join(__dirname, 'login_preload.js'),
+			preload: path.join(__dirname, "login_preload.js"),
 		},
 		width: 800,
 		height: 600,
 		autoHideMenuBar: true,
-		darkTheme: startUpTheme === 'dark',
-		backgroundColor: startUpTheme === 'dark' ? 'black' : 'white',
+		darkTheme: startUpTheme === "dark",
+		backgroundColor: startUpTheme === "dark" ? "black" : "white",
 		resizable: false,
 		/* 
         alwaysOnTop: true,
         focusable: true,
         roundedCorners: true,
         show: true, */
-	})
+	});
 
 	try {
-		const { initializeLoginHandler } = await import('./services/itslearning/auth/auth-service.ts')
+		const { initializeLoginHandler } = await import(
+			"./services/itslearning/auth/auth-service.ts"
+		);
 
-		initializeLoginHandler()
+		initializeLoginHandler();
 
-		const { initializeItslearningPreload } = await import('./services/itslearning/itslearning-service.ts')
+		const { initializeItslearningPreload } = await import(
+			"./services/itslearning/itslearning-service.ts"
+		);
 
-		initializeItslearningPreload()
+		initializeItslearningPreload();
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 	}
 
 	if (VITE_DEV_SERVER_URL) {
-		await authWindow.loadURL(new URL('/login', VITE_DEV_SERVER_URL).toString())
+		await authWindow.loadURL(new URL("/login", VITE_DEV_SERVER_URL).toString());
 	} else {
-		await authWindow.loadFile(path.join(process.env.DIST, 'login.html'))
+		await authWindow.loadFile(path.join(process.env.DIST, "login.html"));
 	}
 
 	if (wins.length > 0) {
-		wins.forEach((w) => w.destroy())
+		wins.forEach((w) => w.destroy());
 	}
 
-	return authWindow
+	return authWindow;
 }
 
-if (process.platform === 'win32') {
-	app.setAppUserModelId('itsdu')
+if (process.platform === "win32") {
+	app.setAppUserModelId("itsdu");
 }
 
-if (!app.isDefaultProtocolClient('itsl-itslearning')) {
+if (!app.isDefaultProtocolClient("itsl-itslearning")) {
 	// Define custom protocol handler. Deep linking works on packaged versions of the application!
-	app.setAsDefaultProtocolClient('itsl-itslearning')
+	app.setAsDefaultProtocolClient("itsl-itslearning");
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-		win = null
+app.on("window-all-closed", () => {
+	if (process.platform !== "darwin") {
+		app.quit();
+		win = null;
 	}
-})
+});
 
-app.on('activate', () => {
+app.on("activate", () => {
 	// On OS X it's common to re-create a window in the app when the
 	// dock icon is clicked and there are no other windows open.
 	if (BrowserWindow.getAllWindows().length === 0) {
-		createMainWindow()
+		createMainWindow();
 	}
-})
+});
 
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 if (gotTheLock) {
-	app.on('second-instance', (_, argv) => {
-		console.log('second-instance', argv)
+	app.on("second-instance", (_, argv) => {
+		console.log("second-instance", argv);
 		// Someone tried to run a second instance, we should focus our window.
 		if (win) {
 			if (win.isMinimized()) {
-				win.restore()
-				win.focus()
-				win.show()
+				win.restore();
+				win.focus();
+				win.show();
 			}
 		}
 
@@ -246,96 +267,105 @@ if (gotTheLock) {
             logEverywhere('app.makeSingleInstance# ' + 'code ' + deeplinkingUrl)
             win.webContents.executeJavaScript(`window.localStorage.setItem('code', '${deeplinkingUrl}')`)
         }*/
-	})
+	});
 } else {
-	app.quit()
-	win = null
+	app.quit();
+	win = null;
 }
 
-app.on('will-finish-launching', function () {
+app.on("will-finish-launching", function () {
 	// Protocol handler for osx
-	app.on('open-url', function (event, url) {
-		event.preventDefault()
+	app.on("open-url", function (event, url) {
+		event.preventDefault();
 		// deeplinkingUrl = url
-		logEverywhere('open-url# ' + url)
-	})
-})
+		logEverywhere("open-url# " + url);
+	});
+});
 
 function logEverywhere(s: string) {
-	console.log(s)
-	win?.webContents.send('main-process-message', s)
+	console.log(s);
+	win?.webContents.send("main-process-message", s);
 }
 
 function logEverywhereError(s: string) {
-	console.error(s)
-	win?.webContents.send('main-process-error', s)
+	console.error(s);
+	win?.webContents.send("main-process-error", s);
 }
 
 async function initializeAllHandlers() {
-	const darkModeHandlerInitializer = (await import('./handlers/dark-mode-handlers.ts')).default
-	const appHandlerInitializer = (await import('./handlers/app-handler.ts')).default
-	const initAuthIpcHandlers = (await import('./handlers/auth-handler.ts')).default
-	const initDownloadHandlers = (await import('./handlers/download-handler.ts')).default
-	const { autoUpdater } = await import('electron-updater')
-	autoUpdater.autoRunAppAfterInstall = true
-	autoUpdater.autoInstallOnAppQuit = false
-	autoUpdater.autoDownload = false
-	darkModeHandlerInitializer()
-	appHandlerInitializer()
-	initDownloadHandlers()
-	initAuthIpcHandlers()
+	const darkModeHandlerInitializer = (
+		await import("./handlers/dark-mode-handlers.ts")
+	).default;
+	const appHandlerInitializer = (await import("./handlers/app-handler.ts"))
+		.default;
+	const initAuthIpcHandlers = (await import("./handlers/auth-handler.ts"))
+		.default;
+	const initDownloadHandlers = (await import("./handlers/download-handler.ts"))
+		.default;
+	const { autoUpdater } = await import("electron-updater");
+	autoUpdater.autoRunAppAfterInstall = true;
+	autoUpdater.autoInstallOnAppQuit = false;
+	autoUpdater.autoDownload = false;
+	darkModeHandlerInitializer();
+	appHandlerInitializer();
+	initDownloadHandlers();
+	initAuthIpcHandlers();
 }
 
 app.whenReady().then(async () => {
-	await initializeAllHandlers()
+	await initializeAllHandlers();
 	if (VITE_DEV_SERVER_URL) {
-		const { startProxyDevServer } = await import('./utils/proxy-dev-server.ts')
+		const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
 
-		await startProxyDevServer()
+		await startProxyDevServer();
 	}
 
-	const ses = session.defaultSession
-	ses.protocol.registerBufferProtocol('itsl-itslearning-file', async (request, callback) => {
-		// get image file path
-		const url = request.url.replace('itsl-itslearning-file://', '')
-		const filePath = path.join(process.env.VITE_PUBLIC, url)
-		// read image file
-		const fs = await import('fs')
-		fs.readFile(filePath, (error, data) => {
-			if (error) {
-				console.error(`Failed to read ${filePath} on ${request.url}`)
-				console.error(error)
-			}
-			const extension = path.extname(filePath).toLowerCase()
-			let mimeType = ''
-			if (extension === '.svg') {
-				mimeType = 'image/svg+xml'
-			} else if (extension === '.png') {
-				mimeType = 'image/png'
-			} else if (extension === '.jpg' || extension === '.jpeg') {
-				mimeType = 'image/jpeg'
-			} else if (extension === '.gif') {
-				mimeType = 'image/gif'
-			} else if (extension === '.webp') {
-				mimeType = 'image/webp'
-			}
-			callback({ mimeType, data })
-		})
-	})
+	const ses = session.defaultSession;
+	ses.protocol.registerBufferProtocol(
+		"itsl-itslearning-file",
+		async (request, callback) => {
+			// get image file path
+			const url = request.url.replace("itsl-itslearning-file://", "");
+			const filePath = path.join(process.env.VITE_PUBLIC, url);
+			// read image file
+			const fs = await import("fs");
+			fs.readFile(filePath, (error, data) => {
+				if (error) {
+					console.error(`Failed to read ${filePath} on ${request.url}`);
+					console.error(error);
+				}
+				const extension = path.extname(filePath).toLowerCase();
+				let mimeType = "";
+				if (extension === ".svg") {
+					mimeType = "image/svg+xml";
+				} else if (extension === ".png") {
+					mimeType = "image/png";
+				} else if (extension === ".jpg" || extension === ".jpeg") {
+					mimeType = "image/jpeg";
+				} else if (extension === ".gif") {
+					mimeType = "image/gif";
+				} else if (extension === ".webp") {
+					mimeType = "image/webp";
+				}
+				callback({ mimeType, data });
+			});
+		},
+	);
 
 	// @ts-ignore
-	protocol.handle('itsl-itslearning', async (req) => {
-		const { AuthService, ITSLEARNING_CLIENT_ID, ITSLEARNING_OAUTH_TOKEN_URL } = await import(
-			'./services/itslearning/auth/auth-service.ts'
-		)
+	protocol.handle("itsl-itslearning", async (req) => {
+		const { AuthService, ITSLEARNING_CLIENT_ID, ITSLEARNING_OAUTH_TOKEN_URL } =
+			await import("./services/itslearning/auth/auth-service.ts");
 
-		const authService = AuthService.getInstance()
+		const authService = AuthService.getInstance();
 
-		const code = authService.getAuthCodeFromURI(req.url)
+		const code = authService.getAuthCodeFromURI(req.url);
 		if (code) {
 			try {
-				const { GrantType } = await import('./services/itslearning/auth/types/grant_type.ts')
-				const axios = (await import('axios')).default
+				const { GrantType } = await import(
+					"./services/itslearning/auth/types/grant_type.ts"
+				);
+				const axios = (await import("axios")).default;
 
 				const res = await axios.post(
 					ITSLEARNING_OAUTH_TOKEN_URL(),
@@ -346,116 +376,118 @@ app.whenReady().then(async () => {
 					},
 					{
 						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded',
+							"Content-Type": "application/x-www-form-urlencoded",
 						},
-					}
-				)
-				const { access_token, refresh_token } = res.data
-				console.log(access_token, refresh_token)
-				authService.setToken('access_token', access_token)
-				authService.setToken('refresh_token', refresh_token)
-				await authService.refreshAccessToken()
-				authWindow?.close()
-				authWindow = null
+					},
+				);
+				const { access_token, refresh_token } = res.data;
+				console.log(access_token, refresh_token);
+				authService.setToken("access_token", access_token);
+				authService.setToken("refresh_token", refresh_token);
+				await authService.refreshAccessToken();
+				authWindow?.close();
+				authWindow = null;
 				if (!isDev) {
-					app.relaunch()
+					app.relaunch();
 				} else {
-					await createMainWindow()
+					await createMainWindow();
 				}
 			} catch (err) {
-				logEverywhereError('protocol.handle# ' + err)
-				await createAuthWindow()
+				logEverywhereError("protocol.handle# " + err);
+				await createAuthWindow();
 			}
 		} else {
-			authService.loadSigninPage()
+			authService.loadSigninPage();
 		}
-	})
+	});
 
 	try {
-		const { AuthService, REFRESH_ACCESS_TOKEN_INTERVAL } = await import('./services/itslearning/auth/auth-service.ts')
+		const { AuthService, REFRESH_ACCESS_TOKEN_INTERVAL } = await import(
+			"./services/itslearning/auth/auth-service.ts"
+		);
 
-		const authService = AuthService.getInstance()
+		const authService = AuthService.getInstance();
 
-		const { access_token, refresh_token } = authService.getTokens()
+		const { access_token, refresh_token } = authService.getTokens();
 		if (!access_token || !refresh_token) {
-			authService.clearTokens()
-			throw new Error('Invalid refresh token')
+			authService.clearTokens();
+			throw new Error("Invalid refresh token");
 		}
-		await authService.refreshAccessToken()
+		await authService.refreshAccessToken();
 
-		await createMainWindow()
+		await createMainWindow();
 		// setup interval for refreshing access token
 		setInterval(async () => {
-			await authService.refreshAccessToken()
-		}, REFRESH_ACCESS_TOKEN_INTERVAL) // 45 minutes
+			await authService.refreshAccessToken();
+		}, REFRESH_ACCESS_TOKEN_INTERVAL); // 45 minutes
 	} catch (e) {
-		logEverywhereError('app.whenReady# ' + e)
-		await createAuthWindow()
+		logEverywhereError("app.whenReady# " + e);
+		await createAuthWindow();
 	} finally {
 		const contextMenu = Menu.buildFromTemplate([
 			{
-				label: 'Show App',
+				label: "Show App",
 				click: function (e) {
-					win?.show()
-					e.enabled = false
+					win?.show();
+					e.enabled = false;
 				},
 			},
 			{
-				label: 'Quit',
+				label: "Quit",
 				click: function () {
-					win?.close()
-					win?.destroy()
-					app?.exit(0)
+					win?.close();
+					win?.destroy();
+					app?.exit(0);
 				},
 			},
-		])
+		]);
 
-		win?.on('close', (e) => {
-			e.preventDefault()
-			if (!win) return
+		win?.on("close", (e) => {
+			e.preventDefault();
+			if (!win) return;
 			// TODO: have some preferences and follow those
-			require('electron')
+			require("electron")
 				.dialog.showMessageBox(win, {
-					type: 'question',
-					buttons: ['Yes', 'Minimize', 'No'],
-					title: 'Confirm',
-					message: 'Are you sure you want to quit?',
-					icon: path.join(process.env.VITE_PUBLIC, 'icon.ico'),
+					type: "question",
+					buttons: ["Yes", "Minimize", "No"],
+					title: "Confirm",
+					message: "Are you sure you want to quit?",
+					icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 					noLink: true,
 				})
 				.then((result) => {
 					if (result.response === 0) {
-						win?.close()
-						win?.destroy()
-						app.quit()
+						win?.close();
+						win?.destroy();
+						app.quit();
 					} else if (result.response === 1) {
-						win?.hide()
-						contextMenu.items[0].enabled = true
+						win?.hide();
+						contextMenu.items[0].enabled = true;
 					} else if (result.response === 2) {
-						e.preventDefault()
+						e.preventDefault();
 					}
 				})
 				.catch((err) => {
-					console.log(err)
-					app.exit(0)
-				})
-		})
+					console.log(err);
+					app.exit(0);
+				});
+		});
 
-		const tray = new Tray(path.join(process.env.VITE_PUBLIC, 'icon.ico'))
+		const tray = new Tray(path.join(process.env.VITE_PUBLIC, "icon.ico"));
 
-		tray.on('double-click', () => {
-			win?.show()
-		})
+		tray.on("double-click", () => {
+			win?.show();
+		});
 
-		tray.setToolTip('ITSDU')
-		tray.on('right-click', () => {
-			tray.focus()
-			console.log(win?.isVisible())
-			contextMenu.items[0].enabled = !win?.isVisible()
-			tray.setContextMenu(contextMenu)
+		tray.setToolTip("ITSDU");
+		tray.on("right-click", () => {
+			tray.focus();
+			console.log(win?.isVisible());
+			contextMenu.items[0].enabled = !win?.isVisible();
+			tray.setContextMenu(contextMenu);
 			setTimeout(() => {
-				tray.popUpContextMenu(contextMenu)
-			}, 250)
-		})
+				tray.popUpContextMenu(contextMenu);
+			}, 250);
+		});
 	}
-})
+});

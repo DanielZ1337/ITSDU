@@ -1,28 +1,34 @@
-import {useMutation, UseMutationOptions} from "@tanstack/react-query";
-import axios from "axios";
-import {TanstackKeys} from "@/types/tanstack-keys";
+import { getQueryKeysFromParamsObject } from "@/lib/utils";
 import {
-    POSTnewAIMessageApiUrl,
-    POSTnewAIMessageBody,
-    POSTnewAIMessageParams
+	POSTnewAIMessageApiUrl,
+	POSTnewAIMessageBody,
+	POSTnewAIMessageParams,
 } from "@/types/api-types/AI/POSTnewAIMessage";
-import {getQueryKeysFromParamsObject} from "@/lib/utils";
+import { TanstackKeys } from "@/types/tanstack-keys";
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
-export default function usePOSTnewAIMessage(params: POSTnewAIMessageParams, queryConfig?: UseMutationOptions<any, Error, any, string[]>) {
+export default function usePOSTnewAIMessage(
+	params: POSTnewAIMessageParams,
+	queryConfig?: UseMutationOptions<any, Error, any, string[]>,
+) {
+	return useMutation(
+		[TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)],
+		async (body: POSTnewAIMessageBody) => {
+			const res = await axios.post(POSTnewAIMessageApiUrl(params), body, {
+				params: {
+					...params,
+				},
+			});
 
-    return useMutation([TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)], async (body: POSTnewAIMessageBody) => {
-        const res = await axios.post(POSTnewAIMessageApiUrl(params), body, {
-            params: {
-                ...params
-            }
-        });
+			console.log(res);
 
-        console.log(res);
+			if (res.status !== 200) throw new Error(res.statusText);
 
-        if (res.status !== 200) throw new Error(res.statusText);
-
-        return res.data;
-    }, {
-        ...queryConfig
-    })
+			return res.data;
+		},
+		{
+			...queryConfig,
+		},
+	);
 }

@@ -1,10 +1,16 @@
-import {useAtom} from "jotai/index";
-import {browseNavigationAtom} from "@/atoms/browse-navigation.ts";
+import { browseNavigationAtom } from "@/atoms/browse-navigation.ts";
+import { useAtom } from "jotai/index";
 
 export const useBrowseNavigation = () => {
-    const [showBrowseNavigation, setShowBrowseNavigation] = useAtom(browseNavigationAtom)
+	const [showBrowseNavigation, setShowBrowseNavigation] =
+		useAtom(browseNavigationAtom);
 
-    const toggleBrowseNavigation = () => setShowBrowseNavigation(showBrowseNavigation => !showBrowseNavigation)
+	const toggleBrowseNavigation = () =>
+		setShowBrowseNavigation((showBrowseNavigation) => !showBrowseNavigation);
 
-    return {showBrowseNavigation, setShowBrowseNavigation, toggleBrowseNavigation};
-}
+	return {
+		showBrowseNavigation,
+		setShowBrowseNavigation,
+		toggleBrowseNavigation,
+	};
+};

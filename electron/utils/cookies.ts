@@ -1,5 +1,5 @@
-import {Cookie} from "electron"
+import { Cookie } from "electron";
 
 export function getFormattedCookies(cookies: Cookie[]) {
-    return cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ')
+	return cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join("; ");
 }

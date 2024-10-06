@@ -1,10 +1,10 @@
-import {useAtom} from "jotai/index";
-import {settingsModalAtom} from "@/atoms/settings-modal.ts";
+import { settingsModalAtom } from "@/atoms/settings-modal.ts";
+import { useAtom } from "jotai/index";
 
 export const useShowSettingsModal = () => {
-    const [showSettingsModal, setShowSettingsModal] = useAtom(settingsModalAtom)
+	const [showSettingsModal, setShowSettingsModal] = useAtom(settingsModalAtom);
 
-    const toggleSettingsModal = () => setShowSettingsModal(show => !show)
+	const toggleSettingsModal = () => setShowSettingsModal((show) => !show);
 
-    return {showSettingsModal, setShowSettingsModal, toggleSettingsModal}
-}
+	return { showSettingsModal, setShowSettingsModal, toggleSettingsModal };
+};

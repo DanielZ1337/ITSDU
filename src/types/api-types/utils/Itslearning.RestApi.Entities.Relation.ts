@@ -1,4 +1,4 @@
 export type ItslearningRestApiEntitiesRelation = {
-    Text: string,
-    Items: string[]
-}
+	Text: string;
+	Items: string[];
+};

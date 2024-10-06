@@ -1,16 +1,21 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import axios from 'axios'
-import { getAccessToken, getQueryKeysFromParamsObject } from '@/lib/utils.ts'
+import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseRootResources,
 	GETcourseRootResourcesApiUrl,
 	GETcourseRootResourcesParams,
-} from '@/types/api-types/courses/GETcourseRootResources.ts'
-import { TanstackKeys } from '@/types/tanstack-keys'
+} from "@/types/api-types/courses/GETcourseRootResources.ts";
+import { TanstackKeys } from "@/types/tanstack-keys";
+import { UseQueryOptions, useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function useGETcourseRootResources(
 	params: GETcourseRootResourcesParams,
-	queryConfig?: UseQueryOptions<GETcourseRootResources, Error, GETcourseRootResources, string[]>
+	queryConfig?: UseQueryOptions<
+		GETcourseRootResources,
+		Error,
+		GETcourseRootResources,
+		string[]
+	>,
 ) {
 	return useQuery(
 		[TanstackKeys.CourseRootResources, ...getQueryKeysFromParamsObject(params)],
@@ -21,18 +26,18 @@ export default function useGETcourseRootResources(
 				}),
 				{
 					params: {
-						access_token: (await getAccessToken()) || '',
+						access_token: (await getAccessToken()) || "",
 						...params,
 					},
-				}
-			)
+				},
+			);
 
-			if (res.status !== 200) throw new Error(res.statusText)
+			if (res.status !== 200) throw new Error(res.statusText);
 
-			return res.data
+			return res.data;
 		},
 		{
 			...queryConfig,
-		}
-	)
+		},
+	);
 }

@@ -1,3 +1,3 @@
-import {atom} from "jotai";
+import { atom } from "jotai";
 
-export const browseNavigationAtom = atom<boolean>(false)
+export const browseNavigationAtom = atom<boolean>(false);

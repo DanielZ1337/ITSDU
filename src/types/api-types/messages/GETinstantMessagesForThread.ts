@@ -1,25 +1,26 @@
-import {apiUrl, ITSLEARNING_API_MAX_PAGESIZE} from "@/lib/utils";
-import {
-    EntityListOfItslearningRestApiEntitiesInstantMessage
-} from "../utils/EntityListOfItslearning.RestApi.Entities.InstantMessage";
+import { ITSLEARNING_API_MAX_PAGESIZE, apiUrl } from "@/lib/utils";
+import { EntityListOfItslearningRestApiEntitiesInstantMessage } from "../utils/EntityListOfItslearning.RestApi.Entities.InstantMessage";
 
-const GETinstantMessagesForThreadApiEndpoint = 'restapi/personal/instantmessages/messagethreads/{threadId}/messages/v3?pageSize={pageSize}&fromId={fromId}'
+const GETinstantMessagesForThreadApiEndpoint =
+	"restapi/personal/instantmessages/messagethreads/{threadId}/messages/v3?pageSize={pageSize}&fromId={fromId}";
 
-export const GETinstantMessagesForThreadApiUrl = (params: GETinstantMessagesForThreadParams) => {
-    return apiUrl(GETinstantMessagesForThreadApiEndpoint, {
-        threadId: params.threadId,
-        pageSize: params.pageSize,
-        fromId: params.fromId
-    })
-}
+export const GETinstantMessagesForThreadApiUrl = (
+	params: GETinstantMessagesForThreadParams,
+) => {
+	return apiUrl(GETinstantMessagesForThreadApiEndpoint, {
+		threadId: params.threadId,
+		pageSize: params.pageSize,
+		fromId: params.fromId,
+	});
+};
 
 export type GETinstantMessagesForThread = {
-    Messages: EntityListOfItslearningRestApiEntitiesInstantMessage
-    HasMore: boolean
-}
+	Messages: EntityListOfItslearningRestApiEntitiesInstantMessage;
+	HasMore: boolean;
+};
 
 export type GETinstantMessagesForThreadParams = {
-    threadId: number
-    pageSize?: ITSLEARNING_API_MAX_PAGESIZE
-    fromId?: number
-}
+	threadId: number;
+	pageSize?: ITSLEARNING_API_MAX_PAGESIZE;
+	fromId?: number;
+};

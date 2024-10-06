@@ -1,21 +1,23 @@
-import {SystemNetHttpHttpResponseMessage} from "@/types/api-types/utils/System.Net.Http.HttpResponseMessage.ts";
-import {
-    ItslearningRestApiEntitiesUpdatableLightBulletinCommentUpdateV1
-} from "@/types/api-types/utils/Itslearning.RestApi.Entities.Updatable.LightBulletinCommentUpdateV1.ts";
-import {apiUrl} from "@/lib/utils.ts";
+import { apiUrl } from "@/lib/utils.ts";
+import { ItslearningRestApiEntitiesUpdatableLightBulletinCommentUpdateV1 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Updatable.LightBulletinCommentUpdateV1.ts";
+import { SystemNetHttpHttpResponseMessage } from "@/types/api-types/utils/System.Net.Http.HttpResponseMessage.ts";
 
-const PUTlightbulletinUpdateCommentApiEndpoint = "restapi/personal/lightbulletins/comments/{commentId}/v2"
+const PUTlightbulletinUpdateCommentApiEndpoint =
+	"restapi/personal/lightbulletins/comments/{commentId}/v2";
 
-export const PUTlightbulletinUpdateCommentApiUrl = (params: PUTlightbulletinUpdateCommentParams) => {
-    return apiUrl(PUTlightbulletinUpdateCommentApiEndpoint, {
-        commentId: params.commentId
-    })
-}
+export const PUTlightbulletinUpdateCommentApiUrl = (
+	params: PUTlightbulletinUpdateCommentParams,
+) => {
+	return apiUrl(PUTlightbulletinUpdateCommentApiEndpoint, {
+		commentId: params.commentId,
+	});
+};
 
-export type PUTlightbulletinUpdateComment = SystemNetHttpHttpResponseMessage
+export type PUTlightbulletinUpdateComment = SystemNetHttpHttpResponseMessage;
 
 export type PUTlightbulletinUpdateCommentParams = {
-    commentId: number
-}
+	commentId: number;
+};
 
-export type PUTlightbulletinUpdateCommentBody = ItslearningRestApiEntitiesUpdatableLightBulletinCommentUpdateV1
+export type PUTlightbulletinUpdateCommentBody =
+	ItslearningRestApiEntitiesUpdatableLightBulletinCommentUpdateV1;

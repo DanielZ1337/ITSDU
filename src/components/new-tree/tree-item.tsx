@@ -1,23 +1,20 @@
-import { Entry, Child, TreeViewElement } from '@/components/ui/tree-view-api'
+import { Child, Entry, TreeViewElement } from "@/components/ui/tree-view-api";
 
 type TreeItemProps = {
-	elements: TreeViewElement[]
-}
+	elements: TreeViewElement[];
+};
 
 export const TreeItem = ({ elements }: TreeItemProps) => {
 	return (
-		<ul className='w-full space-y-1'>
+		<ul className="w-full space-y-1">
 			{elements.map((element) => (
-				<li
-					key={element.id}
-					className='w-full space-y-2'
-				>
+				<li key={element.id} className="w-full space-y-2">
 					{element.children && element.children?.length > 0 ? (
 						<Child
 							element={element.name}
 							value={element.id}
 							isSelectable={element.isSelectable}
-							className='px-px pr-1'
+							className="px-px pr-1"
 						>
 							<TreeItem
 								key={element.id}
@@ -31,13 +28,13 @@ export const TreeItem = ({ elements }: TreeItemProps) => {
 							value={element.id}
 							element={element.name}
 							isSelectable={element.isSelectable}
-							className={'px-1'}
+							className={"px-1"}
 						>
-							<span className='ml-1'>{element?.name}</span>
+							<span className="ml-1">{element?.name}</span>
 						</Entry>
 					)}
 				</li>
 			))}
 		</ul>
-	)
-}
+	);
+};

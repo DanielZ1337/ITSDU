@@ -1,6 +1,6 @@
 export type ItslearningRestApiEntitiesLightBulletinsLightBulletinImage = {
-    PreviewFileId: number;
-    PreviewFileUrl: string;
-    OriginalFileId: number;
-    OriginalFileUrl: string;
-}
+	PreviewFileId: number;
+	PreviewFileUrl: string;
+	OriginalFileId: number;
+	OriginalFileUrl: string;
+};
