@@ -112,7 +112,7 @@ export default function Layout() {
       <Suspense fallback={null}>
         <BrowserNavLazy />
       </Suspense>
-      <div className="relative flex max-h-screen flex-1 overflow-hidden drag bg-background">
+      <div className="relative flex max-h-screen flex-1 overflow-hidden drag bg-background transition-all">
         <Suspense fallback={null}>
           <SidebarLazy />
         </Suspense>

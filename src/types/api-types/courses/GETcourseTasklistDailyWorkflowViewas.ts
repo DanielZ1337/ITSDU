@@ -1,20 +1,20 @@
 import { ITSLEARNING_API_MAX_PAGESIZE, apiUrl } from "@/lib/utils.ts";
 import { ItslearningRestApiEntitiesTaskDailyWorkflowSection } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflowSection.ts";
 
-const GETcourseTasklistDailyWorkflowApiEndpoint =
-  "restapi/personal/tasklistdailyworkflow/{courseId}/v1?PageIndex={PageIndex}&PageSize={PageSize}";
+const GETcourseTasklistDailyWorkflowApiViewasEndpoint =
+  "restapi/personal/tasklistdailyworkflow/{courseId}/viewas/v1?PageIndex={PageIndex}&PageSize={PageSize}";
 
-export const GETcourseTasklistDailyWorkflowApiUrl = (
+export const GETcourseTasklistDailyWorkflowApiViewasUrl = (
   params: GETcourseTasklistDailyWorkflowParams,
 ) => {
-  return apiUrl(GETcourseTasklistDailyWorkflowApiEndpoint, {
+  return apiUrl(GETcourseTasklistDailyWorkflowApiViewasEndpoint, {
     courseId: params.courseId,
     PageIndex: params.PageIndex,
     PageSize: params.PageSize,
   });
 };
 
-export type GETcourseTasklistDailyWorkflow = {
+export type GETcourseTasklistDailyWorkflowViewas = {
   EntityArray: ItslearningRestApiEntitiesTaskDailyWorkflowSection[];
   Total: number;
   CurrentPageIndex: number;
