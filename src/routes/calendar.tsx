@@ -280,7 +280,9 @@ function CustomToolBar({ ...props }) {
 
 function EventCard({
 	event,
-}: { event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2 }) {
+}: {
+	event: ItslearningRestApiEntitiesPersonalCalendarCalendarEventV2;
+}) {
 	return (
 		<div
 			className={
