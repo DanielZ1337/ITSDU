@@ -50,7 +50,7 @@ export default function SidebarItem({
 										mass: 0.8,
 									}}
 									className={cn(
-										"-mx-2 inset-y-0 w-1 absolute rounded-full bg-primary/80 transition-shadow shadow-md shadow-primary drop-shadow-[0px_-2px_6px_hsl(var(--primary))]",
+										"-mx-2 inset-y-0 w-1 absolute rounded-full bg-primary/80 transition-shadow shadow-md shadow-primary drop-shadow-[0px_-1px_6px_hsl(var(--primary))]",
 										sidebarActive && "shadow-md shadow-primary/5",
 									)}
 								/>

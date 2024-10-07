@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import copy from "copy-to-clipboard";
 import { AnimatePresence, MotionConfig, m } from "framer-motion";
 import { useCallback, useState } from "react";
@@ -7,22 +8,23 @@ export default function CopyButton({
 	copyable = true,
 	isBlockHovered,
 	onCopy,
+	className,
 }: {
 	value: string;
 	copyable?: boolean;
 	isBlockHovered?: boolean;
 	onCopy?: () => void;
+	className?: string;
 }) {
 	const [copying, setCopying] = useState<number>(0);
 
 	const handleCopy = useCallback(() => {
 		copy(value);
+		onCopy?.();
 		setCopying((c) => c + 1);
 		setTimeout(() => {
 			setCopying((c) => c - 1);
 		}, 2000);
-
-		onCopy?.();
 	}, [value]);
 
 	const variants = {
@@ -33,9 +35,12 @@ export default function CopyButton({
 		<button
 			onClick={handleCopy}
 			aria-label="Copy code"
-			className={`copy-button ${
-				isBlockHovered ? "opacity-100" : copying ? "opacity-100" : "opacity-0"
-			} absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`}
+			className={cn(
+				`copy-button ${
+					isBlockHovered ? "opacity-100" : copying ? "opacity-100" : "opacity-0"
+				} absolute right-3 top-[0.6rem] z-50 flex h-6 w-6 items-center justify-center rounded-md border bg-background`,
+				className,
+			)}
 		>
 			<MotionConfig transition={{ duration: 0.15 }}>
 				<AnimatePresence initial={false} mode="wait">
