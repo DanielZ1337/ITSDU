@@ -2,115 +2,124 @@ import { cn } from "@/lib/utils";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { forwardRef, useCallback, useRef } from "react";
 import useResizeObserver from "use-resize-observer";
-import { Child, CollapseButton, Entry, Tree, TreeViewElement } from "./tree-view-api";
+import {
+	Child,
+	CollapseButton,
+	Entry,
+	Tree,
+	TreeViewElement,
+} from "./tree-view-api";
 
 interface TreeViewComponentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 type TreeViewProps = {
-  initialSelectedId?: string;
-  elements: TreeViewElement[];
-  indicator?: boolean;
+	initialSelectedId?: string;
+	elements: TreeViewElement[];
+	indicator?: boolean;
 } & (
-  | {
-      initialExpendedItems?: string[];
-      expandAll?: false;
-    }
-  | {
-      initialExpendedItems?: undefined;
-      expandAll: true;
-    }
+	| {
+			initialExpendedItems?: string[];
+			expandAll?: false;
+	  }
+	| {
+			initialExpendedItems?: undefined;
+			expandAll: true;
+	  }
 ) &
-  TreeViewComponentProps;
+	TreeViewComponentProps;
 
 export const TreeView = ({
-  elements,
-  className,
-  initialSelectedId,
-  initialExpendedItems,
-  expandAll,
-  indicator = false,
+	elements,
+	className,
+	initialSelectedId,
+	initialExpendedItems,
+	expandAll,
+	indicator = false,
 }: TreeViewProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
-  const { getVirtualItems, getTotalSize } = useVirtualizer({
-    count: elements.length,
-    getScrollElement: () => containerRef.current,
-    estimateSize: useCallback(() => 40, []),
-    overscan: 5,
-  });
+	const { getVirtualItems, getTotalSize } = useVirtualizer({
+		count: elements.length,
+		getScrollElement: () => containerRef.current,
+		estimateSize: useCallback(() => 40, []),
+		overscan: 5,
+	});
 
-  const { height = getTotalSize(), width } = useResizeObserver({
-    ref: containerRef,
-  });
-  return (
-    <div
-      ref={containerRef}
-      className={cn("w-full rounded-md overflow-hidden py-1 relative", className)}
-    >
-      <Tree
-        initialSelectedId={initialSelectedId}
-        initialExpendedItems={initialExpendedItems}
-        elements={elements}
-        style={{ height, width }}
-        className="w-full h-full overflow-y-auto"
-      >
-        {getVirtualItems().map((element) => (
-          <TreeItem
-            aria-label="Root"
-            key={element.key}
-            elements={[elements[element.index]]}
-            indicator={indicator}
-          />
-        ))}
-        <CollapseButton elements={elements} expandAll={expandAll}>
-          <span>Expand All</span>
-        </CollapseButton>
-      </Tree>
-    </div>
-  );
+	const { height = getTotalSize(), width } = useResizeObserver({
+		ref: containerRef,
+	});
+	return (
+		<div
+			ref={containerRef}
+			className={cn(
+				"w-full rounded-md overflow-hidden py-1 relative",
+				className,
+			)}
+		>
+			<Tree
+				initialSelectedId={initialSelectedId}
+				initialExpendedItems={initialExpendedItems}
+				elements={elements}
+				style={{ height, width }}
+				className="w-full h-full overflow-y-auto"
+			>
+				{getVirtualItems().map((element) => (
+					<TreeItem
+						aria-label="Root"
+						key={element.key}
+						elements={[elements[element.index]]}
+						indicator={indicator}
+					/>
+				))}
+				<CollapseButton elements={elements} expandAll={expandAll}>
+					<span>Expand All</span>
+				</CollapseButton>
+			</Tree>
+		</div>
+	);
 };
 
 TreeView.displayName = "TreeView";
 
 export const TreeItem = forwardRef<
-  HTMLUListElement,
-  {
-    elements?: TreeViewElement[];
-    indicator?: boolean;
-  } & React.HTMLAttributes<HTMLUListElement>
+	HTMLUListElement,
+	{
+		elements?: TreeViewElement[];
+		indicator?: boolean;
+	} & React.HTMLAttributes<HTMLUListElement>
 >(({ className, elements, indicator, ...props }, ref) => {
-  return (
-    <ul ref={ref} className="w-full space-y-1 " {...props}>
-      {elements &&
-        elements.map((element) => (
-          <li key={element.id} className="w-full">
-            {element.children && element.children?.length > 0 ? (
-              <Child
-                element={element.name}
-                value={element.id}
-                isSelectable={element.isSelectable}
-              >
-                <TreeItem
-                  key={element.id}
-                  aria-label={`child ${element.name}`}
-                  elements={element.children}
-                  indicator={indicator}
-                />
-              </Child>
-            ) : (
-              <Entry
-                value={element.id}
-                aria-label={`entry ${element.name}`}
-                key={element.id}
-                isSelectable={element.isSelectable}
-              >
-                <span>{element?.name}</span>
-              </Entry>
-            )}
-          </li>
-        ))}
-    </ul>
-  );
+	return (
+		<ul ref={ref} className="w-full space-y-1 " {...props}>
+			{elements &&
+				elements.map((element) => (
+					<li key={element.id} className="w-full">
+						{element.children && element.children?.length > 0 ? (
+							<Child
+								element={element.name}
+								value={element.id}
+								isSelectable={element.isSelectable}
+							>
+								<TreeItem
+									key={element.id}
+									aria-label={`child ${element.name}`}
+									elements={element.children}
+									indicator={indicator}
+								/>
+							</Child>
+						) : (
+							<Entry
+								value={element.id}
+								aria-label={`entry ${element.name}`}
+								key={element.id}
+								isSelectable={element.isSelectable}
+							>
+								<span>{element?.name}</span>
+							</Entry>
+						)}
+					</li>
+				))}
+		</ul>
+	);
 });
 
 TreeItem.displayName = "TreeItem";
