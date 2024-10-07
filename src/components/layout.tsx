@@ -149,7 +149,7 @@ export default function Layout() {
 				</div>
 				<div
 					className={cn(
-						"pointer-events-none absolute top-0 left-0 h-full w-full bg-black/25 transition-all backdrop-blur-sm z-10 shadow-sm",
+						"pointer-events-none absolute top-0 left-0 h-full w-full bg-black/30 transition-all backdrop-blur-sm z-10 shadow-sm",
 						sidebarActive ? "opacity-100" : "opacity-0",
 					)}
 				/>

@@ -235,7 +235,7 @@ export function isResourceCustom(resource: ResourceObject | string | number) {
 		LearningToolIdTypes.REGISTRATION,
 		LearningToolIdTypes.FILE,
 		// LearningToolIdTypes.BOOK,
-		LearningToolIdTypes.LINK,
+		// LearningToolIdTypes.LINK,
 	];
 
 	return (

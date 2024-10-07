@@ -1,5 +1,4 @@
 import useGETperson from "@/queries/person/useGETperson.ts";
-import copy from "copy-to-clipboard";
 import { toast } from "sonner";
 import CopyButton from "../copy-button";
 import ProfileAvatar from "../profile-avatar";
@@ -37,6 +36,7 @@ export function PersonInfo({ personId }: { personId: number }) {
 					</p>
 					<CopyButton
 						className="relative top-0.5 bottom-0 left-0 right-0 bg-primary/20 text-primary"
+						/*@ts-ignore*/
 						value={person.AdditionalInfo}
 						isBlockHovered
 						onCopy={() => toast.success("Copied to clipboard")}
