@@ -648,7 +648,7 @@ function ResourcesDataTable({
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="ml-auto scale-100 select-none active:scale-100"
+              className="ml-4 scale-100 select-none active:scale-100"
             >
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
