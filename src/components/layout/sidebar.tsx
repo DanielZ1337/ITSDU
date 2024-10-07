@@ -23,7 +23,7 @@ export default function Sidebar() {
         onMouseEnter={() => setSidebarActive(true)}
         onMouseLeave={() => setSidebarActive(false)}
         className={cn(
-          "min-w-0 will-change-auto overflow-hidden no-drag top-0 transition-all h-full py-6 pb-4 px-2.5 z-20 bg-background flex flex-col justify-between",
+          "will-change-auto overflow-hidden no-drag top-0 transition-all h-full py-6 pb-4 px-2.5 z-20 bg-background flex flex-col justify-between",
           // sidebarActive ? 'w-64' : 'w-24'
         )}
       >
@@ -76,7 +76,7 @@ export default function Sidebar() {
           }
         >
           <ErrorBoundary fallback={<SidebarUserFallback />}>
-            <Suspense fallback={null}>
+            <Suspense fallback={<SidebarUserFallback />}>
               <LazySidebarUser />
             </Suspense>
           </ErrorBoundary>
