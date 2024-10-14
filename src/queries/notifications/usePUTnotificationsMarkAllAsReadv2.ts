@@ -74,7 +74,7 @@ async function getNotificationsRecursively({
 	PageSize = 100,
 }: GETnotificationsParams & {
 	total?: number
-}): Promise<any[]> {
+}): Promise<GETnotifications['EntityArray']> {
 	// Replace `any` with your actual notification type
 	try {
 		// Fetch the current page of notifications
