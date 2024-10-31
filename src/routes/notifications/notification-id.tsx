@@ -1,18 +1,21 @@
-import renderLink from '@/components/custom-render-link-linkify'
-import PersonHoverCard from '@/components/person/person-hover-card'
-import useGETnotificationsStream from '@/queries/notifications/useGETnotificationsStream'
-import { isSupportedResourceInApp, useNavigateToResource } from '@/types/api-types/extra/learning-tool-id-types'
-import Linkify from 'linkify-react'
-import { Helmet } from 'react-helmet-async'
-import { useParams } from 'react-router-dom'
-import useGETnotificationElements from '../../queries/notifications/useGETnotificationElements'
-import usePUTnotificationsMarkAsRead from '@/queries/notifications/usePUTnotificationsMarkAsRead'
-import { useEffect } from 'react'
+import renderLink from "@/components/custom-render-link-linkify";
+import PersonHoverCard from "@/components/person/person-hover-card";
+import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
+import usePUTnotificationsMarkAsRead from "@/queries/notifications/usePUTnotificationsMarkAsRead";
+import {
+	isSupportedResourceInApp,
+	useNavigateToResource,
+} from "@/types/api-types/extra/learning-tool-id-types";
+import Linkify from "linkify-react";
+import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
+import useGETnotificationElements from "../../queries/notifications/useGETnotificationElements";
 
 export default function NotificationID() {
-	const { notificationId } = useParams()
+	const { notificationId } = useParams();
 
-	if (!notificationId) throw new Error('notificationId is required')
+	if (!notificationId) throw new Error("notificationId is required");
 
 	const { data: notification } = useGETnotificationsStream(
 		{
@@ -22,19 +25,19 @@ export default function NotificationID() {
 		},
 		{
 			suspense: true,
-		}
-	)
+		},
+	);
 
-	const currentNotificaton = notification!.pages[0].EntityArray[0]
+	const currentNotificaton = notification!.pages[0].EntityArray[0];
 
 	const { data: resources } = useGETnotificationElements({
 		notificationId: currentNotificaton.NotificationId,
 		PageSize: 100,
-	})
+	});
 
-	const navigateToResource = useNavigateToResource()
+	const navigateToResource = useNavigateToResource();
 
-	const { mutate: markAsRead } = usePUTnotificationsMarkAsRead()
+	const { mutate: markAsRead } = usePUTnotificationsMarkAsRead();
 
 	useEffect(() => {
 		if (markAsRead) {
@@ -44,66 +47,71 @@ export default function NotificationID() {
 						NotificationId: notificationId,
 						IsRead: true,
 					},
-				])
-			}, 100)
-			return () => clearTimeout(timeout)
+				]);
+			}, 100);
+			return () => clearTimeout(timeout);
 		}
-	}, [markAsRead])
+	}, [markAsRead]);
 
 	return (
-		<div className='flex w-full flex-1 flex-col overflow-hidden p-6'>
+		<div className="flex w-full flex-1 flex-col overflow-hidden p-6">
 			<Helmet>
 				<title>{currentNotificaton!.Text}</title>
 			</Helmet>
-			<h1 className='mb-4 text-2xl font-bold'>{currentNotificaton!.Text}</h1>
-			<div className='m-auto w-full overflow-auto px-20'>
-				<div className='m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40'>
-					<div className='mb-4 flex items-center'>
+			<h1 className="mb-4 text-2xl font-bold">{currentNotificaton!.Text}</h1>
+			<div className="m-auto w-full overflow-auto px-20">
+				<div className="m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40">
+					<div className="mb-4 flex items-center">
 						<img
-							loading='lazy'
+							loading="lazy"
 							src={currentNotificaton!.IconUrl}
-							alt='Notification Icon'
-							className='mr-2 h-6 w-6'
+							alt="Notification Icon"
+							className="mr-2 h-6 w-6"
 						/>
-						<h1 className='ml-2 text-lg font-bold'>{currentNotificaton!.LocationTitle}</h1>
+						<h1 className="ml-2 text-lg font-bold">
+							{currentNotificaton!.LocationTitle}
+						</h1>
 					</div>
-					<p className='mb-4'>{currentNotificaton!.Text}</p>
+					<p className="mb-4">{currentNotificaton!.Text}</p>
 					{currentNotificaton!.PublishedDate && (
-						<p className='mb-4 text-sm text-foreground/80'>
-							Published Date: {new Date(currentNotificaton!.PublishedDate).toDateString()}
+						<p className="mb-4 text-sm text-foreground/80">
+							Published Date:{" "}
+							{new Date(currentNotificaton!.PublishedDate).toDateString()}
 						</p>
 					)}
 					{currentNotificaton.LightBulletin && (
-						<div className='border-t border-gray-300 pt-4'>
-							<h2 className='mb-2 font-semibold text-md'>Announcement:</h2>
-							<p className='whitespace-pre-wrap text-sm text-foreground/80'>
-								<Linkify options={{ render: renderLink }}>{currentNotificaton!.LightBulletin.Text}</Linkify>
+						<div className="border-t border-gray-300 pt-4">
+							<h2 className="mb-2 font-semibold text-md">Announcement:</h2>
+							<p className="whitespace-pre-wrap text-sm text-foreground/80">
+								<Linkify options={{ render: renderLink }}>
+									{currentNotificaton!.LightBulletin.Text}
+								</Linkify>
 							</p>
 						</div>
 					)}
 					{currentNotificaton!.ElementsCount > 0 && (
-						<div className='border-t border-gray-300 pt-4'>
-							<h2 className='mb-2 font-semibold text-md'>Resources:</h2>
+						<div className="border-t border-gray-300 pt-4">
+							<h2 className="mb-2 font-semibold text-md">Resources:</h2>
 							{resources?.EntityArray.map((resource) => (
 								<div
 									key={resource.ElementId}
-									className='mb-2 flex items-center'
+									className="mb-2 flex items-center"
 								>
 									<img
-										loading='lazy'
+										loading="lazy"
 										src={resource.IconUrl}
-										alt='Resource Icon'
-										className='mr-2 h-6 w-6'
+										alt="Resource Icon"
+										className="mr-2 h-6 w-6"
 									/>
 									<button
 										onClick={async () => {
 											if (isSupportedResourceInApp(resource)) {
-												navigateToResource(resource)
+												navigateToResource(resource);
 											} else {
-												await window.app.openExternal(resource.ContentUrl)
+												await window.app.openExternal(resource.ContentUrl);
 											}
 										}}
-										className='text-sm text-foreground/80 hover:underline'
+										className="text-sm text-foreground/80 hover:underline"
 									>
 										{resource.Title}
 									</button>
@@ -111,7 +119,7 @@ export default function NotificationID() {
 							))}
 						</div>
 					)}
-					<div className='mt-4'>
+					<div className="mt-4">
 						<PersonHoverCard
 							personId={currentNotificaton!.PublishedBy.PersonId}
 							showTitle={false}
@@ -122,5 +130,5 @@ export default function NotificationID() {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }
