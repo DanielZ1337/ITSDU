@@ -434,9 +434,8 @@ function ResourcesDataTable({
   const downloadFoldersSelected = downloableSelectedResources.filter(
     (resource) => resource.ElementType === "Folder",
   );
-  const downloadFilesSelected = downloableSelectedResources.filter((resource) =>
-    isResourceFile(resource),
-  );
+  const downloadFilesSelected =
+    downloableSelectedResources.filter(isResourceFile);
 
   const hasDownloadableFoldersSelected = downloadFoldersSelected.length > 0;
   const hasDownloadableFilesSelected = downloadFilesSelected.length > 0;
@@ -508,9 +507,11 @@ function ResourcesDataTable({
     });
   };
 
-  const handleDownloadConfirm = () => {
+  const handleDownloadConfirm = async () => {
     if (hasDownloadableFoldersSelected) {
-      sonnerToast.error("Not implemented yet");
+      sonnerToast.error("Not implemented yet", {
+        description: "Please deselect folders first",
+      });
       // sonnerToast.loading(`Downloading ${downloadFoldersSelected.length} folders...`);
       // window.download.start(downloadFoldersSelected, {
       //   organizeByCourse: false,
@@ -518,7 +519,7 @@ function ResourcesDataTable({
       return;
     }
 
-    if (hasDownloadableFilesSelected) {
+    if (hasDownloadableFilesSelected && !hasDownloadableFoldersSelected) {
       if (downloadFilesSelected.length === 1) {
         downloadToast({
           toastCustomTitle: downloadFilesSelected[0].Title,
@@ -553,15 +554,70 @@ function ResourcesDataTable({
         }
 
         return;
-      }
+      } else {
+        const toastId = sonnerToast.loading("Downloading and zipping...", {
+          description: "This might take a while...",
+        });
 
-      sonnerToast.error("Not implemented yet");
-      // window.app.zipDownloadAllCourseResources(elements, {
-      //   organizeByCourse: options.organizeByCourse,
-      //   filter: (resource) => isResourceFile(resource),
-      // });
-      return;
+        const zipRes = await window.app.zipDownloadAllCourseResources(
+          downloadFilesSelected.map((resource) => resource.ElementId),
+        );
+
+        if (zipRes.canceled) {
+          sonnerToast.error("An error occurred while zipping the files", {
+            id: toastId,
+          });
+
+          return;
+        }
+
+        const { path, filename, size } = zipRes;
+
+        sonnerToast.success(`Downloaded and zipped selected files`, {
+          id: toastId,
+          description: `${filename} (${getFormattedSize(size)})`,
+          richColors: true,
+          duration: 2000,
+          dismissible: true,
+          action: {
+            label: "Open",
+            onClick: () => {
+              window.app.openShell(path);
+            },
+          },
+        });
+        return;
+      }
     }
+
+    // const toastId = sonnerToast.loading("Downloading and zipping...");
+
+    // const filePath = await window.app.zipDownloadAllCourseResources(
+    //   downloadFilesSelected.map((resource) => resource.ElementId),
+    // );
+
+    // if (!filePath) {
+    //   sonnerToast.error("An error occurred while zipping the files", {
+    //     id: toastId,
+    //   });
+
+    //   return;
+    // }
+
+    // sonnerToast.success(`Downloaded and zipped selected files`, {
+    //   id: toastId,
+    //   description: `${filePath} (${getFormattedSize(0)})`,
+    //   richColors: true,
+    //   duration: 2000,
+    //   dismissible: true,
+    //   action: {
+    //     label: "Open",
+    //     onClick: () => {
+    //       window.app.openShell(filePath);
+    //     },
+    //   },
+    // });
+    // return;
   };
 
   return (
@@ -796,7 +852,9 @@ function ResourcesDataTable({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDownloadConfirm}>
+            <AlertDialogAction
+              onClick={async () => await handleDownloadConfirm()}
+            >
               Download
             </AlertDialogAction>
           </AlertDialogFooter>
