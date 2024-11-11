@@ -464,7 +464,9 @@ function ResourcesDataTable({
 		const { title, path, size } = await downloadCallback();
 
 		sonnerToast.success(
-			`Downloaded ${formatTitle(title)}${title.length > titleMaxLength ? "..." : ""}`,
+			`Downloaded ${formatTitle(title)}${
+				title.length > titleMaxLength ? "..." : ""
+			}`,
 			{
 				id: toastId,
 				description: `${path} (${getFormattedSize(size)})`,
@@ -497,6 +499,10 @@ function ResourcesDataTable({
 
 			return;
 		}
+	};
+
+	const resetSelectedRows = () => {
+		setRowSelection({});
 	};
 
 	const resetDownloadOptions = () => {
@@ -533,6 +539,9 @@ function ResourcesDataTable({
 								title: filename,
 							})),
 				});
+
+				resetSelectedRows();
+
 				return;
 			}
 
@@ -550,6 +559,8 @@ function ResourcesDataTable({
 								})),
 					});
 				}
+
+				resetSelectedRows();
 
 				return;
 			} else {
@@ -584,6 +595,9 @@ function ResourcesDataTable({
 						},
 					},
 				});
+
+				resetSelectedRows();
+
 				return;
 			}
 		}
