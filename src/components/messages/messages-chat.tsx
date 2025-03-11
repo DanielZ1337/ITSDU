@@ -5,6 +5,11 @@ import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMess
 import { ErrorBoundary } from "react-error-boundary";
 import { Loader } from "../ui/loader";
 import MessageChatMessage from "./message-chat-message";
+import usePUTinstantMessageThreadUpdateIsRead from "@/queries/messages/usePUTinstantMessageThreadUpdateIsRead";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { queryClient } from "@/lib/tanstack-client";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function MessageChat({
 	threadId,
@@ -31,6 +36,22 @@ export default function MessageChat({
 			keepPreviousData: true,
 		},
 	);
+
+	const { mutate: markAsRead } =
+		usePUTinstantMessageThreadUpdateIsRead();
+
+	useEffect(() => {
+        if(!messages) return;
+		markAsRead({
+            threadId,
+            lastReadInstantMessageId:
+                messages.pages[0].Messages.EntityArray[0].MessageId,
+        }, {
+            onSuccess: () => {
+                queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+            },
+        })
+	}, [messages]);
 
 	const user = useUser();
 
