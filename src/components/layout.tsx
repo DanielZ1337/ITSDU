@@ -6,6 +6,7 @@ import { Suspense, lazy, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
+import { useUpdateAvailableToast } from "./update-available-toast";
 
 const ToasterLazy = lazy(() =>
 	import("@/components/ui/toaster").then((module) => ({
@@ -45,6 +46,7 @@ const SonnerLazy = lazy(() =>
 );
 
 export default function Layout() {
+	useUpdateAvailableToast();
 	const { sidebarActive } = useSidebar();
 	const ref = useRef<HTMLDivElement>(null);
 
