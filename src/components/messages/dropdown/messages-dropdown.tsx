@@ -122,7 +122,8 @@ export default function MessagesDropdown() {
 									<div key={idx} className={"overflow-x-hidden w-full"}>
 										<DropdownMenuItem
 											onClick={() => {
-												navigate(`/messages/${thread.InstantMessageThreadId}`);
+												// navigate(`/messages/${thread.InstantMessageThreadId}`)
+												navigate(`/messages`);
 												setCurrentChat(thread.InstantMessageThreadId);
 											}}
 										>
