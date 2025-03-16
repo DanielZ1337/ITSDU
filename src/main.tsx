@@ -290,57 +290,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 	</GlobalErrorBoundaryProvider>,
 );
 
-// unread messages notification system
-type UnreadMessages = {
-	count: number;
-	timestamp: number;
-};
-const unreadMessages: UnreadMessages[] = [
-	{
-		count: 0,
-		timestamp: Date.now(),
-	},
-];
-setInterval(async () => {
-	const access_token = await getAccessToken();
-	axios
-		.get(GETunreadInstantMessagesCountApiUrl(), {
-			params: {
-				access_token: access_token,
-			},
-		})
-		.then((res: { data: number }) => {
-			unreadMessages.push({
-				count: res.data,
-				timestamp: Date.now(),
-			});
-
-			if (unreadMessages.length > 10) {
-				unreadMessages.shift();
-			}
-
-			const lastUnreadMessage = unreadMessages[unreadMessages.length - 1];
-			const secondLastUnreadMessage = unreadMessages[unreadMessages.length - 2];
-
-			// check if there are any unread messages based on the timestamps and the count
-			if (
-				lastUnreadMessage.count > 0 &&
-				lastUnreadMessage.timestamp - unreadMessages[0].timestamp <
-					1000 * 60 * 5
-			) {
-				if (lastUnreadMessage.count !== secondLastUnreadMessage.count) {
-					new Notification("itslearning", {
-						body: `You have ${lastUnreadMessage.count} unread message${lastUnreadMessage.count > 1 ? "s" : ""}`,
-						icon: "itsl-itslearning-file://icon.ico",
-					});
-				}
-			}
-		})
-		.catch((err: any) => {
-			console.log(err);
-		});
-}, 1000 * 15); // 15 seconds
-
 // Remove Preload scripts loading
 postMessage({ payload: "removeLoading" }, "*");
 

@@ -4,19 +4,28 @@ import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
 import useGETinstantMessageThread from "@/queries/messages/useGETinstantMessageThread";
 import { useAtom } from "jotai";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Helmet } from "react-helmet-async";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
 import MessageChat from "./messages-chat";
+import { useParams } from "react-router-dom";
 
 export default function Messages() {
-	const [currentChat] = useAtom(currentChatAtom);
+	const [currentChat, setCurrentChat] = useAtom(currentChatAtom);
+	const params = useParams<{ id: string }>();
 	const isChatExisting =
 		currentChat !== currentChatEnum.NONE && currentChat !== currentChatEnum.NEW;
 	const isChatNew = currentChat === currentChatEnum.NEW;
 	const isChatNewOrExisting = isChatExisting || isChatNew;
 	const isChatUndefined = currentChat === currentChatEnum.NONE;
+
+	useEffect(() => {
+		if (!params.id) return;
+		const MessageThreadId = Number(params.id);
+		if (Number.isNaN(MessageThreadId)) return;
+		setCurrentChat(Number(params.id));
+	}, [params.id]);
 
 	const { data: messages, isLoading } = useGETinstantMessageThread(
 		{

@@ -74,6 +74,17 @@ function updateHandler() {
 	});
 }
 
+function focusHandler() {
+	ipcMain.handle("app:focus", () => {
+		const window = BrowserWindow.getAllWindows()[0];
+
+		if (window) {
+			window.focus();
+			window.show();
+		}
+	});
+}
+
 export default function appHandlerInitializer() {
 	exitHandler();
 	quitHandler();
@@ -84,4 +95,5 @@ export default function appHandlerInitializer() {
 	checkForUpdatesHandler();
 	downloadUpdateHandler();
 	updateHandler();
+	focusHandler();
 }

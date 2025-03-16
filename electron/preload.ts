@@ -37,6 +37,7 @@ contextBridge.exposeInMainWorld("app", {
 	quit: () => ipcRenderer.invoke("app:quit"),
 	minimize: () => ipcRenderer.invoke("app:minimize"),
 	maximize: () => ipcRenderer.invoke("app:maximize"),
+	focus: () => ipcRenderer.invoke("app:focus"),
 	getVersion: () => ipcRenderer.invoke("app:getVersion"),
 	checkForUpdates: () => ipcRenderer.invoke("app:checkForUpdates"),
 	downloadUpdate: () => ipcRenderer.invoke("app:downloadUpdate"),
@@ -238,6 +239,7 @@ declare global {
 			quit: () => Promise<void>;
 			minimize: () => Promise<void>;
 			maximize: () => Promise<void>;
+			focus: () => Promise<void>;
 			checkForUpdates: () => Promise<UpdateInfo | null>;
 			downloadUpdate: () => Promise<string[]>;
 			update: () => Promise<void>;
@@ -422,4 +424,4 @@ window.onmessage = (ev) => {
 	ev.data.payload === "removeLoading" && removeLoading();
 };
 
-setTimeout(removeLoading, 4999);
+setTimeout(removeLoading, 3000);

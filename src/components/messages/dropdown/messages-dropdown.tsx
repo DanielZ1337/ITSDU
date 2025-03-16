@@ -54,7 +54,7 @@ export default function MessagesDropdown() {
 
 	const threads = data!.pages.flatMap((page) => page.EntityArray);
 	const total = data!.pages[data!.pages.length - 1].Total;
-	const unreadMessages = threads?.filter(
+	const unreadThreads = threads?.filter(
 		(thread) =>
 			thread.LastMessage.MessageId !== thread.LastReadInstantMessageId,
 	);
@@ -66,8 +66,8 @@ export default function MessagesDropdown() {
 			<DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
 					<MessageCircle />
-					{unreadMessages && unreadMessages.length > 0 && (
-						<UnreadNotificationsPingIndicator amount={unreadMessages.length} />
+					{unreadThreads && unreadThreads.length > 0 && (
+						<UnreadNotificationsPingIndicator amount={unreadThreads.length} />
 					)}
 				</Button>
 			</DropdownMenuTrigger>

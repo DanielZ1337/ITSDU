@@ -44,6 +44,7 @@ export enum TanstackKeys {
 	Messagesv2 = "messagesv2",
 	Messagesv3 = "messagesv3",
 	MessageThread = "messageThread",
+	MessagesUnreadCount = "messagesUnreadCount",
 	NotificationElements = "notificationElements",
 	Notifications = "notifications",
 	NotificationsStream = "notificationsStream",
