@@ -39,7 +39,6 @@ import { toast } from "sonner";
 import { useCustomPDFContext } from "../../../hooks/useCustomPDF";
 import AISidepanelButton from "../../ai-chat/ai-sidepanel-button";
 import PdfFullscreen from "./pdf-fullscreen";
-import useResizeObserver from "use-resize-observer";
 import { useSettings } from "@/hooks/atoms/useSettings";
 
 // import SimpleBar from 'simplebar-react'
@@ -123,23 +122,22 @@ export function Thumbnail({
   onClick,
   isActive,
   sidebarOpen,
+  containerWidth,
 }: {
   pageNumber: number;
   onClick: () => void;
   isActive: boolean;
   sidebarOpen: boolean;
+  containerWidth: number;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [width, setWidth] = useState<number>(0);
   const containerRef = useRef<HTMLButtonElement>(null);
 
-  useResizeObserver({
-    ref: containerRef,
-    onResize: (entry) => {
-      setWidth(entry.width || 0);
-    },
-  });
+  // Calculate thumbnail width from container, accounting for padding
+  // Container has p-2 (8px each side), button has p-2 (8px each side) = 32px total
+  // Leave extra space for potential scrollbar (~12px)
+  const thumbnailWidth = Math.max(containerWidth - 44, 80);
 
   useEffect(() => {
     if (isActive) {
@@ -184,16 +182,22 @@ export function Thumbnail({
         )}
       >
         {isLoading && (
-          <div className="w-full aspect-[1/1.414] bg-muted animate-pulse min-w-[100px]" />
+          <div 
+            className="aspect-[1/1.414] bg-muted animate-pulse" 
+            style={{ width: thumbnailWidth }}
+          />
         )}
         {error && (
-          <div className="w-full aspect-[1/1.414] bg-destructive/10 flex items-center justify-center text-destructive text-xs min-w-[100px]">
+          <div 
+            className="aspect-[1/1.414] bg-destructive/10 flex items-center justify-center text-destructive text-xs" 
+            style={{ width: thumbnailWidth }}
+          >
             Error
           </div>
         )}
         <Page
           pageNumber={pageNumber}
-          width={width}
+          width={thumbnailWidth}
           renderTextLayer={false}
           renderAnnotationLayer={false}
           onLoadSuccess={() => setIsLoading(false)}
@@ -246,6 +250,22 @@ export default function PdfRenderer({
   const [intrinsicPageHeight, setIntrinsicPageHeight] = useState<number | null>(null);
 
   const [isThumbnailLoading, setIsThumbnailLoading] = useState(true);
+
+  // Track sidebar width with stabilization to prevent oscillation
+  const { width: rawSidebarWidth, ref: sidebarRef } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 100,
+  });
+  const [stableSidebarWidth, setStableSidebarWidth] = useState<number>(0);
+
+  useEffect(() => {
+    if (!rawSidebarWidth) return;
+    const diff = Math.abs(rawSidebarWidth - stableSidebarWidth);
+    // Only update on significant changes (sidebar open/close) not scrollbar changes
+    if (stableSidebarWidth === 0 || diff > 20) {
+      setStableSidebarWidth(rawSidebarWidth);
+    }
+  }, [rawSidebarWidth, stableSidebarWidth]);
 
   // Use resize detector for the content area
   const { width: rawContentWidth, height: rawContentHeight, ref: contentRef } = useResizeDetector({
@@ -713,10 +733,19 @@ export default function PdfRenderer({
             data-open={CustomPDFSidebarOpened}
             className={cn(
               "shrink-0 overflow-hidden transition-all duration-300 ease-in-out border-r bg-muted/20",
-              CustomPDFSidebarOpened ? "w-48 p-1" : "w-0 p-0 border-r-0",
+              CustomPDFSidebarOpened ? "w-48" : "w-0 border-r-0",
             )}
           >
-            <div className="h-full overflow-y-auto overflow-x-hidden scrollbar-thin p-2">
+            {/* Fixed width inner container - slides and fades with parent */}
+            <div 
+              ref={sidebarRef}
+              className={cn(
+                "h-full w-48 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 transition-all duration-300 ease-out",
+                CustomPDFSidebarOpened 
+                  ? "opacity-100 translate-x-0" 
+                  : "opacity-0 -translate-x-12"
+              )}
+            >
               <Document
                 file={url}
                 className={cn(
@@ -735,6 +764,7 @@ export default function PdfRenderer({
                       setValue("page", String(index + 1));
                     }}
                     isActive={currPage === index + 1}
+                    containerWidth={stableSidebarWidth}
                   />
                 ))}
               </Document>
