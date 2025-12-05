@@ -53,6 +53,71 @@ interface PdfRendererProps {
   externalIsLoading?: boolean;
 }
 
+// Stable skeleton line widths to prevent re-renders causing layout shifts
+const SKELETON_LINE_WIDTHS = [85, 72, 90, 65, 78, 88, 70, 82, 75, 68, 92, 80];
+
+function LoadingSkeleton({
+  width,
+  height,
+  message,
+}: {
+  width: number;
+  height: number;
+  message: string;
+}) {
+  // Calculate skeleton size based on container, maintaining A4 aspect ratio
+  const skeletonWidth = Math.min(width || 400, 500);
+  const skeletonHeight = skeletonWidth * 1.414;
+
+  // If we don't have dimensions yet, use CSS to fill container
+  // Otherwise use explicit dimensions for precision
+  const hasValidDimensions = width > 0 && height > 0;
+
+  return (
+    <div
+      className="flex items-center justify-center"
+      style={hasValidDimensions ? {
+        width,
+        height,
+      } : {
+        // Fallback: use absolute positioning to fill parent
+        position: 'absolute',
+        inset: 0,
+      }}
+    >
+      <div className="flex flex-col items-center gap-4">
+        <div
+          className="bg-white rounded-sm shadow-lg overflow-hidden"
+          style={{
+            width: skeletonWidth,
+            height: skeletonHeight,
+          }}
+        >
+          <div className="h-full w-full flex flex-col p-6 gap-4 animate-pulse">
+            {/* Header skeleton */}
+            <div className="h-4 bg-neutral-200 rounded w-3/4" />
+            <div className="h-3 bg-neutral-200 rounded w-1/2" />
+            {/* Content skeleton lines */}
+            <div className="flex-1 flex flex-col gap-2 mt-4">
+              {SKELETON_LINE_WIDTHS.map((widthPercent, i) => (
+                <div
+                  key={i}
+                  className="h-2 bg-neutral-200 rounded"
+                  style={{ width: `${widthPercent}%` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Loader size="sm" />
+          <span className="text-sm">{message}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Thumbnail({
   pageNumber,
   onClick,
@@ -679,7 +744,7 @@ export default function PdfRenderer({
           <div
             ref={contentRef}
             className={cn(
-              "flex-1 bg-neutral-900",
+              "flex-1 bg-neutral-900 relative",
               // Fit to page: no scrollbars (content fits exactly)
               // Fit to width: vertical scroll only (page may be taller than container)
               // Custom zoom: both scrollbars as needed
@@ -690,15 +755,19 @@ export default function PdfRenderer({
             onWheel={handleWheel}
           >
             {externalIsLoading ? (
-              <div className="flex h-full w-full items-center justify-center">
-                <Loader size="sm" />
-              </div>
+              <LoadingSkeleton
+                width={stableContentWidth}
+                height={stableContentHeight}
+                message="Loading document..."
+              />
             ) : (
               <Document
                 loading={
-                  <div className="flex h-full w-full items-center justify-center">
-                    <Loader size="sm" />
-                  </div>
+                  <LoadingSkeleton
+                    width={stableContentWidth}
+                    height={stableContentHeight}
+                    message="Parsing PDF..."
+                  />
                 }
                 onLoadError={() => {
                   toast.error("Failed to load PDF", {
@@ -707,7 +776,7 @@ export default function PdfRenderer({
                 }}
                 onLoadSuccess={({ numPages }) => setNumPages(numPages)}
                 file={url}
-                className="inline-block"
+                className="h-full w-full"
               >
                 {/* Wrapper for centering content within scroll area */}
                 <div
@@ -716,10 +785,8 @@ export default function PdfRenderer({
                     // Fit to page: exact container size (no overflow)
                     // Fit to width: exact width, min-height for vertical scroll
                     // Custom: min sizes so content can grow and scroll both ways
-                    width: fitMode === "page" ? stableContentWidth || '100%' :
-                      fitMode === "width" ? stableContentWidth || '100%' : undefined,
+                    width: stableContentWidth || '100%',
                     height: fitMode === "page" ? stableContentHeight || '100%' : undefined,
-                    minWidth: fitMode === "custom" ? stableContentWidth || '100%' : undefined,
                     minHeight: fitMode !== "page" ? stableContentHeight || '100%' : undefined,
                     // Add padding for custom zoom mode
                     padding: fitMode === "custom" ? 16 : 0,
