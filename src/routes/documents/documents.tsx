@@ -10,11 +10,8 @@ import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import {
 	lazy,
 	memo,
-	useCallback,
-	useEffect,
 	useMemo,
 	useRef,
-	useState,
 } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useParams } from "react-router-dom";
@@ -32,46 +29,15 @@ function Documents() {
 
 	const { isLoading, data } = useResourceByElementID(elementId);
 	const { aiSidepanel, toggleSidebar } = useAISidepanel();
-	const { ref: aiSidepanelRef, width: aiSidepanelWidth } = useResizeDetector();
+	const { ref: aiSidepanelRef } = useResizeDetector();
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const [containerWidth, setContainerWidth] = useState<number | null>(null);
-	const [containerHeight, setContainerHeight] = useState<number | null>(null);
 	const memoizedData = useMemo(() => data, [data]);
-	const memoizedContainerWidth = useMemo(
-		() => containerWidth,
-		[containerWidth],
-	);
-	const memoizedContainerHeight = useMemo(
-		() => containerHeight,
-		[containerHeight],
-	);
-
-	useEffect(() => {
-		if (containerRef.current) {
-			setContainerWidth(containerRef.current.clientWidth);
-			setContainerHeight(containerRef.current.clientHeight);
-		}
-	}, [containerRef.current?.clientHeight]);
-
-	const handleResize = useCallback(() => {
-		if (containerRef.current) {
-			setContainerWidth(containerRef.current.clientWidth);
-			setContainerHeight(containerRef.current.clientHeight);
-		}
-	}, [containerRef.current?.clientHeight, containerRef.current?.clientWidth]);
-
-	useEffect(() => {
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
-	}, []);
 
 	const { settings } = useSettings();
 
 	return (
 		<div
 			className="flex h-full max-h-full w-full flex-1 overflow-hidden"
-			ref={containerRef}
 		>
 			{settings.CustomPDFrenderer ? (
 				<CustomPDFProvider>
@@ -79,10 +45,7 @@ function Documents() {
 						key={memoizedData?.url}
 						url={memoizedData?.url}
 						filename={memoizedData?.name}
-						aiSidepanelWidth={aiSidepanelWidth ?? 0}
 						externalIsLoading={isLoading}
-						containerWidth={memoizedContainerWidth}
-						containerHeight={memoizedContainerHeight}
 					/>
 				</CustomPDFProvider>
 			) : (
