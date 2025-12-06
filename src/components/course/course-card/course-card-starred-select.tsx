@@ -9,6 +9,7 @@ import {
 	CourseCardsSelectOptions,
 	CourseCardsSelectOptionsEnum,
 } from "@/types/course-cards-select-options.ts";
+import { Filter } from "lucide-react";
 
 export default function CourseCardStarredSelect({
 	selectedStarredOption,
@@ -23,8 +24,9 @@ export default function CourseCardStarredSelect({
 			onValueChange={setSelectedStarredOption}
 			value={selectedStarredOption}
 		>
-			<SelectTrigger className="w-[180px]">
-				<SelectValue placeholder={"Sort by"} className={"text-left"}>
+			<SelectTrigger className="w-[140px] h-9 bg-secondary/50 border-0 focus:ring-1">
+				<Filter className="w-3.5 h-3.5 text-muted-foreground mr-2" />
+				<SelectValue placeholder="Filter" className="text-left">
 					{CourseCardsSelectOptionsEnum[selectedStarredOption]}
 				</SelectValue>
 			</SelectTrigger>

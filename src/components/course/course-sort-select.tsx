@@ -10,6 +10,7 @@ import {
 	CourseCardsSortByTypesConst,
 	CourseCardsSortByTypesLabels,
 } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
+import { ArrowUpDown } from "lucide-react";
 
 export default function CourseSortSelect({
 	selectedRankedBy,
@@ -21,8 +22,9 @@ export default function CourseSortSelect({
 }) {
 	return (
 		<Select onValueChange={setSelectedRankedBy} value={selectedRankedBy}>
-			<SelectTrigger className="w-[180px]">
-				<SelectValue placeholder={"Sort by"} className={"text-left"}>
+			<SelectTrigger className="w-[160px] h-9 bg-secondary/50 border-0 focus:ring-1">
+				<ArrowUpDown className="w-3.5 h-3.5 text-muted-foreground mr-2" />
+				<SelectValue placeholder="Sort by" className="text-left">
 					{CourseCardsSortByTypesLabels[selectedRankedBy]}
 				</SelectValue>
 			</SelectTrigger>
