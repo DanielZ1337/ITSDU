@@ -28,10 +28,9 @@ export default function LightbulletinLinkPreview({
 					"https://www.google.com/s2/favicons?sz=256&domain_url=" + href
 				}
 				alt={href}
-				className={"w-6 h-6"}
+				className="w-4 h-4 rounded-sm"
 			/>
-			&nbsp;
-			<span className="truncate">{data?.meta.title || title}</span>
+			<span className="truncate max-w-[200px]">{data?.meta.title || title}</span>
 		</LightbulletinLink>
 	);
 }

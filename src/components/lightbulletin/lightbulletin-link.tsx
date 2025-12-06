@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { ExternalLink } from "lucide-react";
 import React from "react";
 
 export default function LightbulletinLink({
@@ -12,14 +13,15 @@ export default function LightbulletinLink({
 	return (
 		<button
 			className={cn(
-				"hover:cursor-pointer hover:bg-foreground/5 py-2 px-2 hover:border-transparent border border-foreground/10 rounded-lg group/attachment",
+				"inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm",
+				"bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/30",
+				"text-foreground transition-colors cursor-pointer",
 				className,
 			)}
 			{...props}
 		>
-			<div className="flex items-center p-2 text-blue-500 group-hover/attachment:text-blue-600 space-x-2 font-semibold">
-				{children}
-			</div>
+			{children}
+			<ExternalLink className="w-3 h-3 text-muted-foreground" />
 		</button>
 	);
 }

@@ -211,7 +211,7 @@ export default function LightbulletinsForCourse({
 					)}
 				</div>
 			) : (
-				<div className="grid grid-cols-1 gap-6">
+				<div className="flex flex-col gap-4">
 					{filteredAndSortedBulletins.map((bulletin, idx) => {
 						// find the date of the previous bulletin and compare it to the current one
 						const previousBulletin = filteredAndSortedBulletins[idx - 1];
@@ -229,17 +229,15 @@ export default function LightbulletinsForCourse({
 						return (
 							<div key={bulletin.LightBulletinId}>
 								{shouldMakeNewHeader && hasNextBulletin && (
-									<div className="flex items-center justify-center pb-6">
-										<div className="h-[1px] w-full bg-border/50 rounded-full" />
-										<div className="bg-secondary/50 dark:bg-secondary/30 rounded-md px-3 py-1 mx-3">
-											<div className="text-xs font-medium text-muted-foreground text-nowrap">
-												{currentBulletinDate.toLocaleString("default", {
-													month: "long",
-													year: showYear ? "numeric" : undefined,
-												})}
-											</div>
-										</div>
-										<div className="h-[1px] w-full bg-border/50 rounded-full" />
+									<div className="flex items-center gap-3 py-4">
+										<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+										<span className="text-xs font-medium text-muted-foreground px-2">
+											{currentBulletinDate.toLocaleString("default", {
+												month: "long",
+												year: showYear ? "numeric" : undefined,
+											})}
+										</span>
+										<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
 									</div>
 								)}
 								<LightbulletinCard

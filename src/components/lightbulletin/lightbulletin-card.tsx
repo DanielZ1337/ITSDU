@@ -1,5 +1,6 @@
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
+import LightbulletinCommentsLoader from "@/components/lightbulletin/lightbulletin-comments-loader.tsx";
 import PersonHoverCard from "@/components/person/person-hover-card";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
@@ -9,9 +10,8 @@ import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTligh
 import { ItslearningRestApiEntitiesLightBulletinsLightBulletinV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import { LinkifyType } from "@/types/linkify";
 import Linkify from "linkify-react";
-import { BellOff, BellRing } from "lucide-react";
+import { BellOff, BellRing, ChevronDown, ChevronUp, MessageSquare, Paperclip } from "lucide-react";
 import React, { Suspense, useState } from "react";
-import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import renderLink from "../custom-render-link-linkify";
@@ -49,8 +49,7 @@ export default function LightbulletinCard({
 		},
 	);
 
-	// let hasReadMore = textRef.current?.scrollHeight > textRef.current?.clientHeight;
-	let hasReadMore = bulletin.Text.split("\n").length > 6;
+	const hasReadMore = bulletin.Text.split("\n").length > 6;
 
 	return (
 		<div
@@ -58,15 +57,16 @@ export default function LightbulletinCard({
 			data-readmore={readMore}
 			data-hasreadmore={hasReadMore}
 			key={bulletin.LightBulletinId}
-			className="h-fit group p-4 has data-[hasreadmore=true]:hover:dark:bg-foreground/15 data-[hasreadmore=true]:hover:bg-foreground/10 rounded-md transition-all duration-200 bg-foreground/5 dark:bg-foreground/10 shadow-md overflow-hidden hover:shadow-lg hover:shadow-foreground/10 dark:hover:shadow-foreground/5"
+			className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-300 hover:bg-gradient-to-b hover:from-muted/30 hover:to-muted/10 overflow-hidden"
 		>
-			<div className="flex justify-between">
-				<div className="flex items-center space-x-2">
+			{/* Card Header */}
+			<div className="flex items-start justify-between gap-4 p-4 pb-0">
+				<div className="flex items-center gap-3 min-w-0">
 					<LightbulletinAvatar
 						src={bulletin.PublishedBy.ProfileImageUrlSmall}
 						name={bulletin.PublishedBy.FullName}
 					/>
-					<div className="flex flex-col truncate space-y-0.5">
+					<div className="flex flex-col min-w-0">
 						<PersonHoverCard
 							personId={bulletin.PublishedBy.PersonId}
 							asChild
@@ -74,14 +74,16 @@ export default function LightbulletinCard({
 						>
 							<Link
 								to={`/person/${bulletin.PublishedBy.PersonId}`}
-								className="font-semibold text-blue-500 hover:underline"
+								className="font-medium text-foreground hover:text-primary transition-colors truncate"
 							>
-								{bulletin.PublishedBy.FullName}{" "}
+								{bulletin.PublishedBy.FullName}
 							</Link>
 						</PersonHoverCard>
 						<HoverDate date={bulletin.PublishedDate} />
 					</div>
 				</div>
+
+				{/* Notification Toggle */}
 				<Button
 					disabled={isLoading}
 					onClick={() => {
@@ -91,17 +93,15 @@ export default function LightbulletinCard({
 							},
 							{
 								onSuccess: () => {
-									console.log("success");
 									bulletin.IsSubscribed = !bulletin.IsSubscribed;
 									toast.success("Success", {
 										description: bulletin.IsSubscribed
-											? "You will now receive notifications for this lightbulletin"
-											: "You will no longer receive notifications for this lightbulletin",
+											? "You will now receive notifications for this announcement"
+											: "You will no longer receive notifications for this announcement",
 										duration: 3000,
 									});
 								},
 								onError: () => {
-									console.log("error");
 									toast.error("Error", {
 										description: "Something went wrong",
 										duration: 3000,
@@ -110,41 +110,69 @@ export default function LightbulletinCard({
 							},
 						);
 					}}
-					size={"icon"}
-					variant={"secondary"}
-					className="ml-4 flex h-fit w-fit transform cursor-pointer justify-end rounded-full p-2 transition-all duration-200 ease-in-out bg-background/30 hover:opacity-80 hover:shadow-md active:scale-95 active:opacity-60 md:ml-6 lg:ml-8 xl:ml-10"
+					size="icon"
+					variant="ghost"
+					className="h-8 w-8 rounded-full flex-shrink-0 hover:bg-muted"
 				>
 					{bulletin.IsSubscribed ? (
-						<BellRing className={"stroke-success w-6 h-6"} />
+						<BellRing className="w-4 h-4 text-primary" />
 					) : (
-						<BellOff className={"stroke-destructive w-6 h-6"} />
+						<BellOff className="w-4 h-4 text-muted-foreground" />
 					)}
 				</Button>
 			</div>
-			<pre
-				ref={textRef}
-				onClick={() => setReadMore((prev) => !prev)}
-				className={
-					"my-4 whitespace-pre text-wrap font-sans font-normal group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=true]:cursor-pointer"
-				}
-			>
-				<Linkify options={{ render: renderLink }}>{bulletin.Text}</Linkify>
-			</pre>
+
+			{/* Card Content */}
+			<div className="p-4">
+				<pre
+					ref={textRef}
+					onClick={() => hasReadMore && setReadMore((prev) => !prev)}
+					className="whitespace-pre-wrap font-sans text-sm text-foreground/90 leading-relaxed group-data-[readmore=false]:line-clamp-6 group-data-[readmore=true]:line-clamp-none transition-all duration-200 group-data-[hasreadmore=true]:cursor-pointer"
+				>
+					<Linkify options={{ render: renderLink }}>{bulletin.Text}</Linkify>
+				</pre>
+
+				{/* Read More Indicator */}
+				{hasReadMore && (
+					<button
+						onClick={() => setReadMore((prev) => !prev)}
+						className="mt-2 flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors"
+					>
+						{readMore ? (
+							<>
+								<ChevronUp className="w-3 h-3" />
+								Show less
+							</>
+						) : (
+							<>
+								<ChevronDown className="w-3 h-3" />
+								Read more
+							</>
+						)}
+					</button>
+				)}
+			</div>
+
+			{/* Attached Images */}
 			{bulletin.AttachedImages && bulletin.AttachedImages.length > 0 && (
-				<div className="mb-4 flex p-2 overflow-auto gap-4">
-					{bulletin.AttachedImages.map((image) => (
-						<LightbulletinImage key={image.OriginalFileId} image={image} />
-					))}
+				<div className="px-4 pb-4">
+					<div className="flex gap-2 overflow-x-auto rounded-lg">
+						{bulletin.AttachedImages.map((image) => (
+							<LightbulletinImage key={image.OriginalFileId} image={image} />
+						))}
+					</div>
 				</div>
 			)}
+
+			{/* Link Previews */}
 			{links && links.length > 0 && (
-				<div className="mb-4 flex flex-col rounded-lg p-2 space-y-4">
+				<div className="px-4 pb-4 flex flex-wrap gap-2">
 					{links.map((link) => (
 						<Suspense
 							key={link.href}
 							fallback={
 								<LightbulletinLink>
-									<Loader className={"stroke-current text-gray-500 m-auto"} />
+									<Loader className="stroke-current text-muted-foreground w-4 h-4" />
 								</LightbulletinLink>
 							}
 						>
@@ -162,53 +190,68 @@ export default function LightbulletinCard({
                 className={"w-full items-center justify-center flex flex-col gap-4 truncate text-lg group-data-[readmore=false]:hidden group-data-[readmore=true]:flex"}>
                 <OgImagePreview url={links[links.length - 1]} />
             </div> */}
-			{showResources && (
-				<div className="mb-4 flex flex-col rounded-lg p-2 space-y-4">
-					{Resources!.EntityArray.map((resource) => (
-						<LightbulletinResource
-							key={resource.ElementId}
-							resource={resource}
-							courseId={courseId!}
-						/>
-					))}
+			{/* Resources Section */}
+			{showResources && Resources && (
+				<div className="px-4 pb-4">
+					<div className="rounded-lg border border-border/50 bg-muted/30 p-3 space-y-2">
+						{Resources.EntityArray.map((resource) => (
+							<LightbulletinResource
+								key={resource.ElementId}
+								resource={resource}
+								courseId={courseId!}
+							/>
+						))}
+					</div>
 				</div>
 			)}
+
+			{/* Comments Section */}
 			{showComments && (
-				<>
-					{bulletin.CommentsCount > 0 && (
-						<Suspense
-							fallback={
-								<Loader
-									className={"stroke-current text-gray-500 m-auto my-4"}
+				<div className="px-4 pb-4">
+					<div className="rounded-lg border border-border/50 bg-muted/30 p-3">
+						{bulletin.CommentsCount > 0 && (
+							<Suspense
+								fallback={
+									<LightbulletinCommentsLoader count={Math.min(bulletin.CommentsCount, 3)} />
+								}
+							>
+								<LightbulletinComments
+									lightbulletinId={bulletin.LightBulletinId}
 								/>
-							}
-						>
-							<LightbulletinComments
-								lightbulletinId={bulletin.LightBulletinId}
-							/>
-						</Suspense>
-					)}
-					<LightbulletinCommentForm
-						lightbulletinId={bulletin.LightBulletinId}
-					/>
-				</>
+							</Suspense>
+						)}
+						<LightbulletinCommentForm
+							lightbulletinId={bulletin.LightBulletinId}
+							hasComments={bulletin.CommentsCount > 0}
+						/>
+					</div>
+				</div>
 			)}
-			<div className="mt-2 flex gap-4 truncate text-lg">
-				{/*{bulletin.CommentsCount > 0 && (*/}
-				<LightbulletinBadgeButton
+
+			{/* Card Footer - Action Buttons */}
+			<div className="flex items-center gap-2 px-4 py-3 border-t border-border/50 bg-muted/20">
+				<Button
+					variant={showComments ? "secondary" : "ghost"}
+					size="sm"
 					onClick={() => setShowComments(!showComments)}
+					className="h-8 gap-1.5 text-xs"
 				>
-					{bulletin.CommentsCount}
-					<BsChatSquareTextFill className={"mt-1"} />
-				</LightbulletinBadgeButton>
-				{/*)}*/}
+					<MessageSquare className="w-3.5 h-3.5" />
+					<span>{bulletin.CommentsCount}</span>
+					<span className="hidden sm:inline">Comments</span>
+				</Button>
+
 				{bulletin.ResourcesCount > 0 && (
-					<LightbulletinBadgeButton
+					<Button
+						variant={showResources ? "secondary" : "ghost"}
+						size="sm"
 						onClick={() => setShowResources(!showResources)}
+						className="h-8 gap-1.5 text-xs"
 					>
-						{bulletin.ResourcesCount}
-						<BsFileEarmarkFill />
-					</LightbulletinBadgeButton>
+						<Paperclip className="w-3.5 h-3.5" />
+						<span>{bulletin.ResourcesCount}</span>
+						<span className="hidden sm:inline">Files</span>
+					</Button>
 				)}
 			</div>
 			{/*<div className="mt-4 flex justify-end">

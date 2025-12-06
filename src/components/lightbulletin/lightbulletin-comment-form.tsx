@@ -7,8 +7,10 @@ import { toast } from "sonner";
 
 export default function LightbulletinCommentForm({
 	lightbulletinId,
+	hasComments = false,
 }: {
 	lightbulletinId: number;
+	hasComments?: boolean;
 }) {
 	const [comment, setComment] = React.useState<string>("");
 
@@ -63,41 +65,33 @@ export default function LightbulletinCommentForm({
 	}, [handleSubmit]);
 
 	return (
-		<form className="my-4" onSubmit={handleSubmit}>
-			{/*<label className="sr-only" htmlFor="comment">
-                            Add a new comment
-                        </label>*/}
-			<Input
-				className="mb-2"
-				id="comment"
-				name="comment"
-				placeholder="Add a new comment..."
-				type="text"
-				onChange={(e) => setComment(e.target.value)}
-				value={comment}
-			/>
-			{comment.length > 0 && (
-				<Button
-					disabled={isLoading}
-					variant={"outline"}
-					size={"lg"}
-					className="w-full"
-					type="submit"
-				>
-					{isLoading ? (
-						<span
-							className={
-								"inline-flex shrink-0 text-center justify-center items-center"
-							}
-						>
-							<Loader2 className="mr-2 inline-block animate-spin" size={16} />
-							Adding comment...
-						</span>
-					) : (
-						"Add comment"
-					)}
-				</Button>
-			)}
+		<form className={`mt-3 pt-3 ${hasComments ? 'border-t border-border/30' : ''}`} onSubmit={handleSubmit}>
+			<div className="flex gap-2">
+				<Input
+					className="flex-1 h-9 text-sm bg-background/50"
+					id="comment"
+					name="comment"
+					placeholder="Write a comment..."
+					type="text"
+					onChange={(e) => setComment(e.target.value)}
+					value={comment}
+				/>
+				{comment.length > 0 && (
+					<Button
+						disabled={isLoading}
+						variant="default"
+						size="sm"
+						className="h-9"
+						type="submit"
+					>
+						{isLoading ? (
+							<Loader2 className="w-4 h-4 animate-spin" />
+						) : (
+							"Post"
+						)}
+					</Button>
+				)}
+			</div>
 		</form>
 	);
 }

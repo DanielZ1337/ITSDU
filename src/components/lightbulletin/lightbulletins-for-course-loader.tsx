@@ -1,48 +1,40 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { BsChatSquareTextFill, BsFileEarmarkFill } from "react-icons/bs";
-import { Badge } from "../ui/badge";
-import { LightbulletinBadgeButton } from "./lightbulletin-card";
+import { MessageSquare, Paperclip } from "lucide-react";
 
 export default function LightbulletinsForCourseLoader() {
 	return (
-		<div className={"gap-4 flex flex-col p-4"}>
-			{[...Array(4).keys()]
-				.map((i) => i + 1)
-				.map((i) => (
-					<div
-						key={i}
-						className="overflow-hidden rounded-md p-4 shadow-md bg-foreground/10 hover:shadow-lg"
-					>
-						<div className="flex items-center space-x-2">
-							<Skeleton className="h-10 w-10 shrink-0 rounded-full bg-foreground/10" />
-							<Skeleton className="h-6 w-2/4 rounded bg-foreground/20" />
-						</div>
-						<div className="mt-2 flex py-4 space-x-4">
-							<div className="flex-1 py-1 space-y-4">
-								<div className="space-y-2">
-									<Skeleton className="h-4 w-3/4 rounded bg-foreground/20" />
-									<div className="space-y-2">
-										<Skeleton className="h-4 rounded bg-foreground/20" />
-										<Skeleton className="h-4 w-5/6 rounded bg-foreground/20" />
-										<Skeleton className="h-4 w-3/4 rounded bg-foreground/20" />
-									</div>
-								</div>
+		<div className="flex flex-col gap-4 p-4">
+			{[...Array(4).keys()].map((i) => (
+				<div
+					key={i}
+					className="rounded-xl border border-border/40 bg-card/50 overflow-hidden"
+				>
+					{/* Card Header */}
+					<div className="flex items-start justify-between gap-4 p-4 pb-0">
+						<div className="flex items-center gap-3">
+							<Skeleton className="h-10 w-10 rounded-full" />
+							<div className="space-y-2">
+								<Skeleton className="h-4 w-32" />
+								<Skeleton className="h-3 w-20" />
 							</div>
 						</div>
-						<div className="mt-2 flex gap-4 truncate text-lg">
-							<Skeleton>
-								<LightbulletinBadgeButton>
-									0 <BsChatSquareTextFill className={"mt-1"} />
-								</LightbulletinBadgeButton>
-							</Skeleton>
-							<Skeleton>
-								<LightbulletinBadgeButton>
-									0 <BsFileEarmarkFill />
-								</LightbulletinBadgeButton>
-							</Skeleton>
-						</div>
+						<Skeleton className="h-8 w-8 rounded-full" />
 					</div>
-				))}
+
+					{/* Card Content */}
+					<div className="p-4 space-y-2">
+						<Skeleton className="h-4 w-full" />
+						<Skeleton className="h-4 w-5/6" />
+						<Skeleton className="h-4 w-4/6" />
+					</div>
+
+					{/* Card Footer */}
+					<div className="flex items-center gap-2 px-4 py-3 border-t border-border/50 bg-muted/20">
+						<Skeleton className="h-8 w-24 rounded-md" />
+						<Skeleton className="h-8 w-20 rounded-md" />
+					</div>
+				</div>
+			))}
 		</div>
 	);
 }

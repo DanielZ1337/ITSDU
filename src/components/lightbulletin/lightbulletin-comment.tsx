@@ -1,9 +1,11 @@
+import renderLink from "@/components/custom-render-link-linkify.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { useUser } from "@/hooks/atoms/useUser";
 import { cn, getRelativeTimeString } from "@/lib/utils.ts";
 import usePUTlightbulletinUpdateComment from "@/queries/lightbulletin/usePUTlightbulletinUpdateComment.ts";
 import { ItslearningRestApiEntitiesComment } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
+import Linkify from "linkify-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -48,31 +50,39 @@ export default function LightbulletinComment({
 	useEffect(() => {
 		setShowUpdate(
 			isEditing &&
-				commentText.length > 0 &&
-				commentText !== comment.CommentText,
+			commentText.length > 0 &&
+			commentText !== comment.CommentText,
 		);
 	}, [comment.CommentText, commentText, isEditing]);
 
 	return (
-		<div className="flex space-x-2">
+		<div className="flex gap-3 p-2 rounded-lg hover:bg-muted/30 transition-colors">
 			<LightbulletinAvatar
 				src={comment.Author.ProfileImageUrlSmall}
 				name={comment.Author.FullName}
-				className="mt-1"
+				className="mt-0.5 flex-shrink-0"
 			/>
-			<div className={"w-full"}>
-				<PersonHoverCard
-					personId={comment.Author.PersonId}
-					asChild
-					showTitle={false}
-				>
-					<Link
-						to={`/person/${comment.Author.PersonId}`}
-						className="font-semibold text-blue-500 hover:underline"
+			<div className="flex-1 min-w-0">
+				<div className="flex items-baseline gap-2">
+					<PersonHoverCard
+						personId={comment.Author.PersonId}
+						asChild
+						showTitle={false}
 					>
-						{comment.Author.FullName}{" "}
-					</Link>
-				</PersonHoverCard>
+						<Link
+							to={`/person/${comment.Author.PersonId}`}
+							className="text-sm font-medium text-foreground hover:text-primary transition-colors"
+						>
+							{comment.Author.FullName}
+						</Link>
+					</PersonHoverCard>
+					<HoverDate
+						date={comment.CreatedDateTime}
+						className="text-xs text-muted-foreground"
+					>
+						{getRelativeTimeString(new Date(comment.CreatedDateTime))}
+					</HoverDate>
+				</div>
 				{isEditing ? (
 					<form
 						onSubmit={(e) => {
@@ -129,16 +139,12 @@ export default function LightbulletinComment({
 						</div>
 					</form>
 				) : (
-					<p className={cn("mt-0.5 font-normal", isUpdating && "opacity-50")}>
-						{comment.CommentText}
+					<p className={cn("text-sm text-foreground/90 mt-0.5 whitespace-pre-wrap", isUpdating && "opacity-50")}>
+						<Linkify options={{ render: renderLink }}>
+							{comment.CommentText}
+						</Linkify>
 					</p>
 				)}
-				<HoverDate
-					date={comment.CreatedDateTime}
-					className="text-sm text-gray-500"
-				>
-					Posted {getRelativeTimeString(new Date(comment.CreatedDateTime))}
-				</HoverDate>
 			</div>
 			{comment.Author.PersonId === user.PersonId && (
 				<>
