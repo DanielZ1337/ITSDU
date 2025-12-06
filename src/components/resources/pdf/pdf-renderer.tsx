@@ -182,14 +182,14 @@ export function Thumbnail({
         )}
       >
         {isLoading && (
-          <div 
-            className="aspect-[1/1.414] bg-muted animate-pulse" 
+          <div
+            className="aspect-[1/1.414] bg-muted animate-pulse"
             style={{ width: thumbnailWidth }}
           />
         )}
         {error && (
-          <div 
-            className="aspect-[1/1.414] bg-destructive/10 flex items-center justify-center text-destructive text-xs" 
+          <div
+            className="aspect-[1/1.414] bg-destructive/10 flex items-center justify-center text-destructive text-xs"
             style={{ width: thumbnailWidth }}
           >
             Error
@@ -737,12 +737,12 @@ export default function PdfRenderer({
             )}
           >
             {/* Fixed width inner container - slides and fades with parent */}
-            <div 
+            <div
               ref={sidebarRef}
               className={cn(
                 "h-full w-48 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 transition-all duration-300 ease-out",
-                CustomPDFSidebarOpened 
-                  ? "opacity-100 translate-x-0" 
+                CustomPDFSidebarOpened
+                  ? "opacity-100 translate-x-0"
                   : "opacity-0 -translate-x-12"
               )}
             >

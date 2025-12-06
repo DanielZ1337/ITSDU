@@ -1,10 +1,8 @@
 import {
 	Tooltip,
 	TooltipContent,
-	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
 import { AnimatePresence, motion } from "framer-motion";
@@ -18,12 +16,8 @@ export default function SidebarItem({
 	end = true,
 	disabled,
 }: NavigationType) {
-	const { sidebarActive } = useSidebar();
-
 	const match = useMatch(href);
-
 	const isActive = !!match;
-
 	const [isHovering, setIsHovering] = useState(false);
 
 	return (
@@ -34,17 +28,21 @@ export default function SidebarItem({
 					onMouseLeave={() => setIsHovering(false)}
 					onClick={(e) => disabled && e.preventDefault()}
 					className={cn(
-						"animate-in slide-in-from-left-6",
-						"relative flex items-center p-2 rounded-md cursor-pointer hover:text-foreground",
-						isActive ? "text-foreground" : "text-foreground/60",
-						// isPending && "opacity-50",
-						disabled && "opacity-50 cursor-not-allowed",
+						"group/item relative flex items-center justify-center",
+						"p-2.5 mx-1 rounded-xl cursor-pointer",
+						"transition-all duration-200 ease-out",
+						"hover:bg-foreground/[0.08] active:scale-95",
+						isActive
+							? "text-foreground"
+							: "text-muted-foreground hover:text-foreground",
+						disabled && "opacity-40 cursor-not-allowed pointer-events-none",
 					)}
 					to={href}
 					end={end}
 				>
 					{({ isActive }) => (
 						<>
+							{/* Active indicator pill with glow */}
 							{isActive && (
 								<motion.div
 									layoutId="active-pill"
@@ -55,46 +53,49 @@ export default function SidebarItem({
 										mass: 0.8,
 									}}
 									className={cn(
-										"-mx-2 inset-y-0 w-1 absolute rounded-full bg-primary/80 transition-shadow shadow-md shadow-primary drop-shadow-[0px_-1px_6px_hsl(var(--primary))]",
-										sidebarActive && "shadow-md shadow-primary/5",
+										"absolute -left-1.5 inset-y-0 w-1 rounded-full",
+										"bg-primary/80 shadow-md shadow-primary",
+										"drop-shadow-[0px_0px_8px_hsl(var(--primary))]",
 									)}
 								/>
 							)}
-							<AnimatePresence mode="sync" presenceAffectsLayout>
+
+							{/* Hover indicator pill */}
+							<AnimatePresence mode="popLayout">
 								{!isActive && isHovering && (
 									<motion.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}
-										layoutId="is-pending-pill"
+										initial={{ opacity: 0, scale: 0.8 }}
+										animate={{ opacity: 1, scale: 1 }}
+										exit={{ opacity: 0, scale: 0.8 }}
 										transition={{
-											type: "spring",
-											stiffness: 400,
-											damping: 30,
-											mass: 0.8,
+											duration: 0.15,
+											ease: "easeOut",
 										}}
 										className={cn(
-											"-mx-2 inset-y-0 w-1 absolute rounded-full bg-muted/80 transition-shadow shadow-md shadow-muted drop-shadow-[0px_-1px_6px_hsl(var(--muted))]",
-											sidebarActive && "shadow-md shadow-muted/5",
+											"absolute -left-1.5 inset-y-1 w-1 rounded-full",
+											"bg-muted-foreground/40",
 										)}
 									/>
 								)}
 							</AnimatePresence>
-							<span className="relative z-10 p-1 mx-auto">{icon}</span>
+
+							{/* Icon with subtle scale on hover */}
+							<span className={cn(
+								"relative z-10 transition-transform duration-200",
+								"group-hover/item:scale-110",
+							)}>
+								{icon}
+							</span>
 						</>
 					)}
 				</NavLink>
 			</TooltipTrigger>
-			<TooltipContent side="right">
-				<span
-					className={cn(
-						"whitespace-nowrap text-left z-10 relative overflow-hidden transition-all",
-						// 'pl-4',
-						// sidebarActive ? "w-full opacity-100" : "w-0 opacity-0 ",
-					)}
-				>
-					{title}
-				</span>
+			<TooltipContent
+				side="right"
+				sideOffset={8}
+				className="font-medium"
+			>
+				{title}
 			</TooltipContent>
 		</Tooltip>
 	);
