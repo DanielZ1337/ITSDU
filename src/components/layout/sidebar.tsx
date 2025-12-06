@@ -24,7 +24,6 @@ export default function Sidebar() {
 				className={cn(
 					"group/sidebar no-drag h-full flex flex-col",
 					"py-4 px-2 z-20 bg-background/80 backdrop-blur-sm",
-					"border-r border-border/50",
 				)}
 			>
 				{/* Main navigation */}
