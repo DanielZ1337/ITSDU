@@ -1,7 +1,8 @@
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { Loader } from "@/components/ui/loader";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { ItslearningRestApiEntitiesLightBulletinsLightBulletinImage } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinImage";
+import { ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function LightbulletinImage({
@@ -36,12 +37,12 @@ export default function LightbulletinImage({
 	);
 
 	return (
-		<div className="w-fit shrink-0 m-auto flex max-h-full flex-col items-center justify-center rounded-md p-4 ring ring-purple-500/50 bg-foreground/10">
-			<div className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-sm">
+		<div className="w-full flex max-h-full flex-col items-center justify-center rounded-lg overflow-hidden border border-border/50 bg-muted/30">
+			<div className="flex h-full w-full flex-col items-center justify-center overflow-hidden">
 				{isLoaded && (
 					<Dialog>
-						<DialogTrigger>
-							<ImageComponent className="max-h-96" />
+						<DialogTrigger className="w-full">
+							<ImageComponent className="max-h-96 hover:opacity-90 transition-opacity cursor-zoom-in" />
 						</DialogTrigger>
 						<DialogContent
 							className={
@@ -55,11 +56,9 @@ export default function LightbulletinImage({
 					</Dialog>
 				)}
 				{!isLoaded && (
-					<div className="absolute flex h-full w-full items-center justify-center">
-						<Loader
-							className={"animate-spin stroke-current text-gray-500 m-auto"}
-						/>
-					</div>
+					<Skeleton className="w-full h-48 flex items-center justify-center">
+						<ImageIcon className="w-8 h-8 text-muted-foreground/50" />
+					</Skeleton>
 				)}
 			</div>
 		</div>
