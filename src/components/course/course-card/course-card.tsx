@@ -29,7 +29,26 @@ const courseColors = [
 	{ bg: "from-indigo-500/10 to-blue-500/5", accent: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
 	{ bg: "from-teal-500/10 to-emerald-500/5", accent: "bg-teal-500", text: "text-teal-600 dark:text-teal-400" },
 	{ bg: "from-amber-500/10 to-yellow-500/5", accent: "bg-amber-500", text: "text-amber-600 dark:text-amber-400" },
+	{ bg: "from-gray-500/10 to-slate-500/5", accent: "bg-gray-500", text: "text-gray-600 dark:text-gray-400" },
+	{ bg: "from-red-500/10 to-rose-500/5", accent: "bg-red-500", text: "text-red-600 dark:text-red-400" },
+	{ bg: "from-cyan-500/10 to-blue-500/5", accent: "bg-cyan-500", text: "text-cyan-600 dark:text-cyan-400" },
+	{ bg: "from-lime-500/10 to-green-500/5", accent: "bg-lime-500", text: "text-lime-600 dark:text-lime-400" },
+	{ bg: "from-slate-500/10 to-gray-500/5", accent: "bg-slate-500", text: "text-slate-600 dark:text-slate-400" },
 ];
+
+// Map CourseColorClass from API to our color palette
+const colorMap: Record<string, typeof courseColors[0]> = {
+	"smog-1": courseColors[8], // gray
+	"moss--100": courseColors[2], // emerald
+	"olive--100": courseColors[6], // teal
+	"grape--100": courseColors[3], // purple
+	"olympicblue--100": courseColors[1], // blue
+	"cornflower--100": courseColors[5], // indigo
+	"emerald--100": courseColors[11], // lime
+	"pigeongrey--100": courseColors[12], // slate
+	"mauve--100": courseColors[4], // rose
+	"bronze--100": courseColors[0], // orange
+};
 
 function getColorForCourse(courseId: number) {
 	return courseColors[courseId % courseColors.length];
@@ -63,7 +82,7 @@ export default function CourseCard({
 		},
 	);
 	const [isCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom);
-	const color = getColorForCourse(card.CourseId);
+	const color = colorMap[card.CourseColorClass] || getColorForCourse(card.CourseId);
 
 	const totalNotifications = card.NumberOfAnnouncements + card.NumberOfFollowUpTasks + card.NumberOfTasks;
 	const hasNotifications = totalNotifications > 0;
@@ -83,7 +102,7 @@ export default function CourseCard({
 				tabIndex={0}
 				onClick={navigateToCourse}
 				className={cn(
-					"group relative flex flex-col w-full cursor-pointer",
+					"group relative flex flex-col w-full h-full min-h-[160px] cursor-pointer",
 					"bg-card dark:bg-card/80 rounded-xl overflow-hidden",
 					"border border-border/50 hover:border-border",
 					"shadow-sm hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20",

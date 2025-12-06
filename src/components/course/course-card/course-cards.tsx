@@ -4,6 +4,7 @@ import useGETcourses from "@/queries/course-cards/useGETcourses.ts";
 import { GETstarredCoursesParams } from "@/types/api-types/course-cards/GETstarredCourses.ts";
 import { GETunstarredCoursesParams } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
 import { BookOpen, GraduationCap, Star } from "lucide-react";
+import React from "react";
 
 function EmptyState({
 	type,
@@ -87,10 +88,13 @@ function SectionHeader({
 
 function CourseGrid({ children }: { children: React.ReactNode }) {
 	return (
-		<div className={cn(
-			"grid gap-4",
-			"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
-		)}>
+		<div
+			className={cn(
+				"grid gap-4",
+				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+			)}
+			style={{ alignItems: "stretch" }}
+		>
 			{children}
 		</div>
 	);
