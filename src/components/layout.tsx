@@ -62,12 +62,12 @@ export default function Layout() {
 				<IsOnlineIndicatorLazy />
 			</Suspense>
 			<div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
-				<Link className="shrink-0 no-drag" to={"/"}>
+				<Link className="shrink-0 no-drag mt-2 px-2 py-1 bg-muted/20 rounded-lg" to={"/"}>
 					<img
 						loading="eager"
 						src="itsl-itslearning-file://i_logo_colored.png"
 						alt="itslearning"
-						className="my-auto mt-2 ml-4 h-8 w-8"
+						className="my-auto h-8 w-8"
 					/>
 				</Link>
 				<div className="w-full max-w-xl px-4">
@@ -139,8 +139,8 @@ export default function Layout() {
 							<div
 								className="flex flex-1 flex-col overflow-x-auto overflow-y-auto"
 								/*style={{
-                                    scrollbarGutter: "stable both-edges"
-                                }}*/
+									scrollbarGutter: "stable both-edges"
+								}}*/
 								ref={ref}
 								key={pathname}
 							>
