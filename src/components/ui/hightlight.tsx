@@ -33,7 +33,7 @@ export function Highlight({ text, highlight, minChars = 3 }: HighlightProps) {
 		part.toLowerCase() === highlight.toLowerCase() ? (
 			<mark
 				key={index + part}
-				className="bg-secondary-300 text-secondary-900 rounded-full px-1.5 py-0.5 text-sm"
+				className="bg-primary text-primary-foreground rounded-full px-1.5 py-0.5 text-sm shadow-sm shadow-primary/25"
 			>
 				{part}
 			</mark>
