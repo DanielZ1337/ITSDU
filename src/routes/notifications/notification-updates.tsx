@@ -4,9 +4,10 @@ import UpdatesTypeSelect, {
 	useUpdatesTypeSelect,
 } from "@/components/notifications/notifications-updates-type-select";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
+import { Bell } from "lucide-react";
 import { Suspense, lazy, memo } from "react";
 import { Helmet } from "react-helmet-async";
-// import { FetchMoreInview } from "@/components/fetch-more-in-view";
+
 const FetchMoreInviewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
 		default: module.FetchMoreInview,
@@ -36,40 +37,55 @@ function NotificationUpdates() {
 		useUpdatesTypeSelect(notifications);
 
 	return (
-		<>
+		<div className="flex h-full w-full flex-col overflow-hidden">
 			<Helmet>
 				<title>Recent Updates</title>
 			</Helmet>
-			<div className="sticky top-0 z-10 flex items-center justify-between gap-4 border-b bg-zinc-100/40 px-6 py-5 shadow backdrop-blur-md dark:bg-zinc-800/40">
-				<h1 className="text-2xl font-bold">Recent Updates</h1>
-				<UpdatesTypeSelect
-					update={selectedUpdatesType}
-					onChange={setSelectedUpdatesType}
-				/>
+			{/* Header */}
+			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
+				<div className="flex items-center justify-between gap-4">
+					<div className="flex items-center gap-3">
+						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+							<Bell className="h-5 w-5 text-primary" />
+						</div>
+						<div>
+							<h1 className="text-xl font-semibold text-foreground">Recent Updates</h1>
+							<p className="text-sm text-muted-foreground">Stay up to date with your courses</p>
+						</div>
+					</div>
+					<UpdatesTypeSelect
+						update={selectedUpdatesType}
+						onChange={setSelectedUpdatesType}
+					/>
+				</div>
 			</div>
-			<div className="p-6">
-				<div className="flex flex-col gap-4">
+
+			{/* Content */}
+			<div className="flex-1 overflow-y-auto p-6">
+				<div className="mx-auto max-w-3xl space-y-4">
 					{isLoading ? (
 						<NotificationsCardsFallback />
 					) : (
 						<NotificationCards filteredNotifications={filteredNotifications} />
 					)}
+					{!isLoading && (
+						<Suspense fallback={null}>
+							<FetchMoreInviewLazy
+								hasNextPage={hasNextPage}
+								fetchNextPage={fetchNextPage}
+								isFetchingNextPage={isFetchingNextPage}
+							>
+								<div className="py-8 text-center text-sm text-muted-foreground">
+									{isFetchingNextPage
+										? "Fetching more notifications..."
+										: "End of notifications"}
+								</div>
+							</FetchMoreInviewLazy>
+						</Suspense>
+					)}
 				</div>
-				{!isLoading && (
-					<Suspense fallback={null}>
-						<FetchMoreInviewLazy
-							hasNextPage={hasNextPage}
-							fetchNextPage={fetchNextPage}
-							isFetchingNextPage={isFetchingNextPage}
-						>
-							{isFetchingNextPage
-								? "Fetching more notifications..."
-								: "End of notifications"}
-						</FetchMoreInviewLazy>
-					</Suspense>
-				)}
 			</div>
-		</>
+		</div>
 	);
 }
 

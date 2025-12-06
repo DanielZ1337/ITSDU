@@ -8,7 +8,7 @@ export default function NotificationPublishedBy({
 	return (
 		<PersonHoverCard personId={personId} showTitle={false} asChild>
 			<Link
-				className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
+				className="font-medium text-primary transition-colors hover:text-primary/80 hover:underline"
 				to={`/person/${personId}`}
 			>
 				{name}

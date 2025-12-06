@@ -1,5 +1,7 @@
 import renderLink from "@/components/custom-render-link-linkify";
 import PersonHoverCard from "@/components/person/person-hover-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
 import usePUTnotificationsMarkAsRead from "@/queries/notifications/usePUTnotificationsMarkAsRead";
 import {
@@ -7,31 +9,58 @@ import {
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import Linkify from "linkify-react";
+import { ArrowLeft, Calendar, FileText, Megaphone, User } from "lucide-react";
 import { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import useGETnotificationElements from "../../queries/notifications/useGETnotificationElements";
+
+function NotificationDetailSkeleton() {
+	return (
+		<div className="flex h-full w-full flex-col overflow-hidden">
+			{/* Header skeleton */}
+			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
+				<Skeleton className="h-4 w-24 mb-3" />
+				<Skeleton className="h-7 w-96" />
+			</div>
+			{/* Content skeleton */}
+			<div className="flex-1 overflow-y-auto p-6">
+				<div className="mx-auto max-w-2xl">
+					<div className="rounded-xl border border-border/50 bg-card/50 p-6">
+						<div className="flex items-center gap-3 mb-4">
+							<Skeleton className="h-10 w-10 rounded-lg" />
+							<Skeleton className="h-5 w-48" />
+						</div>
+						<Skeleton className="h-4 w-full mb-2" />
+						<Skeleton className="h-4 w-3/4 mb-6" />
+						<Skeleton className="h-32 w-full rounded-lg" />
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+}
 
 export default function NotificationID() {
 	const { notificationId } = useParams();
 
 	if (!notificationId) throw new Error("notificationId is required");
 
-	const { data: notification } = useGETnotificationsStream(
+	const { data: notification, isLoading } = useGETnotificationsStream(
 		{
 			FromId: Number(notificationId),
 			PageSize: 1,
 			showLightBulletins: true,
 		},
 		{
-			suspense: true,
+			suspense: false,
 		},
 	);
 
-	const currentNotificaton = notification!.pages[0].EntityArray[0];
+	const currentNotification = notification?.pages[0]?.EntityArray[0];
 
 	const { data: resources } = useGETnotificationElements({
-		notificationId: currentNotificaton.NotificationId,
+		notificationId: currentNotification?.NotificationId ?? 0,
 		PageSize: 100,
 	});
 
@@ -40,7 +69,7 @@ export default function NotificationID() {
 	const { mutate: markAsRead } = usePUTnotificationsMarkAsRead();
 
 	useEffect(() => {
-		if (markAsRead) {
+		if (markAsRead && currentNotification) {
 			const timeout = setTimeout(() => {
 				markAsRead([
 					{
@@ -51,81 +80,129 @@ export default function NotificationID() {
 			}, 100);
 			return () => clearTimeout(timeout);
 		}
-	}, [markAsRead]);
+	}, [markAsRead, currentNotification, notificationId]);
+
+	if (isLoading || !currentNotification) {
+		return <NotificationDetailSkeleton />;
+	}
 
 	return (
-		<div className="flex w-full flex-1 flex-col overflow-hidden p-6">
+		<div className="flex h-full w-full flex-col overflow-hidden">
 			<Helmet>
-				<title>{currentNotificaton!.Text}</title>
+				<title>{currentNotification.Text}</title>
 			</Helmet>
-			<h1 className="mb-4 text-2xl font-bold">{currentNotificaton!.Text}</h1>
-			<div className="m-auto w-full overflow-auto px-20">
-				<div className="m-auto max-w-2xl rounded-md p-10 shadow-md bg-foreground/10 dark:bg-foreground/40">
-					<div className="mb-4 flex items-center">
-						<img
-							loading="lazy"
-							src={currentNotificaton!.IconUrl}
-							alt="Notification Icon"
-							className="mr-2 h-6 w-6"
-						/>
-						<h1 className="ml-2 text-lg font-bold">
-							{currentNotificaton!.LocationTitle}
-						</h1>
-					</div>
-					<p className="mb-4">{currentNotificaton!.Text}</p>
-					{currentNotificaton!.PublishedDate && (
-						<p className="mb-4 text-sm text-foreground/80">
-							Published Date:{" "}
-							{new Date(currentNotificaton!.PublishedDate).toDateString()}
-						</p>
-					)}
-					{currentNotificaton.LightBulletin && (
-						<div className="border-t border-gray-300 pt-4">
-							<h2 className="mb-2 font-semibold text-md">Announcement:</h2>
-							<p className="whitespace-pre-wrap text-sm text-foreground/80">
-								<Linkify options={{ render: renderLink }}>
-									{currentNotificaton!.LightBulletin.Text}
-								</Linkify>
-							</p>
-						</div>
-					)}
-					{currentNotificaton!.ElementsCount > 0 && (
-						<div className="border-t border-gray-300 pt-4">
-							<h2 className="mb-2 font-semibold text-md">Resources:</h2>
-							{resources?.EntityArray.map((resource) => (
-								<div
-									key={resource.ElementId}
-									className="mb-2 flex items-center"
-								>
-									<img
-										loading="lazy"
-										src={resource.IconUrl}
-										alt="Resource Icon"
-										className="mr-2 h-6 w-6"
-									/>
-									<button
-										onClick={async () => {
-											if (isSupportedResourceInApp(resource)) {
-												navigateToResource(resource);
-											} else {
-												await window.app.openExternal(resource.ContentUrl);
-											}
-										}}
-										className="text-sm text-foreground/80 hover:underline"
-									>
-										{resource.Title}
-									</button>
+
+			{/* Header */}
+			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
+				<Link
+					to="/notifications"
+					className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+				>
+					<ArrowLeft className="h-4 w-4" />
+					Back to notifications
+				</Link>
+				<h1 className="text-xl font-semibold text-foreground">
+					{currentNotification.Text}
+				</h1>
+			</div>
+
+			{/* Content */}
+			<div className="flex-1 overflow-y-auto p-6">
+				<div className="mx-auto max-w-2xl">
+					<div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden">
+						{/* Notification header */}
+						<div className="border-b border-border/50 bg-muted/20 px-6 py-4">
+							<div className="flex items-center gap-3">
+								<img
+									loading="lazy"
+									src={currentNotification.IconUrl}
+									alt=""
+									className="h-10 w-10 rounded-lg bg-muted p-1.5"
+								/>
+								<div className="flex-1 min-w-0">
+									<h2 className="font-medium text-foreground truncate">
+										{currentNotification.LocationTitle}
+									</h2>
+									<div className="flex items-center gap-3 text-sm text-muted-foreground">
+										<span className="flex items-center gap-1">
+											<Calendar className="h-3.5 w-3.5" />
+											{getRelativeTimeString(new Date(currentNotification.PublishedDate))}
+										</span>
+										<span className="flex items-center gap-1">
+											<User className="h-3.5 w-3.5" />
+											<PersonHoverCard
+												personId={currentNotification.PublishedBy.PersonId}
+												showTitle={false}
+											>
+												<span className="hover:underline cursor-pointer">
+													{currentNotification.PublishedBy.FullName}
+												</span>
+											</PersonHoverCard>
+										</span>
+									</div>
 								</div>
-							))}
+							</div>
 						</div>
-					)}
-					<div className="mt-4">
-						<PersonHoverCard
-							personId={currentNotificaton!.PublishedBy.PersonId}
-							showTitle={false}
-						>
-							Published By: {currentNotificaton!.PublishedBy.FullName}
-						</PersonHoverCard>
+
+						{/* Notification content */}
+						<div className="p-6 space-y-6">
+							{/* Main text */}
+							<p className="text-foreground">{currentNotification.Text}</p>
+
+							{/* Announcement/Light Bulletin */}
+							{currentNotification.LightBulletin && (
+								<div className="rounded-lg border border-border/50 bg-muted/20 overflow-hidden">
+									<div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/30">
+										<Megaphone className="h-4 w-4 text-primary" />
+										<span className="text-sm font-medium text-foreground">Announcement</span>
+									</div>
+									<div className="p-4">
+										<p className="whitespace-pre-wrap text-sm text-foreground/90">
+											<Linkify options={{ render: renderLink }}>
+												{currentNotification.LightBulletin.Text}
+											</Linkify>
+										</p>
+									</div>
+								</div>
+							)}
+
+							{/* Resources */}
+							{currentNotification.ElementsCount > 0 && resources?.EntityArray && resources.EntityArray.length > 0 && (
+								<div className="rounded-lg border border-border/50 bg-muted/20 overflow-hidden">
+									<div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/30">
+										<FileText className="h-4 w-4 text-primary" />
+										<span className="text-sm font-medium text-foreground">
+											Resources ({resources.EntityArray.length})
+										</span>
+									</div>
+									<div className="p-2">
+										{resources.EntityArray.map((resource) => (
+											<button
+												key={resource.ElementId}
+												onClick={async () => {
+													if (isSupportedResourceInApp(resource)) {
+														navigateToResource(resource);
+													} else {
+														await window.app.openExternal(resource.ContentUrl);
+													}
+												}}
+												className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/50 group"
+											>
+												<img
+													loading="lazy"
+													src={resource.IconUrl}
+													alt=""
+													className="h-8 w-8 rounded-md bg-muted p-1"
+												/>
+												<span className="text-sm text-foreground group-hover:text-primary transition-colors">
+													{resource.Title}
+												</span>
+											</button>
+										))}
+									</div>
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 			</div>

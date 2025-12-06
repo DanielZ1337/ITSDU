@@ -3,6 +3,7 @@ import {
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink";
+import { FileText } from "lucide-react";
 import { ResourceContextMenu } from "../recursive-file-explorer";
 
 export default function NotificationElement({
@@ -20,8 +21,9 @@ export default function NotificationElement({
 						window.app.openExternal(element.ContentUrl);
 					}
 				}}
-				className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
+				className="inline-flex items-center gap-1 text-primary transition-colors hover:text-primary/80 hover:underline"
 			>
+				<FileText className="h-3.5 w-3.5" />
 				{element.Title}
 			</button>
 		</ResourceContextMenu>

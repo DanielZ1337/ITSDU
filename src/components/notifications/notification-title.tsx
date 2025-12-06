@@ -33,7 +33,7 @@ export default function NotificationTitle({
 					{" "}
 					and{" "}
 					<button
-						className="text-blue-500 transition-colors hover:text-blue-600 hover:underline"
+						className="text-primary transition-colors hover:text-primary/80 hover:underline"
 						onClick={() => setShowElements((prev) => !prev)}
 					>
 						{notification.ElementsCount - 1} more
