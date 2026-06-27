@@ -27,6 +27,14 @@ export type SidebarDensitySetting = (typeof sidebarDensityOptions)[number];
 export const downloadAutoOpenOptions = ["never", "file", "folder"] as const;
 export type DownloadAutoOpenSetting = (typeof downloadAutoOpenOptions)[number];
 
+export const resourceCacheModeOptions = [
+	"opened",
+	"pdf-only",
+	"manual",
+] as const;
+export type ResourceCacheModeSetting =
+	(typeof resourceCacheModeOptions)[number];
+
 export const calendarViewOptions = ["month", "week", "day", "agenda"] as const;
 export type CalendarViewSetting = (typeof calendarViewOptions)[number];
 
@@ -48,6 +56,8 @@ export type SettingsOptions = {
 	notificationQuietHoursEnd: string;
 	downloadDirectory: string | null;
 	downloadAutoOpen: DownloadAutoOpenSetting;
+	resourceCacheMaxSizeMb: number;
+	resourceCacheMode: ResourceCacheModeSetting;
 	calendarDefaultView: CalendarViewSetting;
 	calendarWeekStartsOn: CalendarWeekStartSetting;
 	calendarShowWeekends: boolean;
@@ -77,6 +87,8 @@ export const defaultSettings: SettingsOptions = {
 	notificationQuietHoursEnd: "07:00",
 	downloadDirectory: null,
 	downloadAutoOpen: "never",
+	resourceCacheMaxSizeMb: 512,
+	resourceCacheMode: "opened",
 	calendarDefaultView: "agenda",
 	calendarWeekStartsOn: "monday",
 	calendarShowWeekends: true,
@@ -127,6 +139,16 @@ export function validateSetting<K extends SettingsKey>(
 		case "downloadAutoOpen":
 			return (
 				isOption(downloadAutoOpenOptions, value) ? value : fallback
+			) as SettingsOptions[K];
+		case "resourceCacheMode":
+			return (
+				isOption(resourceCacheModeOptions, value) ? value : fallback
+			) as SettingsOptions[K];
+		case "resourceCacheMaxSizeMb":
+			return (
+				typeof value === "number" && Number.isFinite(value)
+					? Math.min(Math.max(Math.round(value), 50), 10_240)
+					: fallback
 			) as SettingsOptions[K];
 		case "calendarDefaultView":
 			return (

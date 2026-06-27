@@ -36,11 +36,13 @@ import {
 	type DownloadAutoOpenSetting,
 	type LandingPageSetting,
 	type LanguageSetting,
+	type ResourceCacheModeSetting,
 	type SettingsKey,
 	type SettingsOptions,
 	type SidebarDensitySetting,
 	type ThemeSetting,
 	downloadAutoOpenOptions,
+	resourceCacheModeOptions,
 } from "@/types/settings";
 import type { UpdateInfo } from "electron-updater";
 import {
@@ -83,6 +85,12 @@ const autoOpenLabels: Record<DownloadAutoOpenSetting, string> = {
 	never: "Do not open",
 	file: "Open file",
 	folder: "Show in folder",
+};
+
+const resourceCacheModeLabels: Record<ResourceCacheModeSetting, string> = {
+	opened: "Cache opened resources",
+	"pdf-only": "Cache opened PDFs only",
+	manual: "Manual only",
 };
 
 type UpdateStatus =
@@ -641,19 +649,28 @@ function DownloadSettings() {
 
 function CacheSettings() {
 	const { setShowSettingsModal } = useShowSettingsModal();
+	const { settings, setSetting } = useSettings();
 	const [cacheInfo, setCacheInfo] = useState({
 		count: 0,
 		size: 0,
+		cachedCount: 0,
+		missingCount: 0,
+		staleCount: 0,
+		failedCount: 0,
 		isLoading: true,
 	});
 
 	const refreshCacheInfo = async () => {
 		setCacheInfo((current) => ({ ...current, isLoading: true }));
 		const db = await ItsduResourcesDBWrapper.getInstance();
-		const resources = await db.getAllResources();
+		const health = await db.getCacheHealth();
 		setCacheInfo({
-			count: resources.length,
-			size: resources.reduce((total, resource) => total + resource.size, 0),
+			count: health.totalCount,
+			size: health.totalSize,
+			cachedCount: health.cachedCount,
+			missingCount: health.missingCount,
+			staleCount: health.staleCount,
+			failedCount: health.failedCount,
 			isLoading: false,
 		});
 	};
@@ -669,6 +686,17 @@ function CacheSettings() {
 		sonnerToast.success("Resource cache cleared");
 	};
 
+	const clearProblemCache = async () => {
+		const db = await ItsduResourcesDBWrapper.getInstance();
+		const removed = await db.clearProblemResources();
+		await refreshCacheInfo();
+		sonnerToast.success(
+			removed === 0
+				? "No stale cache records found"
+				: `Removed ${removed} stale cache record${removed === 1 ? "" : "s"}`,
+		);
+	};
+
 	return (
 		<SettingsGroup>
 			<SettingRow
@@ -681,6 +709,21 @@ function CacheSettings() {
 							? "Calculating..."
 							: `${cacheInfo.count} files, ${formatSize(cacheInfo.size)}`}
 					</Badge>
+					{!cacheInfo.isLoading && (
+						<Badge
+							variant="outline"
+							className={
+								cacheInfo.missingCount + cacheInfo.failedCount > 0
+									? "border-amber-500/40 text-amber-600 dark:text-amber-400"
+									: "border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
+							}
+						>
+							{cacheInfo.cachedCount} healthy
+							{cacheInfo.missingCount + cacheInfo.failedCount > 0
+								? `, ${cacheInfo.missingCount + cacheInfo.failedCount} need cleanup`
+								: ""}
+						</Badge>
+					)}
 					<Button
 						type="button"
 						variant="outline"
@@ -693,6 +736,71 @@ function CacheSettings() {
 				</div>
 			</SettingRow>
 			<SettingRow
+				title="Cache behavior"
+				description="Controls which opened resources are kept for offline use."
+			>
+				<Select
+					value={settings.resourceCacheMode}
+					onValueChange={(value) =>
+						void setSetting(
+							"resourceCacheMode",
+							value as ResourceCacheModeSetting,
+						)
+					}
+				>
+					<SelectTrigger className="w-[220px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{resourceCacheModeOptions.map((value) => (
+							<SelectItem key={value} value={value}>
+								{resourceCacheModeLabels[value]}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingRow
+				title="Maximum cache size"
+				description="Least recently opened resources are evicted first when the cache grows past this limit."
+			>
+				<div className="flex items-center gap-2">
+					<Input
+						type="number"
+						min={50}
+						max={10240}
+						step={50}
+						className="w-28"
+						value={settings.resourceCacheMaxSizeMb}
+						onChange={(event) => {
+							const value = Number(event.target.value);
+							if (!Number.isFinite(value)) return;
+							void setSetting("resourceCacheMaxSizeMb", value);
+						}}
+					/>
+					<span className="text-sm text-muted-foreground">MB</span>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={async () => {
+							const db = await ItsduResourcesDBWrapper.getInstance();
+							const removed = await db.enforceMaxSize(
+								settings.resourceCacheMaxSizeMb * 1024 * 1024,
+							);
+							await refreshCacheInfo();
+							sonnerToast.success(
+								removed
+									? `Evicted ${removed} old resource${removed === 1 ? "" : "s"}`
+									: "Cache is within the limit",
+							);
+						}}
+					>
+						Apply limit
+					</Button>
+				</div>
+			</SettingRow>
+			<SettingRow
 				title="Browse cached resources"
 				description="Open, search, and remove individual cached files."
 			>
@@ -700,6 +808,20 @@ function CacheSettings() {
 					<Link to="/resources" onClick={() => setShowSettingsModal(false)}>
 						View resources
 					</Link>
+				</Button>
+			</SettingRow>
+			<SettingRow
+				title="Clear stale cache records"
+				description="Removes broken cache entries without deleting healthy offline resources."
+			>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={() => void clearProblemCache()}
+				>
+					<Trash2 className="mr-2 h-3.5 w-3.5" />
+					Clear stale
 				</Button>
 			</SettingRow>
 			<SettingRow

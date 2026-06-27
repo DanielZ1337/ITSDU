@@ -31,6 +31,7 @@ import {
 	AlertTriangle,
 	ArrowRight,
 	CalendarDays,
+	CheckCircle2,
 	CheckSquare,
 	File as FileIcon,
 	GraduationCap,
@@ -39,6 +40,7 @@ import {
 	RefreshCcw,
 	Settings,
 	Star,
+	WifiOff,
 } from "lucide-react";
 import type React from "react";
 import { useMemo } from "react";
@@ -619,6 +621,21 @@ function RecentResourcesWidget({
 										{resource.CourseTitle || "Cached resource"}
 									</p>
 								</div>
+								<Badge
+									variant="outline"
+									className={
+										resource.cacheStatus === "cached"
+											? "hidden gap-1 border-emerald-500/30 text-[10px] font-normal text-emerald-600 dark:text-emerald-300 sm:inline-flex"
+											: "hidden gap-1 border-amber-500/30 text-[10px] font-normal text-amber-600 dark:text-amber-300 sm:inline-flex"
+									}
+								>
+									{resource.cacheStatus === "cached" ? (
+										<CheckCircle2 className="h-3 w-3" />
+									) : (
+										<WifiOff className="h-3 w-3" />
+									)}
+									{resource.cacheStatus === "cached" ? "Offline" : "Online"}
+								</Badge>
 								<div className="shrink-0 text-right">
 									<p className="text-xs text-muted-foreground">
 										{formatSize(resource.size)}
