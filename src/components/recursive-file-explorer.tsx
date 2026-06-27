@@ -1,8 +1,9 @@
 import ErrorPage from "@/error-page.tsx";
+import { useCachedResources } from "@/hooks/useCachedResources";
 import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources.ts";
 // eslint-disable-next-line no-redeclare
-import { File, FolderClosedIcon, FolderOpenIcon } from "lucide-react";
-import { Suspense, useCallback, useState } from "react";
+import { Database, File, FolderClosedIcon, FolderOpenIcon } from "lucide-react";
+import { Suspense, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import "@/styles/3-dots-loading.css";
 import {
@@ -12,6 +13,7 @@ import {
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { useDownloadActivity } from "@/hooks/useDownloadActivity";
+import { cacheResourceForOffline } from "@/lib/resources/cache-actions";
 import { getFormattedSize } from "@/lib/utils";
 import {
 	isResourceFile,
@@ -22,9 +24,7 @@ import type { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/ut
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
 import ReactLoading from "react-loading";
-import { useNavigate } from "react-router-dom";
 import { toast as sonnerToast } from "sonner";
-import { Button } from "./ui/button";
 import { Highlight } from "./ui/hightlight";
 import { useSearch } from "./ui/search-input";
 
@@ -36,12 +36,25 @@ export default function RecursiveFileExplorer({
 	courseId,
 	folderId,
 	isOpen,
+	cachedIds,
 }: {
 	courseId: number;
 	folderId: number;
 	isOpen: boolean;
+	cachedIds?: Set<string>;
 }) {
 	const [showNested, setShowNested] = useState<NestedItem>({});
+	const cachedResources = useCachedResources();
+	const visibleCachedIds = useMemo(
+		() =>
+			cachedIds ??
+			new Set(
+				cachedResources.resources
+					.filter((resource) => resource.cacheStatus === "cached")
+					.map((resource) => resource.elementId),
+			),
+		[cachedIds, cachedResources.resources],
+	);
 
 	const { data, isLoading } = useGETcourseFolderResources({
 		courseId: courseId,
@@ -56,8 +69,8 @@ export default function RecursiveFileExplorer({
 
 	const handleResourceNavigation = useCallback(
 		(resource: ItslearningRestApiEntitiesPersonalCourseCourseResource) => {
-			if (isSupportedResourceInApp(resource)) {
-				navigateToResource(resource);
+			if (isSupportedResourceInApp(resource as never)) {
+				navigateToResource(resource as never);
 			} else {
 				window.app.openExternal(resource.ContentUrl);
 			}
@@ -150,6 +163,7 @@ export default function RecursiveFileExplorer({
 													isOpen={showNested[parent.ElementId]}
 													courseId={courseId}
 													folderId={parent.ElementId}
+													cachedIds={visibleCachedIds}
 												/>
 											)}
 										</div>
@@ -178,6 +192,11 @@ export default function RecursiveFileExplorer({
 													text={parent.Title}
 												/>
 											</p>
+											{visibleCachedIds.has(parent.ElementId.toString()) && (
+												<span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-300">
+													Offline
+												</span>
+											)}
 										</button>
 									</ResourceContextMenu>
 								)}
@@ -215,8 +234,14 @@ export function useDownloadToast({
 			const { path, size } = await window.download.start(
 				resourceArg.ElementId,
 				resourceArg.Title,
+				{ id: activityId },
 			);
-			updateEntry(activityId, { status: "completed", path, size });
+			updateEntry(activityId, {
+				status: "completed",
+				path,
+				size,
+				progress: 100,
+			});
 			sonnerToast.success(`Downloaded ${resourceArg.Title}`, {
 				id: toastId,
 				description: `${path} (${getFormattedSize(size)})`,
@@ -258,6 +283,24 @@ export function ResourceContextMenu({
 	const navigateToResource = useNavigateToResource();
 
 	const { downloadToast } = useDownloadToast({ resource });
+	const cacheForOffline = async () => {
+		await sonnerToast.promise(
+			cacheResourceForOffline({
+				elementId: resource.ElementId,
+				title: resource.Title,
+				courseId: "CourseId" in resource ? resource.CourseId : undefined,
+				courseTitle:
+					"CourseTitle" in resource && typeof resource.CourseTitle === "string"
+						? resource.CourseTitle
+						: undefined,
+			}),
+			{
+				loading: `Caching ${resource.Title}...`,
+				success: `${resource.Title} is available offline`,
+				error: "Couldn't cache resource for offline use",
+			},
+		);
+	};
 
 	return (
 		<ContextMenu>
@@ -282,13 +325,24 @@ export function ResourceContextMenu({
 						Download
 					</ContextMenuItem>
 				)}
-				{isSupportedResourceInApp(resource) && (
+				{isResourceFile(resource) && (
+					<ContextMenuItem
+						onClick={(e) => {
+							e.stopPropagation();
+							void cacheForOffline();
+						}}
+					>
+						<Database className="mr-2 h-4 w-4" />
+						Cache for offline
+					</ContextMenuItem>
+				)}
+				{isSupportedResourceInApp(resource as never) && (
 					<ContextMenuItem
 						onClick={async (e) => {
 							e.stopPropagation();
 							// documents/:elementId for pdfs
 							// office/:elementId for office documents
-							navigateToResource(resource);
+							navigateToResource(resource as never);
 						}}
 					>
 						Open In App

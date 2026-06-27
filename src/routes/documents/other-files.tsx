@@ -17,7 +17,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, RefreshCcw, WifiOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -259,7 +259,8 @@ function OtherFiles() {
 	if (!elementId) {
 		throw new Error("Invalid ID");
 	}
-	const { isLoading, isError, data } = useResourceByElementID(elementId);
+	const { isLoading, isError, error, data, refetch } =
+		useResourceByElementID(elementId);
 
 	useEffect(() => {
 		if (data?.type === "text/csv") {
@@ -272,7 +273,32 @@ function OtherFiles() {
 	}, [data?.text]);
 
 	if (isError) {
-		return <p className="text-primary">Error</p>;
+		return (
+			<div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center">
+				<div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
+					<WifiOff className="h-5 w-5 text-muted-foreground" />
+				</div>
+				<div>
+					<h1 className="text-lg font-semibold">
+						This resource is not available offline
+					</h1>
+					<p className="mt-1 max-w-md text-sm text-muted-foreground">
+						{error instanceof Error
+							? error.message
+							: "Connect to the internet and try again."}
+					</p>
+				</div>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={() => void refetch()}
+				>
+					<RefreshCcw className="mr-2 h-3.5 w-3.5" />
+					Retry
+				</Button>
+			</div>
+		);
 	}
 	let results;
 	let columns;
@@ -286,7 +312,7 @@ function OtherFiles() {
 			} else {
 				const parsedData = results?.data;
 				headers = parsedData?.[0] as string[];
-				rows = parsedData?.slice(1).map((row: string[]) => {
+				rows = (parsedData?.slice(1) as string[][]).map((row) => {
 					return row.reduce((acc: any, value: string, index: number) => {
 						acc[headers[index]] = value;
 						return acc;
@@ -331,44 +357,6 @@ function OtherFiles() {
 					</Button>
 				</div>
 				{data?.text}
-			</div>
-		);
-	};
-
-	const JsonRenderer = () => {
-		return (
-			<div className="flex h-full flex-col items-center p-6">
-				<div className="flex flex-col items-center justify-center gap-4">
-					<div className="flex flex-col items-center gap-4">
-						<h1 className="text-4xl font-bold">JSON File</h1>
-						<p className="text-xl">
-							This file is not supported by itslearning.
-						</p>
-					</div>
-					<Button
-						variant="outline"
-						className="ml-auto"
-						disabled={isLoading}
-						onClick={() => {
-							if (!data || !headers) return;
-
-							let url = data?.url;
-							const name = data?.name ?? "export.json";
-							const a = document.createElement("a");
-							a.setAttribute("hidden", "");
-							a.setAttribute("href", url);
-							a.setAttribute("download", name);
-							document.body.appendChild(a);
-							a.click();
-							document.body.removeChild(a);
-						}}
-					>
-						Export
-					</Button>
-				</div>
-				<pre className="text-left">
-					{JSON.stringify(JSON.parse(data?.text ?? "{}"), null, 4)}
-				</pre>
 			</div>
 		);
 	};
@@ -580,23 +568,3 @@ function OtherFiles() {
 }
 
 export default memo(OtherFiles);
-
-function DownloadButton({ url, name }: { url?: string; name?: string }) {
-	return (
-		<Button
-			variant="outline"
-			className="ml-auto"
-			onClick={() => {
-				const a = document.createElement("a");
-				a.setAttribute("hidden", "");
-				a.setAttribute("href", url ?? "");
-				a.setAttribute("download", name ?? "");
-				document.body.appendChild(a);
-				a.click();
-				document.body.removeChild(a);
-			}}
-		>
-			Export
-		</Button>
-	);
-}

@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { AnimatePresence, m } from "framer-motion";
 import { useEffect } from "react";
 import { useErrorBoundary } from "react-error-boundary";
-import { useNavigate } from "react-router-dom";
 
 export default function IsOnlineIndicator() {
 	const { isOnline, debouncedIsOnline } = useIsOnline();
@@ -14,8 +13,6 @@ export default function IsOnlineIndicator() {
 
 	const changedFromOfflineToOnline =
 		debouncedIsOnline === false && isOnline === true;
-	const navigate = useNavigate();
-
 	useEffect(() => {
 		if (changedFromOfflineToOnline) {
 			window.auth.refresh().then(() => {
@@ -40,7 +37,10 @@ export default function IsOnlineIndicator() {
 		<>
 			<AnimatePresence>
 				{isOnline === false && (
-					<IsOnline title="You are offline" className="bg-red-500" />
+					<IsOnline
+						title="You are offline. Cached resources remain available."
+						className="bg-red-500"
+					/>
 				)}
 			</AnimatePresence>
 			<AnimatePresence>
