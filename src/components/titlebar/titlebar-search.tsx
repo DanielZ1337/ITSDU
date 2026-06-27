@@ -374,8 +374,6 @@ function ResourcesCommandList({
 		};
 	}, [resources]);
 
-	console.log(resources);
-
 	return (
 		<>
 			<CommandEmpty

@@ -1,18 +1,13 @@
-import { getAccessToken } from "@/lib/utils.ts";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
-import { defaultSettings } from "@/types/settings";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { lazy, useEffect, useRef } from "react";
+import { useSettings } from "@/hooks/atoms/useSettings";
+import { lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { createHashRouter, useParams, useSearchParams } from "react-router-dom";
+import { Navigate, createHashRouter } from "react-router-dom";
 import { GlobalShortcuts } from "./components/global-shortcuts";
 import { Loader } from "./components/ui/loader";
 import { GlobalErrorBoundaryProvider } from "./contexts/global-error-boundary-context";
-import useGETssoUrl from "./queries/sso/useGETssoUrl";
 import AllTasks from "./routes/all-tasks";
-import { GETunreadInstantMessagesCountApiUrl } from "./types/api-types/messages/GETunreadInstantMessagesCount";
 
 const RouterProvider = lazy(() =>
 	import("react-router-dom").then((module) => ({
@@ -79,14 +74,30 @@ const MergeZIPDocumentsLazy = lazy(
 const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
 const NativeSSOElement = lazy(() => import("@/routes/sso/native-sso-element"));
 
+function LandingRedirect() {
+	const { settings, isHydrated } = useSettings();
+
+	if (!isHydrated) return <Loader />;
+
+	const landingPath =
+		{
+			overview: "/overview",
+			courses: "/courses",
+			calendar: "/calendar",
+			tasks: "/all-tasks",
+			messages: "/messages",
+		}[settings.defaultLandingPage] ?? "/overview";
+
+	return <Navigate to={landingPath} replace />;
+}
+
 const router = createHashRouter([
 	{
 		element: <Layout />,
 		errorElement: <ErrorPage />,
 		children: [
 			{
-				path: "/",
-				element: <Index />,
+				element: <LandingRedirect />,
 				errorElement: <ErrorPage />,
 				index: true,
 			},
@@ -128,6 +139,11 @@ const router = createHashRouter([
 			},
 			{
 				path: "/courses",
+				element: <Index />,
+				errorElement: <ErrorPage />,
+			},
+			{
+				path: "/courses-legacy",
 				element: <CoursesIndex />,
 				errorElement: <ErrorPage />,
 			},
@@ -255,18 +271,6 @@ const router = createHashRouter([
 		],
 	},
 ]);
-
-// initialize settings in the local storage
-if (!localStorage.getItem("settings")) {
-	localStorage.setItem("settings", JSON.stringify({ ...defaultSettings }));
-} else {
-	//if settings is already initialized but not all the settings are present, add the missing settings
-	const settings = JSON.parse(localStorage.getItem("settings")!);
-	localStorage.setItem(
-		"settings",
-		JSON.stringify({ ...defaultSettings, ...settings }),
-	);
-}
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<GlobalErrorBoundaryProvider>

@@ -5,6 +5,7 @@ import {
 	FileSearch,
 	Files,
 	GanttChart,
+	GraduationCap,
 	Route,
 	Users2,
 } from "lucide-react";
@@ -22,9 +23,9 @@ const defaultNavLinkClassName = "h-4 w-4 3xl:w-5 3xl:h-5";
 
 export const navlinks = [
 	{
-		title: "Home",
-		icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
-		href: "/",
+		title: "Courses",
+		icon: <GraduationCap className={cn("", defaultNavLinkClassName)} />,
+		href: "/courses",
 		end: true,
 		disabled: false,
 	},
@@ -33,7 +34,7 @@ export const navlinks = [
 		icon: <GanttChart className={cn("", defaultNavLinkClassName)} />,
 		href: "/overview",
 		end: true,
-		disabled: true,
+		disabled: false,
 	},
 	{
 		title: "Updates",
@@ -77,13 +78,6 @@ export const navlinks = [
 		end: true,
 		disabled: false,
 	},
-	/* {
-        title: 'Courses',
-        icon: <BookCopy className={cn("", defaultNavLinkClassName)} />,
-        href: '/courses',
-        end: true,
-        disabled: false
-    }, */
 ] as NavigationType[];
 
 export const courseNavLinks = [

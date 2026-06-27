@@ -2,12 +2,12 @@ import CourseCardStarredSelect from "@/components/course/course-card/course-card
 import CourseCards from "@/components/course/course-card/course-cards.tsx";
 import CourseSearchDialog from "@/components/course/course-search-dialog";
 import CourseSortSelect from "@/components/course/course-sort-select.tsx";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { Input } from "@/components/ui/input.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn, isMacOS } from "@/lib/utils";
 import {
 	CourseCardsSortByTypes,
-	CourseCardsSortByTypesConst,
 } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
 import {
 	CourseCardsSelectOptions,
@@ -16,18 +16,23 @@ import {
 import { useDebounce } from "@uidotdev/usehooks";
 import { motion } from "framer-motion";
 import { GraduationCap, Search } from "lucide-react";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Helmet } from "react-helmet-async";
 
 export default function Index() {
+	const { settings, setSetting } = useSettings();
 	const [searchInput, setSearchInput] = useState<string>("");
 	const debouncedSearchTerm = useDebounce(searchInput, 100);
 	const [selectedRankedBy, setSelectedRankedBy] =
-		useState<CourseCardsSortByTypes>(CourseCardsSortByTypesConst[0]);
+		useState<CourseCardsSortByTypes>(settings.courseSortBy);
 	const [selectedStarredOption, setSelectedStarredOption] =
 		useState<CourseCardsSelectOptions>(CourseCardsSelectOptionsEnum.Starred);
 	const cardsRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		setSelectedRankedBy(settings.courseSortBy);
+	}, [settings.courseSortBy]);
 
 	return (
 		<div className="flex flex-col flex-1 h-full w-full">
@@ -66,7 +71,10 @@ export default function Index() {
 							</div>
 							<CourseSortSelect
 								selectedRankedBy={selectedRankedBy}
-								setSelectedRankedBy={setSelectedRankedBy}
+								setSelectedRankedBy={(sortBy) => {
+									setSelectedRankedBy(sortBy);
+									void setSetting("courseSortBy", sortBy);
+								}}
 							/>
 							<CourseCardStarredSelect
 								selectedStarredOption={selectedStarredOption}

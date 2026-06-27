@@ -1,13 +1,13 @@
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
+import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
 import { Spinner } from "@nextui-org/spinner";
-import { Suspense, lazy, useEffect, useRef } from "react";
+import { Suspense, lazy, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { useUpdateAvailableToast } from "./update-available-toast";
-import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
 
 const ToasterLazy = lazy(() =>
 	import("@/components/ui/toaster").then((module) => ({
@@ -52,8 +52,6 @@ export default function Layout() {
 	const { sidebarActive } = useSidebar();
 	const ref = useRef<HTMLDivElement>(null);
 
-	console.log(sidebarActive);
-
 	const { pathname } = useLocation();
 
 	return (
@@ -62,7 +60,10 @@ export default function Layout() {
 				<IsOnlineIndicatorLazy />
 			</Suspense>
 			<div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
-				<Link className="shrink-0 no-drag mt-2 px-2 py-1 bg-muted/20 rounded-lg" to={"/"}>
+				<Link
+					className="shrink-0 no-drag mt-2 px-2 py-1 bg-muted/20 rounded-lg"
+					to={"/"}
+				>
 					<img
 						loading="eager"
 						src="itsl-itslearning-file://i_logo_colored.png"
@@ -137,7 +138,7 @@ export default function Layout() {
 							}
 						>
 							<div
-								className="flex flex-1 flex-col overflow-x-auto overflow-y-auto"
+								className="flex min-h-0 flex-1 flex-col overflow-x-auto overflow-y-auto"
 								/*style={{
 									scrollbarGutter: "stable both-edges"
 								}}*/
