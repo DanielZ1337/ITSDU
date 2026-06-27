@@ -7,7 +7,9 @@ export function getSortedResourcesByTime(
 	sortOrder: SortOrder = "normal",
 ) {
 	const sortedResources = resources.sort((a, b) => {
-		const timeDiff = a.last_accessed.getTime() - b.last_accessed.getTime();
+		const timeDiff =
+			new Date(a.lastOpenedAt ?? a.last_accessed).getTime() -
+			new Date(b.lastOpenedAt ?? b.last_accessed).getTime();
 
 		return sortOrder === "normal" ? timeDiff : -timeDiff;
 	});

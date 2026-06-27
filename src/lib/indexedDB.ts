@@ -1,14 +1,8 @@
 type IDBUtilsResult<T> = Promise<T[]>;
 
-type CustomIDBIndexParameters = {
-	name: string;
-	keyPath: string | Iterable<string>;
-	options?: IDBIndexParameters | undefined;
-};
-
 interface checkRemainingSpaceOptions {
-	onStorageAvailable?: () => void;
-	onStorageUnavailable?: () => void;
+	onStorageAvailable?: () => void | Promise<void>;
+	onStorageUnavailable?: () => void | Promise<void>;
 }
 
 const MAX_DB_SIZE = 300 * 1024 * 1024; // 50 MB
@@ -256,10 +250,10 @@ class IndexedDB<T> {
 
 		if (required && remainingSpace >= required) {
 			console.log("Storage is available");
-			onStorageAvailable && onStorageAvailable();
+			if (onStorageAvailable) await onStorageAvailable();
 		} else {
 			console.log("Storage is unavailable");
-			onStorageUnavailable && onStorageUnavailable();
+			if (onStorageUnavailable) await onStorageUnavailable();
 		}
 	}
 
@@ -269,7 +263,7 @@ class IndexedDB<T> {
 				throw new Error("Database is not open");
 			}
 
-			const store = this.db.createObjectStore(this.DB_STORE_NAME, {
+			this.db.createObjectStore(this.DB_STORE_NAME, {
 				keyPath: this.keyPath,
 			}); // Use keyPath value
 		} catch (error) {
