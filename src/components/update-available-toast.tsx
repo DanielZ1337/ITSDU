@@ -1,12 +1,22 @@
+import {
+	updateAvailableVersionAtom,
+	updateCheckErrorAtom,
+	updateReadyAtom,
+} from "@/atoms/update-status";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useVersion } from "@/hooks/atoms/useVersion";
+import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
 import type { UpdateInfo } from "electron-updater";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function useUpdateAvailableToast() {
 	const { version } = useVersion();
 	const { settings, isHydrated } = useSettings();
+	const setUpdateReady = useSetAtom(updateReadyAtom);
+	const setUpdateAvailableVersion = useSetAtom(updateAvailableVersionAtom);
+	const setUpdateCheckError = useSetAtom(updateCheckErrorAtom);
 	const [updateResult, setUpdateResult] = useState<UpdateInfo | null>(null);
 	const isUpdateAvailable =
 		updateResult?.version !== version && updateResult?.version !== undefined;
@@ -18,9 +28,14 @@ export function useUpdateAvailableToast() {
 		try {
 			const result = await window.app.checkForUpdates();
 			setUpdateResult(result);
+			setUpdateCheckError(null);
+			setUpdateAvailableVersion(
+				result?.version && result.version !== version ? result.version : null,
+			);
 		} catch (error) {
 			console.error(error);
 			setIsError(true);
+			setUpdateCheckError(getUpdateErrorMessage(error));
 		}
 	}
 
@@ -28,9 +43,9 @@ export function useUpdateAvailableToast() {
 		if (isUpdateAvailable) {
 			window.ipcRenderer.on("app:updateDownloaded", () => {
 				setIsDownloading(false);
+				setUpdateReady(true);
 			});
 			window.ipcRenderer.on("app:downloadProgress", (_event, progress) => {
-				console.log(progress);
 				setDownloadProgress(progress.percent);
 			});
 		}
@@ -39,7 +54,7 @@ export function useUpdateAvailableToast() {
 			window.ipcRenderer.removeAllListeners("app:updateDownloaded");
 			window.ipcRenderer.removeAllListeners("app:downloadProgress");
 		};
-	}, [isUpdateAvailable]);
+	}, [isUpdateAvailable, setUpdateReady]);
 
 	useEffect(() => {
 		if (!isDownloading) return;

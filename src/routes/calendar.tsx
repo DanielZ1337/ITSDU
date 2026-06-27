@@ -64,7 +64,7 @@ import {
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 type CalendarProps = {
@@ -148,6 +148,7 @@ function CalendarPlanner({
 	const [selectedEvent, setSelectedEvent] =
 		useState<NormalizedCalendarEvent | null>(null);
 	const hydratedDefaultView = useRef(false);
+	const [searchParams, setSearchParams] = useSearchParams();
 
 	useEffect(() => {
 		if (!isHydrated || hydratedDefaultView.current || defaultViewOverride)
@@ -200,6 +201,24 @@ function CalendarPlanner({
 		() => normalizeCalendarEvents(rawEvents, { courseTitleById }),
 		[courseTitleById, rawEvents],
 	);
+
+	// Deep link support (command palette / notification center): /calendar?eventId=123
+	useEffect(() => {
+		const requestedEventId = searchParams.get("eventId");
+		if (!requestedEventId) return;
+
+		const match = allEvents.find(
+			(event) => String(event.numericId) === requestedEventId,
+		);
+		if (match) {
+			setSelectedEvent(match);
+			setSelectedDay(startOfDay(match.startsAt ?? new Date()));
+		}
+
+		const nextParams = new URLSearchParams(searchParams);
+		nextParams.delete("eventId");
+		setSearchParams(nextParams, { replace: true });
+	}, [allEvents, searchParams, setSearchParams]);
 
 	const courseOptions = useMemo(() => {
 		const map = new Map<number, string>();
@@ -468,7 +487,12 @@ function CalendarToolbar({
 		<section className="flex flex-col gap-3 rounded-xl border bg-card p-3">
 			<div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
 				<div className="flex flex-wrap items-center gap-2">
-					<Button type="button" variant="outline" size="sm" onClick={onToday}>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={onToday}
+					>
 						Today
 					</Button>
 					<div className="flex rounded-md border bg-background">

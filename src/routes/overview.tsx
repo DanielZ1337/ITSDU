@@ -1,14 +1,22 @@
+import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
+import {
+	type CachedResourceSummary,
+	useCachedResources,
+} from "@/hooks/useCachedResources";
 import {
 	type NormalizedCalendarEvent,
 	formatEventTimeRange,
 	groupAgendaEvents,
 	normalizeCalendarEvents,
 } from "@/lib/calendar/calendar-events";
-import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
+import {
+	formatSize,
+	getResourceOpenRoute,
+} from "@/lib/resources/resource-format";
 import { cn } from "@/lib/utils";
 import useGETcalendarEvents from "@/queries/calendar/useGETcalendarEvents";
 import useGETcourses from "@/queries/course-cards/useGETcourses";
@@ -33,7 +41,7 @@ import {
 	Star,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Link } from "react-router-dom";
 
@@ -46,14 +54,6 @@ type DashboardTask = ItslearningRestApiEntitiesTask & {
 
 type DashboardThread = ItslearningRestApiEntitiesInstantMessageThread & {
 	unread: boolean;
-};
-
-type RecentResource = {
-	elementId: string;
-	name: string;
-	CourseTitle?: string;
-	size: number;
-	last_accessed: Date;
 };
 
 export default function Overview() {
@@ -81,7 +81,7 @@ export default function Overview() {
 		{ PageIndex: 0, PageSize: 8, sortBy: "LastOnline", isShowMore: false },
 		{ suspense: false, staleTime: 1000 * 60 * 10 },
 	);
-	const recent = useRecentResources();
+	const recent = useCachedResources({ limit: 8 });
 
 	// --- Tasks: dedupe obvious repeats, classify urgency, sort by due date ---
 	const tasks = useMemo<DashboardTask[]>(() => {
@@ -586,12 +586,13 @@ function PinnedCoursesWidget({
 function RecentResourcesWidget({
 	recent,
 }: {
-	recent: ReturnType<typeof useRecentResources>;
+	recent: ReturnType<typeof useCachedResources>;
 }) {
 	return (
 		<Widget
 			title="Recent resources"
 			icon={<FileIcon className="h-4 w-4" />}
+			action={<WidgetLink to="/resources" label="View all" />}
 			isLoading={recent.isLoading}
 			isError={recent.isError}
 			error={recent.error}
@@ -600,30 +601,36 @@ function RecentResourcesWidget({
 			emptyText="No cached resources yet. Files you open appear here."
 		>
 			<ul className="flex flex-col gap-1">
-				{recent.resources.slice(0, 6).map((resource) => (
-					<li key={resource.elementId}>
-						<Link
-							to={`/documents/pdf/${resource.elementId}`}
-							className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
-						>
-							<FileTypeBadge name={resource.name} />
-							<div className="min-w-0 flex-1">
-								<p className="truncate text-sm font-medium">{resource.name}</p>
-								<p className="truncate text-xs text-muted-foreground">
-									{resource.CourseTitle || "Cached resource"}
-								</p>
-							</div>
-							<div className="shrink-0 text-right">
-								<p className="text-xs text-muted-foreground">
-									{formatSize(resource.size)}
-								</p>
-								<p className="text-[11px] text-muted-foreground/70">
-									{formatShortDate(resource.last_accessed)}
-								</p>
-							</div>
-						</Link>
-					</li>
-				))}
+				{recent.resources.slice(0, 6).map((resource) => {
+					const route = getResourceOpenRoute(resource.name, resource.elementId);
+					return (
+						<li key={resource.elementId}>
+							<Link
+								to={route.pathname}
+								state={route.state}
+								className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
+							>
+								<ResourceTypeBadge name={resource.name} />
+								<div className="min-w-0 flex-1">
+									<p className="truncate text-sm font-medium">
+										{resource.name}
+									</p>
+									<p className="truncate text-xs text-muted-foreground">
+										{resource.CourseTitle || "Cached resource"}
+									</p>
+								</div>
+								<div className="shrink-0 text-right">
+									<p className="text-xs text-muted-foreground">
+										{formatSize(resource.size)}
+									</p>
+									<p className="text-[11px] text-muted-foreground/70">
+										{formatShortDate(resource.last_accessed)}
+									</p>
+								</div>
+							</Link>
+						</li>
+					);
+				})}
 			</ul>
 		</Widget>
 	);
@@ -633,7 +640,11 @@ function RecentResourcesWidget({
 /* Continue where you left off (optional, only when data exists)              */
 /* -------------------------------------------------------------------------- */
 
-function ContinueWidget({ resources }: { resources: RecentResource[] }) {
+function ContinueWidget({
+	resources,
+}: {
+	resources: CachedResourceSummary[];
+}) {
 	const items = resources.slice(0, 3);
 	if (items.length === 0) return null;
 
@@ -648,22 +659,26 @@ function ContinueWidget({ resources }: { resources: RecentResource[] }) {
 				</h2>
 			</header>
 			<div className="flex flex-col gap-1 p-3">
-				{items.map((resource) => (
-					<Link
-						key={resource.elementId}
-						to={`/documents/pdf/${resource.elementId}`}
-						className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
-					>
-						<FileTypeBadge name={resource.name} />
-						<div className="min-w-0 flex-1">
-							<p className="truncate text-sm font-medium">{resource.name}</p>
-							<p className="truncate text-xs text-muted-foreground">
-								{resource.CourseTitle || "Recently opened"}
-							</p>
-						</div>
-						<ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-					</Link>
-				))}
+				{items.map((resource) => {
+					const route = getResourceOpenRoute(resource.name, resource.elementId);
+					return (
+						<Link
+							key={resource.elementId}
+							to={route.pathname}
+							state={route.state}
+							className="flex items-center gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-accent"
+						>
+							<ResourceTypeBadge name={resource.name} />
+							<div className="min-w-0 flex-1">
+								<p className="truncate text-sm font-medium">{resource.name}</p>
+								<p className="truncate text-xs text-muted-foreground">
+									{resource.CourseTitle || "Recently opened"}
+								</p>
+							</div>
+							<ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+						</Link>
+					);
+				})}
 			</div>
 		</section>
 	);
@@ -822,78 +837,6 @@ function WidgetBoundary({ children }: { children: React.ReactNode }) {
 	);
 }
 
-function FileTypeBadge({ name }: { name: string }) {
-	const ext = fileExtension(name);
-	return (
-		<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-muted/40 text-[10px] font-semibold uppercase text-muted-foreground">
-			{ext ? ext.slice(0, 4) : <FileIcon className="h-4 w-4" />}
-		</div>
-	);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Data: recent resources from IndexedDB                                      */
-/* -------------------------------------------------------------------------- */
-
-function useRecentResources() {
-	const [state, setState] = useState<{
-		resources: RecentResource[];
-		isLoading: boolean;
-		isError: boolean;
-		error: unknown;
-	}>({ resources: [], isLoading: true, isError: false, error: undefined });
-
-	const load = useCallback(async () => {
-		setState((current) => ({ ...current, isLoading: true, isError: false }));
-		try {
-			const db = await ItsduResourcesDBWrapper.getInstance();
-			const all = await db.getAllResources();
-			const resources = all
-				.sort(
-					(a, b) =>
-						new Date(b.last_accessed).getTime() -
-						new Date(a.last_accessed).getTime(),
-				)
-				.slice(0, 8)
-				.map((resource) => ({
-					elementId: resource.elementId,
-					name:
-						"name" in resource && typeof resource.name === "string"
-							? resource.name
-							: resource.elementId,
-					CourseTitle: resource.CourseTitle,
-					size:
-						"size" in resource && typeof resource.size === "number"
-							? resource.size
-							: 0,
-					last_accessed: new Date(resource.last_accessed),
-				}));
-			setState({
-				resources,
-				isLoading: false,
-				isError: false,
-				error: undefined,
-			});
-		} catch (error) {
-			console.error(error);
-			setState({ resources: [], isLoading: false, isError: true, error });
-		}
-	}, []);
-
-	useEffect(() => {
-		let mounted = true;
-		void (async () => {
-			await load();
-			if (!mounted) return;
-		})();
-		return () => {
-			mounted = false;
-		};
-	}, [load]);
-
-	return { ...state, refetch: load };
-}
-
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                     */
 /* -------------------------------------------------------------------------- */
@@ -993,15 +936,4 @@ function formatShortDate(date: Date) {
 		month: "short",
 		day: "numeric",
 	}).format(date);
-}
-
-function fileExtension(name: string) {
-	const match = name.match(/\.([a-z0-9]+)$/i);
-	return match ? match[1].toLowerCase() : "";
-}
-
-function formatSize(size: number) {
-	if (size < 1024) return `${size} B`;
-	if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
-	return `${Math.round(size / 1024 / 1024)} MB`;
 }

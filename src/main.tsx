@@ -67,6 +67,7 @@ const OfficeDocuments = lazy(
 );
 const OtherFiles = lazy(() => import("@/routes/documents/other-files"));
 const Overview = lazy(() => import("@/routes/overview"));
+const ResourcesLazy = lazy(() => import("@/routes/resources"));
 const AIChats = lazy(() => import("@/routes/ai-chats"));
 const MergeZIPDocumentsLazy = lazy(
 	() => import("@/routes/merge-zip-documents"),
@@ -130,6 +131,11 @@ const router = createHashRouter([
 			{
 				path: "/overview",
 				element: <Overview />,
+				errorElement: <ErrorPage />,
+			},
+			{
+				path: "/resources",
+				element: <ResourcesLazy />,
 				errorElement: <ErrorPage />,
 			},
 			{

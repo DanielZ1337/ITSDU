@@ -11,6 +11,7 @@ import {
 	ContextMenuItem,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { useDownloadActivity } from "@/hooks/useDownloadActivity";
 import { getFormattedSize } from "@/lib/utils";
 import {
 	isResourceFile,
@@ -194,17 +195,28 @@ export function useDownloadToast({
 		| ItslearningRestApiEntitiesPersonalCourseCourseResource
 		| ItslearningRestApiEntitiesElementLink;
 } = {}) {
-	return {
-		async downloadToast(resourceArg = resource) {
-			if (!resourceArg) return;
+	const { addEntry, updateEntry } = useDownloadActivity();
 
-			const toastId = sonnerToast.loading(
-				`Downloading ${resourceArg.Title}...`,
-			);
+	const downloadToast = async (resourceArg = resource) => {
+		if (!resourceArg) return;
+
+		const activityId = `${resourceArg.ElementId}-${Date.now()}`;
+		addEntry({
+			id: activityId,
+			filename: resourceArg.Title,
+			status: "downloading",
+			startedAt: new Date(),
+			retry: () => void downloadToast(resourceArg),
+		});
+
+		const toastId = sonnerToast.loading(`Downloading ${resourceArg.Title}...`);
+
+		try {
 			const { path, size } = await window.download.start(
 				resourceArg.ElementId,
 				resourceArg.Title,
 			);
+			updateEntry(activityId, { status: "completed", path, size });
 			sonnerToast.success(`Downloaded ${resourceArg.Title}`, {
 				id: toastId,
 				description: `${path} (${getFormattedSize(size)})`,
@@ -218,8 +230,18 @@ export function useDownloadToast({
 					},
 				},
 			});
-		},
+		} catch (error) {
+			updateEntry(activityId, {
+				status: "failed",
+				error: error instanceof Error ? error.message : "Download failed",
+			});
+			sonnerToast.error(`Couldn't download ${resourceArg.Title}`, {
+				id: toastId,
+			});
+		}
 	};
+
+	return { downloadToast };
 }
 
 export function ResourceContextMenu({

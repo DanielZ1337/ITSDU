@@ -296,6 +296,36 @@ function logEverywhereError(s: string) {
 	win?.webContents.send("main-process-error", s);
 }
 
+function navigateTrayTo(routePath: string) {
+	win?.show();
+	win?.focus();
+	win?.webContents.send("tray:navigate", routePath);
+}
+
+async function checkForUpdatesFromTray() {
+	const { Notification } = await import("electron");
+	const icon = path.join(process.env.VITE_PUBLIC, "icon.ico");
+
+	try {
+		const { autoUpdater } = await import("electron-updater");
+		const result = await autoUpdater.checkForUpdates();
+		new Notification({
+			title: "ITSDU",
+			body: result?.updateInfo?.version
+				? `Update available: v${result.updateInfo.version}`
+				: "ITSDU is up to date.",
+			icon,
+		}).show();
+	} catch (error) {
+		console.error(error);
+		new Notification({
+			title: "ITSDU",
+			body: "Could not check for updates.",
+			icon,
+		}).show();
+	}
+}
+
 async function initializeAllHandlers() {
 	const { SettingsService } = await import(
 		"./services/settings/settings-service.ts"
@@ -439,6 +469,24 @@ app.whenReady().then(async () => {
 					e.enabled = false;
 				},
 			},
+			{ type: "separator" },
+			{
+				label: "Open Overview",
+				click: () => navigateTrayTo("/overview"),
+			},
+			{
+				label: "Open Calendar",
+				click: () => navigateTrayTo("/calendar"),
+			},
+			{
+				label: "Open Messages",
+				click: () => navigateTrayTo("/messages"),
+			},
+			{
+				label: "Check for updates",
+				click: () => void checkForUpdatesFromTray(),
+			},
+			{ type: "separator" },
 			{
 				label: "Quit",
 				click: function () {

@@ -1,5 +1,6 @@
-import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
+import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSettings } from "@/hooks/atoms/useSettings";
+import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect } from "react";
 
@@ -14,8 +15,12 @@ export function GlobalShortcuts() {
 	}, [resolvedTheme, setSetting, setTheme]);
 
 	const { toggleSettingsModal } = useShowSettingsModal();
+	const { toggleCommandPalette } = useCommandPalette();
+
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
+			const withModifier = e.ctrlKey || e.metaKey;
+
 			if (e.ctrlKey && e.key === "t") {
 				e.preventDefault();
 				handleDarkModeToggle();
@@ -31,6 +36,14 @@ export function GlobalShortcuts() {
 				e.preventDefault();
 				toggleSettingsModal();
 			}
+			if (withModifier && e.key === "k") {
+				e.preventDefault();
+				toggleCommandPalette();
+			}
+			if (withModifier && e.key === ",") {
+				e.preventDefault();
+				toggleSettingsModal();
+			}
 		}
 
 		window.addEventListener("keydown", handleKeyDown);
@@ -38,7 +51,7 @@ export function GlobalShortcuts() {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [handleDarkModeToggle]);
+	}, [handleDarkModeToggle, toggleCommandPalette, toggleSettingsModal]);
 
 	return <></>;
 }

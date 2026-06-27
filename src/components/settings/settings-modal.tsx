@@ -29,6 +29,7 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
+import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
 import {
 	type CalendarViewSetting,
 	type CalendarWeekStartSetting,
@@ -61,6 +62,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast as sonnerToast } from "sonner";
 
 const landingLabels: Record<LandingPageSetting, string> = {
@@ -99,7 +101,7 @@ type DownloadProgress = {
 	total?: number;
 };
 
-const sectionIds = [
+export const sectionIds = [
 	"appearance",
 	"language",
 	"navigation",
@@ -113,9 +115,13 @@ const sectionIds = [
 	"advanced",
 ] as const;
 
-type SectionId = (typeof sectionIds)[number];
+export type SectionId = (typeof sectionIds)[number];
 
-const sectionMeta: Record<
+function isSectionId(value: string | null): value is SectionId {
+	return (sectionIds as readonly string[]).includes(value ?? "");
+}
+
+export const sectionMeta: Record<
 	SectionId,
 	{ label: string; icon: React.ReactNode; description: string }
 > = {
@@ -192,8 +198,17 @@ export default function SettingsModal() {
 }
 
 function SettingsScreen() {
-	const [activeSection, setActiveSection] = useState<SectionId>("appearance");
+	const { requestedSection, setRequestedSection } = useShowSettingsModal();
+	const [activeSection, setActiveSection] = useState<SectionId>(
+		isSectionId(requestedSection) ? requestedSection : "appearance",
+	);
 	const section = sectionMeta[activeSection];
+
+	useEffect(() => {
+		if (!isSectionId(requestedSection)) return;
+		setActiveSection(requestedSection);
+		setRequestedSection(null);
+	}, [requestedSection, setRequestedSection]);
 
 	return (
 		<div className="flex h-full min-h-0 w-full flex-col">
@@ -625,6 +640,7 @@ function DownloadSettings() {
 }
 
 function CacheSettings() {
+	const { setShowSettingsModal } = useShowSettingsModal();
 	const [cacheInfo, setCacheInfo] = useState({
 		count: 0,
 		size: 0,
@@ -675,6 +691,16 @@ function CacheSettings() {
 						Refresh
 					</Button>
 				</div>
+			</SettingRow>
+			<SettingRow
+				title="Browse cached resources"
+				description="Open, search, and remove individual cached files."
+			>
+				<Button asChild type="button" variant="outline" size="sm">
+					<Link to="/resources" onClick={() => setShowSettingsModal(false)}>
+						View resources
+					</Link>
+				</Button>
 			</SettingRow>
 			<SettingRow
 				title="Clear resource cache"
@@ -923,10 +949,43 @@ function PrivacySettings() {
 }
 
 function AdvancedSettings() {
-	const { resetAllSettings } = useSettings();
+	const { settings, resetAllSettings } = useSettings();
+	const { version } = useVersion();
+
+	const copyDiagnostics = async () => {
+		const db = await ItsduResourcesDBWrapper.getInstance();
+		const resources = await db.getAllResources();
+		const cacheSize = resources.reduce(
+			(total, resource) => total + resource.size,
+			0,
+		);
+
+		const diagnostics = {
+			version,
+			userAgent: navigator.userAgent,
+			cache: { files: resources.length, size: formatSize(cacheSize) },
+			settings,
+		};
+
+		await navigator.clipboard.writeText(JSON.stringify(diagnostics, null, 2));
+		sonnerToast.success("Diagnostics copied to clipboard");
+	};
 
 	return (
 		<SettingsGroup>
+			<SettingRow
+				title="Copy diagnostics"
+				description="App version, settings, and cache usage - no tokens or account data."
+			>
+				<Button
+					type="button"
+					variant="outline"
+					size="sm"
+					onClick={() => void copyDiagnostics()}
+				>
+					Copy diagnostics
+				</Button>
+			</SettingRow>
 			<SettingRow
 				title="Reset app settings"
 				description="Restores settings defaults. Cached resources and account data are not cleared."
@@ -1059,14 +1118,4 @@ function getUpdateStatusLabel(
 		default:
 			return isUpdateAvailable ? "Update available" : "Not checked";
 	}
-}
-
-function getUpdateErrorMessage(error: unknown) {
-	if (import.meta.env.DEV) {
-		return "Updates are usually unavailable in development builds.";
-	}
-	if (error instanceof Error && error.message) {
-		return error.message;
-	}
-	return "The update service could not be reached.";
 }

@@ -1,11 +1,15 @@
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
+import { Button } from "@/components/ui/button";
+import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
+import { isMacOS } from "@/lib/utils";
 import { Spinner } from "@nextui-org/spinner";
-import { Suspense, lazy, useRef } from "react";
+import { Command } from "lucide-react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { useUpdateAvailableToast } from "./update-available-toast";
 
@@ -23,6 +27,12 @@ const MessagesDropdown = lazy(
 const NotificationsDropdown = lazy(
 	() => import("@/components/notifications/notifications-dropdown"),
 );
+const NotificationCenterLazy = lazy(
+	() => import("@/components/notifications/notification-center"),
+);
+const DownloadActivityLazy = lazy(
+	() => import("@/components/downloads/download-activity"),
+);
 const BrowserNavLazy = lazy(() => import("@/components/browse-nav"));
 const TitlebarButtonsLazy = lazy(
 	() => import("@/components/titlebar/titlebar"),
@@ -34,6 +44,9 @@ const SettingsModalLazy = lazy(
 	() => import("@/components/settings/settings-modal"),
 );
 const AboutModalLazy = lazy(() => import("@/components/about-modal"));
+const CommandPaletteLazy = lazy(
+	() => import("@/components/command-palette/command-palette"),
+);
 const IsOnlineIndicatorLazy = lazy(
 	() => import("@/components/is-online-indicator"),
 );
@@ -46,13 +59,48 @@ const SonnerLazy = lazy(() =>
 	})),
 );
 
+const quickNavRoutes = [
+	"/overview",
+	"/courses",
+	"/calendar",
+	"/all-tasks",
+	"/messages",
+];
+
 export default function Layout() {
 	useUpdateAvailableToast();
 	useUnreadMessagesNotification();
 	const { sidebarActive } = useSidebar();
 	const ref = useRef<HTMLDivElement>(null);
+	const navigate = useNavigate();
+	const { toggleCommandPalette } = useCommandPalette();
 
 	const { pathname } = useLocation();
+
+	useEffect(() => {
+		function handleKeyDown(e: KeyboardEvent) {
+			if (!(e.ctrlKey || e.metaKey)) return;
+			const index = Number(e.key) - 1;
+			if (Number.isInteger(index) && quickNavRoutes[index]) {
+				e.preventDefault();
+				navigate(quickNavRoutes[index]);
+			}
+		}
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [navigate]);
+
+	useEffect(() => {
+		const handleTrayNavigate = (_event: unknown, routePath: string) => {
+			navigate(routePath);
+		};
+
+		window.ipcRenderer.on("tray:navigate", handleTrayNavigate);
+		return () => {
+			window.ipcRenderer.removeAllListeners("tray:navigate");
+		};
+	}, [navigate]);
 
 	return (
 		<div className="flex h-screen max-h-screen min-h-screen flex-col overflow-hidden">
@@ -85,8 +133,28 @@ export default function Layout() {
 					</ErrorBoundary>
 				</div>
 				<div
-					className={"no-drag flex flex-row items-center justify-center gap-4"}
+					className={"no-drag flex flex-row items-center justify-center gap-2"}
 				>
+					<Button
+						variant="ghost"
+						size="icon"
+						className="shrink-0"
+						onClick={toggleCommandPalette}
+						title={`Command palette (${isMacOS() ? "⌘" : "Ctrl"}K)`}
+					>
+						<Command className="h-5 w-5" />
+						<span className="sr-only">Open command palette</span>
+					</Button>
+					<ErrorBoundary fallback={null}>
+						<Suspense fallback={null}>
+							<DownloadActivityLazy />
+						</Suspense>
+					</ErrorBoundary>
+					<ErrorBoundary fallback={null}>
+						<Suspense fallback={null}>
+							<NotificationCenterLazy />
+						</Suspense>
+					</ErrorBoundary>
 					<ErrorBoundary
 						fallback={
 							<Suspense fallback={<MessagesDropDownSkeleton />}>
@@ -164,6 +232,7 @@ export default function Layout() {
 					<SonnerLazy />
 					<SettingsModalLazy />
 					<AboutModalLazy />
+					<CommandPaletteLazy />
 				</Suspense>
 			</div>
 		</div>
