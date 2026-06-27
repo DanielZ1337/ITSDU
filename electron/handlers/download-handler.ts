@@ -27,7 +27,8 @@ import { getFormattedCookies } from "../utils/cookies.ts";
 const authService = AuthService.getInstance();
 
 function getConfiguredDownloadDirectory() {
-	const configuredDirectory = SettingsService.getInstance().getDownloadDirectory();
+	const configuredDirectory =
+		SettingsService.getInstance().getDownloadDirectory();
 	const directory = configuredDirectory ?? app.getPath("downloads");
 
 	try {
@@ -306,7 +307,13 @@ function itslearningElementDownload() {
 							onDownloadProgress: (progress) => {
 								if (progress.progress) {
 									const percent = Math.round(progress.progress * 100);
-									console.log(`Downloaded ${percent}%`);
+									event.sender.send("download:progress", {
+										id,
+										filename,
+										percent,
+										transferred: progress.loaded,
+										total: progress.total,
+									});
 								}
 							},
 						})
@@ -337,7 +344,7 @@ function itslearningElementDownload() {
 
 							res.data.on("end", () => {
 								const size =
-									res.headers["content-length"] ??
+									Number(res.headers["content-length"]) ||
 									fs.statSync(downloadedFilePath).size;
 								const data = {
 									path: downloadedFilePath,
@@ -353,7 +360,10 @@ function itslearningElementDownload() {
 
 							res.data.on("error", (err: Error) => {
 								reject(err);
-								event.sender.send("download:error", err);
+								event.sender.send("download:error", {
+									id,
+									error: err.message,
+								});
 							});
 						});
 				});
@@ -361,7 +371,10 @@ function itslearningElementDownload() {
 			} catch (e) {
 				if (e instanceof Error) {
 					console.error(e);
-					event.sender.send("download:error", e.name);
+					event.sender.send("download:error", {
+						id,
+						error: e.message || e.name,
+					});
 				}
 			}
 		},
@@ -408,7 +421,10 @@ function mergePDFsHandler() {
 
 				const { filePath } = await Dialog.showSaveDialog(win, {
 					title: "Save As",
-					defaultPath: path.join(getConfiguredDownloadDirectory(), "merged.pdf"),
+					defaultPath: path.join(
+						getConfiguredDownloadDirectory(),
+						"merged.pdf",
+					),
 					buttonLabel: "Save",
 					filters: [{ name: "PDF Files", extensions: ["pdf"] }],
 				});
@@ -495,7 +511,10 @@ function zipDownloadAllCourseResourcesHandler() {
 
 				const { canceled, filePath } = await Dialog.showSaveDialog(win, {
 					title: "Save As",
-					defaultPath: path.join(getConfiguredDownloadDirectory(), "resources.zip"),
+					defaultPath: path.join(
+						getConfiguredDownloadDirectory(),
+						"resources.zip",
+					),
 					buttonLabel: "Save",
 					filters: [{ name: "Zip Files", extensions: ["zip"] }],
 				});
@@ -614,19 +633,33 @@ function downloadExternalHandler() {
 				directory: getConfiguredDownloadDirectory(),
 				showProgressBar: true,
 				showBadge: true,
+				onProgress: (progress) => {
+					event.sender.send("download:progress", {
+						id,
+						filename,
+						percent: Math.round(progress.percent * 100),
+						transferred: progress.transferredBytes,
+						total: progress.totalBytes,
+					});
+				},
 			});
 			// event.sender.send('download:complete', downloadItem.getSavePath())
 
 			void applyDownloadOpenPreference(downloadItem.getSavePath());
 
-			return {
+			const result = {
 				path: downloadItem.getSavePath(),
 				filename: downloadItem.getFilename(),
 				id,
 			};
+			event.sender.send("download:complete", result);
+			return result;
 		} catch (e) {
 			console.error(e);
-			event.sender.send("download:error", null);
+			event.sender.send("download:error", {
+				id,
+				error: e instanceof Error ? e.message : "Download failed",
+			});
 		}
 	});
 }

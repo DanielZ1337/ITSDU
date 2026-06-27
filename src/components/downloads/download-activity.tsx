@@ -4,7 +4,10 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { useDownloadActivity } from "@/hooks/useDownloadActivity";
+import {
+	useDownloadActivity,
+	useDownloadActivityEvents,
+} from "@/hooks/useDownloadActivity";
 import { formatSize } from "@/lib/resources/resource-format";
 import {
 	AlertTriangle,
@@ -12,7 +15,9 @@ import {
 	Download,
 	FolderOpen,
 	Loader2,
+	PanelTopOpen,
 	RefreshCcw,
+	X,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -26,7 +31,8 @@ const statusIcon = {
 
 export default function DownloadActivity() {
 	const [open, setOpen] = useState(false);
-	const { entries, clearFinished } = useDownloadActivity();
+	useDownloadActivityEvents();
+	const { entries, clearFinished, dismissEntry } = useDownloadActivity();
 
 	if (entries.length === 0) return null;
 
@@ -63,30 +69,63 @@ export default function DownloadActivity() {
 					{entries.map((entry) => (
 						<div
 							key={entry.id}
-							className="flex items-start gap-3 rounded-md px-2 py-2"
+							className="group flex items-start gap-3 rounded-md px-2 py-2 hover:bg-muted/40"
 						>
 							<span className="mt-0.5">{statusIcon[entry.status]}</span>
 							<div className="min-w-0 flex-1">
-								<p className="truncate text-sm font-medium">{entry.filename}</p>
+								<div className="flex items-center gap-2">
+									<p className="truncate text-sm font-medium">
+										{entry.filename}
+									</p>
+									{entry.status === "downloading" &&
+										typeof entry.progress === "number" && (
+											<span className="shrink-0 text-[11px] text-muted-foreground">
+												{Math.round(entry.progress)}%
+											</span>
+										)}
+								</div>
 								<p className="truncate text-xs text-muted-foreground">
-									{entry.status === "downloading" && "Downloading..."}
+									{entry.status === "downloading" &&
+										(entry.progress
+											? `${Math.round(entry.progress)}% downloaded`
+											: "Downloading...")}
 									{entry.status === "completed" &&
 										(entry.size ? formatSize(entry.size) : "Done")}
 									{entry.status === "failed" &&
 										(entry.error || "Download failed")}
 								</p>
+								{entry.status === "downloading" && (
+									<div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
+										<div
+											className="h-full rounded-full bg-primary transition-all"
+											style={{ width: `${entry.progress ?? 10}%` }}
+										/>
+									</div>
+								)}
 							</div>
 							{entry.status === "completed" && entry.path && (
-								<Button
-									type="button"
-									variant="ghost"
-									size="icon"
-									className="shrink-0"
-									onClick={() => void window.app.openShell(entry.path!)}
-									title="Open in folder"
-								>
-									<FolderOpen className="h-4 w-4" />
-								</Button>
+								<div className="flex shrink-0 items-center gap-1">
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={() => void window.app.openItem(entry.path!)}
+										title="Open file"
+									>
+										<PanelTopOpen className="h-4 w-4" />
+									</Button>
+									<Button
+										type="button"
+										variant="ghost"
+										size="icon"
+										onClick={() =>
+											void window.app.openShell(parentDirectory(entry.path!))
+										}
+										title="Open folder"
+									>
+										<FolderOpen className="h-4 w-4" />
+									</Button>
+								</div>
 							)}
 							{entry.status === "failed" && entry.retry && (
 								<Button
@@ -100,10 +139,29 @@ export default function DownloadActivity() {
 									<RefreshCcw className="h-4 w-4" />
 								</Button>
 							)}
+							{entry.status !== "downloading" && (
+								<Button
+									type="button"
+									variant="ghost"
+									size="icon"
+									className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+									onClick={() => dismissEntry(entry.id)}
+									title="Dismiss"
+								>
+									<X className="h-4 w-4" />
+								</Button>
+							)}
 						</div>
 					))}
 				</div>
 			</PopoverContent>
 		</Popover>
 	);
+}
+
+function parentDirectory(path: string) {
+	const normalized = path.split("\\").join("/");
+	const index = normalized.lastIndexOf("/");
+	if (index <= 0) return path;
+	return path.slice(0, index);
 }

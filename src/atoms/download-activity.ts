@@ -9,6 +9,7 @@ export type DownloadActivityEntry = {
 	startedAt: Date;
 	path?: string;
 	size?: number;
+	progress?: number;
 	error?: string;
 	retry?: () => void;
 };
