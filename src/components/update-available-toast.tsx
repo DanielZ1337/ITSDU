@@ -5,6 +5,7 @@ import {
 } from "@/atoms/update-status";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useVersion } from "@/hooks/atoms/useVersion";
+import { useT } from "@/lib/i18n";
 import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
 import type { UpdateInfo } from "electron-updater";
 import { useSetAtom } from "jotai";
@@ -14,6 +15,7 @@ import { toast } from "sonner";
 export function useUpdateAvailableToast() {
 	const { version } = useVersion();
 	const { settings, isHydrated } = useSettings();
+	const t = useT();
 	const setUpdateReady = useSetAtom(updateReadyAtom);
 	const setUpdateAvailableVersion = useSetAtom(updateAvailableVersionAtom);
 	const setUpdateCheckError = useSetAtom(updateCheckErrorAtom);
@@ -59,10 +61,13 @@ export function useUpdateAvailableToast() {
 	useEffect(() => {
 		if (!isDownloading) return;
 
-		toast.message(`Downloading update... ${downloadProgress.toFixed(2)}%`, {
-			id: "update-available-toast",
-		});
-	}, [isDownloading, downloadProgress]);
+		toast.message(
+			`${t("common.downloading")}... ${downloadProgress.toFixed(2)}%`,
+			{
+				id: "update-available-toast",
+			},
+		);
+	}, [downloadProgress, isDownloading, t]);
 
 	const handleUpdateClick = async () => {
 		if (isUpdateAvailable) {
@@ -74,9 +79,9 @@ export function useUpdateAvailableToast() {
 					.then(() => window.app.exit()),
 				{
 					id: "update-available-toast",
-					loading: "Downloading update...",
-					success: "Update downloaded!",
-					error: "Error downloading update",
+					loading: t("common.downloading"),
+					success: t("settings.appUpdates.download.title"),
+					error: t("errors.updateCheck"),
 				},
 			);
 		}
@@ -100,19 +105,24 @@ export function useUpdateAvailableToast() {
 
 	useEffect(() => {
 		if (settings.notificationsAppUpdates && isUpdateAvailable) {
-			toast.info("Update available!", {
+			toast.info(t("settings.appUpdates.download.title"), {
 				duration: 10000,
 				action: {
-					label: "Update",
+					label: t("common.install"),
 					onClick: handleUpdateClick,
 				},
 			});
 		}
-	}, [isUpdateAvailable, settings.notificationsAppUpdates]);
+	}, [
+		handleUpdateClick,
+		isUpdateAvailable,
+		settings.notificationsAppUpdates,
+		t,
+	]);
 
 	useEffect(() => {
 		if (settings.notificationsAppUpdates && isError) {
-			toast.error("Error checking for update");
+			toast.error(t("errors.updateCheck"));
 		}
-	}, [isError, settings.notificationsAppUpdates]);
+	}, [isError, settings.notificationsAppUpdates, t]);
 }

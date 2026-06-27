@@ -8,6 +8,7 @@ import {
 	ContextMenuSubTrigger,
 	ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { useT } from "@/lib/i18n";
 import { courseNavLinks } from "@/lib/routes";
 import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources";
 import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources";
@@ -22,6 +23,7 @@ export default function CourseCardContextMenu({
 	const filteredCourseNavLinks = courseNavLinks.filter(
 		(route) => route.end === false,
 	);
+	const t = useT();
 	const navigate = useNavigate();
 
 	const handleItemClick = (route?: string) => {
@@ -33,14 +35,14 @@ export default function CourseCardContextMenu({
 			<ContextMenuTrigger>{children}</ContextMenuTrigger>
 			<ContextMenuContent>
 				{filteredCourseNavLinks.map((route) => {
-					switch (route.title) {
-						case "Resources":
+					switch (route.labelKey) {
+						case "course.resources":
 							return (
-								<ContextMenuSub key={route.title}>
+								<ContextMenuSub key={route.labelKey ?? route.title}>
 									<ContextMenuSubTrigger
 										onClick={() => handleItemClick(route.href)}
 									>
-										{route.title}
+										{route.labelKey ? t(route.labelKey) : route.title}
 									</ContextMenuSubTrigger>
 									<Suspense fallback={null}>
 										<RootFolderResources courseId={courseId} />
@@ -50,10 +52,10 @@ export default function CourseCardContextMenu({
 						default:
 							return (
 								<ContextMenuItem
-									key={route.title}
+									key={route.labelKey ?? route.title}
 									onClick={() => handleItemClick(route.href)}
 								>
-									{route.title}
+									{route.labelKey ? t(route.labelKey) : route.title}
 								</ContextMenuItem>
 							);
 					}

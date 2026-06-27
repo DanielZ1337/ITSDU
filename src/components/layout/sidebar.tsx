@@ -1,11 +1,12 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCourse } from "@/hooks/atoms/useCourse";
-import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useSettings } from "@/hooks/atoms/useSettings";
+import { useSidebar } from "@/hooks/atoms/useSidebar";
+import { useT } from "@/lib/i18n";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, m } from "framer-motion";
-import { lazy, Suspense } from "react";
+import { Suspense, lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SidebarUserFallback from "./sidebar-user-fallback";
 
@@ -17,6 +18,7 @@ export default function Sidebar() {
 	const { settings } = useSettings();
 	const { courseId } = useCourse();
 	const courseActive = courseId !== undefined;
+	const t = useT();
 
 	return (
 		<TooltipProvider delayDuration={100}>
@@ -39,12 +41,12 @@ export default function Sidebar() {
 								transition={{
 									delay: index * 0.03,
 									duration: 0.2,
-									ease: "easeOut"
+									ease: "easeOut",
 								}}
 							>
 								<LazySidebarItem
 									href={link.href}
-									title={link.title}
+									title={link.labelKey ? t(link.labelKey) : (link.title ?? "")}
 									icon={link.icon}
 									end={link.end}
 									disabled={link.disabled}
@@ -75,12 +77,14 @@ export default function Sidebar() {
 											transition={{
 												delay: index * 0.03,
 												duration: 0.2,
-												ease: "easeOut"
+												ease: "easeOut",
 											}}
 										>
 											<LazySidebarItem
 												href={`/courses/${courseId}${link.end ? "" : "/" + link.href}`}
-												title={link.title}
+												title={
+													link.labelKey ? t(link.labelKey) : (link.title ?? "")
+												}
 												icon={link.icon}
 												end={link.end}
 												disabled={link.disabled}

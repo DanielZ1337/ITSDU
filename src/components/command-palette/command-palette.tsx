@@ -17,6 +17,7 @@ import {
 	type NormalizedCalendarEvent,
 	normalizeCalendarEvents,
 } from "@/lib/calendar/calendar-events";
+import { useT } from "@/lib/i18n";
 import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
 import { getResourceOpenRoute } from "@/lib/resources/resource-format";
 import { navlinks } from "@/lib/routes";
@@ -65,6 +66,7 @@ export default function CommandPalette() {
 	const navigate = useNavigate();
 	const { settings, setSetting } = useSettings();
 	const { openSettingsSection } = useShowSettingsModal();
+	const t = useT();
 	const { resolvedTheme, setTheme } = useTheme();
 	const updateReady = useAtomValue(updateReadyAtom);
 
@@ -233,11 +235,11 @@ export default function CommandPalette() {
 			if (result?.version) {
 				toast.info(`Update available: v${result.version}`);
 			} else {
-				toast.success("ITSDU is up to date.");
+				toast.success(t("common.upToDate"));
 			}
 		} catch (error) {
 			console.error(error);
-			toast.error("Could not check for updates.");
+			toast.error(t("errors.updateCheck"));
 		}
 	};
 
@@ -253,16 +255,16 @@ export default function CommandPalette() {
 	};
 
 	const clearResourceCache = async () => {
-		if (!window.confirm("Clear all cached resources? This cannot be undone.")) {
+		if (!window.confirm(t("settings.cache.clearAll.confirm.description"))) {
 			return;
 		}
 		const db = await ItsduResourcesDBWrapper.getInstance();
 		await db.clearResources();
-		toast.success("Resource cache cleared");
+		toast.success(t("settings.cache.clearAll.title"));
 	};
 
 	const logout = async () => {
-		if (!window.confirm("Log out of ITSDU?")) return;
+		if (!window.confirm(t("common.confirmLogOut"))) return;
 		await window.auth.logout();
 	};
 
@@ -279,22 +281,24 @@ export default function CommandPalette() {
 		>
 			<CommandInput
 				autoFocus
-				placeholder="Search courses, resources, tasks, events, settings..."
+				placeholder={`${t("common.search")} courses, resources, tasks, events, settings...`}
 				value={query}
 				onValueChange={setQuery}
 			/>
 			<CommandList className="max-h-[480px]">
-				<CommandEmpty>No results found.</CommandEmpty>
+				<CommandEmpty>{t("common.empty")}</CommandEmpty>
 
-				<CommandGroup heading="Navigation">
+				<CommandGroup heading={t("common.navigation")}>
 					{navlinks.map((link) => (
 						<CommandItem
 							key={link.href}
-							value={`navigate ${link.title}`}
+							value={`navigate ${link.labelKey ? t(link.labelKey) : (link.title ?? "")}`}
 							onSelect={() => close(() => navigate(link.href))}
 						>
 							{link.icon}
-							<span className="ml-2">{link.title}</span>
+							<span className="ml-2">
+								{link.labelKey ? t(link.labelKey) : link.title}
+							</span>
 							{quickNavShortcuts[link.href] && (
 								<CommandShortcut>
 									{quickNavShortcuts[link.href]}
@@ -307,7 +311,7 @@ export default function CommandPalette() {
 				{filteredEvents.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading="Calendar">
+						<CommandGroup heading={t("nav.calendar")}>
 							{filteredEvents.map((event) => (
 								<CommandItem
 									key={event.id}
@@ -330,7 +334,7 @@ export default function CommandPalette() {
 				{filteredTasks.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading="Tasks">
+						<CommandGroup heading={t("nav.tasks")}>
 							{filteredTasks.map((task) => (
 								<CommandItem
 									key={task.TaskId}
@@ -350,7 +354,7 @@ export default function CommandPalette() {
 				{filteredThreads.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading="Messages">
+						<CommandGroup heading={t("nav.messages")}>
 							{filteredThreads.map((thread) => (
 								<CommandItem
 									key={thread.InstantMessageThreadId}
@@ -365,7 +369,7 @@ export default function CommandPalette() {
 									<span className="ml-2 truncate">
 										{thread.Name ||
 											thread.LastMessage?.CreatedByName ||
-											"Thread"}
+											t("overview.empty.thread")}
 									</span>
 								</CommandItem>
 							))}
@@ -376,7 +380,7 @@ export default function CommandPalette() {
 				{filteredResources.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading="Resources">
+						<CommandGroup heading={t("resources.title")}>
 							{filteredResources.map((resource) => (
 								<CommandItem
 									key={resource.elementId}
@@ -402,7 +406,7 @@ export default function CommandPalette() {
 				{courseResults.length > 0 && (
 					<>
 						<CommandSeparator />
-						<CommandGroup heading="Courses">
+						<CommandGroup heading={t("nav.courses")}>
 							{courseResults.map((course) => (
 								<CommandItem
 									key={course.CourseId}
@@ -420,31 +424,31 @@ export default function CommandPalette() {
 				)}
 
 				<CommandSeparator />
-				<CommandGroup heading="Settings">
+				<CommandGroup heading={t("common.settings")}>
 					{sectionIds.map((id) => (
 						<CommandItem
 							key={id}
-							value={`settings ${sectionMeta[id].label}`}
+							value={`settings ${t(sectionMeta[id].labelKey)}`}
 							onSelect={() => close(() => openSettingsSection(id))}
 						>
 							{sectionMeta[id].icon}
-							<span className="ml-2">{sectionMeta[id].label}</span>
+							<span className="ml-2">{t(sectionMeta[id].labelKey)}</span>
 						</CommandItem>
 					))}
 				</CommandGroup>
 
 				<CommandSeparator />
-				<CommandGroup heading="Actions">
+				<CommandGroup heading={t("common.actions")}>
 					<CommandItem value="toggle theme" onSelect={() => close(toggleTheme)}>
 						<Moon className="h-4 w-4" />
-						<span className="ml-2">Toggle theme</span>
+						<span className="ml-2">{t("settings.appearance.theme.title")}</span>
 					</CommandItem>
 					<CommandItem
 						value="check for updates"
 						onSelect={() => close(() => void checkForUpdates())}
 					>
 						<RefreshCcw className="h-4 w-4" />
-						<span className="ml-2">Check for updates</span>
+						<span className="ml-2">{t("settings.appUpdates.check.title")}</span>
 					</CommandItem>
 					{updateReady && (
 						<CommandItem
@@ -452,7 +456,7 @@ export default function CommandPalette() {
 							onSelect={() => close(() => void restartToInstall())}
 						>
 							<RotateCw className="h-4 w-4" />
-							<span className="ml-2">Restart to install update</span>
+							<span className="ml-2">{t("common.install")}</span>
 						</CommandItem>
 					)}
 					<CommandItem
@@ -460,21 +464,21 @@ export default function CommandPalette() {
 						onSelect={() => close(() => void openDownloadsFolder())}
 					>
 						<FolderOpen className="h-4 w-4" />
-						<span className="ml-2">Open downloads folder</span>
+						<span className="ml-2">{t("settings.downloads.folder.title")}</span>
 					</CommandItem>
 					<CommandItem
 						value="clear resource cache"
 						onSelect={() => close(() => void clearResourceCache())}
 					>
 						<Trash2 className="h-4 w-4" />
-						<span className="ml-2">Clear resource cache</span>
+						<span className="ml-2">{t("settings.cache.clearAll.title")}</span>
 					</CommandItem>
 					<CommandItem
 						value="log out"
 						onSelect={() => close(() => void logout())}
 					>
 						<LogOut className="h-4 w-4" />
-						<span className="ml-2">Log out</span>
+						<span className="ml-2">{t("common.logOut")}</span>
 					</CommandItem>
 				</CommandGroup>
 			</CommandList>

@@ -11,10 +11,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
 import { useCourse } from "@/hooks/atoms/useCourse";
 import { useTabButtonHover } from "@/hooks/useTabButtonHover";
+import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
 import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses";
-import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
 import useGETcourseResourceBySearch from "@/queries/courses/useGETcourseResourceBySearch";
 import { GETstarredCourses } from "@/types/api-types/course-cards/GETstarredCourses";
 import { GETunstarredCourses } from "@/types/api-types/course-cards/GETunstarredCourses";
@@ -38,9 +38,7 @@ export default function TitlebarSearch() {
 	const [query, setQuery] = React.useState("");
 	const debouncedQuery = useDebounce(query, 300);
 	const { courseId } = useCourse();
-	const [selectedCourseId, setSelectedCourseId] = useState<number | undefined>(
-		undefined,
-	);
+	const t = useT();
 	const navigate = useNavigate();
 
 	const { data: starredCourses, isLoading: isStarredFetching } =
@@ -73,14 +71,14 @@ export default function TitlebarSearch() {
 
 	const tabs = React.useMemo(
 		() => [
-			{ id: "courses", label: "Courses", isEnabled: true },
+			{ id: "courses", label: t("nav.courses"), isEnabled: true },
 			{
 				id: "resources",
-				label: "Resources",
+				label: t("resources.title"),
 				isEnabled: courseId !== undefined,
 			},
 		],
-		[courseId],
+		[courseId, t],
 	);
 
 	const [activeTab, setTabIndex] = useCycle(...tabs.map((tab) => tab.id));
@@ -155,7 +153,7 @@ export default function TitlebarSearch() {
 			<CommandDialog modal open={isOpen} onOpenChange={setIsOpen}>
 				<CommandInput
 					autoFocus
-					placeholder="Search resources..."
+					placeholder={t("common.search")}
 					value={query}
 					onValueChange={setQuery}
 				/>
@@ -200,7 +198,7 @@ export default function TitlebarSearch() {
 						)}
 						{activeTab === "resources" && (
 							<ResourcesCommandList
-								courseId={selectedCourseId ?? courseId}
+								courseId={courseId}
 								navigate={navigate}
 								handleSelect={handleSelect}
 								query={debouncedQuery}
@@ -240,82 +238,6 @@ export default function TitlebarSearch() {
 	);
 }
 
-function UpdatesCommandList({
-	courseId,
-	isResourcesFetching,
-	handleSelect,
-	navigateToResource,
-}: {
-	courseId?: number;
-	isResourcesFetching: boolean;
-	handleSelect: (callback: () => unknown) => void;
-	navigateToResource: (resource: any) => void;
-}) {
-	const {
-		data: updates,
-		isLoading,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-	} = useGETcourseNotifications(
-		{
-			courseId: courseId ?? 0,
-			showLightBulletins: true,
-			PageIndex: 0,
-			PageSize: 100,
-		},
-		{
-			keepPreviousData: true,
-		},
-	);
-
-	//flatten the array
-	const allUpdates = updates?.pages.map((page) => page.EntityArray).flat();
-
-	return (
-		<>
-			<CommandEmpty
-				className={cn(
-					isResourcesFetching ? "hidden" : "py-6 text-center text-sm",
-				)}
-			>
-				No updates found.
-			</CommandEmpty>
-			{isLoading && (
-				<CommandLoading>
-					<div className="overflow-hidden px-1 py-2 space-y-1">
-						<Skeleton className="h-4 w-10 rounded" />
-						<Skeleton className="h-8 rounded-sm" />
-						<Skeleton className="h-8 rounded-sm" />
-					</div>
-				</CommandLoading>
-			)}
-			{allUpdates && allUpdates.length > 0 && !isLoading && (
-				<CommandGroup heading={`${allUpdates?.length} updates found`}>
-					<div className="my-2 overflow-hidden pr-1 space-y-1">
-						{allUpdates?.map((update) => (
-							<CommandItem
-								key={update.NotificationId}
-								value={update.Text + " " + update.NotificationId}
-								onSelect={() =>
-									handleSelect(() => {
-										console.log("Selected update", update);
-										navigateToResource(update);
-									})
-								}
-							>
-								<span className="truncate break-all line-clamp-1">
-									{update.Text}
-								</span>
-							</CommandItem>
-						))}
-					</div>
-				</CommandGroup>
-			)}
-		</>
-	);
-}
-
 function ResourcesCommandList({
 	courseId,
 	navigate,
@@ -327,6 +249,7 @@ function ResourcesCommandList({
 	handleSelect: (callback: () => unknown) => void;
 	query: string;
 }) {
+	const t = useT();
 	const navigateToResource = useNavigateToResource(navigate);
 
 	const isEnabled = courseId !== undefined && query.length > 2;
@@ -379,7 +302,7 @@ function ResourcesCommandList({
 			<CommandEmpty
 				className={cn(isLoading ? "hidden" : "py-6 text-center text-sm")}
 			>
-				No resources found.
+				{t("resources.emptyFiltered")}
 			</CommandEmpty>
 			{isLoading && isEnabled && (
 				<CommandLoading>
@@ -392,14 +315,14 @@ function ResourcesCommandList({
 			)}
 			{!isEnabled && !resources && (
 				<CommandEmpty className={cn("py-6 text-center text-sm")}>
-					Type at least 3 characters to search.
+					{t("common.search")} 3+ characters
 				</CommandEmpty>
 			)}
 			<CommandList className="my-2 pr-1 space-y-1 min-h-full pb-3">
 				{resources &&
 					resources.Resources.EntityArray[0]?.CourseId === courseId && (
 						<CommandGroup
-							heading={`${resources?.Resources.EntityArray.length} resources found`}
+							heading={`${resources?.Resources.EntityArray.length} resources`}
 						>
 							<>
 								{resources.Resources.EntityArray.map((resource) => (
@@ -479,6 +402,7 @@ function CoursesCommandList({
 	navigate: NavigateFunction;
 	handleSelect: (callback: () => unknown) => void;
 }) {
+	const t = useT();
 	return (
 		<>
 			<CommandEmpty
@@ -488,7 +412,7 @@ function CoursesCommandList({
 						: "py-6 text-center text-sm",
 				)}
 			>
-				No courses found.
+				{t("common.empty")}
 			</CommandEmpty>
 			<CommandList className="my-2 pr-1 space-y-1">
 				{isStarredFetching || isUnstarredFetching ? (
@@ -502,7 +426,7 @@ function CoursesCommandList({
 					unstarredCourses && (
 						<>
 							<CommandGroup
-								heading={`${starredCourses.EntityArray.length} starred courses found`}
+								heading={`${starredCourses.EntityArray.length} starred courses`}
 							>
 								<div className="my-2 overflow-hidden pr-1 space-y-1">
 									{starredCourses.EntityArray.map((element) => (
@@ -524,7 +448,7 @@ function CoursesCommandList({
 								</div>
 							</CommandGroup>
 							<CommandGroup
-								heading={`${unstarredCourses.EntityArray.length} unstarred courses found`}
+								heading={`${unstarredCourses.EntityArray.length} courses`}
 							>
 								<div className="my-2 overflow-hidden pr-1 space-y-1">
 									{unstarredCourses.EntityArray.map((element) => (

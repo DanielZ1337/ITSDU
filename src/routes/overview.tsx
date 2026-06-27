@@ -14,9 +14,14 @@ import {
 	normalizeCalendarEvents,
 } from "@/lib/calendar/calendar-events";
 import {
-	formatSize,
-	getResourceOpenRoute,
-} from "@/lib/resources/resource-format";
+	formatDate,
+	formatFileSize,
+	formatRelativeTime,
+	formatTime,
+	useLocale,
+	useT,
+} from "@/lib/i18n";
+import { getResourceOpenRoute } from "@/lib/resources/resource-format";
 import { cn } from "@/lib/utils";
 import useGETcalendarEvents from "@/queries/calendar/useGETcalendarEvents";
 import useGETcourses from "@/queries/course-cards/useGETcourses";
@@ -59,6 +64,8 @@ type DashboardThread = ItslearningRestApiEntitiesInstantMessageThread & {
 };
 
 export default function Overview() {
+	const { locale } = useLocale();
+	const t = useT();
 	const today = useMemo(() => new Date(), []);
 
 	const calendarQuery = useGETcalendarEvents(
@@ -149,6 +156,8 @@ export default function Overview() {
 	return (
 		<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 pb-12 sm:gap-5 sm:p-6 lg:p-8">
 			<Hero
+				locale={locale}
+				t={t}
 				overdue={overdueCount}
 				dueToday={dueTodayCount}
 				eventsToday={eventsTodayCount}
@@ -158,29 +167,44 @@ export default function Overview() {
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 				<div className="flex flex-col gap-4 lg:col-span-2">
 					<WidgetBoundary>
-						<TasksWidget tasks={tasks} query={tasksQuery} />
+						<TasksWidget
+							tasks={tasks}
+							query={tasksQuery}
+							t={t}
+							locale={locale}
+						/>
 					</WidgetBoundary>
 					<WidgetBoundary>
-						<CalendarWidget groups={eventGroups} query={calendarQuery} />
+						<CalendarWidget
+							groups={eventGroups}
+							query={calendarQuery}
+							t={t}
+							locale={locale}
+						/>
 					</WidgetBoundary>
 				</div>
 
 				<div className="flex flex-col gap-4">
 					<WidgetBoundary>
-						<MessagesWidget threads={threads} query={messagesQuery} />
+						<MessagesWidget
+							threads={threads}
+							query={messagesQuery}
+							t={t}
+							locale={locale}
+						/>
 					</WidgetBoundary>
 					<WidgetBoundary>
-						<ContinueWidget resources={recent.resources} />
+						<ContinueWidget resources={recent.resources} t={t} />
 					</WidgetBoundary>
 				</div>
 			</div>
 
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 				<WidgetBoundary>
-					<PinnedCoursesWidget courses={courses} query={coursesQuery} />
+					<PinnedCoursesWidget courses={courses} query={coursesQuery} t={t} />
 				</WidgetBoundary>
 				<WidgetBoundary>
-					<RecentResourcesWidget recent={recent} />
+					<RecentResourcesWidget recent={recent} t={t} locale={locale} />
 				</WidgetBoundary>
 			</div>
 		</div>
@@ -192,11 +216,15 @@ export default function Overview() {
 /* -------------------------------------------------------------------------- */
 
 function Hero({
+	locale,
+	t,
 	overdue,
 	dueToday,
 	eventsToday,
 	unread,
 }: {
+	locale: "en" | "da";
+	t: ReturnType<typeof useT>;
 	overdue: number;
 	dueToday: number;
 	eventsToday: number;
@@ -204,34 +232,36 @@ function Hero({
 }) {
 	const { toggleSettingsModal } = useShowSettingsModal();
 	const now = new Date();
-	const hour = now.getHours();
 	const greeting =
-		hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-	const dateLabel = new Intl.DateTimeFormat(undefined, {
-		weekday: "long",
-		month: "long",
-		day: "numeric",
-	}).format(now);
+		now.getHours() < 12
+			? t("overview.greeting.morning")
+			: now.getHours() < 18
+				? t("overview.greeting.afternoon")
+				: t("overview.greeting.evening");
+	const dateLabel = formatDate(now, locale);
 
 	const stats = [
 		overdue > 0 && {
 			icon: <AlertTriangle className="h-3.5 w-3.5" />,
-			label: `${overdue} overdue`,
+			label: t("overview.stat.overdue", { count: overdue }),
 			className: "border-destructive/40 text-destructive",
 		},
 		dueToday > 0 && {
 			icon: <CheckSquare className="h-3.5 w-3.5" />,
-			label: `${dueToday} due today`,
+			label: t("overview.stat.dueToday", { count: dueToday }),
 			className: "border-amber-500/40 text-amber-600 dark:text-amber-400",
 		},
 		eventsToday > 0 && {
 			icon: <CalendarDays className="h-3.5 w-3.5" />,
-			label: `${eventsToday} event${eventsToday === 1 ? "" : "s"} today`,
+			label: t("overview.stat.eventsToday", {
+				count: eventsToday,
+				suffix: eventsToday === 1 ? "" : "s",
+			}),
 			className: "",
 		},
 		unread > 0 && {
 			icon: <MessageSquare className="h-3.5 w-3.5" />,
-			label: `${unread} unread`,
+			label: t("overview.stat.unread", { count: unread }),
 			className: "",
 		},
 	].filter(Boolean) as {
@@ -262,7 +292,7 @@ function Hero({
 					</div>
 				) : (
 					<p className="mt-2 text-sm text-muted-foreground">
-						You're all caught up — nothing urgent right now.
+						{t("notifications.allCaughtUp")}
 					</p>
 				)}
 			</div>
@@ -271,19 +301,19 @@ function Hero({
 				<Button asChild size="sm">
 					<Link to="/courses">
 						<GraduationCap className="mr-2 h-3.5 w-3.5" />
-						Courses
+						{t("nav.courses")}
 					</Link>
 				</Button>
 				<Button asChild variant="outline" size="sm">
 					<Link to="/calendar">
 						<CalendarDays className="mr-2 h-3.5 w-3.5" />
-						Calendar
+						{t("nav.calendar")}
 					</Link>
 				</Button>
 				<Button asChild variant="outline" size="sm">
 					<Link to="/messages">
 						<MessageSquare className="mr-2 h-3.5 w-3.5" />
-						Messages
+						{t("nav.messages")}
 					</Link>
 				</Button>
 				<Button
@@ -293,7 +323,7 @@ function Hero({
 					onClick={toggleSettingsModal}
 				>
 					<Settings className="mr-2 h-3.5 w-3.5" />
-					Settings
+					{t("common.settings")}
 				</Button>
 			</div>
 		</header>
@@ -307,6 +337,8 @@ function Hero({
 function TasksWidget({
 	tasks,
 	query,
+	t,
+	locale,
 }: {
 	tasks: DashboardTask[];
 	query: {
@@ -315,20 +347,22 @@ function TasksWidget({
 		error: unknown;
 		refetch: () => void;
 	};
+	t: ReturnType<typeof useT>;
+	locale: "en" | "da";
 }) {
 	return (
 		<Widget
-			title="Tasks & deadlines"
+			title={t("overview.widget.tasks")}
 			icon={<CheckSquare className="h-4 w-4" />}
-			action={<WidgetLink to="/all-tasks" label="All tasks" />}
+			action={<WidgetLink to="/all-tasks" label={t("nav.tasks")} />}
 			isLoading={query.isLoading}
 			isError={query.isError}
 			error={query.error}
 			onRetry={query.refetch}
 			isEmpty={tasks.length === 0}
-			emptyText="No active tasks right now."
+			emptyText={t("overview.empty.tasks")}
 			emptyTo="/all-tasks"
-			emptyAction="Open tasks"
+			emptyAction={t("common.open")}
 		>
 			<ul className="flex flex-col gap-1">
 				{tasks.slice(0, 6).map((task) => (
@@ -350,7 +384,9 @@ function TasksWidget({
 							<div className="min-w-0 flex-1">
 								<p className="truncate text-sm font-medium">{task.Title}</p>
 								<p className="truncate text-xs text-muted-foreground">
-									{task.LocationTitle || task.LocationFriendlyName || "Task"}
+									{task.LocationTitle ||
+										task.LocationFriendlyName ||
+										t("nav.tasks")}
 								</p>
 							</div>
 							<Badge
@@ -360,7 +396,7 @@ function TasksWidget({
 									urgencyText[task.urgency],
 								)}
 							>
-								{formatDueLabel(task.deadline)}
+								{formatDueLabel(task.deadline, locale, t)}
 							</Badge>
 						</a>
 					</li>
@@ -377,6 +413,8 @@ function TasksWidget({
 function CalendarWidget({
 	groups,
 	query,
+	t,
+	locale,
 }: {
 	groups: { key: string; label: string; items: NormalizedCalendarEvent[] }[];
 	query: {
@@ -385,26 +423,28 @@ function CalendarWidget({
 		error: unknown;
 		refetch: () => void;
 	};
+	t: ReturnType<typeof useT>;
+	locale: "en" | "da";
 }) {
 	return (
 		<Widget
-			title="Upcoming calendar"
+			title={t("overview.widget.calendar")}
 			icon={<CalendarDays className="h-4 w-4" />}
-			action={<WidgetLink to="/calendar" label="Calendar" />}
+			action={<WidgetLink to="/calendar" label={t("nav.calendar")} />}
 			isLoading={query.isLoading}
 			isError={query.isError}
 			error={query.error}
 			onRetry={query.refetch}
 			isEmpty={groups.length === 0}
-			emptyText="No upcoming events."
+			emptyText={t("overview.empty.calendar")}
 			emptyTo="/calendar"
-			emptyAction="Open calendar"
+			emptyAction={t("common.open")}
 		>
 			<div className="flex flex-col gap-3">
 				{groups.map((group) => (
 					<div key={group.key}>
 						<p className="px-2 pb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-							{group.label}
+							{agendaGroupLabel(group.key, t)}
 						</p>
 						<div className="flex flex-col gap-1">
 							{group.items.map((event) => (
@@ -415,7 +455,9 @@ function CalendarWidget({
 								>
 									<div className="flex w-14 shrink-0 flex-col items-center rounded-md border bg-background py-1">
 										<span className="text-xs font-semibold leading-tight">
-											{event.startsAt ? formatTime(event.startsAt) : "--"}
+											{event.startsAt
+												? formatTime(event.startsAt, locale)
+												: "--"}
 										</span>
 									</div>
 									<div className="min-w-0 flex-1">
@@ -425,7 +467,7 @@ function CalendarWidget({
 										<p className="truncate text-xs text-muted-foreground">
 											{event.courseTitle ||
 												event.location ||
-												formatEventTimeRange(event)}
+												formatEventTimeRange(event, locale)}
 										</p>
 									</div>
 								</Link>
@@ -445,6 +487,8 @@ function CalendarWidget({
 function MessagesWidget({
 	threads,
 	query,
+	t,
+	locale,
 }: {
 	threads: DashboardThread[];
 	query: {
@@ -453,20 +497,22 @@ function MessagesWidget({
 		error: unknown;
 		refetch: () => void;
 	};
+	t: ReturnType<typeof useT>;
+	locale: "en" | "da";
 }) {
 	return (
 		<Widget
-			title="Messages"
+			title={t("overview.widget.messages")}
 			icon={<MessageSquare className="h-4 w-4" />}
-			action={<WidgetLink to="/messages" label="Inbox" />}
+			action={<WidgetLink to="/messages" label={t("nav.messages")} />}
 			isLoading={query.isLoading}
 			isError={query.isError}
 			error={query.error}
 			onRetry={query.refetch}
 			isEmpty={threads.length === 0}
-			emptyText="No recent message threads."
+			emptyText={t("overview.empty.messages")}
 			emptyTo="/messages"
-			emptyAction="Open messages"
+			emptyAction={t("common.open")}
 		>
 			<ul className="flex flex-col gap-1">
 				{threads.slice(0, 5).map((thread) => (
@@ -491,14 +537,14 @@ function MessagesWidget({
 									>
 										{thread.Name ||
 											thread.LastMessage?.CreatedByName ||
-											"Thread"}
+											t("overview.empty.thread")}
 									</p>
 									<span className="shrink-0 text-xs text-muted-foreground">
-										{messageAge(thread)}
+										{messageAge(thread, locale)}
 									</span>
 								</div>
 								<p className="truncate text-xs text-muted-foreground">
-									{thread.LastMessage?.Text || "No preview available"}
+									{thread.LastMessage?.Text || t("common.empty")}
 								</p>
 							</div>
 						</Link>
@@ -516,6 +562,7 @@ function MessagesWidget({
 function PinnedCoursesWidget({
 	courses,
 	query,
+	t,
 }: {
 	courses: ItslearningRestApiEntitiesCourseCard[];
 	query: {
@@ -524,20 +571,21 @@ function PinnedCoursesWidget({
 		error: unknown;
 		refetch: () => void;
 	};
+	t: ReturnType<typeof useT>;
 }) {
 	return (
 		<Widget
-			title="Pinned courses"
+			title={t("overview.widget.courses")}
 			icon={<Star className="h-4 w-4" />}
-			action={<WidgetLink to="/courses" label="All courses" />}
+			action={<WidgetLink to="/courses" label={t("nav.courses")} />}
 			isLoading={query.isLoading}
 			isError={query.isError}
 			error={query.error}
 			onRetry={query.refetch}
 			isEmpty={courses.length === 0}
-			emptyText="No starred courses yet."
+			emptyText={t("overview.empty.courses")}
 			emptyTo="/courses"
-			emptyAction="Browse courses"
+			emptyAction={t("common.open")}
 		>
 			<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 				{courses.slice(0, 6).map((course) => {
@@ -563,14 +611,14 @@ function PinnedCoursesWidget({
 									<p className="truncate text-xs text-muted-foreground">
 										{course.LastOnlineDisplayTime ||
 											course.LastUpdatedDisplayTime ||
-											"No recent activity"}
+											t("overview.empty.noRecentActivity")}
 									</p>
 								</div>
 								<Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />
 							</div>
 							{notifications > 0 && (
 								<Badge variant="secondary" className="w-fit font-normal">
-									{notifications} new
+									{t("overview.stat.new", { count: notifications })}
 								</Badge>
 							)}
 						</Link>
@@ -587,20 +635,24 @@ function PinnedCoursesWidget({
 
 function RecentResourcesWidget({
 	recent,
+	t,
+	locale,
 }: {
 	recent: ReturnType<typeof useCachedResources>;
+	t: ReturnType<typeof useT>;
+	locale: "en" | "da";
 }) {
 	return (
 		<Widget
-			title="Recent resources"
+			title={t("overview.widget.resources")}
 			icon={<FileIcon className="h-4 w-4" />}
-			action={<WidgetLink to="/resources" label="View all" />}
+			action={<WidgetLink to="/resources" label={t("common.open")} />}
 			isLoading={recent.isLoading}
 			isError={recent.isError}
 			error={recent.error}
 			onRetry={recent.refetch}
 			isEmpty={recent.resources.length === 0}
-			emptyText="No cached resources yet. Files you open appear here."
+			emptyText={t("overview.empty.resources")}
 		>
 			<ul className="flex flex-col gap-1">
 				{recent.resources.slice(0, 6).map((resource) => {
@@ -618,7 +670,7 @@ function RecentResourcesWidget({
 										{resource.name}
 									</p>
 									<p className="truncate text-xs text-muted-foreground">
-										{resource.CourseTitle || "Cached resource"}
+										{resource.CourseTitle || t("resources.title")}
 									</p>
 								</div>
 								<Badge
@@ -634,14 +686,16 @@ function RecentResourcesWidget({
 									) : (
 										<WifiOff className="h-3 w-3" />
 									)}
-									{resource.cacheStatus === "cached" ? "Offline" : "Online"}
+									{resource.cacheStatus === "cached"
+										? t("common.availableOffline")
+										: t("common.needsConnection")}
 								</Badge>
 								<div className="shrink-0 text-right">
 									<p className="text-xs text-muted-foreground">
-										{formatSize(resource.size)}
+										{formatFileSize(resource.size, locale)}
 									</p>
 									<p className="text-[11px] text-muted-foreground/70">
-										{formatShortDate(resource.last_accessed)}
+										{formatShortDate(resource.last_accessed, locale)}
 									</p>
 								</div>
 							</Link>
@@ -659,8 +713,10 @@ function RecentResourcesWidget({
 
 function ContinueWidget({
 	resources,
+	t,
 }: {
 	resources: CachedResourceSummary[];
+	t: ReturnType<typeof useT>;
 }) {
 	const items = resources.slice(0, 3);
 	if (items.length === 0) return null;
@@ -672,7 +728,7 @@ function ContinueWidget({
 					<ArrowRight className="h-4 w-4" />
 				</span>
 				<h2 className="truncate text-sm font-semibold">
-					Continue where you left off
+					{t("overview.widget.continue")}
 				</h2>
 			</header>
 			<div className="flex flex-col gap-1 p-3">
@@ -689,7 +745,7 @@ function ContinueWidget({
 							<div className="min-w-0 flex-1">
 								<p className="truncate text-sm font-medium">{resource.name}</p>
 								<p className="truncate text-xs text-muted-foreground">
-									{resource.CourseTitle || "Recently opened"}
+									{resource.CourseTitle || t("common.open")}
 								</p>
 							</div>
 							<ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -914,43 +970,49 @@ function classifyUrgency(deadline: Date | null): TaskUrgency {
 	return "upcoming";
 }
 
-function formatDueLabel(deadline: Date | null) {
-	if (!deadline) return "No due date";
+function formatDueLabel(
+	deadline: Date | null,
+	locale: "en" | "da",
+	t: ReturnType<typeof useT>,
+) {
+	if (!deadline) return t("common.empty");
 	const days = Math.round(
 		(startOfDay(deadline).getTime() - startOfDay(new Date()).getTime()) /
 			86_400_000,
 	);
-	if (days === 0) return `Today ${formatTime(deadline)}`;
-	if (days === 1) return "Tomorrow";
-	if (days === -1) return "1d overdue";
+	if (days === 0) return `${t("common.today")} ${formatTime(deadline, locale)}`;
+	if (days === 1) return t("common.tomorrow");
+	if (days === -1) return `1d overdue`;
 	if (days < 0) return `${Math.abs(days)}d overdue`;
 	if (days < 7) return `In ${days}d`;
-	return new Intl.DateTimeFormat(undefined, {
-		month: "short",
-		day: "numeric",
-	}).format(deadline);
+	return formatDate(deadline, locale);
 }
 
-function messageAge(thread: DashboardThread) {
+function messageAge(thread: DashboardThread, locale: "en" | "da") {
 	const relative = thread.LastMessage?.CreatedRelative;
 	if (relative) return relative;
 	const created = thread.LastMessage?.Created ?? thread.Created;
 	if (!created) return "";
 	const date = new Date(created);
 	if (Number.isNaN(date.getTime())) return "";
-	return formatShortDate(date);
+	return formatRelativeTime(date, locale);
 }
 
-function formatTime(date: Date) {
-	return new Intl.DateTimeFormat(undefined, {
-		hour: "2-digit",
-		minute: "2-digit",
-	}).format(date);
+function formatShortDate(date: Date, locale: "en" | "da") {
+	return formatDate(date, locale);
 }
 
-function formatShortDate(date: Date) {
-	return new Intl.DateTimeFormat(undefined, {
-		month: "short",
-		day: "numeric",
-	}).format(date);
+function agendaGroupLabel(key: string, t: ReturnType<typeof useT>) {
+	switch (key) {
+		case "today":
+			return t("calendar.group.today");
+		case "tomorrow":
+			return t("calendar.group.tomorrow");
+		case "this-week":
+			return t("calendar.group.thisWeek");
+		case "later":
+			return t("calendar.group.later");
+		default:
+			return t("calendar.group.noDate");
+	}
 }

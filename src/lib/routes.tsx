@@ -24,6 +24,7 @@ const defaultNavLinkClassName = "h-4 w-4 3xl:w-5 3xl:h-5";
 export const navlinks = [
 	{
 		title: "Courses",
+		labelKey: "nav.courses",
 		icon: <GraduationCap className={cn("", defaultNavLinkClassName)} />,
 		href: "/courses",
 		end: true,
@@ -31,6 +32,7 @@ export const navlinks = [
 	},
 	{
 		title: "Overview",
+		labelKey: "nav.overview",
 		icon: <GanttChart className={cn("", defaultNavLinkClassName)} />,
 		href: "/overview",
 		end: true,
@@ -38,6 +40,7 @@ export const navlinks = [
 	},
 	{
 		title: "Updates",
+		labelKey: "nav.updates",
 		icon: <BookCheck className={cn("", defaultNavLinkClassName)} />,
 		href: "/updates",
 		end: true,
@@ -45,6 +48,7 @@ export const navlinks = [
 	},
 	{
 		title: "All Tasks",
+		labelKey: "nav.tasks",
 		icon: <ClipboardList className={cn("", defaultNavLinkClassName)} />,
 		href: "/all-tasks",
 		end: true,
@@ -52,6 +56,7 @@ export const navlinks = [
 	},
 	{
 		title: "Calendar",
+		labelKey: "nav.calendar",
 		icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
 		href: "/calendar",
 		end: true,
@@ -59,6 +64,7 @@ export const navlinks = [
 	},
 	{
 		title: "Messages",
+		labelKey: "nav.messages",
 		icon: <AiOutlineMessage className={cn("", defaultNavLinkClassName)} />,
 		href: "/messages",
 		end: true,
@@ -66,6 +72,7 @@ export const navlinks = [
 	},
 	{
 		title: "AI Chats",
+		labelKey: "nav.aiChats",
 		icon: <FileSearch className={cn("", defaultNavLinkClassName)} />,
 		href: "/ai-chats",
 		end: true,
@@ -73,6 +80,7 @@ export const navlinks = [
 	},
 	{
 		title: "Merge & ZIP",
+		labelKey: "nav.mergeZip",
 		icon: <AiOutlineFile className={cn("", defaultNavLinkClassName)} />,
 		href: "/merge-zip-documents",
 		end: true,
@@ -83,6 +91,7 @@ export const navlinks = [
 export const courseNavLinks = [
 	{
 		title: "Overview",
+		labelKey: "course.overview",
 		icon: <AiOutlineHome className={cn("", defaultNavLinkClassName)} />,
 		href: ".",
 		end: true,
@@ -90,6 +99,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Schedule",
+		labelKey: "course.schedule",
 		icon: <AiOutlineCalendar className={cn("", defaultNavLinkClassName)} />,
 		href: "schedule",
 		end: false,
@@ -97,6 +107,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Updates",
+		labelKey: "course.updates",
 		icon: <AiOutlineNotification className={cn("", defaultNavLinkClassName)} />,
 		href: "updates",
 		end: false,
@@ -104,6 +115,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Resources",
+		labelKey: "course.resources",
 		icon: <Files className={cn("", defaultNavLinkClassName)} />,
 		href: "resources",
 		end: false,
@@ -111,6 +123,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Tasks",
+		labelKey: "course.tasks",
 		icon: <ClipboardList className={cn("", defaultNavLinkClassName)} />,
 		href: "tasks",
 		end: false,
@@ -118,6 +131,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Plans",
+		labelKey: "course.plans",
 		icon: <Route className={cn("", defaultNavLinkClassName)} />,
 		href: "plans",
 		end: false,
@@ -125,6 +139,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Participants",
+		labelKey: "course.participants",
 		icon: <Users2 className={cn("", defaultNavLinkClassName)} />,
 		href: "participants",
 		end: false,
@@ -132,6 +147,7 @@ export const courseNavLinks = [
 	},
 	{
 		title: "Course Information",
+		labelKey: "course.info",
 		icon: <AiOutlineInfoCircle className={cn("", defaultNavLinkClassName)} />,
 		href: "course-information",
 		end: false,

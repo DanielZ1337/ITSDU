@@ -28,6 +28,12 @@ import { Switch } from "@/components/ui/switch";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion";
+import {
+	type TranslationKey,
+	formatFileSize,
+	useLocale,
+	useT,
+} from "@/lib/i18n";
 import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
 import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
 import {
@@ -67,32 +73,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast as sonnerToast } from "sonner";
 
-const landingLabels: Record<LandingPageSetting, string> = {
-	overview: "Overview",
-	courses: "Courses",
-	calendar: "Calendar",
-	tasks: "Tasks",
-	messages: "Messages",
-};
-
-const languageLabels: Record<LanguageSetting, string> = {
-	system: "System",
-	da: "Danish",
-	en: "English",
-};
-
-const autoOpenLabels: Record<DownloadAutoOpenSetting, string> = {
-	never: "Do not open",
-	file: "Open file",
-	folder: "Show in folder",
-};
-
-const resourceCacheModeLabels: Record<ResourceCacheModeSetting, string> = {
-	opened: "Cache opened resources",
-	"pdf-only": "Cache opened PDFs only",
-	manual: "Manual only",
-};
-
 type UpdateStatus =
 	| "idle"
 	| "checking"
@@ -131,62 +111,66 @@ function isSectionId(value: string | null): value is SectionId {
 
 export const sectionMeta: Record<
 	SectionId,
-	{ label: string; icon: React.ReactNode; description: string }
+	{
+		labelKey: TranslationKey;
+		icon: React.ReactNode;
+		descriptionKey: TranslationKey;
+	}
 > = {
 	appearance: {
-		label: "Appearance",
+		labelKey: "settings.group.appearance",
 		icon: <Brush className="h-4 w-4" />,
-		description: "Theme and window controls.",
+		descriptionKey: "settings.appearance.theme.description",
 	},
 	language: {
-		label: "Language",
+		labelKey: "settings.group.language",
 		icon: <Globe2 className="h-4 w-4" />,
-		description: "Locale preferences used by supported app surfaces.",
+		descriptionKey: "settings.language.description",
 	},
 	navigation: {
-		label: "Navigation",
+		labelKey: "settings.group.navigation",
 		icon: <LayoutDashboard className="h-4 w-4" />,
-		description: "Startup destination and navigation density.",
+		descriptionKey: "settings.navigation.defaultLanding.description",
 	},
 	calendar: {
-		label: "Calendar",
+		labelKey: "settings.group.calendar",
 		icon: <CalendarDays className="h-4 w-4" />,
-		description: "Planner view defaults.",
+		descriptionKey: "settings.calendar.defaultView.description",
 	},
 	notifications: {
-		label: "Notifications",
+		labelKey: "settings.group.notifications",
 		icon: <Bell className="h-4 w-4" />,
-		description: "Desktop notification behavior.",
+		descriptionKey: "settings.notifications.permission.description",
 	},
 	downloads: {
-		label: "Downloads",
+		labelKey: "settings.group.downloads",
 		icon: <Download className="h-4 w-4" />,
-		description: "Where files go after download.",
+		descriptionKey: "settings.downloads.folder.description",
 	},
 	cache: {
-		label: "Cache",
+		labelKey: "settings.group.cache",
 		icon: <Database className="h-4 w-4" />,
-		description: "Local resource cache stored in IndexedDB.",
+		descriptionKey: "settings.cache.usage.description",
 	},
 	pdf: {
-		label: "PDF",
+		labelKey: "settings.group.pdf",
 		icon: <FileText className="h-4 w-4" />,
-		description: "PDF viewer defaults.",
+		descriptionKey: "settings.pdf.useViewer.description",
 	},
 	appUpdates: {
-		label: "App & Updates",
+		labelKey: "settings.group.appUpdates",
 		icon: <Info className="h-4 w-4" />,
-		description: "Version and update controls.",
+		descriptionKey: "settings.appUpdates.status.description",
 	},
 	privacy: {
-		label: "Privacy",
+		labelKey: "settings.group.privacy",
 		icon: <Lock className="h-4 w-4" />,
-		description: "Data sharing and AI upload controls.",
+		descriptionKey: "settings.privacy.uploadAi.description",
 	},
 	advanced: {
-		label: "Advanced",
+		labelKey: "settings.group.advanced",
 		icon: <Settings2 className="h-4 w-4" />,
-		description: "Reset and app foundation settings.",
+		descriptionKey: "settings.advanced.resetAll.description",
 	},
 };
 
@@ -207,6 +191,7 @@ export default function SettingsModal() {
 
 function SettingsScreen() {
 	const { requestedSection, setRequestedSection } = useShowSettingsModal();
+	const t = useT();
 	const [activeSection, setActiveSection] = useState<SectionId>(
 		isSectionId(requestedSection) ? requestedSection : "appearance",
 	);
@@ -228,10 +213,10 @@ function SettingsScreen() {
 					</div>
 					<div className="min-w-0">
 						<h2 className="truncate text-lg font-semibold tracking-tight">
-							{section.label}
+							{t(section.labelKey)}
 						</h2>
 						<p className="truncate text-sm text-muted-foreground">
-							{section.description}
+							{t(section.descriptionKey)}
 						</p>
 					</div>
 				</div>
@@ -266,7 +251,7 @@ function SettingsScreen() {
 								data-active={activeSection === sectionId}
 							>
 								<span className="shrink-0">{sectionMeta[sectionId].icon}</span>
-								{sectionMeta[sectionId].label}
+								{t(sectionMeta[sectionId].labelKey)}
 							</button>
 						))}
 					</nav>
@@ -282,7 +267,7 @@ function SettingsScreen() {
 								className="shrink-0"
 								onClick={() => setActiveSection(sectionId)}
 							>
-								{sectionMeta[sectionId].label}
+								{t(sectionMeta[sectionId].labelKey)}
 							</Button>
 						))}
 					</div>
@@ -309,12 +294,13 @@ function SettingsScreen() {
 
 function AppearanceSettings() {
 	const { settings, setSetting } = useSettings();
+	const t = useT();
 
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Theme"
-				description="Use the OS theme or choose a fixed light/dark mode."
+				title={t("settings.appearance.theme.title")}
+				description={t("settings.appearance.theme.description")}
 			>
 				<Select
 					value={settings.theme}
@@ -326,16 +312,18 @@ function AppearanceSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="system">System</SelectItem>
-						<SelectItem value="light">Light</SelectItem>
-						<SelectItem value="dark">Dark</SelectItem>
+						<SelectItem value="system">
+							{t("settings.options.system")}
+						</SelectItem>
+						<SelectItem value="light">{t("settings.options.light")}</SelectItem>
+						<SelectItem value="dark">{t("settings.options.dark")}</SelectItem>
 					</SelectContent>
 				</Select>
 			</SettingRow>
 			<SettingSwitch
 				settingKey="CustomTitleBarButtons"
-				title="Custom window buttons"
-				description="Use ITSDU-styled window controls in the titlebar."
+				title={t("settings.appearance.customTitlebar.title")}
+				description={t("settings.appearance.customTitlebar.description")}
 			/>
 		</SettingsGroup>
 	);
@@ -343,12 +331,13 @@ function AppearanceSettings() {
 
 function LanguageSettings() {
 	const { settings, setSetting } = useSettings();
+	const t = useT();
 
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="App language"
-				description="Stored now and used by supported labels as localization expands."
+				title={t("settings.language.title")}
+				description={t("settings.language.description")}
 			>
 				<Select
 					value={settings.language}
@@ -360,7 +349,13 @@ function LanguageSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						{Object.entries(languageLabels).map(([value, label]) => (
+						{(
+							[
+								["system", t("settings.options.system")],
+								["da", t("settings.options.danish")],
+								["en", t("settings.options.english")],
+							] as Array<[LanguageSetting, string]>
+						).map(([value, label]) => (
 							<SelectItem key={value} value={value}>
 								{label}
 							</SelectItem>
@@ -374,12 +369,13 @@ function LanguageSettings() {
 
 function NavigationSettings() {
 	const { settings, setSetting } = useSettings();
+	const t = useT();
 
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Default landing page"
-				description="Where the app sends you when opening Home."
+				title={t("settings.navigation.defaultLanding.title")}
+				description={t("settings.navigation.defaultLanding.description")}
 			>
 				<Select
 					value={settings.defaultLandingPage}
@@ -391,7 +387,15 @@ function NavigationSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						{Object.entries(landingLabels).map(([value, label]) => (
+						{(
+							[
+								["overview", t("settings.options.overview")],
+								["courses", t("settings.options.courses")],
+								["calendar", t("settings.options.calendar")],
+								["tasks", t("settings.options.tasks")],
+								["messages", t("settings.options.messages")],
+							] as Array<[LandingPageSetting, string]>
+						).map(([value, label]) => (
 							<SelectItem key={value} value={value}>
 								{label}
 							</SelectItem>
@@ -400,8 +404,8 @@ function NavigationSettings() {
 				</Select>
 			</SettingRow>
 			<SettingRow
-				title="Course sort"
-				description="Default sort order for the Courses screen."
+				title={t("settings.navigation.courseSort.title")}
+				description={t("settings.navigation.courseSort.description")}
 			>
 				<Select
 					value={settings.courseSortBy}
@@ -416,14 +420,25 @@ function NavigationSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="LastOnline">Last online</SelectItem>
-						<SelectItem value="LastUpdated">Last updated</SelectItem>
-						<SelectItem value="Title">Title</SelectItem>
-						<SelectItem value="Rank">Rank</SelectItem>
+						<SelectItem value="LastOnline">
+							{t("settings.navigation.courseSort.lastOnline")}
+						</SelectItem>
+						<SelectItem value="LastUpdated">
+							{t("settings.navigation.courseSort.lastUpdated")}
+						</SelectItem>
+						<SelectItem value="Title">
+							{t("settings.navigation.courseSort.titleOption")}
+						</SelectItem>
+						<SelectItem value="Rank">
+							{t("settings.navigation.courseSort.rank")}
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</SettingRow>
-			<SettingRow title="Sidebar density" description="Adjust sidebar spacing.">
+			<SettingRow
+				title={t("settings.navigation.sidebarDensity.title")}
+				description={t("settings.navigation.sidebarDensity.description")}
+			>
 				<Select
 					value={settings.sidebarDensity}
 					onValueChange={(value) =>
@@ -434,8 +449,12 @@ function NavigationSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="comfortable">Comfortable</SelectItem>
-						<SelectItem value="compact">Compact</SelectItem>
+						<SelectItem value="comfortable">
+							{t("settings.options.comfortable")}
+						</SelectItem>
+						<SelectItem value="compact">
+							{t("settings.options.compact")}
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</SettingRow>
@@ -445,12 +464,13 @@ function NavigationSettings() {
 
 function CalendarSettings() {
 	const { settings, setSetting } = useSettings();
+	const t = useT();
 
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Default calendar view"
-				description="The Calendar page opens in this view."
+				title={t("settings.calendar.defaultView.title")}
+				description={t("settings.calendar.defaultView.description")}
 			>
 				<Select
 					value={settings.calendarDefaultView}
@@ -462,16 +482,16 @@ function CalendarSettings() {
 						<SelectValue />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="agenda">Agenda</SelectItem>
-						<SelectItem value="month">Month</SelectItem>
-						<SelectItem value="week">Week</SelectItem>
-						<SelectItem value="day">Day</SelectItem>
+						<SelectItem value="agenda">{t("calendar.agenda")}</SelectItem>
+						<SelectItem value="month">{t("calendar.month")}</SelectItem>
+						<SelectItem value="week">{t("calendar.week")}</SelectItem>
+						<SelectItem value="day">{t("calendar.day")}</SelectItem>
 					</SelectContent>
 				</Select>
 			</SettingRow>
 			<SettingRow
-				title="Week starts on"
-				description="Controls the week and month grid layout."
+				title={t("settings.calendar.weekStartsOn.title")}
+				description={t("settings.calendar.weekStartsOn.description")}
 			>
 				<Select
 					value={settings.calendarWeekStartsOn}
@@ -493,8 +513,8 @@ function CalendarSettings() {
 			</SettingRow>
 			<SettingSwitch
 				settingKey="calendarShowWeekends"
-				title="Show weekends"
-				description="Include Saturday and Sunday in month and week views."
+				title={t("settings.calendar.showWeekends.title")}
+				description={t("settings.calendar.showWeekends.description")}
 			/>
 		</SettingsGroup>
 	);
@@ -502,6 +522,7 @@ function CalendarSettings() {
 
 function NotificationSettings() {
 	const { settings, setSetting } = useSettings();
+	const t = useT();
 	const [permission, setPermission] = useState(() =>
 		"Notification" in window ? Notification.permission : "unsupported",
 	);
@@ -509,8 +530,8 @@ function NotificationSettings() {
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="System permission"
-				description="Desktop notifications require browser notification permission."
+				title={t("settings.notifications.permission.title")}
+				description={t("settings.notifications.permission.description")}
 			>
 				<div className="flex items-center gap-2">
 					<Badge variant="outline">{permission}</Badge>
@@ -522,35 +543,35 @@ function NotificationSettings() {
 								void Notification.requestPermission().then(setPermission);
 							}}
 						>
-							Allow
+							{t("common.allow")}
 						</Button>
 					)}
 				</div>
 			</SettingRow>
 			<SettingSwitch
 				settingKey="notificationsMessages"
-				title="Message notifications"
-				description="Poll gently for unread messages and show desktop notifications."
+				title={t("settings.notifications.messages.title")}
+				description={t("settings.notifications.messages.description")}
 			/>
 			<SettingSwitch
 				settingKey="notificationsTasks"
-				title="Task notifications"
-				description="Stored for task notification surfaces as they are enabled."
+				title={t("settings.notifications.tasks.title")}
+				description={t("settings.notifications.tasks.description")}
 			/>
 			<SettingSwitch
 				settingKey="notificationsAppUpdates"
-				title="App update notifications"
-				description="Show a toast when a new app update is available."
+				title={t("settings.notifications.updates.title")}
+				description={t("settings.notifications.updates.description")}
 			/>
 			<SettingSwitch
 				settingKey="notificationQuietHoursEnabled"
-				title="Quiet hours"
-				description="Suppress desktop notifications during a daily window."
+				title={t("settings.notifications.quietHours.title")}
+				description={t("settings.notifications.quietHours.description")}
 			/>
 			{settings.notificationQuietHoursEnabled && (
 				<div className="grid grid-cols-1 gap-4 rounded-md border bg-muted/20 p-4 sm:grid-cols-2">
 					<div className="space-y-2">
-						<Label htmlFor="quiet-start">Start</Label>
+						<Label htmlFor="quiet-start">{t("common.start")}</Label>
 						<Input
 							id="quiet-start"
 							type="time"
@@ -564,7 +585,7 @@ function NotificationSettings() {
 						/>
 					</div>
 					<div className="space-y-2">
-						<Label htmlFor="quiet-end">End</Label>
+						<Label htmlFor="quiet-end">{t("common.end")}</Label>
 						<Input
 							id="quiet-end"
 							type="time"
@@ -583,6 +604,7 @@ function NotificationSettings() {
 function DownloadSettings() {
 	const { settings, setSetting, chooseDownloadDirectory } = useSettings();
 	const [systemDownloadPath, setSystemDownloadPath] = useState("");
+	const t = useT();
 
 	useEffect(() => {
 		void window.app.getPath("downloads").then(setSystemDownloadPath);
@@ -591,8 +613,8 @@ function DownloadSettings() {
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Download folder"
-				description="Files use the selected folder, or your OS Downloads folder."
+				title={t("settings.downloads.folder.title")}
+				description={t("settings.downloads.folder.description")}
 			>
 				<div className="flex max-w-md items-center gap-2">
 					<div className="min-w-0 truncate rounded-md border bg-muted/30 px-3 py-2 text-sm">
@@ -604,7 +626,7 @@ function DownloadSettings() {
 						size="sm"
 						onClick={() => void chooseDownloadDirectory()}
 					>
-						Choose
+						{t("common.choose")}
 					</Button>
 					{settings.downloadDirectory && (
 						<Button
@@ -613,14 +635,14 @@ function DownloadSettings() {
 							size="sm"
 							onClick={() => void setSetting("downloadDirectory", null)}
 						>
-							Reset
+							{t("common.reset")}
 						</Button>
 					)}
 				</div>
 			</SettingRow>
 			<SettingRow
-				title="After download"
-				description="Choose whether completed downloads open automatically."
+				title={t("settings.downloads.after.title")}
+				description={t("settings.downloads.after.description")}
 			>
 				<Select
 					value={settings.downloadAutoOpen}
@@ -637,7 +659,11 @@ function DownloadSettings() {
 					<SelectContent>
 						{downloadAutoOpenOptions.map((value) => (
 							<SelectItem key={value} value={value}>
-								{autoOpenLabels[value]}
+								{value === "never"
+									? t("settings.options.never")
+									: value === "file"
+										? t("settings.options.file")
+										: t("settings.options.folder")}
 							</SelectItem>
 						))}
 					</SelectContent>
@@ -650,6 +676,8 @@ function DownloadSettings() {
 function CacheSettings() {
 	const { setShowSettingsModal } = useShowSettingsModal();
 	const { settings, setSetting } = useSettings();
+	const { locale } = useLocale();
+	const t = useT();
 	const [cacheInfo, setCacheInfo] = useState({
 		count: 0,
 		size: 0,
@@ -683,7 +711,7 @@ function CacheSettings() {
 		const db = await ItsduResourcesDBWrapper.getInstance();
 		await db.clearResources();
 		await refreshCacheInfo();
-		sonnerToast.success("Resource cache cleared");
+		sonnerToast.success(t("settings.cache.clearAll.success"));
 	};
 
 	const clearProblemCache = async () => {
@@ -692,22 +720,25 @@ function CacheSettings() {
 		await refreshCacheInfo();
 		sonnerToast.success(
 			removed === 0
-				? "No stale cache records found"
-				: `Removed ${removed} stale cache record${removed === 1 ? "" : "s"}`,
+				? t("settings.cache.clearProblem.empty")
+				: t("settings.cache.clearProblem.removed", {
+						count: removed,
+						suffix: removed === 1 ? "" : "s",
+					}),
 		);
 	};
 
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Resource cache usage"
-				description="Cached resources make recently opened files available faster."
+				title={t("settings.cache.usage.title")}
+				description={t("settings.cache.usage.description")}
 			>
 				<div className="flex items-center gap-3">
 					<Badge variant="outline">
 						{cacheInfo.isLoading
-							? "Calculating..."
-							: `${cacheInfo.count} files, ${formatSize(cacheInfo.size)}`}
+							? t("common.calculating")
+							: `${cacheInfo.count} files, ${formatFileSize(cacheInfo.size, locale)}`}
 					</Badge>
 					{!cacheInfo.isLoading && (
 						<Badge
@@ -718,9 +749,11 @@ function CacheSettings() {
 									: "border-emerald-500/40 text-emerald-600 dark:text-emerald-400"
 							}
 						>
-							{cacheInfo.cachedCount} healthy
+							{t("settings.cache.healthy", { count: cacheInfo.cachedCount })}
 							{cacheInfo.missingCount + cacheInfo.failedCount > 0
-								? `, ${cacheInfo.missingCount + cacheInfo.failedCount} need cleanup`
+								? `, ${t("settings.cache.needsCleanup", {
+										count: cacheInfo.missingCount + cacheInfo.failedCount,
+									})}`
 								: ""}
 						</Badge>
 					)}
@@ -731,13 +764,13 @@ function CacheSettings() {
 						onClick={() => void refreshCacheInfo()}
 					>
 						<RefreshCcw className="mr-2 h-3.5 w-3.5" />
-						Refresh
+						{t("common.retry")}
 					</Button>
 				</div>
 			</SettingRow>
 			<SettingRow
-				title="Cache behavior"
-				description="Controls which opened resources are kept for offline use."
+				title={t("settings.cache.behavior.title")}
+				description={t("settings.cache.behavior.description")}
 			>
 				<Select
 					value={settings.resourceCacheMode}
@@ -754,15 +787,19 @@ function CacheSettings() {
 					<SelectContent>
 						{resourceCacheModeOptions.map((value) => (
 							<SelectItem key={value} value={value}>
-								{resourceCacheModeLabels[value]}
+								{value === "opened"
+									? t("settings.options.opened")
+									: value === "pdf-only"
+										? t("settings.options.pdfOnly")
+										: t("settings.options.manual")}
 							</SelectItem>
 						))}
 					</SelectContent>
 				</Select>
 			</SettingRow>
 			<SettingRow
-				title="Maximum cache size"
-				description="Least recently opened resources are evicted first when the cache grows past this limit."
+				title={t("settings.cache.maxSize.title")}
+				description={t("settings.cache.maxSize.description")}
 			>
 				<div className="flex items-center gap-2">
 					<Input
@@ -792,27 +829,27 @@ function CacheSettings() {
 							sonnerToast.success(
 								removed
 									? `Evicted ${removed} old resource${removed === 1 ? "" : "s"}`
-									: "Cache is within the limit",
+									: t("settings.cache.limitWithin"),
 							);
 						}}
 					>
-						Apply limit
+						{t("settings.cache.applyLimit")}
 					</Button>
 				</div>
 			</SettingRow>
 			<SettingRow
-				title="Browse cached resources"
-				description="Open, search, and remove individual cached files."
+				title={t("settings.cache.browse.title")}
+				description={t("settings.cache.browse.description")}
 			>
 				<Button asChild type="button" variant="outline" size="sm">
 					<Link to="/resources" onClick={() => setShowSettingsModal(false)}>
-						View resources
+						{t("common.open")}
 					</Link>
 				</Button>
 			</SettingRow>
 			<SettingRow
-				title="Clear stale cache records"
-				description="Removes broken cache entries without deleting healthy offline resources."
+				title={t("settings.cache.clearProblem.title")}
+				description={t("settings.cache.clearProblem.description")}
 			>
 				<Button
 					type="button"
@@ -821,32 +858,33 @@ function CacheSettings() {
 					onClick={() => void clearProblemCache()}
 				>
 					<Trash2 className="mr-2 h-3.5 w-3.5" />
-					Clear stale
+					{t("settings.cache.clearProblem.action")}
 				</Button>
 			</SettingRow>
 			<SettingRow
-				title="Clear resource cache"
-				description="Removes locally cached files. Course data can be fetched again."
+				title={t("settings.cache.clearAll.title")}
+				description={t("settings.cache.clearAll.description")}
 			>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
 						<Button type="button" variant="destructive" size="sm">
 							<Trash2 className="mr-2 h-3.5 w-3.5" />
-							Clear cache
+							{t("common.clear")}
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Clear resource cache?</AlertDialogTitle>
+							<AlertDialogTitle>
+								{t("settings.cache.clearAll.confirm.title")}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
-								This removes all locally cached resource files from IndexedDB.
-								It does not delete downloads from your computer.
+								{t("settings.cache.clearAll.confirm.description")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 							<AlertDialogAction onClick={() => void clearCache()}>
-								Clear cache
+								{t("common.clear")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
@@ -858,25 +896,26 @@ function CacheSettings() {
 
 function PdfSettings() {
 	const { settings } = useSettings();
+	const t = useT();
 
 	return (
 		<SettingsGroup>
 			<SettingSwitch
 				settingKey="CustomPDFrenderer"
-				title="Use ITSDU PDF viewer"
-				description="Use the built-in PDF viewer with thumbnails and the AI side panel."
+				title={t("settings.pdf.useViewer.title")}
+				description={t("settings.pdf.useViewer.description")}
 			/>
 			{settings.CustomPDFrenderer && (
 				<SettingSwitch
 					settingKey="pdfAIChatSidepanelOpenByDefault"
-					title="Open AI side panel by default"
-					description="New PDF sessions open with the AI panel visible when enabled."
+					title={t("settings.pdf.aiPanel.title")}
+					description={t("settings.pdf.aiPanel.description")}
 				/>
 			)}
 			<SettingSwitch
 				settingKey="CustomPDFSidebarOpened"
-				title="Show PDF thumbnails by default"
-				description="Controls the thumbnail sidebar in the custom PDF viewer."
+				title={t("settings.pdf.sidebar.title")}
+				description={t("settings.pdf.sidebar.description")}
 			/>
 		</SettingsGroup>
 	);
@@ -884,6 +923,7 @@ function PdfSettings() {
 
 function AppUpdatesSettings() {
 	const { version } = useVersion();
+	const t = useT();
 	const [status, setStatus] = useState<UpdateStatus>("idle");
 	const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
 	const [downloadProgress, setDownloadProgress] = useState(0);
@@ -968,26 +1008,28 @@ function AppUpdatesSettings() {
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Installed version"
-				description="The version currently running on this computer."
+				title={t("settings.appUpdates.version.title")}
+				description={t("settings.appUpdates.version.description")}
 			>
 				<Badge variant="outline">v{version}</Badge>
 			</SettingRow>
 			<SettingRow
-				title="Update status"
+				title={t("settings.appUpdates.status.title")}
 				description={
 					import.meta.env.DEV
-						? "Development builds usually cannot contact the packaged update feed."
-						: "Check, download, and install updates from here."
+						? t("settings.appUpdates.devModeNotice")
+						: t("settings.appUpdates.status.description")
 				}
 			>
 				<div className="flex min-w-[220px] flex-col items-start gap-2 sm:items-end">
 					<Badge variant={status === "error" ? "destructive" : "outline"}>
-						{getUpdateStatusLabel(status, isUpdateAvailable)}
+						{getUpdateStatusLabel(status, isUpdateAvailable, t)}
 					</Badge>
 					{updateInfo?.version && (
 						<p className="text-xs text-muted-foreground">
-							Latest checked: v{updateInfo.version}
+							{t("settings.appUpdates.latestChecked", {
+								version: updateInfo.version,
+							})}
 						</p>
 					)}
 					{error && (
@@ -999,8 +1041,8 @@ function AppUpdatesSettings() {
 			</SettingRow>
 			{status === "downloading" && (
 				<SettingRow
-					title="Download progress"
-					description="Keep the app open while the update downloads."
+					title={t("settings.appUpdates.download.title")}
+					description={t("settings.appUpdates.download.description")}
 				>
 					<div className="flex min-w-[220px] flex-col gap-2">
 						<Progress value={downloadProgress} />
@@ -1011,8 +1053,8 @@ function AppUpdatesSettings() {
 				</SettingRow>
 			)}
 			<SettingRow
-				title="Manual update check"
-				description="Uses the app's existing update service."
+				title={t("settings.appUpdates.check.title")}
+				description={t("settings.appUpdates.check.description")}
 			>
 				<div className="flex flex-wrap justify-start gap-2 sm:justify-end">
 					<Button
@@ -1023,7 +1065,9 @@ function AppUpdatesSettings() {
 						onClick={() => void checkForUpdates()}
 					>
 						<RefreshCcw className="mr-2 h-3.5 w-3.5" />
-						{status === "checking" ? "Checking..." : "Check for updates"}
+						{status === "checking"
+							? t("settings.appUpdates.checking")
+							: t("settings.appUpdates.check.title")}
 					</Button>
 					{isUpdateAvailable && status !== "downloaded" && (
 						<Button
@@ -1032,7 +1076,7 @@ function AppUpdatesSettings() {
 							disabled={isBusy}
 							onClick={() => void downloadUpdate()}
 						>
-							Download v{updateInfo?.version}
+							{t("settings.appUpdates.download.title")} v{updateInfo?.version}
 						</Button>
 					)}
 					{(status === "downloaded" || status === "installing") && (
@@ -1043,28 +1087,29 @@ function AppUpdatesSettings() {
 							onClick={() => void installUpdate()}
 						>
 							{status === "installing"
-								? "Installing..."
-								: "Install and restart"}
+								? t("settings.appUpdates.installing")
+								: t("common.install")}
 						</Button>
 					)}
 				</div>
 			</SettingRow>
 			<SettingSwitch
 				settingKey="updatesAutoCheckOnStartup"
-				title="Check for updates on startup"
-				description="Runs a quiet update check after settings are loaded."
+				title={t("settings.appUpdates.check.title")}
+				description={t("settings.appUpdates.autoCheck.description")}
 			/>
 		</SettingsGroup>
 	);
 }
 
 function PrivacySettings() {
+	const t = useT();
 	return (
 		<SettingsGroup>
 			<SettingSwitch
 				settingKey="UploadAIChats"
-				title="Allow AI document uploads"
-				description="When off, documents are not uploaded for AI chat indexing."
+				title={t("settings.privacy.uploadAi.title")}
+				description={t("settings.privacy.uploadAi.description")}
 			/>
 		</SettingsGroup>
 	);
@@ -1073,6 +1118,7 @@ function PrivacySettings() {
 function AdvancedSettings() {
 	const { settings, resetAllSettings } = useSettings();
 	const { version } = useVersion();
+	const t = useT();
 
 	const copyDiagnostics = async () => {
 		const db = await ItsduResourcesDBWrapper.getInstance();
@@ -1096,8 +1142,8 @@ function AdvancedSettings() {
 	return (
 		<SettingsGroup>
 			<SettingRow
-				title="Copy diagnostics"
-				description="App version, settings, and cache usage - no tokens or account data."
+				title={t("settings.privacy.copyDiagnostics.title")}
+				description={t("settings.privacy.copyDiagnostics.description")}
 			>
 				<Button
 					type="button"
@@ -1105,30 +1151,32 @@ function AdvancedSettings() {
 					size="sm"
 					onClick={() => void copyDiagnostics()}
 				>
-					Copy diagnostics
+					{t("settings.privacy.copyDiagnostics.action")}
 				</Button>
 			</SettingRow>
 			<SettingRow
-				title="Reset app settings"
-				description="Restores settings defaults. Cached resources and account data are not cleared."
+				title={t("settings.advanced.resetAll.title")}
+				description={t("settings.advanced.resetAll.description")}
 			>
 				<AlertDialog>
 					<AlertDialogTrigger asChild>
 						<Button type="button" variant="destructive" size="sm">
-							Reset settings
+							{t("common.reset")}
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
 						<AlertDialogHeader>
-							<AlertDialogTitle>Reset all settings?</AlertDialogTitle>
+							<AlertDialogTitle>
+								{t("settings.advanced.resetAll.confirm.title")}
+							</AlertDialogTitle>
 							<AlertDialogDescription>
-								This restores every setting in this screen to its default value.
+								{t("settings.advanced.resetAll.confirm.description")}
 							</AlertDialogDescription>
 						</AlertDialogHeader>
 						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
 							<AlertDialogAction onClick={() => void resetAllSettings()}>
-								Reset settings
+								{t("common.reset")}
 							</AlertDialogAction>
 						</AlertDialogFooter>
 					</AlertDialogContent>
@@ -1138,12 +1186,12 @@ function AdvancedSettings() {
 			<div className="rounded-md border bg-muted/20 p-4">
 				<div className="flex items-center gap-2">
 					<BookOpen className="h-4 w-4 text-muted-foreground" />
-					<h3 className="font-medium">Deferred foundation settings</h3>
+					<h3 className="font-medium">
+						{t("settings.advanced.deferred.title")}
+					</h3>
 				</div>
 				<p className="mt-2 text-sm text-muted-foreground">
-					Cache size limits and broader task notification scheduling need
-					background enforcement before they become real controls, so they are
-					not exposed as toggles yet.
+					{t("settings.advanced.deferred.description")}
 				</p>
 			</div>
 		</SettingsGroup>
@@ -1221,23 +1269,26 @@ function formatSize(size: number) {
 function getUpdateStatusLabel(
 	status: UpdateStatus,
 	isUpdateAvailable: boolean,
+	t: (key: TranslationKey) => string,
 ) {
 	switch (status) {
 		case "checking":
-			return "Checking...";
+			return t("common.checking");
 		case "current":
-			return "Up to date";
+			return t("common.upToDate");
 		case "available":
-			return "Update available";
+			return t("settings.appUpdates.download.title");
 		case "downloading":
-			return "Downloading";
+			return t("common.downloading");
 		case "downloaded":
-			return "Ready to install";
+			return t("common.readyToInstall");
 		case "installing":
-			return "Installing";
+			return t("common.installing");
 		case "error":
-			return "Update check failed";
+			return t("errors.updateCheck");
 		default:
-			return isUpdateAvailable ? "Update available" : "Not checked";
+			return isUpdateAvailable
+				? t("settings.appUpdates.download.title")
+				: t("common.notChecked");
 	}
 }

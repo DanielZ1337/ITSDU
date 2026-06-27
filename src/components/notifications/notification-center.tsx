@@ -13,6 +13,7 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
 import { useNotificationCenter } from "@/hooks/useNotificationCenter";
 import { normalizeCalendarEvents } from "@/lib/calendar/calendar-events";
+import { useT } from "@/lib/i18n";
 import {
 	buildNotificationItems,
 	groupNotificationItems,
@@ -52,6 +53,7 @@ export default function NotificationCenter() {
 	const { settings } = useSettings();
 	const { openSettingsSection } = useShowSettingsModal();
 	const { seenIds, markSeen } = useNotificationCenter();
+	const t = useT();
 
 	const updateReady = useAtomValue(updateReadyAtom);
 	const updateAvailableVersion = useAtomValue(updateAvailableVersionAtom);
@@ -148,17 +150,19 @@ export default function NotificationCenter() {
 							{unreadCount > 9 ? "9+" : unreadCount}
 						</span>
 					)}
-					<span className="sr-only">Notifications</span>
+					<span className="sr-only">{t("notifications.title")}</span>
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent align="end" className="w-96 p-0">
 				<div className="flex items-center justify-between border-b px-4 py-3">
 					<div>
-						<h2 className="text-sm font-semibold">Notifications</h2>
+						<h2 className="text-sm font-semibold">
+							{t("notifications.title")}
+						</h2>
 						<p className="text-xs text-muted-foreground">
 							{unreadCount > 0
-								? `${unreadCount} unread`
-								: "You're all caught up"}
+								? t("notifications.unread", { count: unreadCount })
+								: t("notifications.allCaughtUp")}
 						</p>
 					</div>
 					{items.length > 0 && (
@@ -168,7 +172,7 @@ export default function NotificationCenter() {
 							size="sm"
 							onClick={() => markSeen(items.map((item) => item.id))}
 						>
-							Mark all read
+							{t("notifications.markAllRead")}
 						</Button>
 					)}
 				</div>
@@ -177,7 +181,7 @@ export default function NotificationCenter() {
 						<div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
 							<Inbox className="h-5 w-5 text-muted-foreground" />
 							<p className="text-sm text-muted-foreground">
-								Nothing new right now.
+								{t("notifications.nothingNew")}
 							</p>
 						</div>
 					) : (

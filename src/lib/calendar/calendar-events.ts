@@ -1,3 +1,4 @@
+import { type Locale, formatTime } from "@/lib/i18n";
 import type { CalendarWeekStartSetting } from "@/types/settings";
 import {
 	addDays,
@@ -235,13 +236,16 @@ export function compareCalendarEvents(
 	return a.title.localeCompare(b.title);
 }
 
-export function formatEventTimeRange(event: NormalizedCalendarEvent) {
-	if (!event.startsAt) return "Time unknown";
-	if (event.isAllDay) return "All day";
+export function formatEventTimeRange(
+	event: NormalizedCalendarEvent,
+	locale: Locale,
+) {
+	if (!event.startsAt) return locale === "da" ? "Tid ukendt" : "Time unknown";
+	if (event.isAllDay) return locale === "da" ? "Hele dagen" : "All day";
 	if (!event.endsAt || event.endsAt.getTime() === event.startsAt.getTime()) {
-		return format(event.startsAt, "HH:mm");
+		return formatTime(event.startsAt, locale);
 	}
-	return `${format(event.startsAt, "HH:mm")} - ${format(event.endsAt, "HH:mm")}`;
+	return `${formatTime(event.startsAt, locale)} - ${formatTime(event.endsAt, locale)}`;
 }
 
 export function formatDuration(minutes: number | null) {
