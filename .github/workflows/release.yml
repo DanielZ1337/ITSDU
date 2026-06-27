@@ -11,8 +11,22 @@ permissions:
 
 jobs:
   release:
-    name: Build and publish release
-    runs-on: macos-latest
+    name: Build and publish ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macOS
+            os: macos-latest
+            script: release:mac
+          - platform: Linux
+            os: ubuntu-latest
+            script: release:linux
+          - platform: Windows
+            os: windows-latest
+            script: release:win
 
     steps:
       - name: Checkout
@@ -28,7 +42,7 @@ jobs:
         run: npm ci --force
 
       - name: Build and publish
-        run: npm run release
+        run: npm run ${{ matrix.script }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
