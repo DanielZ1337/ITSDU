@@ -65,7 +65,7 @@
 		"biome:check": "biome check --write ./src ./electron",
 		"preview": "vite preview",
 		"release": "vite build && electron-builder -mwl -p always",
-		"release:mac": "vite build && electron-builder --mac --x64 --arm64 --publish always",
+		"release:mac": "vite build && electron-builder --mac --publish always",
 		"release:linux": "vite build && electron-builder --linux --x64 --publish always",
 		"release:win": "vite build && electron-builder --win --x64 --publish always",
 		"tsc": "tsc"
