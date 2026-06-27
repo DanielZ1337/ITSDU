@@ -6,7 +6,7 @@ export const queryClient = new QueryClient({
 			refetchOnWindowFocus: false,
 			refetchOnMount: false,
 			retry: false,
-			refetchInterval: 1000 * 60 * 5, // 5 minutes
+			// No global polling: queries that need it opt in via their own refetchInterval.
 			keepPreviousData: true,
 			refetchOnReconnect: "always",
 			// useErrorBoundary: true

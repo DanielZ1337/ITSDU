@@ -1,35 +1,30 @@
 import { ipcMain, nativeTheme } from "electron";
-import { themeStore } from "../services/theme/theme-service";
+import { SettingsService } from "../services/settings/settings-service";
 
 function darkModeToggleHandler() {
 	ipcMain.handle("dark-mode:toggle", () => {
-		if (nativeTheme.shouldUseDarkColors) {
-			nativeTheme.themeSource = "light";
-		} else {
-			nativeTheme.themeSource = "dark";
-		}
-		themeStore.set("theme", nativeTheme.shouldUseDarkColors ? "dark" : "light");
-		return nativeTheme.shouldUseDarkColors;
+		const settingsService = SettingsService.getInstance();
+		const nextTheme = nativeTheme.shouldUseDarkColors ? "light" : "dark";
+		settingsService.set("theme", nextTheme);
+		return nextTheme === "dark";
 	});
 }
 
 function darkModeSetSystemHandler() {
 	ipcMain.handle("dark-mode:system", () => {
-		nativeTheme.themeSource = "system";
+		SettingsService.getInstance().set("theme", "system");
 	});
 }
 
 function darkModeGetHandler() {
 	ipcMain.handle("dark-mode:get", () => {
-		//return nativeTheme.shouldUseDarkColors
-		return themeStore.get("theme");
+		return nativeTheme.shouldUseDarkColors;
 	});
 }
 
 function darkModeSetHandler() {
 	ipcMain.handle("dark-mode:set", (_, value) => {
-		nativeTheme.themeSource = value ? "dark" : "light";
-		themeStore.set("theme", value ? "dark" : "light");
+		SettingsService.getInstance().set("theme", value ? "dark" : "light");
 	});
 }
 

@@ -7,12 +7,7 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import useResourceByElementID from "@/queries/resources/useResourceByElementID";
 import { m } from "framer-motion";
 import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
-import {
-	lazy,
-	memo,
-	useMemo,
-	useRef,
-} from "react";
+import { lazy, memo, useEffect, useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useParams } from "react-router-dom";
 
@@ -28,17 +23,30 @@ function Documents() {
 	}
 
 	const { isLoading, data } = useResourceByElementID(elementId);
-	const { aiSidepanel, toggleSidebar } = useAISidepanel();
+	const { aiSidepanel, setAISidepanel, toggleSidebar } = useAISidepanel();
 	const { ref: aiSidepanelRef } = useResizeDetector();
 
 	const memoizedData = useMemo(() => data, [data]);
 
-	const { settings } = useSettings();
+	const { settings, isHydrated } = useSettings();
+
+	useEffect(() => {
+		if (!isHydrated) return;
+		setAISidepanel(
+			settings.CustomPDFrenderer
+				? settings.pdfAIChatSidepanelOpenByDefault
+				: false,
+		);
+	}, [
+		elementId,
+		isHydrated,
+		setAISidepanel,
+		settings.CustomPDFrenderer,
+		settings.pdfAIChatSidepanelOpenByDefault,
+	]);
 
 	return (
-		<div
-			className="flex h-full max-h-full w-full flex-1 overflow-hidden"
-		>
+		<div className="flex h-full max-h-full w-full flex-1 overflow-hidden">
 			{settings.CustomPDFrenderer ? (
 				<CustomPDFProvider>
 					<PdfRenderer

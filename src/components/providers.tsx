@@ -3,6 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { ThemeProvider } from "next-themes";
 import { HelmetProvider } from "react-helmet-async";
+import SettingsEffects from "./settings/settings-effects";
 
 export default function Providers({
 	children,
@@ -14,6 +15,7 @@ export default function Providers({
 			<ThemeProvider attribute={"class"} enableSystem>
 				<QueryClientProvider client={queryClient}>
 					{/*<div className={"overflow-x-auto"}>*/}
+					<SettingsEffects />
 					<LazyMotion features={domAnimation}>{children}</LazyMotion>
 					{/*</div>*/}
 				</QueryClientProvider>

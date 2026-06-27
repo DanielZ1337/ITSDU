@@ -11,7 +11,8 @@ export default defineConfig({
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    sourcemap: true,
+    // Do not ship sourcemaps in production builds.
+    sourcemap: false,
     target: "esnext",
     minify: "esbuild",
     rollupOptions: {

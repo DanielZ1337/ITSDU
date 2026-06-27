@@ -1,1144 +1,1072 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
-import { useUser } from "@/hooks/atoms/useUser.ts";
-import { useMeasureScrollPosition } from "@/hooks/useMeasureScrollPosition";
-import { getSortedResourcesByTime } from "@/lib/resource-indexeddb/resource-indexeddb-utils";
-import {
-	IndexedDBResourceFileType,
-	ItsduResourcesDBWrapper,
-} from "@/lib/resource-indexeddb/resourceIndexedDB";
-import { cn } from "@/lib/utils";
-import { Divider } from "@nextui-org/divider";
-import { DividerProps } from "@nextui-org/react";
-import { useIntersectionObserver } from "@uidotdev/usehooks";
-import {
-	ChevronDown,
-	ComputerIcon,
-	MoonIcon,
-	SettingsIcon,
-	SunIcon,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-import React, { SetStateAction, useCallback, useEffect, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { LanguageCombobox } from "../language-combobox";
-import {
-	Shadow,
-	ShadowPosition,
-	calculateShadowPosition,
-} from "../scroll-shadow";
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { ScrollArea } from "../ui/scroll-area";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { toast } from "../ui/use-toast";
-import SettingsCloseButton from "./settings-close-button";
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useSettings } from "@/hooks/atoms/useSettings";
+import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
+import { useVersion } from "@/hooks/atoms/useVersion";
+import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
+import {
+	type CalendarViewSetting,
+	type CalendarWeekStartSetting,
+	type DownloadAutoOpenSetting,
+	type LandingPageSetting,
+	type LanguageSetting,
+	type SettingsKey,
+	type SettingsOptions,
+	type SidebarDensitySetting,
+	type ThemeSetting,
+	downloadAutoOpenOptions,
+} from "@/types/settings";
+import type { UpdateInfo } from "electron-updater";
+import {
+	Bell,
+	BookOpen,
+	Brush,
+	CalendarDays,
+	Database,
+	Download,
+	FileText,
+	Globe2,
+	Info,
+	LayoutDashboard,
+	Lock,
+	RefreshCcw,
+	Settings2,
+	Trash2,
+	X,
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast as sonnerToast } from "sonner";
+
+const landingLabels: Record<LandingPageSetting, string> = {
+	overview: "Overview",
+	courses: "Courses",
+	calendar: "Calendar",
+	tasks: "Tasks",
+	messages: "Messages",
+};
+
+const languageLabels: Record<LanguageSetting, string> = {
+	system: "System",
+	da: "Danish",
+	en: "English",
+};
+
+const autoOpenLabels: Record<DownloadAutoOpenSetting, string> = {
+	never: "Do not open",
+	file: "Open file",
+	folder: "Show in folder",
+};
+
+type UpdateStatus =
+	| "idle"
+	| "checking"
+	| "current"
+	| "available"
+	| "downloading"
+	| "downloaded"
+	| "installing"
+	| "error";
+
+type DownloadProgress = {
+	percent?: number;
+	transferred?: number;
+	total?: number;
+};
+
+const sectionIds = [
+	"appearance",
+	"language",
+	"navigation",
+	"calendar",
+	"notifications",
+	"downloads",
+	"cache",
+	"pdf",
+	"appUpdates",
+	"privacy",
+	"advanced",
+] as const;
+
+type SectionId = (typeof sectionIds)[number];
+
+const sectionMeta: Record<
+	SectionId,
+	{ label: string; icon: React.ReactNode; description: string }
+> = {
+	appearance: {
+		label: "Appearance",
+		icon: <Brush className="h-4 w-4" />,
+		description: "Theme and window controls.",
+	},
+	language: {
+		label: "Language",
+		icon: <Globe2 className="h-4 w-4" />,
+		description: "Locale preferences used by supported app surfaces.",
+	},
+	navigation: {
+		label: "Navigation",
+		icon: <LayoutDashboard className="h-4 w-4" />,
+		description: "Startup destination and navigation density.",
+	},
+	calendar: {
+		label: "Calendar",
+		icon: <CalendarDays className="h-4 w-4" />,
+		description: "Planner view defaults.",
+	},
+	notifications: {
+		label: "Notifications",
+		icon: <Bell className="h-4 w-4" />,
+		description: "Desktop notification behavior.",
+	},
+	downloads: {
+		label: "Downloads",
+		icon: <Download className="h-4 w-4" />,
+		description: "Where files go after download.",
+	},
+	cache: {
+		label: "Cache",
+		icon: <Database className="h-4 w-4" />,
+		description: "Local resource cache stored in IndexedDB.",
+	},
+	pdf: {
+		label: "PDF",
+		icon: <FileText className="h-4 w-4" />,
+		description: "PDF viewer defaults.",
+	},
+	appUpdates: {
+		label: "App & Updates",
+		icon: <Info className="h-4 w-4" />,
+		description: "Version and update controls.",
+	},
+	privacy: {
+		label: "Privacy",
+		icon: <Lock className="h-4 w-4" />,
+		description: "Data sharing and AI upload controls.",
+	},
+	advanced: {
+		label: "Advanced",
+		icon: <Settings2 className="h-4 w-4" />,
+		description: "Reset and app foundation settings.",
+	},
+};
 
 export default function SettingsModal() {
 	const { showSettingsModal, setShowSettingsModal } = useShowSettingsModal();
 
 	return (
 		<Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
-			<DialogOverlay className="will-change-auto data-[state=open]:!bg-black/10 data-[state=closed]:!bg-black/0 transition-all data-[state=open]:!duration-500" />
 			<DialogContent
-				customClose={<SettingsCloseButton />}
-				className="flex flex-1 flex-col h-screen w-screen md:w-screen max-w-full rounded-none md:rounded-none overflow-hidden focus:outline-none bg-neutral-100 dark:bg-neutral-800 data-[state=open]:!zoom-in-125 data-[state=closed]:!zoom-out-125 transition-none p-0 gap-0"
+				customClose={<></>}
+				className="flex h-[calc(100vh-4rem)] max-h-[860px] w-[calc(100vw-4rem)] max-w-5xl flex-col overflow-hidden rounded-xl border bg-background p-0 gap-0 shadow-2xl focus:outline-none sm:rounded-xl"
 			>
-				<div className="absolute h-14 w-full bg-transparent drag" />
-				<div className="flex h-full w-full flex-col items-center justify-center gap-4 px-10 py-14">
-					{/* <SettingsCustom /> */}
-					<Tabs defaultValue="settings" className="w-full h-full">
-						<TabsList className="bg-transparent absolute top-1/2 left-[10%] transform -translate-y-1/2 flex flex-col gap-4 items-center">
-							<TabsTrigger
-								value="settings"
-								className={buttonVariants({
-									variant: "link",
-									className:
-										"bg-transparent data-[state=active]:bg-transparent data-[state=inactive]:text-foreground-500 text-lg data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-								})}
-							>
-								Settings
-							</TabsTrigger>
-							<TabsTrigger
-								value="indexeddb"
-								className={buttonVariants({
-									variant: "link",
-									className:
-										"bg-transparent data-[state=active]:bg-transparent data-[state=inactive]:text-foreground-500 text-lg data-[state=active]:text-foreground data-[state=active]:shadow-sm",
-								})}
-							>
-								IndexedDB
-							</TabsTrigger>
-						</TabsList>
-						<TabsContent
-							value="settings"
-							className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden"
-						>
-							<SettingsCustom />
-						</TabsContent>
-						<TabsContent
-							value="indexeddb"
-							className="focus-visible:ring-0 focus-visible:ring-offset-0 h-full w-full overflow-hidden"
-						>
-							<ErrorBoundary
-								fallback={
-									<div className="flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl">
-										<h1 className="text-foreground">Error</h1>
-										<h2 className="text-foreground">
-											An error occured while loading IndexedDB. Please try again
-											later.
-										</h2>
-									</div>
-								}
-								onError={() => {
-									toast({
-										title: "Error",
-										variant: "destructive",
-										description:
-											"An error occured while loading IndexedDB. Please try again later.",
-									});
-								}}
-							>
-								<IndexedDB />
-							</ErrorBoundary>
-						</TabsContent>
-					</Tabs>
-				</div>
+				<SettingsScreen />
 			</DialogContent>
 		</Dialog>
 	);
 }
 
-function ResizablePanelSettings({ panelId }: { panelId: string }) {
-	const localStorageKey = `react-resizable-panels:${panelId}`;
-
-	const [panelSettings, setPanelSettings] = useState([70, 30]);
-
-	useEffect(() => {
-		const storedSettings = localStorage.getItem(localStorageKey);
-		if (storedSettings) {
-			const parsedSettings = JSON.parse(storedSettings);
-			const layout = parsedSettings[Object.keys(parsedSettings)[0]].layout;
-			setPanelSettings(layout);
-		}
-	}, [localStorageKey]);
-
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = event.target;
-		setPanelSettings({ ...panelSettings, [name]: value });
-	};
-
-	const clearLocalStorage = () => {
-		localStorage.removeItem(localStorageKey);
-	};
-
-	const saveSettings = () => {
-		localStorage.setItem(localStorageKey, JSON.stringify(panelSettings));
-	};
+function SettingsScreen() {
+	const [activeSection, setActiveSection] = useState<SectionId>("appearance");
+	const section = sectionMeta[activeSection];
 
 	return (
-		<div>
-			<h2>{`Resizable Panel ${panelId} Settings`}</h2>
-			{/* <div className="py-2">
-                <div>
-                    <label htmlFor={`${panelId}-layout`}>Layout</label>
-                    <input
-                        id={`${panelId}-layout`}
-                        name="layout"
-                        type="text"
-                        value={panelSettings.map(String)}
-                        onChange={handleInputChange}
-                    />
-                </div>
-                <div>
-
-                </div>
-            </div>
-            <Button variant={"outline"} onClick={saveSettings}>Save Settings</Button> */}
-			<Button variant={"outline"} onClick={clearLocalStorage}>
-				Clear Settings
-			</Button>
-		</div>
-	);
-}
-
-function SettingsCustom() {
-	const [currentSection, setCurrentSection] = React.useState<string>("account");
-	const [currentHover, setCurrentHover] = React.useState<string | null>(null);
-
-	const memoizedCurrentSection = React.useMemo(
-		() => currentSection,
-		[currentSection],
-	);
-	const memoizedCurrentHover = React.useMemo(
-		() => currentHover,
-		[currentHover],
-	);
-	const rootRef = React.useRef<HTMLDivElement>(null);
-	const viewportRef = React.useRef<HTMLDivElement>(null);
-
-	const SettingsCardSectionSettings = {
-		root: rootRef,
-		setCurrentSection: setCurrentSection,
-	};
-
-	const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(
-		calculateShadowPosition(viewportRef),
-	);
-	useMeasureScrollPosition(viewportRef, (position) =>
-		setShadowPosition(position),
-	);
-
-	const { settings } = useSettings();
-
-	return (
-		<div
-			className={
-				"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"
-			}
-		>
-			{/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
-			<Tabs
-				defaultValue={currentSection}
-				value={currentSection}
-				onValueChange={setCurrentSection}
-				orientation="vertical"
-				className="flex h-full w-full flex-col gap-4 md:flex-row"
-			>
-				{/* <TabsList
-                    className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
-                    <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
-                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="Preferences"
-                        label="Preferences"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="account"
-                        label="Account"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="password"
-                        label="Password"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                </TabsList>
-                <Divider orientation={"vertical"} className={"hidden md:block h-full"} /> */}
-				<ScrollArea
-					className={
-						"w-1/2 mx-auto overflow-y-auto relative rounded-l-md transition-all duration-75"
-					}
-					// scrollbarClassName="absolute"
-					thumbClassName="bg-neutral-200 dark:bg-neutral-700"
-					ref={rootRef}
-					viewportRef={viewportRef}
-					style={{
-						borderTopRightRadius: shadowPosition === "bottom" ? 5 : 10,
-						borderBottomRightRadius: shadowPosition === "top" ? 5 : 10,
-					}}
-				>
-					<SettingsCardSection
-						title="Preferences"
-						{...SettingsCardSectionSettings}
+		<div className="flex h-full min-h-0 w-full flex-col">
+			{/* Header: doubles as the window drag region while settings is open */}
+			<header className="drag flex shrink-0 items-center justify-between gap-4 border-b px-4 py-3 sm:px-6">
+				<div className="no-drag flex min-w-0 items-center gap-3">
+					<div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border bg-card">
+						{section.icon}
+					</div>
+					<div className="min-w-0">
+						<h2 className="truncate text-lg font-semibold tracking-tight">
+							{section.label}
+						</h2>
+						<p className="truncate text-sm text-muted-foreground">
+							{section.description}
+						</p>
+					</div>
+				</div>
+				<DialogClose asChild>
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className="no-drag shrink-0"
 					>
-						<div className="flex w-full flex-col gap-4">
-							{/* {JSON.stringify(settings)} */}
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Dark Mode</h6>
-								<DarkModeSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Language</h6>
-								<LanguageSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Default Home Page</h6>
-								<DefaultHomePageSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Use Custom PDF Renderer</h6>
-								<CustomPDFRendererSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">
-									Enable/Disable Uploading AI Chats
-								</h6>
-								<UploadAIChatsSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">
-									Default Sort Type for Course Cards
-								</h6>
-								<DefaultSortTypeSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Default AI Chat Sidepanel</h6>
-								<DefaultAIChatSidepanelSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">
-									Default Sort Type for Updates
-								</h6>
-								<DefaultSortTypeUpdatesSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">
-									Interval for Refreshing Access Tokens (in ms)
-								</h6>
-								<RefreshAccessTokenIntervalSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Custom Titlebar Buttons</h6>
-								<CustomTitlebarButtons />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Custom Titlebar</h6>
-								<CustomTitlebarSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Default Resource Open Type</h6>
-								<DefaultResourceOpenTypeSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">
-									Default Resource Table Columns
-								</h6>
-								<DefaultResourceTableColumnsSetting />
-							</div>
-							<div className="flex flex-col gap-2">
-								<h6 className="text-foreground">Resizeable Panel Settings</h6>
-								<ResizablePanelSettings panelId={"course-index"} />
-							</div>
+						<X className="h-5 w-5" />
+						<span className="sr-only">Close settings</span>
+					</Button>
+				</DialogClose>
+			</header>
+
+			{/* Body: fixed sidebar + scrollable content */}
+			<div className="flex min-h-0 flex-1">
+				<aside className="hidden w-60 shrink-0 flex-col border-r bg-muted/30 md:flex">
+					<div className="px-5 pb-1 pt-4">
+						<h1 className="text-sm font-semibold text-muted-foreground">
+							Settings
+						</h1>
+					</div>
+					<nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
+						{sectionIds.map((sectionId) => (
+							<button
+								key={sectionId}
+								type="button"
+								onClick={() => setActiveSection(sectionId)}
+								className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[active=true]:bg-accent data-[active=true]:font-medium data-[active=true]:text-foreground"
+								data-active={activeSection === sectionId}
+							>
+								<span className="shrink-0">{sectionMeta[sectionId].icon}</span>
+								{sectionMeta[sectionId].label}
+							</button>
+						))}
+					</nav>
+				</aside>
+				<div className="flex min-w-0 flex-1 flex-col">
+					<div className="flex gap-2 overflow-x-auto border-b p-3 md:hidden">
+						{sectionIds.map((sectionId) => (
+							<Button
+								key={sectionId}
+								type="button"
+								variant={activeSection === sectionId ? "secondary" : "ghost"}
+								size="sm"
+								className="shrink-0"
+								onClick={() => setActiveSection(sectionId)}
+							>
+								{sectionMeta[sectionId].label}
+							</Button>
+						))}
+					</div>
+					<ScrollArea className="min-h-0 flex-1">
+						<div className="mx-auto flex w-full max-w-3xl flex-col gap-6 p-5 pb-12 lg:p-8">
+							{activeSection === "appearance" && <AppearanceSettings />}
+							{activeSection === "language" && <LanguageSettings />}
+							{activeSection === "navigation" && <NavigationSettings />}
+							{activeSection === "calendar" && <CalendarSettings />}
+							{activeSection === "notifications" && <NotificationSettings />}
+							{activeSection === "downloads" && <DownloadSettings />}
+							{activeSection === "cache" && <CacheSettings />}
+							{activeSection === "pdf" && <PdfSettings />}
+							{activeSection === "appUpdates" && <AppUpdatesSettings />}
+							{activeSection === "privacy" && <PrivacySettings />}
+							{activeSection === "advanced" && <AdvancedSettings />}
 						</div>
-					</SettingsCardSection>
-					<Shadow position={shadowPosition} />
-				</ScrollArea>
-			</Tabs>
-		</div>
-	);
-}
-
-function IndexedDB() {
-	const [currentSection, setCurrentSection] = React.useState<string>("account");
-	const [currentHover, setCurrentHover] = React.useState<string | null>(null);
-
-	const memoizedCurrentSection = React.useMemo(
-		() => currentSection,
-		[currentSection],
-	);
-	const memoizedCurrentHover = React.useMemo(
-		() => currentHover,
-		[currentHover],
-	);
-	const rootRef = React.useRef<HTMLDivElement>(null);
-	const viewportRef = React.useRef<HTMLDivElement>(null);
-
-	const SettingsCardSectionSettings = {
-		root: rootRef,
-		setCurrentSection: setCurrentSection,
-	};
-
-	const [shadowPosition, setShadowPosition] = useState<ShadowPosition>(
-		calculateShadowPosition(viewportRef),
-	);
-	useMeasureScrollPosition(viewportRef, (position) =>
-		setShadowPosition(position),
-	);
-
-	const { settings } = useSettings();
-	const [indexedDBResources, setIndexedDBResources] =
-		useState<ItsduResourcesDBWrapper | null>(null);
-	const [allResources, setAllResources] = useState<
-		IndexedDBResourceFileType[] | null
-	>([]);
-	const [coursesDropdown, setCoursesDropdown] = useState<string[]>([]);
-	const [selectedCourses, setSelectedCourses] = useState<string[] | null>(null);
-	const [filteredResources, setFilteredResources] = useState<
-		IndexedDBResourceFileType[]
-	>([]);
-
-	let courses: any = null;
-	const formatSize = (size: number) => {
-		if (size < 1024) {
-			return `${size} B`;
-		} else if (size < 1024 * 1024) {
-			return `${Math.floor(size / 1024)} KB`;
-		} else if (size < 1024 * 1024 * 1024) {
-			return `${Math.floor(size / 1024 / 1024)} MB`;
-		} else {
-			return `${Math.floor(size / 1024 / 1024 / 1024)} GB`;
-		}
-	};
-
-	let totalSize = useCallback(
-		() =>
-			allResources &&
-			formatSize(
-				allResources.reduce((acc, resource) => acc + resource.size, 0),
-			),
-		[allResources],
-	)();
-	let filteredTotalSize = useCallback(
-		() =>
-			formatSize(
-				filteredResources.reduce((acc, resource) => acc + resource.size, 0),
-			),
-		[filteredResources],
-	)();
-
-	if (allResources) {
-		courses = allResources.reduce((acc: any, resource) => {
-			const { CourseId, CourseTitle } = resource;
-			acc[CourseId] = {
-				CourseId,
-				CourseTitle,
-			};
-			return acc;
-		}, {});
-	}
-
-	useEffect(() => {
-		ItsduResourcesDBWrapper.getInstance().then((instance) => {
-			setIndexedDBResources(instance);
-		});
-	}, []);
-
-	useEffect(() => {
-		if (indexedDBResources && allResources?.length === 0) {
-			indexedDBResources.getAllResources().then((resources) => {
-				resources = getSortedResourcesByTime(resources);
-				setAllResources(resources);
-			});
-		}
-	}, [indexedDBResources, allResources?.length]);
-
-	useEffect(() => {
-		if (allResources) {
-			const uniqueCourses = Array.from(
-				new Set(allResources.map((resource) => String(resource.CourseId))),
-			);
-			setCoursesDropdown(uniqueCourses);
-			setSelectedCourses(uniqueCourses);
-		}
-	}, [allResources?.length]);
-
-	const handleCourseSelect = useCallback(
-		(courseId: string) => {
-			// check if the course is already selected
-			const isSelected = selectedCourses?.includes(courseId);
-
-			if (isSelected) {
-				// remove the course from the selected courses
-				setSelectedCourses(
-					selectedCourses?.filter((id) => id !== courseId) || null,
-				);
-			} else {
-				// add the course to the selected courses
-				setSelectedCourses((selectedCourses || []).concat(courseId));
-			}
-		},
-		[selectedCourses],
-	);
-
-	useEffect(() => {
-		// Filter resources when selectedCourse changes
-		if (selectedCourses && allResources) {
-			const filtered = allResources.filter((resource) => {
-				return selectedCourses.includes(String(resource.CourseId));
-			});
-			setFilteredResources(filtered);
-		} else {
-			setFilteredResources(allResources || []);
-		}
-	}, [selectedCourses, allResources]);
-
-	const handleDeleteResource = (resourceId: string) => {
-		indexedDBResources?.deleteResourceById(resourceId).then(() => {
-			indexedDBResources?.getAllResources().then((resources) => {
-				resources = getSortedResourcesByTime(resources);
-				setAllResources(resources);
-			});
-		});
-	};
-
-	const handleDeleteAllResourcesForFilteredCourses = () => {
-		const filteredResourcesIds = allResources?.map(
-			(resource) => resource.elementId,
-		);
-
-		const filteredResourcesIdsToDelete = filteredResourcesIds?.filter(
-			(resourceId) => {
-				return filteredResources?.some(
-					(resource) =>
-						selectedCourses?.includes(String(resource.CourseId)) &&
-						resource.elementId === resourceId,
-				);
-			},
-		);
-
-		filteredResourcesIdsToDelete?.forEach((resourceId) => {
-			indexedDBResources?.deleteResourceById(resourceId);
-		});
-
-		indexedDBResources?.getAllResources().then((resources) => {
-			resources = getSortedResourcesByTime(resources);
-			setAllResources(resources);
-		});
-	};
-
-	return (
-		<div
-			className={
-				"flex flex-col gap-4 items-center w-full h-full p-4 lg:p-8  rounded-xl"
-			}
-		>
-			{/* <SettingsSidebar currentSection={currentSection} rootRef={rootRef} /> */}
-			<Tabs
-				defaultValue={currentSection}
-				value={currentSection}
-				onValueChange={setCurrentSection}
-				orientation="vertical"
-				className="flex h-full w-full flex-col gap-4 md:flex-row"
-			>
-				{/* <TabsList
-                    className="flex h-full flex-row justify-start gap-4 overflow-x-auto bg-neutral-100 p-2 min-w-[20vw] max-w-[30vw] dark:bg-neutral-800 md:flex-col md:gap-2 md:overflow-y-auto">
-                    <h1 className="my-2 text-xl font-bold text-neutral-400 text-foreground">Settings</h1>
-                    <Divider orientation={"horizontal"} className={"hidden md:block h-1 mb-4"} />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="Preferences"
-                        label="Preferences"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="account"
-                        label="Account"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                    <SettingsSidebarButton
-                        currentSection={memoizedCurrentSection}
-                        value="password"
-                        label="Password"
-                        currentHover={memoizedCurrentHover}
-                        setCurrentHover={setCurrentHover}
-                    />
-                </TabsList>
-                <Divider orientation={"vertical"} className={"hidden md:block h-full"} /> */}
-				<ScrollArea
-					className={
-						"w-1/2 mx-auto overflow-y-auto relative rounded-l-md transition-all duration-75"
-					}
-					// scrollbarClassName="absolute"
-					thumbClassName="bg-neutral-200 dark:bg-neutral-700"
-					ref={rootRef}
-					viewportRef={viewportRef}
-					style={{
-						borderTopRightRadius: shadowPosition === "bottom" ? 5 : 10,
-						borderBottomRightRadius: shadowPosition === "top" ? 5 : 10,
-					}}
-				>
-					<SettingsCardSection
-						title="Preferences"
-						{...SettingsCardSectionSettings}
-					>
-						<div className="flex w-full flex-col gap-4">
-							{/* {JSON.stringify(settings)} */}
-							<div className="flex flex-row gap-2 w-full justify-between items-center">
-								<div className="flex flex-col gap-2">
-									<h6 className="text-foreground">All Resources</h6>
-									<span className="text-foreground">
-										Total Size: {totalSize}
-									</span>
-									<Button
-										variant={"outline"}
-										onClick={() => {
-											indexedDBResources?.clearResources().then(() => {
-												setAllResources([]);
-											});
-										}}
-									>
-										Delete All
-									</Button>
-								</div>
-								<div className="flex flex-col gap-2">
-									<h6 className="text-foreground">Filtered Resources</h6>
-									<span className="text-foreground">
-										Total Size: {filteredTotalSize}
-									</span>
-									<Button
-										variant={"outline"}
-										onClick={handleDeleteAllResourcesForFilteredCourses}
-									>
-										Delete All
-									</Button>
-								</div>
-							</div>
-							{coursesDropdown && coursesDropdown.length > 0 && (
-								<DropdownMenu>
-									<DropdownMenuTrigger asChild>
-										<Button
-											variant="outline"
-											className="ml-auto scale-100 select-none active:scale-100"
-										>
-											Columns <ChevronDown className="ml-2 h-4 w-4" />
-										</Button>
-									</DropdownMenuTrigger>
-									<DropdownMenuContent align="end">
-										{coursesDropdown.map((courseId) => {
-											return (
-												<DropdownMenuCheckboxItem
-													key={courseId}
-													className="capitalize"
-													checked={selectedCourses?.includes(courseId)}
-													onCheckedChange={() => handleCourseSelect(courseId)}
-												>
-													{courses[courseId]?.CourseTitle}
-												</DropdownMenuCheckboxItem>
-											);
-										})}
-									</DropdownMenuContent>
-								</DropdownMenu>
-							)}
-							<div className="flex flex-col gap-2">
-								{filteredResources?.map((resource) => {
-									return (
-										<div
-											key={resource.elementId}
-											className="grid grid-cols-2 gap-2 w-full"
-										>
-											<div className="flex flex-col gap-2 w-full">
-												<span className="text-foreground">
-													{resource.CourseTitle}
-												</span>
-												<span className="text-foreground">
-													{resource.CourseId}
-												</span>
-												<span className="text-foreground">
-													{resource.elementId}
-												</span>
-												<span className="text-foreground">{resource.name}</span>
-												<span className="text-foreground">{resource.type}</span>
-												<span className="text-foreground">
-													Last accessed: {resource.last_accessed.toDateString()}
-												</span>
-												<span className="text-foreground">
-													Size: {formatSize(resource.size)}
-												</span>
-											</div>
-											<div className="flex flex-col gap-2 w-full">
-												<Button
-													variant={"outline"}
-													onClick={() => {
-														handleDeleteResource(resource.elementId);
-													}}
-												>
-													Delete
-												</Button>
-											</div>
-										</div>
-									);
-								})}
-							</div>
-						</div>
-					</SettingsCardSection>
-				</ScrollArea>
-			</Tabs>
-		</div>
-	);
-}
-
-function DarkModeSetting() {
-	const { theme } = useTheme();
-
-	return (
-		<div className="flex flex-col gap-2">
-			<div className="flex flex-row gap-2">
-				<ThemeChangeButton theme={"light"} />
-				<ThemeChangeButton theme={"dark"} />
-				<ThemeChangeButton theme={"system"} />
-			</div>
-			<div className="flex flex-row gap-2">
-				<span className="text-foreground">Current Theme: {theme}</span>
+					</ScrollArea>
+				</div>
 			</div>
 		</div>
 	);
 }
 
-function LanguageSetting() {
-	const user = useUser()!;
-	const [language, setLanguage] = useState<string>(user.Language);
-
-	useEffect(() => {
-		setLanguage(user.Language);
-	}, [user.Language]);
-
-	return <LanguageCombobox disabled />;
-}
-
-function DefaultHomePageSetting() {
-	const [defaultHomePage, setDefaultHomePage] = useState<string>("index");
+function AppearanceSettings() {
+	const { settings, setSetting } = useSettings();
 
 	return (
-		<Select value={defaultHomePage} onValueChange={setDefaultHomePage} disabled>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Theme" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="index">Index</SelectItem>
-				<SelectItem value="dashboard">Dashboard</SelectItem>
-				<SelectItem value="courses">Courses</SelectItem>
-				<SelectItem value="calendar">Calendar</SelectItem>
-				<SelectItem value="messages">Messages</SelectItem>
-				<SelectItem value="settings">Settings</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function CustomPDFRendererSetting() {
-	const { settings, updateSettings } = useSettings();
-
-	return (
-		<Select
-			value={settings.CustomPDFrenderer.toString()}
-			onValueChange={(e) => updateSettings({ CustomPDFrenderer: e === "true" })}
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Custom PDF Renderer" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="true">Enabled</SelectItem>
-				<SelectItem value="false">Disabled</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function UploadAIChatsSetting() {
-	const { settings, updateSettings } = useSettings();
-
-	return (
-		<Select
-			value={settings.UploadAIChats.toString()}
-			onValueChange={(e) => updateSettings({ UploadAIChats: e === "true" })}
-			disabled
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="AI Chat Upload" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="true">Enabled</SelectItem>
-				<SelectItem value="false">Disabled</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function CustomTitlebarButtons() {
-	const { settings, updateSettings } = useSettings();
-
-	return (
-		<Select
-			value={settings.CustomTitleBarButtons.toString()}
-			onValueChange={(e) =>
-				updateSettings({ CustomTitleBarButtons: e === "true" })
-			}
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Titlebar Buttons" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="true">Enabled</SelectItem>
-				<SelectItem value="false">Disabled</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function CustomTitlebarSetting() {
-	const { settings, updateSettings } = useSettings();
-
-	return (
-		<Select
-			value={settings.CustomTitleBar.toString()}
-			onValueChange={(e) => updateSettings({ CustomTitleBar: e === "true" })}
-			disabled
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Titlebar" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="true">Enabled</SelectItem>
-				<SelectItem value="false">Disabled</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function DefaultSortTypeSetting() {
-	const [defaultSortType, setDefaultSortType] = useState<
-		"starred" | "unstarred" | "all"
-	>("starred");
-
-	return (
-		<Select
-			value={defaultSortType}
-			onValueChange={(e) => {
-				setDefaultSortType(e as "starred" | "unstarred" | "all");
-			}}
-			disabled
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Theme" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="starred">Starred</SelectItem>
-				<SelectItem value="unstarred">Unstarred</SelectItem>
-				<SelectItem value="all">All</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function DefaultAIChatSidepanelSetting() {
-	const { settings, updateSettings } = useSettings();
-
-	return (
-		<Select
-			value={settings.DefaultAIChatSidepanel.toString()}
-			onValueChange={(e) =>
-				updateSettings({ DefaultAIChatSidepanel: e === "true" })
-			}
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="AI Chat Sidepanel" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="true">Enabled</SelectItem>
-				<SelectItem value="false">Disabled</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function DefaultSortTypeUpdatesSetting() {
-	const [defaultSortTypeUpdates, setDefaultSortTypeUpdates] = useState<
-		"all" | "updates" | "announcements"
-	>("all");
-
-	return (
-		<Select
-			value={defaultSortTypeUpdates}
-			onValueChange={(e) => {
-				setDefaultSortTypeUpdates(e as "all" | "updates" | "announcements");
-			}}
-			disabled
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Theme" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="all">All</SelectItem>
-				<SelectItem value="updates">Updates</SelectItem>
-				<SelectItem value="announcements">Announcements</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function DefaultResourceOpenTypeSetting() {
-	type DefaultResourceOpenType = "external" | "internal";
-	const [defaultResourceOpenType, setDefaultResourceOpenType] =
-		useState<DefaultResourceOpenType>("external");
-
-	return (
-		<Select
-			value={defaultResourceOpenType}
-			onValueChange={(e) => {
-				setDefaultResourceOpenType(e as DefaultResourceOpenType);
-			}}
-			disabled
-		>
-			<SelectTrigger className="border-2 border-transparent border-purple-500 text-white w-[180px] text-foreground bg-foreground-200">
-				<SelectValue placeholder="Theme" />
-			</SelectTrigger>
-			<SelectContent className="border-2 border-transparent border-purple-500 text-white text-foreground bg-foreground-200">
-				<SelectItem value="external">External</SelectItem>
-				<SelectItem value="internal">Internal</SelectItem>
-			</SelectContent>
-		</Select>
-	);
-}
-
-function DefaultResourceTableColumnsSetting() {
-	// columns are type, title and published. They can all be toggled on and off at the same time
-	type DefaultResourceTableColumns = {
-		type: boolean;
-		title: boolean;
-		published: boolean;
-	};
-
-	const [defaultResourceTableColumns, setDefaultResourceTableColumns] =
-		useState<DefaultResourceTableColumns>({
-			type: true,
-			title: true,
-			published: true,
-		});
-
-	/**
-     * <DropdownMenu>
-     <DropdownMenuTrigger asChild>
-     <Button variant="outline" className="ml-auto scale-100 select-none active:scale-100">
-     Columns <ChevronDown className="ml-2 h-4 w-4" />
-     </Button>
-     </DropdownMenuTrigger>
-     <DropdownMenuContent align="end">
-     {table
-     .getAllColumns()
-     .filter((column) => column.getCanHide())
-     .map((column) => {
-     return (
-     <DropdownMenuCheckboxItem
-     key={column.id}
-     className="capitalize"
-     checked={column.getIsVisible()}
-     onCheckedChange={(value) =>
-     column.toggleVisibility(!!value)
-     }
-     >
-     {column.id}
-     </DropdownMenuCheckboxItem>
-     )
-     })}
-     </DropdownMenuContent>
-     </DropdownMenu>
-     */
-	return <div></div>;
-}
-
-function RefreshAccessTokenIntervalSetting() {
-	const DEFAULT_REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45; // 5 minutes
-	const [refreshAccessTokenInterval, setRefreshAccessTokenInterval] =
-		useState<number>(DEFAULT_REFRESH_ACCESS_TOKEN_INTERVAL / 60 / 1000);
-
-	/**
-	 * hover:border-foreground/50 focus-visible:hover:border-border flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
-	 */
-	return (
-		<div className="flex flex-col gap-2">
-			<Input
-				className="border-2 border-transparent border-purple-500 text-white ring-offset-0 text-foreground bg-foreground-200 focus-visible:border-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:hover:border-none"
-				value={refreshAccessTokenInterval}
-				onChange={(e) => {
-					setRefreshAccessTokenInterval(Number(e.target.value));
-				}}
-				min={5}
-				max={55}
-				type="number"
-				placeholder="Refresh Access Token Interval"
-				disabled
+		<SettingsGroup>
+			<SettingRow
+				title="Theme"
+				description="Use the OS theme or choose a fixed light/dark mode."
+			>
+				<Select
+					value={settings.theme}
+					onValueChange={(value) =>
+						void setSetting("theme", value as ThemeSetting)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="system">System</SelectItem>
+						<SelectItem value="light">Light</SelectItem>
+						<SelectItem value="dark">Dark</SelectItem>
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingSwitch
+				settingKey="CustomTitleBarButtons"
+				title="Custom window buttons"
+				description="Use ITSDU-styled window controls in the titlebar."
 			/>
-		</div>
+		</SettingsGroup>
 	);
 }
 
-function SettingsSidebar({
-	currentSection,
-	rootRef,
-}: {
-	currentSection: string;
-	rootRef: React.RefObject<HTMLDivElement>;
-}) {
-	const navRef = React.useRef<HTMLDivElement>(null);
-	const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth < 768);
+function LanguageSettings() {
+	const { settings, setSetting } = useSettings();
 
-	const navDividerSettings = {
-		orientation: isMobile ? "vertical" : "horizontal",
-		className: isMobile ? "h-6" : "",
-	} satisfies DividerProps;
-
-	const SettingsNavTitleSettings = {
-		currentSection,
-		navbarRef: navRef,
-		rootRef: rootRef,
-		isMobile: isMobile,
-	} satisfies Omit<SettingsNavTitleProps, "title" | "icon">;
-
-	useEffect(() => {
-		window.addEventListener("resize", () => {
-			setIsMobile(window.innerWidth < 768);
-		});
-
-		return () => {
-			window.removeEventListener("resize", () => {
-				setIsMobile(window.innerWidth < 768);
-			});
-		};
-	}, []);
 	return (
-		<nav
-			className={
-				"flex md:flex-col flex-row gap-4 md:gap-2 w-full md:w-1/6 p-2 min-w-[20vw] overflow-x-auto md:overflow-y-auto"
-			}
-			ref={navRef}
-		>
-			<SettingsNavTitle
-				title={"Preferences"}
-				icon={<SettingsIcon />}
-				{...SettingsNavTitleSettings}
+		<SettingsGroup>
+			<SettingRow
+				title="App language"
+				description="Stored now and used by supported labels as localization expands."
+			>
+				<Select
+					value={settings.language}
+					onValueChange={(value) =>
+						void setSetting("language", value as LanguageSetting)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{Object.entries(languageLabels).map(([value, label]) => (
+							<SelectItem key={value} value={value}>
+								{label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</SettingRow>
+		</SettingsGroup>
+	);
+}
+
+function NavigationSettings() {
+	const { settings, setSetting } = useSettings();
+
+	return (
+		<SettingsGroup>
+			<SettingRow
+				title="Default landing page"
+				description="Where the app sends you when opening Home."
+			>
+				<Select
+					value={settings.defaultLandingPage}
+					onValueChange={(value) =>
+						void setSetting("defaultLandingPage", value as LandingPageSetting)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{Object.entries(landingLabels).map(([value, label]) => (
+							<SelectItem key={value} value={value}>
+								{label}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingRow
+				title="Course sort"
+				description="Default sort order for the Courses screen."
+			>
+				<Select
+					value={settings.courseSortBy}
+					onValueChange={(value) =>
+						void setSetting(
+							"courseSortBy",
+							value as SettingsOptions["courseSortBy"],
+						)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="LastOnline">Last online</SelectItem>
+						<SelectItem value="LastUpdated">Last updated</SelectItem>
+						<SelectItem value="Title">Title</SelectItem>
+						<SelectItem value="Rank">Rank</SelectItem>
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingRow title="Sidebar density" description="Adjust sidebar spacing.">
+				<Select
+					value={settings.sidebarDensity}
+					onValueChange={(value) =>
+						void setSetting("sidebarDensity", value as SidebarDensitySetting)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="comfortable">Comfortable</SelectItem>
+						<SelectItem value="compact">Compact</SelectItem>
+					</SelectContent>
+				</Select>
+			</SettingRow>
+		</SettingsGroup>
+	);
+}
+
+function CalendarSettings() {
+	const { settings, setSetting } = useSettings();
+
+	return (
+		<SettingsGroup>
+			<SettingRow
+				title="Default calendar view"
+				description="The Calendar page opens in this view."
+			>
+				<Select
+					value={settings.calendarDefaultView}
+					onValueChange={(value) =>
+						void setSetting("calendarDefaultView", value as CalendarViewSetting)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="agenda">Agenda</SelectItem>
+						<SelectItem value="month">Month</SelectItem>
+						<SelectItem value="week">Week</SelectItem>
+						<SelectItem value="day">Day</SelectItem>
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingRow
+				title="Week starts on"
+				description="Controls the week and month grid layout."
+			>
+				<Select
+					value={settings.calendarWeekStartsOn}
+					onValueChange={(value) =>
+						void setSetting(
+							"calendarWeekStartsOn",
+							value as CalendarWeekStartSetting,
+						)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						<SelectItem value="monday">Monday</SelectItem>
+						<SelectItem value="sunday">Sunday</SelectItem>
+					</SelectContent>
+				</Select>
+			</SettingRow>
+			<SettingSwitch
+				settingKey="calendarShowWeekends"
+				title="Show weekends"
+				description="Include Saturday and Sunday in month and week views."
 			/>
-			<Divider {...navDividerSettings} />
-		</nav>
+		</SettingsGroup>
 	);
 }
 
-function ThemeChangeButton({ theme }: { theme: string }) {
-	const { setTheme, theme: currentTheme } = useTheme();
+function NotificationSettings() {
+	const { settings, setSetting } = useSettings();
+	const [permission, setPermission] = useState(() =>
+		"Notification" in window ? Notification.permission : "unsupported",
+	);
 
-	const ThemeIconClassName = "w-6 h-6 text-foreground";
 	return (
-		<Button
-			onClick={() => {
-				setTheme(theme);
-			}}
-			className={cn(
-				"w-full md:w-auto border-2 border-transparent",
-				currentTheme === theme
-					? "bg-foreground-100 text-foreground border-2 border-purple-500"
-					: "bg-foreground-200 text-foreground-200",
+		<SettingsGroup>
+			<SettingRow
+				title="System permission"
+				description="Desktop notifications require browser notification permission."
+			>
+				<div className="flex items-center gap-2">
+					<Badge variant="outline">{permission}</Badge>
+					{"Notification" in window && permission === "default" && (
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => {
+								void Notification.requestPermission().then(setPermission);
+							}}
+						>
+							Allow
+						</Button>
+					)}
+				</div>
+			</SettingRow>
+			<SettingSwitch
+				settingKey="notificationsMessages"
+				title="Message notifications"
+				description="Poll gently for unread messages and show desktop notifications."
+			/>
+			<SettingSwitch
+				settingKey="notificationsTasks"
+				title="Task notifications"
+				description="Stored for task notification surfaces as they are enabled."
+			/>
+			<SettingSwitch
+				settingKey="notificationsAppUpdates"
+				title="App update notifications"
+				description="Show a toast when a new app update is available."
+			/>
+			<SettingSwitch
+				settingKey="notificationQuietHoursEnabled"
+				title="Quiet hours"
+				description="Suppress desktop notifications during a daily window."
+			/>
+			{settings.notificationQuietHoursEnabled && (
+				<div className="grid grid-cols-1 gap-4 rounded-md border bg-muted/20 p-4 sm:grid-cols-2">
+					<div className="space-y-2">
+						<Label htmlFor="quiet-start">Start</Label>
+						<Input
+							id="quiet-start"
+							type="time"
+							value={settings.notificationQuietHoursStart}
+							onChange={(event) =>
+								void setSetting(
+									"notificationQuietHoursStart",
+									event.target.value,
+								)
+							}
+						/>
+					</div>
+					<div className="space-y-2">
+						<Label htmlFor="quiet-end">End</Label>
+						<Input
+							id="quiet-end"
+							type="time"
+							value={settings.notificationQuietHoursEnd}
+							onChange={(event) =>
+								void setSetting("notificationQuietHoursEnd", event.target.value)
+							}
+						/>
+					</div>
+				</div>
 			)}
-			variant={"ghost"}
-			size={"lg"}
-		>
-			{theme === "light" && <SunIcon className={ThemeIconClassName} />}
-			{theme === "dark" && <MoonIcon className={ThemeIconClassName} />}
-			{theme === "system" && <ComputerIcon className={ThemeIconClassName} />}
-		</Button>
+		</SettingsGroup>
 	);
 }
 
-function SettingsCardSection({
-	title,
-	children,
-	setCurrentSection,
-	root,
-}: {
-	title: string;
-	children?: React.ReactNode;
-	setCurrentSection?: React.Dispatch<SetStateAction<string>>;
-	root?: React.RefObject<HTMLDivElement>;
-}) {
-	const [ref, entry] = useIntersectionObserver({
-		threshold: 0,
-		root: root?.current,
+function DownloadSettings() {
+	const { settings, setSetting, chooseDownloadDirectory } = useSettings();
+	const [systemDownloadPath, setSystemDownloadPath] = useState("");
+
+	useEffect(() => {
+		void window.app.getPath("downloads").then(setSystemDownloadPath);
+	}, []);
+
+	return (
+		<SettingsGroup>
+			<SettingRow
+				title="Download folder"
+				description="Files use the selected folder, or your OS Downloads folder."
+			>
+				<div className="flex max-w-md items-center gap-2">
+					<div className="min-w-0 truncate rounded-md border bg-muted/30 px-3 py-2 text-sm">
+						{settings.downloadDirectory ?? systemDownloadPath ?? "Downloads"}
+					</div>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={() => void chooseDownloadDirectory()}
+					>
+						Choose
+					</Button>
+					{settings.downloadDirectory && (
+						<Button
+							type="button"
+							variant="ghost"
+							size="sm"
+							onClick={() => void setSetting("downloadDirectory", null)}
+						>
+							Reset
+						</Button>
+					)}
+				</div>
+			</SettingRow>
+			<SettingRow
+				title="After download"
+				description="Choose whether completed downloads open automatically."
+			>
+				<Select
+					value={settings.downloadAutoOpen}
+					onValueChange={(value) =>
+						void setSetting(
+							"downloadAutoOpen",
+							value as DownloadAutoOpenSetting,
+						)
+					}
+				>
+					<SelectTrigger className="w-[180px]">
+						<SelectValue />
+					</SelectTrigger>
+					<SelectContent>
+						{downloadAutoOpenOptions.map((value) => (
+							<SelectItem key={value} value={value}>
+								{autoOpenLabels[value]}
+							</SelectItem>
+						))}
+					</SelectContent>
+				</Select>
+			</SettingRow>
+		</SettingsGroup>
+	);
+}
+
+function CacheSettings() {
+	const [cacheInfo, setCacheInfo] = useState({
+		count: 0,
+		size: 0,
+		isLoading: true,
 	});
 
-	useEffect(() => {
-		if (entry?.isIntersecting) {
-			setCurrentSection?.(title);
-		}
-	}, [entry, setCurrentSection, title]);
+	const refreshCacheInfo = async () => {
+		setCacheInfo((current) => ({ ...current, isLoading: true }));
+		const db = await ItsduResourcesDBWrapper.getInstance();
+		const resources = await db.getAllResources();
+		setCacheInfo({
+			count: resources.length,
+			size: resources.reduce((total, resource) => total + resource.size, 0),
+			isLoading: false,
+		});
+	};
 
-	//shadow-md
+	useEffect(() => {
+		void refreshCacheInfo();
+	}, []);
+
+	const clearCache = async () => {
+		const db = await ItsduResourcesDBWrapper.getInstance();
+		await db.clearResources();
+		await refreshCacheInfo();
+		sonnerToast.success("Resource cache cleared");
+	};
+
 	return (
-		<div
-			className={
-				"p-4 md:p-8 bg-neutral-100 dark:bg-neutral-800 rounded-xl w-full h-max"
-			}
-		>
-			<h1
-				data-title={title}
-				ref={ref}
-				className={"py-2 text-2xl font-bold text-foreground"}
+		<SettingsGroup>
+			<SettingRow
+				title="Resource cache usage"
+				description="Cached resources make recently opened files available faster."
 			>
-				{title}
-			</h1>
-			<div className={"flex flex-col gap-4 w-full h-full"}>{children}</div>
+				<div className="flex items-center gap-3">
+					<Badge variant="outline">
+						{cacheInfo.isLoading
+							? "Calculating..."
+							: `${cacheInfo.count} files, ${formatSize(cacheInfo.size)}`}
+					</Badge>
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={() => void refreshCacheInfo()}
+					>
+						<RefreshCcw className="mr-2 h-3.5 w-3.5" />
+						Refresh
+					</Button>
+				</div>
+			</SettingRow>
+			<SettingRow
+				title="Clear resource cache"
+				description="Removes locally cached files. Course data can be fetched again."
+			>
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button type="button" variant="destructive" size="sm">
+							<Trash2 className="mr-2 h-3.5 w-3.5" />
+							Clear cache
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Clear resource cache?</AlertDialogTitle>
+							<AlertDialogDescription>
+								This removes all locally cached resource files from IndexedDB.
+								It does not delete downloads from your computer.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction onClick={() => void clearCache()}>
+								Clear cache
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+			</SettingRow>
+		</SettingsGroup>
+	);
+}
+
+function PdfSettings() {
+	const { settings } = useSettings();
+
+	return (
+		<SettingsGroup>
+			<SettingSwitch
+				settingKey="CustomPDFrenderer"
+				title="Use ITSDU PDF viewer"
+				description="Use the built-in PDF viewer with thumbnails and the AI side panel."
+			/>
+			{settings.CustomPDFrenderer && (
+				<SettingSwitch
+					settingKey="pdfAIChatSidepanelOpenByDefault"
+					title="Open AI side panel by default"
+					description="New PDF sessions open with the AI panel visible when enabled."
+				/>
+			)}
+			<SettingSwitch
+				settingKey="CustomPDFSidebarOpened"
+				title="Show PDF thumbnails by default"
+				description="Controls the thumbnail sidebar in the custom PDF viewer."
+			/>
+		</SettingsGroup>
+	);
+}
+
+function AppUpdatesSettings() {
+	const { version } = useVersion();
+	const [status, setStatus] = useState<UpdateStatus>("idle");
+	const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
+	const [downloadProgress, setDownloadProgress] = useState(0);
+	const [error, setError] = useState<string | null>(null);
+
+	const isUpdateAvailable =
+		updateInfo?.version !== undefined && updateInfo.version !== version;
+	const isBusy =
+		status === "checking" ||
+		status === "downloading" ||
+		status === "installing";
+
+	useEffect(() => {
+		const onDownloaded = (_event: unknown, info?: UpdateInfo) => {
+			if (info) setUpdateInfo(info);
+			setDownloadProgress(100);
+			setStatus("downloaded");
+		};
+		const onProgress = (_event: unknown, progress?: DownloadProgress) => {
+			setDownloadProgress(progress?.percent ?? 0);
+		};
+
+		window.ipcRenderer.on("app:updateDownloaded", onDownloaded);
+		window.ipcRenderer.on("app:downloadProgress", onProgress);
+
+		return () => {
+			window.ipcRenderer.removeListener("app:updateDownloaded", onDownloaded);
+			window.ipcRenderer.removeListener("app:downloadProgress", onProgress);
+		};
+	}, []);
+
+	const checkForUpdates = async () => {
+		setStatus("checking");
+		setError(null);
+		try {
+			const result = await window.app.checkForUpdates();
+			setUpdateInfo(result);
+			setStatus(
+				result?.version !== undefined && result.version !== version
+					? "available"
+					: "current",
+			);
+		} catch (caught) {
+			console.error(caught);
+			setStatus("error");
+			setError(getUpdateErrorMessage(caught));
+		}
+	};
+
+	const downloadUpdate = async () => {
+		if (!isUpdateAvailable) return;
+
+		setStatus("downloading");
+		setDownloadProgress(0);
+		setError(null);
+
+		try {
+			await window.app.downloadUpdate();
+			setStatus((current) =>
+				current === "downloading" ? "downloaded" : current,
+			);
+		} catch (caught) {
+			console.error(caught);
+			setStatus("error");
+			setError(getUpdateErrorMessage(caught));
+		}
+	};
+
+	const installUpdate = async () => {
+		setStatus("installing");
+		setError(null);
+		try {
+			await window.app.update();
+			await window.app.exit();
+		} catch (caught) {
+			console.error(caught);
+			setStatus("error");
+			setError(getUpdateErrorMessage(caught));
+		}
+	};
+
+	return (
+		<SettingsGroup>
+			<SettingRow
+				title="Installed version"
+				description="The version currently running on this computer."
+			>
+				<Badge variant="outline">v{version}</Badge>
+			</SettingRow>
+			<SettingRow
+				title="Update status"
+				description={
+					import.meta.env.DEV
+						? "Development builds usually cannot contact the packaged update feed."
+						: "Check, download, and install updates from here."
+				}
+			>
+				<div className="flex min-w-[220px] flex-col items-start gap-2 sm:items-end">
+					<Badge variant={status === "error" ? "destructive" : "outline"}>
+						{getUpdateStatusLabel(status, isUpdateAvailable)}
+					</Badge>
+					{updateInfo?.version && (
+						<p className="text-xs text-muted-foreground">
+							Latest checked: v{updateInfo.version}
+						</p>
+					)}
+					{error && (
+						<p className="max-w-[260px] text-right text-xs text-destructive">
+							{error}
+						</p>
+					)}
+				</div>
+			</SettingRow>
+			{status === "downloading" && (
+				<SettingRow
+					title="Download progress"
+					description="Keep the app open while the update downloads."
+				>
+					<div className="flex min-w-[220px] flex-col gap-2">
+						<Progress value={downloadProgress} />
+						<p className="text-right text-xs text-muted-foreground">
+							{downloadProgress.toFixed(0)}%
+						</p>
+					</div>
+				</SettingRow>
+			)}
+			<SettingRow
+				title="Manual update check"
+				description="Uses the app's existing update service."
+			>
+				<div className="flex flex-wrap justify-start gap-2 sm:justify-end">
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						disabled={isBusy}
+						onClick={() => void checkForUpdates()}
+					>
+						<RefreshCcw className="mr-2 h-3.5 w-3.5" />
+						{status === "checking" ? "Checking..." : "Check for updates"}
+					</Button>
+					{isUpdateAvailable && status !== "downloaded" && (
+						<Button
+							type="button"
+							size="sm"
+							disabled={isBusy}
+							onClick={() => void downloadUpdate()}
+						>
+							Download v{updateInfo?.version}
+						</Button>
+					)}
+					{(status === "downloaded" || status === "installing") && (
+						<Button
+							type="button"
+							size="sm"
+							disabled={status === "installing"}
+							onClick={() => void installUpdate()}
+						>
+							{status === "installing"
+								? "Installing..."
+								: "Install and restart"}
+						</Button>
+					)}
+				</div>
+			</SettingRow>
+			<SettingSwitch
+				settingKey="updatesAutoCheckOnStartup"
+				title="Check for updates on startup"
+				description="Runs a quiet update check after settings are loaded."
+			/>
+		</SettingsGroup>
+	);
+}
+
+function PrivacySettings() {
+	return (
+		<SettingsGroup>
+			<SettingSwitch
+				settingKey="UploadAIChats"
+				title="Allow AI document uploads"
+				description="When off, documents are not uploaded for AI chat indexing."
+			/>
+		</SettingsGroup>
+	);
+}
+
+function AdvancedSettings() {
+	const { resetAllSettings } = useSettings();
+
+	return (
+		<SettingsGroup>
+			<SettingRow
+				title="Reset app settings"
+				description="Restores settings defaults. Cached resources and account data are not cleared."
+			>
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button type="button" variant="destructive" size="sm">
+							Reset settings
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Reset all settings?</AlertDialogTitle>
+							<AlertDialogDescription>
+								This restores every setting in this screen to its default value.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancel</AlertDialogCancel>
+							<AlertDialogAction onClick={() => void resetAllSettings()}>
+								Reset settings
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+			</SettingRow>
+			<Separator />
+			<div className="rounded-md border bg-muted/20 p-4">
+				<div className="flex items-center gap-2">
+					<BookOpen className="h-4 w-4 text-muted-foreground" />
+					<h3 className="font-medium">Deferred foundation settings</h3>
+				</div>
+				<p className="mt-2 text-sm text-muted-foreground">
+					Cache size limits and broader task notification scheduling need
+					background enforcement before they become real controls, so they are
+					not exposed as toggles yet.
+				</p>
+			</div>
+		</SettingsGroup>
+	);
+}
+
+function SettingSwitch({
+	settingKey,
+	title,
+	description,
+}: {
+	settingKey: SettingsKey;
+	title: string;
+	description: string;
+}) {
+	const { settings, setSetting } = useSettings();
+	const checked = Boolean(settings[settingKey]);
+
+	return (
+		<SettingRow title={title} description={description}>
+			<Switch
+				checked={checked}
+				onCheckedChange={(value) => void setSetting(settingKey, value as never)}
+			/>
+		</SettingRow>
+	);
+}
+
+function SettingsGroup({ children }: { children: React.ReactNode }) {
+	const childArray = useMemo(() => {
+		return Array.isArray(children) ? children : [children];
+	}, [children]);
+
+	return (
+		<div className="overflow-hidden rounded-md border bg-card">
+			{childArray.map((child, index) => (
+				<div key={index}>
+					{index > 0 && <Separator />}
+					{child}
+				</div>
+			))}
 		</div>
 	);
 }
 
-interface SettingsNavTitleProps {
-	currentSection: string;
+function SettingRow({
+	title,
+	description,
+	children,
+}: {
 	title: string;
-	navbarRef?: React.RefObject<HTMLDivElement>;
-	rootRef?: React.RefObject<HTMLDivElement>;
-	isMobile?: boolean;
-	icon?: React.ReactNode;
+	description: string;
+	children: React.ReactNode;
+}) {
+	return (
+		<div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+			<div className="min-w-0">
+				<h3 className="font-medium">{title}</h3>
+				<p className="mt-1 text-sm text-muted-foreground">{description}</p>
+			</div>
+			<div className="flex justify-start sm:justify-end">{children}</div>
+		</div>
+	);
 }
 
-function SettingsNavTitle({
-	currentSection,
-	title,
-	navbarRef,
-	rootRef,
-	isMobile,
-	icon,
-}: SettingsNavTitleProps) {
-	const ref = React.useRef<HTMLHeadingElement>(null);
+function formatSize(size: number) {
+	if (size < 1024) return `${size} B`;
+	if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`;
+	if (size < 1024 * 1024 * 1024) {
+		return `${Math.round(size / 1024 / 1024)} MB`;
+	}
+	return `${Math.round(size / 1024 / 1024 / 1024)} GB`;
+}
 
-	useEffect(() => {
-		if (ref.current && currentSection === title) {
-			navbarRef?.current?.scrollTo({
-				left: ref.current.offsetLeft - 50,
-				behavior: "smooth",
-			});
-		}
-	}, [currentSection, navbarRef, title]);
+function getUpdateStatusLabel(
+	status: UpdateStatus,
+	isUpdateAvailable: boolean,
+) {
+	switch (status) {
+		case "checking":
+			return "Checking...";
+		case "current":
+			return "Up to date";
+		case "available":
+			return "Update available";
+		case "downloading":
+			return "Downloading";
+		case "downloaded":
+			return "Ready to install";
+		case "installing":
+			return "Installing";
+		case "error":
+			return "Update check failed";
+		default:
+			return isUpdateAvailable ? "Update available" : "Not checked";
+	}
+}
 
-	return (
-		<h6
-			onClick={() => {
-				const element = document.querySelector(`[data-title="${title}"]`);
-				if (element) {
-					// get the element's position relative to the viewport of the ref
-					if (rootRef && rootRef.current) {
-						const top =
-							element.getBoundingClientRect().top -
-							rootRef?.current?.getBoundingClientRect().top! -
-							50;
-						// scroll by the amount of top
-						rootRef?.current?.scrollBy({
-							top,
-							behavior: "smooth",
-						});
-					}
-				}
-			}}
-			ref={ref}
-			className={
-				"overflow-hidden inline-flex gap-2 text-foreground data-[active=true]:text-foreground data-[active=true]:font-bold hover:text-foreground cursor-pointer hover:font-bold transition-all duration-200 hover:drop-shadow-[0_0px_5px_rgba(100,100,100,0.5)]"
-			}
-			data-active={currentSection === title}
-		>
-			<span className="shrink-0">
-				{!isMobile && icon} {title}
-			</span>
-		</h6>
-	);
+function getUpdateErrorMessage(error: unknown) {
+	if (import.meta.env.DEV) {
+		return "Updates are usually unavailable in development builds.";
+	}
+	if (error instanceof Error && error.message) {
+		return error.message;
+	}
+	return "The update service could not be reached.";
 }

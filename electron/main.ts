@@ -43,9 +43,12 @@ async function createMainWindow() {
 	const windowService = new WindowOptionsService();
 	const windowOptions = windowService.getWindowOptions();
 
-	const { themeStore } = await import("./services/theme/theme-service.ts");
-
-	const startUpTheme = themeStore.get("theme");
+	const { SettingsService } = await import(
+		"./services/settings/settings-service.ts"
+	);
+	const startUpTheme = SettingsService.getInstance().get("theme");
+	const shouldUseDarkTheme =
+		startUpTheme === "system" ? nativeTheme.shouldUseDarkColors : startUpTheme === "dark";
 
 	win = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
@@ -61,16 +64,15 @@ async function createMainWindow() {
 		minHeight: 640,
 		minWidth: 800,
 		// show: false,
-		darkTheme: startUpTheme === "dark",
+		darkTheme: shouldUseDarkTheme,
 		// darkTheme: nativeTheme.shouldUseDarkColors,
-		backgroundColor: startUpTheme === "dark" ? "black" : "white",
+		backgroundColor: shouldUseDarkTheme ? "black" : "white",
 		frame: false,
 		roundedCorners: true,
 		...windowOptions,
 	});
 
 	win.webContents.setWindowOpenHandler((handler) => {
-		console.log(handler);
 		// handles office download links
 		const origin = new URL(handler.url);
 		let referrer;
@@ -97,8 +99,8 @@ async function createMainWindow() {
 					minHeight: 640,
 					minWidth: 800,
 					show: false,
-					darkTheme: startUpTheme === "dark",
-					backgroundColor: startUpTheme === "dark" ? "black" : "white",
+					darkTheme: shouldUseDarkTheme,
+					backgroundColor: shouldUseDarkTheme ? "black" : "white",
 					frame: false,
 					roundedCorners: true,
 				},
@@ -160,9 +162,12 @@ async function createMainWindow() {
 
 export async function createAuthWindow() {
 	const wins = BrowserWindow.getAllWindows();
-	const { themeStore } = await import("./services/theme/theme-service.ts");
-
-	const startUpTheme = themeStore.get("theme");
+	const { SettingsService } = await import(
+		"./services/settings/settings-service.ts"
+	);
+	const startUpTheme = SettingsService.getInstance().get("theme");
+	const shouldUseDarkTheme =
+		startUpTheme === "system" ? nativeTheme.shouldUseDarkColors : startUpTheme === "dark";
 
 	authWindow = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
@@ -172,8 +177,8 @@ export async function createAuthWindow() {
 		width: 800,
 		height: 600,
 		autoHideMenuBar: true,
-		darkTheme: startUpTheme === "dark",
-		backgroundColor: startUpTheme === "dark" ? "black" : "white",
+		darkTheme: shouldUseDarkTheme,
+		backgroundColor: shouldUseDarkTheme ? "black" : "white",
 		resizable: false,
 		/* 
         alwaysOnTop: true,
@@ -240,8 +245,7 @@ app.on("activate", () => {
 
 const gotTheLock = app.requestSingleInstanceLock();
 if (gotTheLock) {
-	app.on("second-instance", (_, argv) => {
-		console.log("second-instance", argv);
+	app.on("second-instance", (_, _argv) => {
 		// Someone tried to run a second instance, we should focus our window.
 		if (win) {
 			if (win.isMinimized()) {
@@ -293,6 +297,9 @@ function logEverywhereError(s: string) {
 }
 
 async function initializeAllHandlers() {
+	const { SettingsService } = await import(
+		"./services/settings/settings-service.ts"
+	);
 	const darkModeHandlerInitializer = (
 		await import("./handlers/dark-mode-handlers.ts")
 	).default;
@@ -306,6 +313,7 @@ async function initializeAllHandlers() {
 	autoUpdater.autoRunAppAfterInstall = true;
 	autoUpdater.autoInstallOnAppQuit = false;
 	autoUpdater.autoDownload = false;
+	SettingsService.getInstance();
 	darkModeHandlerInitializer();
 	appHandlerInitializer();
 	initDownloadHandlers();
@@ -381,7 +389,6 @@ app.whenReady().then(async () => {
 					},
 				);
 				const { access_token, refresh_token } = res.data;
-				console.log(access_token, refresh_token);
 				authService.setToken("access_token", access_token);
 				authService.setToken("refresh_token", refresh_token);
 				await authService.refreshAccessToken();
@@ -482,7 +489,6 @@ app.whenReady().then(async () => {
 		tray.setToolTip("ITSDU");
 		tray.on("right-click", () => {
 			tray.focus();
-			console.log(win?.isVisible());
 			contextMenu.items[0].enabled = !win?.isVisible();
 			tray.setContextMenu(contextMenu);
 			setTimeout(() => {

@@ -5,6 +5,10 @@ import slugify from "slugify";
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import { StoreKey } from "./services/itslearning/auth/types/store_keys.ts";
 import type { FileRepository } from "./services/itslearning/resources/resources.ts";
+import type {
+	SettingsKey,
+	SettingsOptions,
+} from "../src/types/settings.ts";
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
@@ -26,6 +30,28 @@ contextBridge.exposeInMainWorld("darkMode", {
 	/*subscribe: (listener: (event: Electron.IpcRendererEvent, shouldUseDarkColors: boolean) => void) => {
         ipcRenderer.on('dark-mode:updated', listener)
     }*/
+});
+contextBridge.exposeInMainWorld("settings", {
+	getAll: () => ipcRenderer.invoke("settings:getAll"),
+	get: (key: SettingsKey) => ipcRenderer.invoke("settings:get", key),
+	set: <K extends SettingsKey>(key: K, value: SettingsOptions[K]) =>
+		ipcRenderer.invoke("settings:set", key, value),
+	reset: (key: SettingsKey) => ipcRenderer.invoke("settings:reset", key),
+	resetAll: () => ipcRenderer.invoke("settings:resetAll"),
+	migrateLocalStorage: (values: Partial<SettingsOptions>) =>
+		ipcRenderer.invoke("settings:migrateLocalStorage", values),
+	chooseDownloadDirectory: () =>
+		ipcRenderer.invoke("settings:chooseDownloadDirectory"),
+	subscribe: (callback: (settings: SettingsOptions) => void) => {
+		const listener = (_event: Electron.IpcRendererEvent, settings: SettingsOptions) => {
+			callback(settings);
+		};
+		ipcRenderer.on("settings:changed", listener);
+
+		return () => {
+			ipcRenderer.removeListener("settings:changed", listener);
+		};
+	},
 });
 contextBridge.exposeInMainWorld("notification", {
 	send: (title: string, body: string, onClick?: () => void) => {
@@ -75,6 +101,11 @@ contextBridge.exposeInMainWorld("itslearning_file_scraping", {});
 
 contextBridge.exposeInMainWorld("ai", {
 	upload: async (elementId: number) => {
+		const allowUpload = await ipcRenderer.invoke("settings:get", "UploadAIChats");
+		if (!allowUpload) {
+			throw new Error("AI document uploads are disabled in settings.");
+		}
+
 		const downloadLink = await ipcRenderer.invoke(
 			"get-resource-download-link",
 			elementId,
@@ -230,6 +261,21 @@ declare global {
 			toggle: () => Promise<boolean>;
 			system: () => Promise<void>;
 			get: () => Promise<boolean>;
+		};
+		settings: {
+			getAll: () => Promise<SettingsOptions>;
+			get: <K extends SettingsKey>(key: K) => Promise<SettingsOptions[K]>;
+			set: <K extends SettingsKey>(
+				key: K,
+				value: SettingsOptions[K],
+			) => Promise<SettingsOptions>;
+			reset: (key: SettingsKey) => Promise<SettingsOptions>;
+			resetAll: () => Promise<SettingsOptions>;
+			migrateLocalStorage: (
+				values: Partial<SettingsOptions>,
+			) => Promise<SettingsOptions>;
+			chooseDownloadDirectory: () => Promise<SettingsOptions>;
+			subscribe: (callback: (settings: SettingsOptions) => void) => () => void;
 		};
 		notification: {
 			send: (title: string, body: string, onClick?: () => void) => void;
@@ -403,10 +449,16 @@ function useLoading() {
 
 	return {
 		async appendLoading() {
-			const theme = await ipcRenderer.invoke("dark-mode:get");
+			const theme = await ipcRenderer.invoke("settings:get", "theme");
+			const resolvedTheme =
+				theme === "system"
+					? window.matchMedia("(prefers-color-scheme: dark)").matches
+						? "dark"
+						: "light"
+					: theme;
 
 			const html = document.getElementsByTagName("html")[0];
-			html.classList.add(theme);
+			html.classList.add(resolvedTheme);
 			safeDOM.append(document.head, oStyle);
 			safeDOM.append(document.body, oDiv);
 		},

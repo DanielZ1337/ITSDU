@@ -1,8 +1,5 @@
 import { SettingsOptions, defaultSettings } from "@/types/settings";
 import { atom } from "jotai";
 
-export const settingsAtom = atom<SettingsOptions>(
-	localStorage.getItem("settings")
-		? { ...defaultSettings, ...JSON.parse(localStorage.getItem("settings")!) }
-		: defaultSettings,
-);
+export const settingsAtom = atom<SettingsOptions>(defaultSettings);
+export const settingsHydratedAtom = atom(false);

@@ -20,9 +20,6 @@ export default function usePUTcourseFavorite(
 	return useMutation(
 		[TanstackKeys.CourseFavorite, ...getQueryKeysFromParamsObject(params)],
 		async (variables) => {
-			console.log(variables);
-			console.log(params);
-			console.log(await getAccessToken());
 			const res = await axios.put(
 				PUTcourseFavoriteApiUrl({
 					...(variables || params),

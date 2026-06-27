@@ -1,40 +1,39 @@
-const Store = require("electron-store");
-const { ipcMain } = require("electron");
+import {
+	BrowserWindow,
+	dialog,
+	ipcMain,
+	nativeTheme,
+	type OpenDialogOptions,
+} from "electron";
+import Store from "electron-store";
+import {
+	defaultSettings,
+	normalizeSettings,
+	type SettingsKey,
+	type SettingsOptions,
+	validateSetting,
+} from "../../../src/types/settings";
+import { themeStore } from "../theme/theme-service";
 
-type SettingsOptions = {
-	CustomPDFrenderer: boolean;
-	CustomTitleBar: boolean;
-	CustomTitleBarButtons: boolean;
-	UploadAIChats: boolean;
-	DefaultAIChatSidepanel: boolean;
-	// theme: string;
-	// language: string;
-};
-
-const defaultSettings: SettingsOptions = {
-	CustomPDFrenderer: true,
-	CustomTitleBar: true,
-	CustomTitleBarButtons: true,
-	UploadAIChats: true,
-	DefaultAIChatSidepanel: true,
-};
+type SettingsStore = Partial<SettingsOptions>;
 
 export class SettingsService {
 	private static instance: SettingsService;
-	private store: typeof Store;
+	private readonly store: Store<SettingsStore>;
+	private readonly keysPresentBeforeDefaults: Set<SettingsKey>;
 
 	private constructor() {
-		this.store = new Store({
+		this.store = new Store<SettingsStore>({
 			watch: true,
 			name: "itsdu-settings",
-			defaults: {
-				// theme: 'dark',
-				// language: 'en',
-				CustomPDFrenderer: true,
-				CustomTitleBar: true,
-				CustomTitleBarButtons: true,
-			},
+			defaults: defaultSettings,
 		});
+		this.keysPresentBeforeDefaults = new Set(
+			Object.keys(this.store.store) as SettingsKey[],
+		);
+
+		this.ensureDefaults();
+		this.applySideEffects(this.getAll());
 		this.registerIpcListeners();
 	}
 
@@ -45,80 +44,128 @@ export class SettingsService {
 		return SettingsService.instance;
 	}
 
-	getKeys(): string[] {
-		const allValues = this.store.store;
-		const keys = Object.keys(allValues);
-		return keys;
-	}
-
 	getAll(): SettingsOptions {
-		return this.store.store;
+		return normalizeSettings(this.store.store);
 	}
 
-	getDefaults(): SettingsOptions {
-		return this.store.defaults;
+	get<K extends SettingsKey>(key: K): SettingsOptions[K] {
+		return validateSetting(key, this.store.get(key));
 	}
 
-	get<T extends keyof SettingsOptions>(keys: T[]): Partial<SettingsOptions> {
-		const result: Partial<SettingsOptions> = {};
+	set<K extends SettingsKey>(key: K, value: SettingsOptions[K]): SettingsOptions {
+		this.store.set(key, validateSetting(key, value));
+		const settings = this.getAll();
+		this.applySideEffects(settings);
+		this.emitChange(settings);
+		return settings;
+	}
 
-		for (const key of keys) {
-			result[key] = this.store.get(key);
+	reset(key: SettingsKey): SettingsOptions {
+		this.store.set(key, defaultSettings[key]);
+		const settings = this.getAll();
+		this.applySideEffects(settings);
+		this.emitChange(settings);
+		return settings;
+	}
+
+	resetAll(): SettingsOptions {
+		this.store.clear();
+		this.store.set(defaultSettings);
+		const settings = this.getAll();
+		this.applySideEffects(settings);
+		this.emitChange(settings);
+		return settings;
+	}
+
+	migrate(values: Partial<SettingsOptions>): SettingsOptions {
+		for (const key of Object.keys(defaultSettings) as SettingsKey[]) {
+			const hasDurableUserValue =
+				this.keysPresentBeforeDefaults.has(key) &&
+				this.store.get(key) !== defaultSettings[key];
+			if (hasDurableUserValue) continue;
+			if (!(key in values)) continue;
+			this.store.set(key, validateSetting(key, values[key]));
 		}
 
-		return result;
+		const settings = this.getAll();
+		this.applySideEffects(settings);
+		this.emitChange(settings);
+		return settings;
 	}
 
-	set<K extends keyof SettingsOptions>(
-		key: K,
-		value: SettingsOptions[K],
-	): void {
-		this.store.set(key, value);
+	getDownloadDirectory() {
+		return this.get("downloadDirectory") ?? undefined;
 	}
 
-	delete(key: keyof SettingsOptions): void {
-		this.store.delete(key);
+	private ensureDefaults() {
+		for (const key of Object.keys(defaultSettings) as SettingsKey[]) {
+			if (!this.store.has(key)) {
+				this.store.set(key, defaultSettings[key]);
+			} else {
+				this.store.set(key, validateSetting(key, this.store.get(key)));
+			}
+		}
 	}
 
-	clear(): void {
-		this.store.clear();
+	private applySideEffects(settings: SettingsOptions) {
+		nativeTheme.themeSource = settings.theme;
+		themeStore.set(
+			"theme",
+			settings.theme === "system"
+				? nativeTheme.shouldUseDarkColors
+					? "dark"
+					: "light"
+				: settings.theme,
+		);
 	}
 
-	has(key: keyof SettingsOptions): boolean {
-		return this.store.has(key);
+	private emitChange(settings: SettingsOptions) {
+		for (const window of BrowserWindow.getAllWindows()) {
+			window.webContents.send("settings:changed", settings);
+		}
 	}
 
 	private registerIpcListeners(): void {
-		ipcMain.handle("settings:get", (_, keys) => {
-			return this.get(keys);
+		ipcMain.handle("settings:getAll", () => this.getAll());
+
+		ipcMain.handle("settings:get", (_, key: SettingsKey) => {
+			return this.get(key);
 		});
 
-		ipcMain.on("settings:set", (_, key, value) => {
-			this.set(key, value);
+		ipcMain.handle(
+			"settings:set",
+			(_, key: SettingsKey, value: SettingsOptions[SettingsKey]) => {
+				return this.set(key, value);
+			},
+		);
+
+		ipcMain.handle("settings:reset", (_, key: SettingsKey) => {
+			return this.reset(key);
 		});
 
-		ipcMain.on("settings:delete", (_, key) => {
-			this.delete(key);
+		ipcMain.handle("settings:resetAll", () => {
+			return this.resetAll();
 		});
 
-		ipcMain.on("settings:clear", () => {
-			this.clear();
+		ipcMain.handle("settings:migrateLocalStorage", (_, values) => {
+			return this.migrate(normalizeSettings(values));
 		});
 
-		ipcMain.handle("settings:has", (_, key) => {
-			return this.has(key);
-		});
+		ipcMain.handle("settings:chooseDownloadDirectory", async (event) => {
+			const window = BrowserWindow.fromWebContents(event.sender);
+			const dialogOptions: OpenDialogOptions = {
+				title: "Choose download folder",
+				properties: ["openDirectory", "createDirectory"],
+			};
+			const result = window
+				? await dialog.showOpenDialog(window, dialogOptions)
+				: await dialog.showOpenDialog(dialogOptions);
 
-		ipcMain.handle("settings:getKeys", () => {
-			return this.getKeys();
-		});
+			if (result.canceled || !result.filePaths[0]) {
+				return this.getAll();
+			}
 
-		ipcMain.handle("settings:getDefaults", () => {
-			return this.getDefaults();
-		});
-
-		ipcMain.handle("settings:getAll", () => {
-			return this.getAll();
+			return this.set("downloadDirectory", result.filePaths[0]);
 		});
 	}
 }

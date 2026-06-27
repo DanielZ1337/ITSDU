@@ -1,14 +1,17 @@
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect } from "react";
 
 export function GlobalShortcuts() {
-	const { theme, setTheme } = useTheme();
+	const { setTheme, resolvedTheme } = useTheme();
+	const { setSetting } = useSettings();
 
 	const handleDarkModeToggle = useCallback(async () => {
-		const isDarkMode = await window.darkMode.toggle();
-		setTheme(isDarkMode ? "dark" : "light");
-	}, [setTheme]);
+		const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
+		await setSetting("theme", nextTheme);
+		setTheme(nextTheme);
+	}, [resolvedTheme, setSetting, setTheme]);
 
 	const { toggleSettingsModal } = useShowSettingsModal();
 	useEffect(() => {

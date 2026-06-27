@@ -8,6 +8,7 @@ import { NavigationType } from "@/types/navigation-link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { NavLink, useMatch } from "react-router-dom";
+import { useSettings } from "@/hooks/atoms/useSettings";
 
 export default function SidebarItem({
 	title,
@@ -19,6 +20,7 @@ export default function SidebarItem({
 	const match = useMatch(href);
 	const isActive = !!match;
 	const [isHovering, setIsHovering] = useState(false);
+	const { settings } = useSettings();
 
 	return (
 		<Tooltip disableHoverableContent>
@@ -29,7 +31,10 @@ export default function SidebarItem({
 					onClick={(e) => disabled && e.preventDefault()}
 					className={cn(
 						"group/item relative flex items-center justify-center",
-						"p-2.5 mx-1 rounded-xl cursor-pointer",
+						settings.sidebarDensity === "compact"
+							? "p-2 mx-0.5 rounded-lg"
+							: "p-2.5 mx-1 rounded-xl",
+						"cursor-pointer",
 						"transition-all duration-200 ease-out",
 						"hover:bg-foreground/[0.08] active:scale-95",
 						isActive

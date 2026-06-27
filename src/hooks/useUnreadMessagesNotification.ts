@@ -1,17 +1,13 @@
+import { queryClient } from "@/lib/tanstack-client";
+import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import useGETunreadInstantMessageCount from "@/queries/messages/useGETunreadInstantMessageCount";
+import { isQuietHoursActive } from "@/types/settings";
+import { TanstackKeys } from "@/types/tanstack-keys";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGETinstantMessagesv3 from "../queries/messages/useGETinstantMessagesv3";
-import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
-import { TanstackKeys } from "@/types/tanstack-keys";
-import { queryClient } from "@/lib/tanstack-client";
+import { useSettings } from "./atoms/useSettings";
 
-type UnreadMessages = {
-	count: number;
-	timestamp: number;
-};
-
-const REFETCH_INTERVAL = 1000 * 15; // 15 seconds
+const REFETCH_INTERVAL = 1000 * 30; // 30 seconds
 const MIN_NOTIFICATION_INTERVAL = 1000 * 60 * 5; // 5 minutes
 
 export function useUnreadMessagesNotification() {
@@ -19,11 +15,18 @@ export function useUnreadMessagesNotification() {
 	const lastNotificationTimestamp = useRef<number>(0);
 	const lastNotificationCount = useRef<number>(0);
 	const [unreadCount, setUnreadCount] = useState<number>(0);
+	const { settings, isHydrated } = useSettings();
+	const notificationsEnabled =
+		isHydrated &&
+		settings.notificationsMessages &&
+		!isQuietHoursActive(settings);
 
-	// Fetch unread message count
+	// Fetch unread message count.
+	// `refetchIntervalInBackground` is intentionally omitted so React Query pauses
+	// polling while the window is hidden/minimized/unfocused.
 	useGETunreadInstantMessageCount({
+		enabled: notificationsEnabled,
 		refetchInterval: REFETCH_INTERVAL,
-		refetchIntervalInBackground: true,
 		onSuccess: (data) => {
 			setUnreadCount(data);
 		},
@@ -33,12 +36,14 @@ export function useUnreadMessagesNotification() {
 	const { data: messageThreads } = useGETinstantMessagesv2(
 		{},
 		{
-			enabled: unreadCount === 1,
+			enabled: notificationsEnabled && unreadCount === 1,
 			refetchInterval: REFETCH_INTERVAL,
 		},
 	);
 
 	useEffect(() => {
+		if (!notificationsEnabled) return;
+
 		// Don't proceed if there are no unread messages
 		if (!unreadCount) return;
 
@@ -92,5 +97,5 @@ export function useUnreadMessagesNotification() {
 
 		// Invalidate the state other places
 		queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
-	}, [unreadCount, messageThreads, navigate]);
+	}, [notificationsEnabled, unreadCount, messageThreads, navigate]);
 }

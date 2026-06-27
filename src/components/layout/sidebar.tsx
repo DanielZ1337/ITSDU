@@ -1,6 +1,7 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCourse } from "@/hooks/atoms/useCourse";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, m } from "framer-motion";
@@ -13,6 +14,7 @@ const LazySidebarUser = lazy(() => import("./sidebar-user"));
 
 export default function Sidebar() {
 	const { setSidebarActive } = useSidebar();
+	const { settings } = useSettings();
 	const { courseId } = useCourse();
 	const courseActive = courseId !== undefined;
 
@@ -23,7 +25,8 @@ export default function Sidebar() {
 				onMouseLeave={() => setSidebarActive(false)}
 				className={cn(
 					"group/sidebar no-drag h-full flex flex-col",
-					"py-4 px-2 z-20 bg-background/80 backdrop-blur-sm",
+					"z-20 bg-background/80 backdrop-blur-sm",
+					settings.sidebarDensity === "compact" ? "py-2 px-1" : "py-4 px-2",
 				)}
 			>
 				{/* Main navigation */}

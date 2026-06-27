@@ -10,15 +10,14 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
 import { useAboutModal } from "@/hooks/atoms/useAboutModal.ts";
+import { useSettings } from "@/hooks/atoms/useSettings.ts";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion.ts";
 import { cn, isMacOS } from "@/lib/utils.ts";
 import { useAtom } from "jotai";
-import { MoreVertical } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useNavigate } from "react-router-dom";
 import { browseNavigationAtom as showBrowseNavAtom } from "../../atoms/browse-navigation.ts";
 
 export default function SettingsDropdown({
@@ -34,13 +33,14 @@ export default function SettingsDropdown({
 	onOpenChange?: (isOpen: boolean) => void;
 	isOpen?: boolean;
 }) {
-	const navigate = useNavigate();
-	const { theme, setTheme } = useTheme();
+	const { resolvedTheme, setTheme } = useTheme();
+	const { setSetting } = useSettings();
 
 	const handleDarkModeToggle = useCallback(async () => {
-		const isDarkMode = await window.darkMode.toggle();
-		setTheme(isDarkMode ? "dark" : "light");
-	}, [setTheme]);
+		const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
+		await setSetting("theme", nextTheme);
+		setTheme(nextTheme);
+	}, [resolvedTheme, setSetting, setTheme]);
 
 	const { toggleSettingsModal } = useShowSettingsModal();
 	const { version } = useVersion();
@@ -118,7 +118,7 @@ export default function SettingsDropdown({
 					}
 				>
 					<span className={"text-sm"}>
-						{theme === "dark" ? "Light" : "Dark"}
+						{resolvedTheme === "dark" ? "Light" : "Dark"}
 					</span>
 					<DropdownMenuShortcut>{commandOrControl()}T</DropdownMenuShortcut>
 				</DropdownMenuItem>

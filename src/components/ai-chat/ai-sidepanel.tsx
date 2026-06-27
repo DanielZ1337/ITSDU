@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { useUser } from "@/hooks/atoms/useUser";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export default function AISidePanel({
 	elementId,
 }: { elementId: string | number }) {
 	const { aiSidepanel } = useAISidepanel();
+	const { settings } = useSettings();
 	const user = useUser()!;
 
 	const [message, setMessage] = useState<string>("");
@@ -69,20 +71,29 @@ export default function AISidePanel({
 
 	useEffect(() => {
 		const uploadDocumentForAI = async () => {
+			if (!settings.UploadAIChats) {
+				setError("AI document uploads are disabled in Settings.");
+				return;
+			}
 			if (refetchCount > 0 && !elementExists && !elementExistsLoading) {
 				setError("An error occured while uploading the document to the AI");
 			}
 			if (refetchCount > 0) return;
 			if (!elementExistsLoading && !elementExists) {
 				setUploadingDocument(true);
-				await window.ai.upload(Number(elementId));
-				setUploadingDocument(false);
-				refetch();
-				setRefetchCount((prev) => prev + 1);
+				try {
+					await window.ai.upload(Number(elementId));
+					refetch();
+					setRefetchCount((prev) => prev + 1);
+				} catch (error) {
+					setError(error instanceof Error ? error.message : "AI upload failed");
+				} finally {
+					setUploadingDocument(false);
+				}
 			}
 		};
 		uploadDocumentForAI();
-	}, [elementExists, elementExistsLoading, elementId]);
+	}, [elementExists, elementExistsLoading, elementId, refetch, refetchCount, settings.UploadAIChats]);
 
 	const handleSubmit = async (
 		e:
@@ -134,12 +145,6 @@ export default function AISidePanel({
 		if (abortController) {
 			abortController.abort();
 			setAbortController(null);
-		}
-	};
-
-	const resetMessages = () => {
-		if (!messageIsLoading) {
-			setChatMessages([]);
 		}
 	};
 

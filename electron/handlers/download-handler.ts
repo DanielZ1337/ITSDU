@@ -21,9 +21,35 @@ import {
 } from "../../electron/services/scrape/scraper.ts";
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import { SettingsService } from "../services/settings/settings-service.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
 
 const authService = AuthService.getInstance();
+
+function getConfiguredDownloadDirectory() {
+	const configuredDirectory = SettingsService.getInstance().getDownloadDirectory();
+	const directory = configuredDirectory ?? app.getPath("downloads");
+
+	try {
+		fs.mkdirSync(directory, { recursive: true });
+		return directory;
+	} catch (error) {
+		console.error(error);
+		return app.getPath("downloads");
+	}
+}
+
+async function applyDownloadOpenPreference(filePath: string) {
+	const autoOpen = SettingsService.getInstance().get("downloadAutoOpen");
+
+	if (autoOpen === "file") {
+		await shell.openPath(filePath);
+	}
+
+	if (autoOpen === "folder") {
+		shell.showItemInFolder(filePath);
+	}
+}
 
 export async function openLinkInBrowser(url: string, sso: boolean = true) {
 	if (sso) {
@@ -55,7 +81,7 @@ function getPathHandler() {
 	});
 
 	ipcMain.handle("app:getDownloadPath", async () => {
-		return app.getPath("downloads");
+		return getConfiguredDownloadDirectory();
 	});
 }
 
@@ -200,8 +226,6 @@ function uploadDocumentForAI() {
 				elementId: string | number;
 			},
 		) => {
-			console.log("uploadfile-for-ai");
-
 			// make a get request to localhost:3000/api/checkFile/[elementId] to check if the current file exists
 			// if it does then return
 			// else continue
@@ -235,8 +259,6 @@ function uploadDocumentForAI() {
 
 			if (!win) return;
 
-			console.log("Getting cookies for AI");
-
 			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
 
 			const cookiesFormatted = getFormattedCookies(cookies);
@@ -258,7 +280,7 @@ function uploadDocumentForAI() {
 function itslearningElementDownload() {
 	ipcMain.handle(
 		"itslearning-element:download",
-		async (event, { url, resourceLink, filename, overwrite, id }) => {
+		async (event, { url, filename, id }) => {
 			try {
 				const win = BrowserWindow.fromWebContents(event.sender);
 
@@ -291,14 +313,14 @@ function itslearningElementDownload() {
 						.then((res) => {
 							const headerFilename = res.headers["content-disposition"];
 							const filenameRegex = /filename\*?=["']([^"']+)["']/i;
-							const match = headerFilename.match(filenameRegex);
+							const match = headerFilename?.match(filenameRegex);
 							const decodedFilename = match
 								? decodeURIComponent(match[1])
 								: null;
 							const saveFilename = decodedFilename ?? filename;
 							let finalFilename = saveFilename;
 
-							const directory = app.getPath("downloads");
+							const directory = getConfiguredDownloadDirectory();
 
 							let i = 1;
 							while (fs.existsSync(path.join(directory, finalFilename))) {
@@ -325,10 +347,11 @@ function itslearningElementDownload() {
 								};
 
 								resolve(data);
+								void applyDownloadOpenPreference(downloadedFilePath);
 								event.sender.send("download:complete", data);
 							});
 
-							res.data.on("error", (err) => {
+							res.data.on("error", (err: Error) => {
 								reject(err);
 								event.sender.send("download:error", err);
 							});
@@ -385,7 +408,7 @@ function mergePDFsHandler() {
 
 				const { filePath } = await Dialog.showSaveDialog(win, {
 					title: "Save As",
-					defaultPath: path.join(app.getPath("downloads"), "merged.pdf"),
+					defaultPath: path.join(getConfiguredDownloadDirectory(), "merged.pdf"),
 					buttonLabel: "Save",
 					filters: [{ name: "PDF Files", extensions: ["pdf"] }],
 				});
@@ -472,7 +495,7 @@ function zipDownloadAllCourseResourcesHandler() {
 
 				const { canceled, filePath } = await Dialog.showSaveDialog(win, {
 					title: "Save As",
-					defaultPath: path.join(app.getPath("downloads"), "resources.zip"),
+					defaultPath: path.join(getConfiguredDownloadDirectory(), "resources.zip"),
 					buttonLabel: "Save",
 					filters: [{ name: "Zip Files", extensions: ["zip"] }],
 				});
@@ -588,11 +611,13 @@ function downloadExternalHandler() {
 			// download the file
 			const { download } = await import("electron-dl");
 			const downloadItem = await download(win, url, {
-				// directory: app.getPath('downloads'),
+				directory: getConfiguredDownloadDirectory(),
 				showProgressBar: true,
 				showBadge: true,
 			});
 			// event.sender.send('download:complete', downloadItem.getSavePath())
+
+			void applyDownloadOpenPreference(downloadItem.getSavePath());
 
 			return {
 				path: downloadItem.getSavePath(),
@@ -978,8 +1003,8 @@ function streamFileHandler() {
 						// event.sender.send('downloadEnd')
 						// win.close()
 					});
-					res.data.on("error", (error: Error) => {
-						// event.sender.send('downloadError', error)
+					res.data.on("error", () => {
+						// event.sender.send('downloadError')
 					});
 				});
 

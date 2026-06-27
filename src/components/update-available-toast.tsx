@@ -1,3 +1,4 @@
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import type { UpdateInfo } from "electron-updater";
 import { useEffect, useState } from "react";
@@ -5,7 +6,7 @@ import { toast } from "sonner";
 
 export function useUpdateAvailableToast() {
 	const { version } = useVersion();
-	const [isCheckingForUpdates, setIsCheckingForUpdates] = useState(false);
+	const { settings, isHydrated } = useSettings();
 	const [updateResult, setUpdateResult] = useState<UpdateInfo | null>(null);
 	const isUpdateAvailable =
 		updateResult?.version !== version && updateResult?.version !== undefined;
@@ -14,15 +15,12 @@ export function useUpdateAvailableToast() {
 	const [downloadProgress, setDownloadProgress] = useState(0);
 
 	async function checkForUpdate() {
-		setIsCheckingForUpdates(true);
 		try {
 			const result = await window.app.checkForUpdates();
 			setUpdateResult(result);
 		} catch (error) {
 			console.error(error);
 			setIsError(true);
-		} finally {
-			setIsCheckingForUpdates(false);
 		}
 	}
 
@@ -31,7 +29,7 @@ export function useUpdateAvailableToast() {
 			window.ipcRenderer.on("app:updateDownloaded", () => {
 				setIsDownloading(false);
 			});
-			window.ipcRenderer.on("app:downloadProgress", (event, progress) => {
+			window.ipcRenderer.on("app:downloadProgress", (_event, progress) => {
 				console.log(progress);
 				setDownloadProgress(progress.percent);
 			});
@@ -70,11 +68,23 @@ export function useUpdateAvailableToast() {
 	};
 
 	useEffect(() => {
+		if (
+			!isHydrated ||
+			import.meta.env.DEV ||
+			!settings.updatesAutoCheckOnStartup ||
+			!settings.notificationsAppUpdates
+		) {
+			return;
+		}
 		checkForUpdate();
-	}, [isCheckingForUpdates]);
+	}, [
+		isHydrated,
+		settings.notificationsAppUpdates,
+		settings.updatesAutoCheckOnStartup,
+	]);
 
 	useEffect(() => {
-		if (isUpdateAvailable) {
+		if (settings.notificationsAppUpdates && isUpdateAvailable) {
 			toast.info("Update available!", {
 				duration: 10000,
 				action: {
@@ -83,11 +93,11 @@ export function useUpdateAvailableToast() {
 				},
 			});
 		}
-	}, [isUpdateAvailable]);
+	}, [isUpdateAvailable, settings.notificationsAppUpdates]);
 
 	useEffect(() => {
-		if (isError) {
+		if (settings.notificationsAppUpdates && isError) {
 			toast.error("Error checking for update");
 		}
-	}, [isError]);
+	}, [isError, settings.notificationsAppUpdates]);
 }
