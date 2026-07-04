@@ -1,5 +1,6 @@
 import path from "path";
 import {
+	net,
 	BrowserWindow,
 	Menu,
 	Tray,
@@ -48,7 +49,9 @@ async function createMainWindow() {
 	);
 	const startUpTheme = SettingsService.getInstance().get("theme");
 	const shouldUseDarkTheme =
-		startUpTheme === "system" ? nativeTheme.shouldUseDarkColors : startUpTheme === "dark";
+		startUpTheme === "system"
+			? nativeTheme.shouldUseDarkColors
+			: startUpTheme === "dark";
 
 	win = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
@@ -160,14 +163,25 @@ async function createMainWindow() {
 	}
 }
 
-export async function createAuthWindow() {
+export async function createAuthWindow(
+	options: { destroyExistingWindows?: boolean } = {},
+) {
+	if (authWindow && !authWindow.isDestroyed()) {
+		authWindow.show();
+		authWindow.focus();
+		return authWindow;
+	}
+
+	const { destroyExistingWindows = true } = options;
 	const wins = BrowserWindow.getAllWindows();
 	const { SettingsService } = await import(
 		"./services/settings/settings-service.ts"
 	);
 	const startUpTheme = SettingsService.getInstance().get("theme");
 	const shouldUseDarkTheme =
-		startUpTheme === "system" ? nativeTheme.shouldUseDarkColors : startUpTheme === "dark";
+		startUpTheme === "system"
+			? nativeTheme.shouldUseDarkColors
+			: startUpTheme === "dark";
 
 	authWindow = new BrowserWindow({
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
@@ -209,9 +223,13 @@ export async function createAuthWindow() {
 		await authWindow.loadFile(path.join(process.env.DIST, "login.html"));
 	}
 
-	if (wins.length > 0) {
+	if (destroyExistingWindows && wins.length > 0) {
 		wins.forEach((w) => w.destroy());
 	}
+
+	authWindow.on("closed", () => {
+		authWindow = null;
+	});
 
 	return authWindow;
 }
@@ -439,24 +457,68 @@ app.whenReady().then(async () => {
 	});
 
 	try {
-		const { AuthService, REFRESH_ACCESS_TOKEN_INTERVAL } = await import(
+		const { AuthService } = await import(
 			"./services/itslearning/auth/auth-service.ts"
+		);
+		const { SettingsService } = await import(
+			"./services/settings/settings-service.ts"
 		);
 
 		const authService = AuthService.getInstance();
+		const settingsService = SettingsService.getInstance();
+		let refreshTimer: NodeJS.Timeout | null = null;
 
-		const { access_token, refresh_token } = authService.getTokens();
-		if (!access_token || !refresh_token) {
+		authService.setOnlineStatus(net.isOnline());
+		authService.subscribe((status) => {
+			if (status.state === "reauthRequired") {
+				void createAuthWindow({ destroyExistingWindows: false });
+			}
+		});
+
+		const runBackgroundRefresh = async () => {
+			if (!authService.hasPersistedSession()) return;
+
+			if (!net.isOnline()) {
+				authService.setOnlineStatus(false);
+				return;
+			}
+
+			try {
+				await authService.refreshAccessToken();
+			} catch (error) {
+				if (authService.getSessionStatus().state === "reauthRequired") {
+					await createAuthWindow({ destroyExistingWindows: false });
+				} else {
+					console.error("Background auth refresh failed", error);
+				}
+			}
+		};
+
+		const armRefreshTimer = () => {
+			if (refreshTimer) clearInterval(refreshTimer);
+			const intervalMinutes = settingsService.get("authRefreshIntervalMinutes");
+			refreshTimer = setInterval(
+				() => void runBackgroundRefresh(),
+				intervalMinutes * 60 * 1000,
+			);
+		};
+
+		settingsService.subscribe(() => armRefreshTimer());
+
+		if (!authService.hasPersistedSession()) {
 			authService.clearTokens();
-			throw new Error("Invalid refresh token");
+			throw new Error("No persisted session");
 		}
-		await authService.refreshAccessToken();
+
+		if (net.isOnline()) {
+			authService.markStale();
+		} else {
+			authService.setOnlineStatus(false);
+		}
 
 		await createMainWindow();
-		// setup interval for refreshing access token
-		setInterval(async () => {
-			await authService.refreshAccessToken();
-		}, REFRESH_ACCESS_TOKEN_INTERVAL); // 45 minutes
+		armRefreshTimer();
+		void runBackgroundRefresh();
 	} catch (e) {
 		logEverywhereError("app.whenReady# " + e);
 		await createAuthWindow();

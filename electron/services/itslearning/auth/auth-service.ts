@@ -1,4 +1,8 @@
 import { BrowserWindow, ipcMain, safeStorage } from "electron";
+import type {
+	AuthSessionReason,
+	AuthSessionStatus,
+} from "../../../../src/types/auth";
 import { ITSLEARNING_URL } from "../itslearning.ts";
 import { GrantType } from "./types/grant_type";
 import { StoreKey } from "./types/store_keys";
@@ -35,13 +39,24 @@ export const REFRESH_ACCESS_TOKEN_INTERVAL = 1000 * 60 * 45; // 45 minutes
 
 let instance: AuthService | null = null;
 
+export class AuthRefreshError extends Error {
+	constructor(
+		message: string,
+		public readonly reason: AuthSessionReason,
+		public readonly terminal: boolean,
+	) {
+		super(message);
+		this.name = "AuthRefreshError";
+	}
+}
+
 export const initializeLoginHandler = () => {
 	try {
 		ipcMain.removeHandler("itslearning:login");
 	} catch (error) {
 		console.error(error);
 	}
-	ipcMain.handle("itslearning:login", async (event, baseUrl) => {
+	ipcMain.handle("itslearning:login", async (_event, baseUrl) => {
 		const authService = AuthService.getInstance();
 		await authService.loadSigninPage(undefined, baseUrl);
 	});
@@ -49,9 +64,22 @@ export const initializeLoginHandler = () => {
 
 export class AuthService {
 	private store: typeof Store;
+	private refreshInFlight: Promise<AuthSessionStatus> | null = null;
+	private listeners = new Set<(status: AuthSessionStatus) => void>();
+	private status: AuthSessionStatus = {
+		state: "unknown",
+		hasPersistedSession: false,
+		isOnline: true,
+		reason: "none",
+	};
 
 	constructor() {
 		this.initializeStore();
+		this.status = {
+			...this.status,
+			state: this.hasPersistedSession() ? "stale" : "anonymous",
+			hasPersistedSession: this.hasPersistedSession(),
+		};
 	}
 
 	private initializeStore() {
@@ -100,6 +128,11 @@ export class AuthService {
 
 	public clearTokens() {
 		this.store.clear();
+		this.setStatus({
+			state: "anonymous",
+			hasPersistedSession: false,
+			reason: "missing",
+		});
 	}
 
 	public setToken(key: StoreKey, token: string) {
@@ -113,6 +146,7 @@ export class AuthService {
 
 	public getToken(key: StoreKey): string | null {
 		try {
+			if (!this.store.has(key)) return null;
 			return safeStorage.decryptString(
 				Buffer.from(this.store.get(key), "latin1"),
 			);
@@ -122,34 +156,157 @@ export class AuthService {
 		}
 	}
 
+	public hasPersistedSession() {
+		return Boolean(this.getToken("refresh_token"));
+	}
+
+	public getSessionStatus(): AuthSessionStatus {
+		return {
+			...this.status,
+			hasPersistedSession: this.hasPersistedSession(),
+		};
+	}
+
+	public subscribe(listener: (status: AuthSessionStatus) => void) {
+		this.listeners.add(listener);
+		return () => this.listeners.delete(listener);
+	}
+
+	public markStale(reason: AuthSessionReason = "none") {
+		if (!this.hasPersistedSession()) {
+			this.setStatus({ state: "anonymous", reason: "missing" });
+			return;
+		}
+		this.setStatus({
+			state: "stale",
+			hasPersistedSession: true,
+			reason,
+		});
+	}
+
+	public setOnlineStatus(isOnline: boolean) {
+		const hadPersistedSession = this.hasPersistedSession();
+		this.setStatus({
+			isOnline,
+			state: !hadPersistedSession
+				? "anonymous"
+				: isOnline
+					? this.status.state === "offline"
+						? "stale"
+						: this.status.state
+					: "offline",
+			hasPersistedSession: hadPersistedSession,
+			reason: !hadPersistedSession ? "missing" : isOnline ? "none" : "network",
+		});
+	}
+
+	private setStatus(status: Partial<AuthSessionStatus>) {
+		this.status = {
+			...this.status,
+			...status,
+			hasPersistedSession:
+				status.hasPersistedSession ?? this.hasPersistedSession(),
+		};
+
+		for (const listener of this.listeners) {
+			listener(this.getSessionStatus());
+		}
+
+		for (const window of BrowserWindow.getAllWindows()) {
+			window.webContents.send("auth:statusChanged", this.getSessionStatus());
+		}
+	}
+
 	/**
 	 * Will throw an error if no refresh token is found or if the refresh token is invalid
 	 */
 	public async refreshAccessToken() {
+		if (this.refreshInFlight) return this.refreshInFlight;
+
+		const refresh = this.refreshAccessTokenInternal().finally(() => {
+			this.refreshInFlight = null;
+		});
+		this.refreshInFlight = refresh;
+		return refresh;
+	}
+
+	private async refreshAccessTokenInternal(): Promise<AuthSessionStatus> {
 		const current_refresh_token = this.getToken("refresh_token");
 
-		if (!current_refresh_token) throw new Error("No refresh token");
+		if (!current_refresh_token) {
+			this.setStatus({
+				state: "anonymous",
+				hasPersistedSession: false,
+				reason: "missing",
+			});
+			throw new AuthRefreshError("No refresh token", "missing", true);
+		}
+
+		this.setStatus({
+			state: "refreshing",
+			hasPersistedSession: true,
+			reason: "none",
+		});
 		const axios = (await import("axios")).default;
 
-		const { data } = await axios.post(
-			ITSLEARNING_OAUTH_TOKEN_URL(),
-			{
-				grant_type: GrantType.REFRESH_TOKEN,
-				refresh_token: current_refresh_token,
-				client_id: ITSLEARNING_CLIENT_ID,
-			},
-			{
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
+		try {
+			const { data } = await axios.post(
+				ITSLEARNING_OAUTH_TOKEN_URL(),
+				{
+					grant_type: GrantType.REFRESH_TOKEN,
+					refresh_token: current_refresh_token,
+					client_id: ITSLEARNING_CLIENT_ID,
 				},
-			},
-		);
+				{
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+				},
+			);
 
-		const { access_token, refresh_token } = data;
-		if (!access_token || !refresh_token)
-			throw new Error("Invalid refresh token");
-		this.setToken("access_token", access_token);
-		this.setToken("refresh_token", refresh_token);
+			const { access_token, refresh_token, expires_in } = data;
+			if (!access_token || !refresh_token) {
+				throw new AuthRefreshError("Invalid refresh token", "invalid", true);
+			}
+
+			const now = new Date();
+			this.setToken("access_token", access_token);
+			this.setToken("refresh_token", refresh_token);
+			this.setStatus({
+				state: "authenticated",
+				hasPersistedSession: true,
+				isOnline: true,
+				lastValidatedAt: now.toISOString(),
+				lastRefreshAt: now.toISOString(),
+				accessTokenExpiresAt:
+					typeof expires_in === "number"
+						? new Date(now.getTime() + expires_in * 1000).toISOString()
+						: undefined,
+				reason: "none",
+			});
+			return this.getSessionStatus();
+		} catch (error) {
+			const classified =
+				error instanceof AuthRefreshError ? error : classifyRefreshError(error);
+
+			if (classified.terminal) {
+				this.store.clear();
+				this.setStatus({
+					state: "reauthRequired",
+					hasPersistedSession: false,
+					reason: classified.reason,
+				});
+			} else {
+				this.setStatus({
+					state: "offline",
+					hasPersistedSession: true,
+					isOnline: false,
+					reason: classified.reason,
+				});
+			}
+
+			throw classified;
+		}
 	}
 
 	public getAuthCodeFromURI(URI: string) {
@@ -201,6 +358,37 @@ export class AuthService {
 			);
 		}, 1000);
 	}
+}
+
+function classifyRefreshError(error: unknown): AuthRefreshError {
+	const maybeAxios = error as {
+		code?: string;
+		message?: string;
+		response?: { status?: number; data?: { error?: string } };
+	};
+	const status = maybeAxios.response?.status;
+	const oauthError = maybeAxios.response?.data?.error;
+
+	if (
+		status === 400 ||
+		status === 401 ||
+		oauthError === "invalid_grant" ||
+		oauthError === "invalid_client"
+	) {
+		return new AuthRefreshError("Refresh token is invalid", "invalid", true);
+	}
+
+	if (
+		maybeAxios.code === "ECONNABORTED" ||
+		maybeAxios.code === "ENOTFOUND" ||
+		maybeAxios.code === "ECONNREFUSED" ||
+		maybeAxios.code === "ERR_NETWORK" ||
+		!maybeAxios.response
+	) {
+		return new AuthRefreshError("Network unavailable", "network", false);
+	}
+
+	return new AuthRefreshError("Session refresh failed", "network", false);
 }
 
 /*

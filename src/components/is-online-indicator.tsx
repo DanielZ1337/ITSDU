@@ -1,4 +1,5 @@
 import { useGlobalErrorBoundary } from "@/contexts/global-error-boundary-context";
+import { useAuthSessionStatus } from "@/hooks/useAuthSessionStatus";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { queryClient } from "@/lib/tanstack-client";
 import { cn } from "@/lib/utils";
@@ -8,14 +9,20 @@ import { useErrorBoundary } from "react-error-boundary";
 
 export default function IsOnlineIndicator() {
 	const { isOnline, debouncedIsOnline } = useIsOnline();
+	const sessionStatus = useAuthSessionStatus();
 	const { resetBoundary } = useErrorBoundary();
 	const { resetAllErrorBoundaries } = useGlobalErrorBoundary();
 
 	const changedFromOfflineToOnline =
 		debouncedIsOnline === false && isOnline === true;
+
+	useEffect(() => {
+		void window.auth.setOnlineStatus(isOnline);
+	}, [isOnline]);
+
 	useEffect(() => {
 		if (changedFromOfflineToOnline) {
-			window.auth.refresh().then(() => {
+			window.auth.refresh().finally(() => {
 				setTimeout(() => {
 					resetBoundary();
 					resetAllErrorBoundaries();
@@ -36,10 +43,35 @@ export default function IsOnlineIndicator() {
 	return (
 		<>
 			<AnimatePresence>
-				{isOnline === false && (
+				{sessionStatus.state === "reauthRequired" && (
 					<IsOnline
-						title="You are offline. Cached resources remain available."
-						className="bg-red-500"
+						title="Login required. Your saved session is no longer valid."
+						className="bg-red-600"
+					/>
+				)}
+			</AnimatePresence>
+			<AnimatePresence>
+				{sessionStatus.state !== "reauthRequired" &&
+					(isOnline === false || sessionStatus.state === "offline") && (
+						<IsOnline
+							title="You are offline. Cached resources remain available."
+							className="bg-red-500"
+						/>
+					)}
+			</AnimatePresence>
+			<AnimatePresence>
+				{sessionStatus.state === "refreshing" && (
+					<IsOnline
+						title="Refreshing Itslearning session..."
+						className="bg-blue-600"
+					/>
+				)}
+			</AnimatePresence>
+			<AnimatePresence>
+				{sessionStatus.state === "stale" && isOnline && (
+					<IsOnline
+						title="Session status is stale. ITSDU is reconnecting in the background."
+						className="bg-amber-600"
 					/>
 				)}
 			</AnimatePresence>

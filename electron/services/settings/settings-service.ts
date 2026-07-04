@@ -1,16 +1,16 @@
 import {
 	BrowserWindow,
+	type OpenDialogOptions,
 	dialog,
 	ipcMain,
 	nativeTheme,
-	type OpenDialogOptions,
 } from "electron";
 import Store from "electron-store";
 import {
-	defaultSettings,
-	normalizeSettings,
 	type SettingsKey,
 	type SettingsOptions,
+	defaultSettings,
+	normalizeSettings,
 	validateSetting,
 } from "../../../src/types/settings";
 import { themeStore } from "../theme/theme-service";
@@ -21,6 +21,7 @@ export class SettingsService {
 	private static instance: SettingsService;
 	private readonly store: Store<SettingsStore>;
 	private readonly keysPresentBeforeDefaults: Set<SettingsKey>;
+	private readonly listeners = new Set<(settings: SettingsOptions) => void>();
 
 	private constructor() {
 		this.store = new Store<SettingsStore>({
@@ -52,7 +53,10 @@ export class SettingsService {
 		return validateSetting(key, this.store.get(key));
 	}
 
-	set<K extends SettingsKey>(key: K, value: SettingsOptions[K]): SettingsOptions {
+	set<K extends SettingsKey>(
+		key: K,
+		value: SettingsOptions[K],
+	): SettingsOptions {
 		this.store.set(key, validateSetting(key, value));
 		const settings = this.getAll();
 		this.applySideEffects(settings);
@@ -97,6 +101,11 @@ export class SettingsService {
 		return this.get("downloadDirectory") ?? undefined;
 	}
 
+	subscribe(listener: (settings: SettingsOptions) => void) {
+		this.listeners.add(listener);
+		return () => this.listeners.delete(listener);
+	}
+
 	private ensureDefaults() {
 		for (const key of Object.keys(defaultSettings) as SettingsKey[]) {
 			if (!this.store.has(key)) {
@@ -120,6 +129,9 @@ export class SettingsService {
 	}
 
 	private emitChange(settings: SettingsOptions) {
+		for (const listener of this.listeners) {
+			listener(settings);
+		}
 		for (const window of BrowserWindow.getAllWindows()) {
 			window.webContents.send("settings:changed", settings);
 		}

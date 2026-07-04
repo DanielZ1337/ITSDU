@@ -208,6 +208,9 @@ const translations = {
 		"settings.advanced.resetAll.title": "Reset all settings",
 		"settings.advanced.resetAll.description":
 			"Restore every setting to its default value.",
+		"settings.advanced.sessionRefresh.title": "Session refresh interval",
+		"settings.advanced.sessionRefresh.description":
+			"How often ITSDU refreshes your Itslearning session in the background.",
 		"settings.advanced.resetAll.confirm.title": "Reset all settings?",
 		"settings.advanced.resetAll.confirm.description":
 			"This restores every setting in this screen to its default value.",
@@ -514,6 +517,9 @@ const translations = {
 		"settings.advanced.resetAll.title": "Nulstil alle indstillinger",
 		"settings.advanced.resetAll.description":
 			"Gendanner alle indstillinger til standardværdier.",
+		"settings.advanced.sessionRefresh.title": "Interval for sessionsopdatering",
+		"settings.advanced.sessionRefresh.description":
+			"Hvor ofte ITSDU opdaterer din Itslearning-session i baggrunden.",
 		"settings.advanced.resetAll.confirm.title": "Nulstil alle indstillinger?",
 		"settings.advanced.resetAll.confirm.description":
 			"Dette gendanner alle indstillinger på denne skærm til deres standardværdier.",

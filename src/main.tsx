@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { useSettings } from "@/hooks/atoms/useSettings";
+import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Navigate, createHashRouter } from "react-router-dom";
@@ -74,6 +75,8 @@ const MergeZIPDocumentsLazy = lazy(
 );
 const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
 const NativeSSOElement = lazy(() => import("@/routes/sso/native-sso-element"));
+
+setupAuthRefreshInterceptor();
 
 function LandingRedirect() {
 	const { settings, isHydrated } = useSettings();

@@ -69,6 +69,7 @@ export type SettingsOptions = {
 	DefaultAIChatSidepanel: boolean;
 	CustomPDFSidebarOpened: boolean;
 	updatesAutoCheckOnStartup: boolean;
+	authRefreshIntervalMinutes: number;
 };
 
 export type SettingsKey = keyof SettingsOptions;
@@ -100,6 +101,7 @@ export const defaultSettings: SettingsOptions = {
 	DefaultAIChatSidepanel: false,
 	CustomPDFSidebarOpened: true,
 	updatesAutoCheckOnStartup: true,
+	authRefreshIntervalMinutes: 45,
 };
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -148,6 +150,12 @@ export function validateSetting<K extends SettingsKey>(
 			return (
 				typeof value === "number" && Number.isFinite(value)
 					? Math.min(Math.max(Math.round(value), 50), 10_240)
+					: fallback
+			) as SettingsOptions[K];
+		case "authRefreshIntervalMinutes":
+			return (
+				typeof value === "number" && Number.isFinite(value)
+					? Math.min(Math.max(Math.round(value), 5), 240)
 					: fallback
 			) as SettingsOptions[K];
 		case "calendarDefaultView":

@@ -2,13 +2,14 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { UpdateInfo } from "electron-updater";
 import slugify from "slugify";
+import type {
+	AuthRefreshOptions,
+	AuthSessionStatus,
+} from "../src/types/auth.ts";
+import type { SettingsKey, SettingsOptions } from "../src/types/settings.ts";
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import { StoreKey } from "./services/itslearning/auth/types/store_keys.ts";
 import type { FileRepository } from "./services/itslearning/resources/resources.ts";
-import type {
-	SettingsKey,
-	SettingsOptions,
-} from "../src/types/settings.ts";
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
@@ -20,7 +21,25 @@ contextBridge.exposeInMainWorld("auth", {
 		clear: () => ipcRenderer.invoke("itslearning-store:clear"),
 	},
 	logout: () => ipcRenderer.invoke("itslearning-store:logout"),
-	refresh: async () => await ipcRenderer.invoke("itslearning-store:refresh"),
+	refresh: async (options?: AuthRefreshOptions) =>
+		await ipcRenderer.invoke("itslearning-store:refresh", options),
+	getStatus: async () =>
+		await ipcRenderer.invoke("itslearning-store:getStatus"),
+	setOnlineStatus: async (isOnline: boolean) =>
+		await ipcRenderer.invoke("itslearning-store:setOnlineStatus", isOnline),
+	subscribe: (callback: (status: AuthSessionStatus) => void) => {
+		const listener = (
+			_event: Electron.IpcRendererEvent,
+			status: AuthSessionStatus,
+		) => {
+			callback(status);
+		};
+		ipcRenderer.on("auth:statusChanged", listener);
+
+		return () => {
+			ipcRenderer.removeListener("auth:statusChanged", listener);
+		};
+	},
 });
 
 contextBridge.exposeInMainWorld("darkMode", {
@@ -43,7 +62,10 @@ contextBridge.exposeInMainWorld("settings", {
 	chooseDownloadDirectory: () =>
 		ipcRenderer.invoke("settings:chooseDownloadDirectory"),
 	subscribe: (callback: (settings: SettingsOptions) => void) => {
-		const listener = (_event: Electron.IpcRendererEvent, settings: SettingsOptions) => {
+		const listener = (
+			_event: Electron.IpcRendererEvent,
+			settings: SettingsOptions,
+		) => {
 			callback(settings);
 		};
 		ipcRenderer.on("settings:changed", listener);
@@ -101,7 +123,10 @@ contextBridge.exposeInMainWorld("itslearning_file_scraping", {});
 
 contextBridge.exposeInMainWorld("ai", {
 	upload: async (elementId: number) => {
-		const allowUpload = await ipcRenderer.invoke("settings:get", "UploadAIChats");
+		const allowUpload = await ipcRenderer.invoke(
+			"settings:get",
+			"UploadAIChats",
+		);
 		if (!allowUpload) {
 			throw new Error("AI document uploads are disabled in settings.");
 		}
@@ -336,12 +361,15 @@ declare global {
 		};
 		auth: {
 			store: {
-				get: (key: StoreKey) => Promise<string>;
+				get: (key: StoreKey) => Promise<string | null>;
 				set: (key: StoreKey, data: any) => Promise<void>;
 				clear: () => Promise<void>;
 			};
 			logout: () => Promise<void>;
-			refresh: () => Promise<void>;
+			refresh: (options?: AuthRefreshOptions) => Promise<AuthSessionStatus>;
+			getStatus: () => Promise<AuthSessionStatus>;
+			setOnlineStatus: (isOnline: boolean) => Promise<AuthSessionStatus>;
+			subscribe: (callback: (status: AuthSessionStatus) => void) => () => void;
 		};
 		ai: {
 			upload: (elementId: number | string) => Promise<boolean>;

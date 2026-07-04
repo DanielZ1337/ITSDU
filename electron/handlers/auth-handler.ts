@@ -1,7 +1,11 @@
 import axios from "axios";
 import { BrowserWindow, ipcMain } from "electron";
 import { createAuthWindow } from "../../electron/main.ts";
-import { AuthService } from "../services/itslearning/auth/auth-service.ts";
+import type { AuthRefreshOptions } from "../../src/types/auth.ts";
+import {
+	AuthRefreshError,
+	AuthService,
+} from "../services/itslearning/auth/auth-service.ts";
 import { StoreKey } from "../services/itslearning/auth/types/store_keys.ts";
 import {
 	ITSLEARNING_RESOURCE_URL,
@@ -17,6 +21,7 @@ const authService = AuthService.getInstance();
 
 function getTokenHandler() {
 	ipcMain.handle("itslearning-store:get", (_, val: StoreKey) => {
+		if (val !== "access_token") return null;
 		return authService.getToken(val);
 	});
 }
@@ -40,13 +45,39 @@ function clearTokensHandler() {
 }
 
 function refreshTokensHandler() {
-	ipcMain.handle("itslearning-store:refresh", async () => {
-		try {
-			await authService.refreshAccessToken();
-		} catch (error) {
-			console.error(error);
-		}
+	ipcMain.handle(
+		"itslearning-store:refresh",
+		async (_, options?: AuthRefreshOptions) => {
+			try {
+				return await authService.refreshAccessToken();
+			} catch (error) {
+				if (authService.getSessionStatus().state === "reauthRequired") {
+					await createAuthWindow({ destroyExistingWindows: false });
+				}
+				if (options?.throwOnFailure) {
+					if (error instanceof AuthRefreshError) {
+						throw new Error(error.reason);
+					}
+					throw error;
+				}
+				return authService.getSessionStatus();
+			}
+		},
+	);
+}
+
+function authStatusHandler() {
+	ipcMain.handle("itslearning-store:getStatus", () => {
+		return authService.getSessionStatus();
 	});
+
+	ipcMain.handle(
+		"itslearning-store:setOnlineStatus",
+		(_, isOnline: boolean) => {
+			authService.setOnlineStatus(isOnline);
+			return authService.getSessionStatus();
+		},
+	);
 }
 
 function getCookies() {
@@ -107,6 +138,7 @@ function scrapePageHandler() {
 
 export default function initAuthIpcHandlers() {
 	scrapePageHandler();
+	authStatusHandler();
 	getTokenHandler();
 	setTokenHandler();
 	deleteTokenHandler();

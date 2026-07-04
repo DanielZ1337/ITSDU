@@ -1116,7 +1116,7 @@ function PrivacySettings() {
 }
 
 function AdvancedSettings() {
-	const { settings, resetAllSettings } = useSettings();
+	const { settings, setSetting, resetAllSettings } = useSettings();
 	const { version } = useVersion();
 	const t = useT();
 
@@ -1141,6 +1141,27 @@ function AdvancedSettings() {
 
 	return (
 		<SettingsGroup>
+			<SettingRow
+				title={t("settings.advanced.sessionRefresh.title")}
+				description={t("settings.advanced.sessionRefresh.description")}
+			>
+				<div className="flex items-center gap-2">
+					<Input
+						type="number"
+						min={5}
+						max={240}
+						step={5}
+						className="w-24"
+						value={settings.authRefreshIntervalMinutes}
+						onChange={(event) => {
+							const value = Number(event.target.value);
+							if (!Number.isFinite(value)) return;
+							void setSetting("authRefreshIntervalMinutes", value);
+						}}
+					/>
+					<span className="text-sm text-muted-foreground">min</span>
+				</div>
+			</SettingRow>
 			<SettingRow
 				title={t("settings.privacy.copyDiagnostics.title")}
 				description={t("settings.privacy.copyDiagnostics.description")}
