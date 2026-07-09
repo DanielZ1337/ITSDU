@@ -369,6 +369,8 @@ async function initializeAllHandlers() {
 }
 
 async function sendDeviceStartupPing() {
+	if (isDev) return;
+
 	try {
 		const { DeviceService } = await import(
 			"./services/device/device-service.ts"
