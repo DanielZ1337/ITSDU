@@ -368,8 +368,28 @@ async function initializeAllHandlers() {
 	initAuthIpcHandlers();
 }
 
+async function sendDeviceStartupPing() {
+	if (isDev) return;
+
+	try {
+		const { DeviceService } = await import(
+			"./services/device/device-service.ts"
+		);
+		const axios = (await import("axios")).default;
+
+		await axios.post("https://itsdu.danielz.dev/api/device", {
+			deviceId: DeviceService.getInstance().getDeviceId(),
+			appVersion: app.getVersion(),
+			platform: process.platform,
+		});
+	} catch (error) {
+		console.error("device startup ping failed", error);
+	}
+}
+
 app.whenReady().then(async () => {
 	await initializeAllHandlers();
+	void sendDeviceStartupPing();
 	if (VITE_DEV_SERVER_URL) {
 		const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
 
