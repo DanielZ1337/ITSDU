@@ -1,3 +1,4 @@
+import { useDeviceId } from "@/hooks/atoms/useDeviceId";
 import { getQueryKeysFromParamsObject } from "@/lib/utils";
 import {
 	POSTnewAIMessageApiUrl,
@@ -12,6 +13,8 @@ export default function usePOSTnewAIMessage(
 	params: POSTnewAIMessageParams,
 	queryConfig?: UseMutationOptions<any, Error, any, string[]>,
 ) {
+	const deviceId = useDeviceId();
+
 	return useMutation(
 		[TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)],
 		async (body: POSTnewAIMessageBody) => {
@@ -19,6 +22,7 @@ export default function usePOSTnewAIMessage(
 				params: {
 					...params,
 				},
+				headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 			});
 
 			console.log(res);

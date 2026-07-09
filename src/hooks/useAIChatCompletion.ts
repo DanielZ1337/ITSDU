@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useDeviceId } from "./atoms/useDeviceId.ts";
 import { useUser } from "./atoms/useUser.ts";
 
 export const useAIChatCompletion = (
@@ -7,6 +8,7 @@ export const useAIChatCompletion = (
 	callback: () => void,
 ) => {
 	const user = useUser();
+	const deviceId = useDeviceId();
 	const [loading, setLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 	const [message, setMessage] = useState("");
@@ -29,6 +31,7 @@ export const useAIChatCompletion = (
 					`http://itsdu.danielz.dev/api/message/${elementId}`,
 					{
 						method: "POST",
+						headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 						body: JSON.stringify({
 							message: prompt,
 							userId: user.PersonId,

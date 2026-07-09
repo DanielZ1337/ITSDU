@@ -1,3 +1,4 @@
+import { useDeviceId } from "@/hooks/atoms/useDeviceId";
 import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import { GETcheckElementIDApiUrl } from "@/types/api-types/AI/GETcheckElementID.ts";
 import { UseQueryOptions, useQuery } from "@tanstack/react-query";
@@ -8,6 +9,8 @@ export default function useGETcheckElementID(
 	elementId: number | string,
 	queryConfig?: UseQueryOptions<boolean, Error, boolean, string[]>,
 ) {
+	const deviceId = useDeviceId();
+
 	return useQuery(
 		[
 			TanstackKeys.AICheckElementID,
@@ -22,6 +25,7 @@ export default function useGETcheckElementID(
 					params: {
 						elementId,
 					},
+					headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 				},
 			);
 

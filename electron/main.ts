@@ -357,6 +357,8 @@ async function initializeAllHandlers() {
 		.default;
 	const initDownloadHandlers = (await import("./handlers/download-handler.ts"))
 		.default;
+	const initDeviceIpcHandlers = (await import("./handlers/device-handler.ts"))
+		.default;
 	const { autoUpdater } = await import("electron-updater");
 	autoUpdater.autoRunAppAfterInstall = true;
 	autoUpdater.autoInstallOnAppQuit = false;
@@ -366,6 +368,7 @@ async function initializeAllHandlers() {
 	appHandlerInitializer();
 	initDownloadHandlers();
 	initAuthIpcHandlers();
+	initDeviceIpcHandlers();
 }
 
 app.whenReady().then(async () => {

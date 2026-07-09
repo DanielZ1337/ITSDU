@@ -1,3 +1,4 @@
+import { useDeviceId } from "@/hooks/atoms/useDeviceId";
 import { useUser } from "@/hooks/atoms/useUser";
 import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
@@ -23,6 +24,7 @@ export default function useGETpreviousChats(
 	>,
 ) {
 	const user = useUser();
+	const deviceId = useDeviceId();
 
 	return useInfiniteQuery(
 		[
@@ -41,6 +43,7 @@ export default function useGETpreviousChats(
 					params: {
 						userId: user.PersonId,
 					},
+					headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 				},
 			);
 
