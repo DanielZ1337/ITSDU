@@ -42,9 +42,6 @@ contextBridge.exposeInMainWorld("auth", {
 	},
 });
 
-contextBridge.exposeInMainWorld("device", {
-	getId: () => ipcRenderer.invoke("device:getId"),
-});
 contextBridge.exposeInMainWorld("darkMode", {
 	toggle: () => ipcRenderer.invoke("dark-mode:toggle"),
 	system: () => ipcRenderer.invoke("dark-mode:system"),
@@ -373,9 +370,6 @@ declare global {
 			getStatus: () => Promise<AuthSessionStatus>;
 			setOnlineStatus: (isOnline: boolean) => Promise<AuthSessionStatus>;
 			subscribe: (callback: (status: AuthSessionStatus) => void) => () => void;
-		};
-		device: {
-			getId: () => Promise<string>;
 		};
 		ai: {
 			upload: (elementId: number | string) => Promise<boolean>;

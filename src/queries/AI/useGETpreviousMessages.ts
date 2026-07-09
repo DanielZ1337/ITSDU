@@ -1,4 +1,3 @@
-import { useDeviceId } from "@/hooks/atoms/useDeviceId";
 import { useUser } from "@/hooks/atoms/useUser";
 import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
@@ -24,7 +23,6 @@ export default function useGETpreviousMessages(
 	>,
 ) {
 	const user = useUser();
-	const deviceId = useDeviceId();
 
 	return useInfiniteQuery(
 		[TanstackKeys.AIpreviousMessages, ...getQueryKeysFromParamsObject(params)],
@@ -44,7 +42,6 @@ export default function useGETpreviousMessages(
 						elementId,
 						userId: user.PersonId,
 					},
-					headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 				},
 			);
 

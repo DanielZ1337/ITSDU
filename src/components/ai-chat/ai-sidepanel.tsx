@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
-import { useDeviceId } from "@/hooks/atoms/useDeviceId";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useUser } from "@/hooks/atoms/useUser";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
@@ -22,7 +21,6 @@ export default function AISidePanel({
 	const { aiSidepanel } = useAISidepanel();
 	const { settings } = useSettings();
 	const user = useUser()!;
-	const deviceId = useDeviceId();
 
 	const [message, setMessage] = useState<string>("");
 	const [messageIsLoading, setMessageIsLoading] = useState<boolean>(false);
@@ -162,7 +160,6 @@ export default function AISidePanel({
 			// const url = `http://localhost:3000/api/message/${elementId}`
 			const res = await fetch(url, {
 				method: "POST",
-				headers: deviceId ? { "X-Device-Id": deviceId } : undefined,
 				body: JSON.stringify({
 					message,
 					userId: user.PersonId,
