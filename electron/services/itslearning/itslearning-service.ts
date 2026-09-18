@@ -74,6 +74,11 @@ export class ItslearningService {
 		const response = await axios.get(API_URL.toString());
 
 		const store = response.data as ItslearningStore;
+		if (!store?.BaseUrl) {
+			throw new Error(
+				`Site ${customerId} response from ${API_URL.origin} has no BaseUrl; keeping the current site settings`,
+			);
+		}
 
 		this.store.store = store;
 	}
