@@ -52,6 +52,7 @@
 	"publisher": "DanielZ1337",
 	"scripts": {
 		"dev": "vite",
+		"dev:mock": "node scripts/dev-mock.mjs",
 		"build:test": "vite build",
 		"build": "tsc && vite build && electron-builder",
 		"prebuild": "vite build && electron-builder",
