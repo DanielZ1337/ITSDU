@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ipcMain } from "electron";
 import Store from "electron-store";
+import { MOCK_URL, storeName } from "./mock-mode";
 
 export type ItslearningStore = {
 	IsFronterUpgradedSite: boolean;
@@ -52,7 +53,7 @@ export class ItslearningService {
 	private static instance: ItslearningService;
 	private store = new Store<ItslearningStore>({
 		watch: true,
-		name: "itsdu-itslearning-store",
+		name: storeName("itsdu-itslearning-store"),
 		defaults: defaultStore,
 	});
 
@@ -67,7 +68,7 @@ export class ItslearningService {
 
 	async setCustomerById(customerId: number) {
 		const API_URL = new URL(
-			`https://sdu.itslearning.com/restapi/sites/${customerId}/v1`,
+			`${MOCK_URL ?? "https://sdu.itslearning.com"}/restapi/sites/${customerId}/v1`,
 		);
 
 		const response = await axios.get(API_URL.toString());
@@ -78,6 +79,8 @@ export class ItslearningService {
 	}
 
 	getStore(): ItslearningStore {
+		if (MOCK_URL)
+			return { ...this.store.store, BaseUrl: MOCK_URL, OrgApiBaseUrl: MOCK_URL };
 		return this.store.store;
 	}
 
@@ -86,11 +89,11 @@ export class ItslearningService {
 	}
 
 	getBaseUrl() {
-		return this.store.store.BaseUrl;
+		return MOCK_URL ?? this.store.store.BaseUrl;
 	}
 
 	getOrgApiBaseUrl() {
-		return this.store.store.OrgApiBaseUrl;
+		return MOCK_URL ?? this.store.store.OrgApiBaseUrl;
 	}
 
 	getCustomerId() {

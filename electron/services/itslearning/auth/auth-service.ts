@@ -4,6 +4,7 @@ import type {
 	AuthSessionStatus,
 } from "../../../../src/types/auth";
 import { ITSLEARNING_URL } from "../itslearning.ts";
+import { storeName as mockAwareStoreName } from "../mock-mode";
 import { GrantType } from "./types/grant_type";
 import { StoreKey } from "./types/store_keys";
 
@@ -87,9 +88,11 @@ export class AuthService {
 		if (!VITE_ITSLEARNING_STORE_KEY)
 			throw new Error("Missing VITE_ITSLEARNING_STORE_KEY in .env file");
 
-		const storeName = require("electron").app.isPackaged
-			? "itsdu-auth-store"
-			: "itsdu-auth-store-dev";
+		const storeName = mockAwareStoreName(
+			require("electron").app.isPackaged
+				? "itsdu-auth-store"
+				: "itsdu-auth-store-dev",
+		);
 
 		try {
 			this.store = new Store({
