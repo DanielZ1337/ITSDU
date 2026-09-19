@@ -24,13 +24,14 @@ export function useUnreadMessagesNotification() {
 	// Fetch unread message count.
 	// `refetchIntervalInBackground` is intentionally omitted so React Query pauses
 	// polling while the window is hidden/minimized/unfocused.
-	useGETunreadInstantMessageCount({
+	const { data: unreadData } = useGETunreadInstantMessageCount({
 		enabled: notificationsEnabled,
 		refetchInterval: REFETCH_INTERVAL,
-		onSuccess: (data) => {
-			setUnreadCount(data);
-		},
 	});
+	// React Query v5 removed onSuccess on queries: mirror the fetched count into state instead.
+	useEffect(() => {
+		if (unreadData !== undefined) setUnreadCount(unreadData);
+	}, [unreadData]);
 
 	// Only fetch message details when there's exactly 1 unread message
 	const { data: messageThreads } = useGETinstantMessagesv2(
@@ -96,6 +97,6 @@ export function useUnreadMessagesNotification() {
 		lastNotificationCount.current = unreadCount;
 
 		// Invalidate the state other places
-		queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+		queryClient.invalidateQueries({ queryKey: [TanstackKeys.Messagesv2] });
 	}, [notificationsEnabled, unreadCount, messageThreads, navigate]);
 }

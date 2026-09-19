@@ -38,7 +38,7 @@ export default function NotificationsDropdown() {
 		},
 	);
 
-	const { mutate: markAllAsRead, isLoading: isMarkingAllAsRead } =
+	const { mutate: markAllAsRead, isPending: isMarkingAllAsRead } =
 		usePUTnotificationsMarkAllAsReadv2();
 
 	const notificationsFlatMap = notifications!.pages.flatMap(

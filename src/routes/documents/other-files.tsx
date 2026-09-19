@@ -533,7 +533,7 @@ function OtherFiles() {
 				className="max-h-full max-w-full object-contain"
 			/>
 		),
-	} as Record<string, JSX.Element>;
+	} as Record<string, React.JSX.Element>;
 
 	if (data?.type === "text/csv") {
 		return (

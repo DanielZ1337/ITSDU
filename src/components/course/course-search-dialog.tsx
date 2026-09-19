@@ -13,6 +13,7 @@ import {
 	CommandList,
 } from "../ui/command";
 import { Skeleton } from "../ui/skeleton";
+import { keepPreviousData } from "@tanstack/react-query";
 
 function CourseCommandList({
 	starredFetching,
@@ -93,7 +94,7 @@ export default function CourseSearchDialog({
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 
@@ -107,7 +108,7 @@ export default function CourseSearchDialog({
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 

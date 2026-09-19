@@ -6,7 +6,7 @@ import { CustomPDFProvider } from "@/contexts/custom-pdf-context";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import useResourceByElementID from "@/queries/resources/useResourceByElementID";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import {
 	ArrowLeftToLine,
 	ArrowRightToLine,

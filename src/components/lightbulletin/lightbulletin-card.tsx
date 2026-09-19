@@ -36,7 +36,7 @@ export default function LightbulletinCard({
 	const [showResources, setShowResources] = useState<boolean>(false);
 	const { courseId } = useCourse();
 
-	const { mutate, isLoading } = usePUTlightbulletinNotifications({
+	const { mutate, isPending: isLoading } = usePUTlightbulletinNotifications({
 		lightbulletinId: bulletin.LightBulletinId,
 	});
 

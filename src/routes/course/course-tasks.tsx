@@ -1,7 +1,7 @@
 import { CourseTaskTabButton } from "@/components/course/tasks/course-task-tab-button";
 import { CourseTasksActive } from "@/components/course/tasks/course-tasks-active";
 import { CourseTasksCompleted } from "@/components/course/tasks/course-tasks-completed";
-import { useCycle } from "framer-motion";
+import { useCycle } from "motion/react";
 import { useParams } from "react-router-dom";
 
 const TASKS_PAGE_SIZE = 100;

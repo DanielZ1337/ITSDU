@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { NavLink, useMatch } from "react-router-dom";
 import { useSettings } from "@/hooks/atoms/useSettings";

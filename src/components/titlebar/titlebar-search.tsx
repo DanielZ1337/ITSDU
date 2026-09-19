@@ -25,13 +25,14 @@ import {
 import { ItsolutionsItslUtilsConstantsLocationType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType";
 import { useDebounce } from "@uidotdev/usehooks";
 import { CommandLoading } from "cmdk";
-import { motion, useCycle } from "framer-motion";
+import { motion, useCycle } from "motion/react";
 import { DownloadIcon } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { isSupportedResourceInApp } from "../../types/api-types/extra/learning-tool-id-types";
 import { useDownloadToast } from "../recursive-file-explorer";
 import TitlebarButton from "./titlebar-button";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export default function TitlebarSearch() {
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -51,7 +52,7 @@ export default function TitlebarSearch() {
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 
@@ -65,7 +66,7 @@ export default function TitlebarSearch() {
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 

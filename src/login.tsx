@@ -127,10 +127,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<Providers>
 			<RouterProvider
-				fallbackElement={<ErrorPage />}
-				future={{
-					v7_startTransition: true,
-				}}
 				router={router}
 			/>
 		</Providers>

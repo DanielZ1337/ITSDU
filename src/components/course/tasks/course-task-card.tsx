@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { ItslearningRestApiEntitiesTaskDailyWorkflow } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 
 export function CourseTaskCard({
 	task,

@@ -6,7 +6,6 @@ import { ItslearningRestApiEntitiesInstantMessageRecipient } from "@/types/api-t
 import { useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import React, { useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -59,7 +58,7 @@ export default function MessageTitleForm({
 				.join(", ");
 	}
 
-	const { mutate: editThreadName, isLoading: isLoadingThreadName } =
+	const { mutate: editThreadName, isPending: isLoadingThreadName } =
 		usePUTinstantMessageThread(
 			{
 				threadId: currentChat!,
@@ -109,9 +108,7 @@ export default function MessageTitleForm({
 
 	return (
 		<>
-			<Helmet>
-				<title>{MessagesHeaderTitleString()}</title>
-			</Helmet>
+			<title>{MessagesHeaderTitleString()}</title>
 			{!isChatNew && !isChatUndefined && isSettingNewThreadName ? (
 				<form
 					className={"flex items-center space-x-2"}

@@ -11,7 +11,6 @@ import {
 import Linkify from "linkify-react";
 import { ArrowLeft, Calendar, FileText, Megaphone, User } from "lucide-react";
 import { useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import useGETnotificationElements from "../../queries/notifications/useGETnotificationElements";
 
@@ -88,9 +87,7 @@ export default function NotificationID() {
 
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
-			<Helmet>
-				<title>{currentNotification.Text}</title>
-			</Helmet>
+			<title>{currentNotification.Text}</title>
 
 			{/* Header */}
 			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">

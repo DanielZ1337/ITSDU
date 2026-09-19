@@ -22,7 +22,7 @@ export default function LightbulletinCommentDropdown({
 }) {
 	const {
 		mutate: deleteComment,
-		isLoading: isDeleting,
+		isPending: isDeleting,
 		error: err,
 		status,
 	} = useDELETElightbulletinComment(

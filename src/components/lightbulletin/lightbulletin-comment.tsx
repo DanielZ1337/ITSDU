@@ -22,7 +22,7 @@ export default function LightbulletinComment({
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const [showUpdate, setShowUpdate] = useState<boolean>(false);
 	const user = useUser()!;
-	const { mutate: updateComment, isLoading: isUpdating } =
+	const { mutate: updateComment, isPending: isUpdating } =
 		usePUTlightbulletinUpdateComment(
 			{
 				commentId: comment.Id,

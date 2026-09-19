@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { TabsTrigger } from "@radix-ui/react-tabs";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { SetStateAction } from "jotai";
 import { Button } from "../ui/button";
 

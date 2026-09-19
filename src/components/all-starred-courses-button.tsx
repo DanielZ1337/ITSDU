@@ -1,4 +1,4 @@
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { StarHalfIcon, StarIcon } from "lucide-react";
 import { useState } from "react";
 

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { customCodeTheme } from "@/styles/custom-code-theme";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { useTheme } from "next-themes";
 import { lazy, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

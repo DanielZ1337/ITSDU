@@ -14,11 +14,10 @@ import {
 	CourseCardsSelectOptionsEnum,
 } from "@/types/course-cards-select-options.ts";
 import { useDebounce } from "@uidotdev/usehooks";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { GraduationCap, Search } from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Helmet } from "react-helmet-async";
 
 export default function Index() {
 	const { settings, setSetting } = useSettings();
@@ -36,9 +35,7 @@ export default function Index() {
 
 	return (
 		<div className="flex flex-col flex-1 h-full w-full">
-			<Helmet>
-				<title>itslearning</title>
-			</Helmet>
+			<title>itslearning</title>
 
 			{/* Header section */}
 			<div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/50">

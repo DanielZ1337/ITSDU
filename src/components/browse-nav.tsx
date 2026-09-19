@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation";
 import { queryClient } from "@/lib/tanstack-client";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import {
 	ArrowLeftCircleIcon,
 	ArrowRightCircleIcon,

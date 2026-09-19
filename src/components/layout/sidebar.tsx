@@ -5,7 +5,7 @@ import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useT } from "@/lib/i18n";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { Suspense, lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import SidebarUserFallback from "./sidebar-user-fallback";

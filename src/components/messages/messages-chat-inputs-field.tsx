@@ -51,7 +51,7 @@ export default function MessagesChatInputsField() {
 		return interval;
 	}, [uploadProgress]);
 
-	const { mutate: sendMessage, isLoading: isSendingMessage } =
+	const { mutate: sendMessage, isPending: isSendingMessage } =
 		usePOSTinstantMessagev2({
 			onSuccess: () => {
 				queryClient.invalidateQueries({
@@ -68,7 +68,7 @@ export default function MessagesChatInputsField() {
 			},
 		});
 
-	const { mutate: sendFile, isLoading: isSendingFile } =
+	const { mutate: sendFile, isPending: isSendingFile } =
 		usePOSTmessageAttachment();
 
 	const handleSubmit = useCallback(

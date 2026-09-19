@@ -1,7 +1,7 @@
 import { cn, getRelativeTimeString } from "@/lib/utils";
 import useGETnotificationElements from "@/queries/notifications/useGETnotificationElements";
 import { ItslearningRestApiEntitiesStreamItemV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import * as linkify from "linkifyjs";
 import { ChevronDown, Megaphone } from "lucide-react";
 import { useState } from "react";

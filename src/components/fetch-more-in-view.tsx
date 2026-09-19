@@ -1,6 +1,6 @@
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 
 export function FetchMoreInview({
 	hasNextPage,

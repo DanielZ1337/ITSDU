@@ -1,7 +1,6 @@
 import ProfileAvatar from "@/components/profile-avatar";
 import { useUser } from "@/hooks/atoms/useUser.ts";
 import { usePOSTpersonUpdateProfileImage } from "@/queries/person/usePOSTpersonUpdateProfileImage";
-import { Helmet } from "react-helmet-async";
 
 export default function UserProfile() {
 	const user = useUser()!;
@@ -18,9 +17,7 @@ export default function UserProfile() {
 
 	return (
 		<div className="m-auto w-full p-10">
-			<Helmet>
-				<title>User Profile for {user.FullName}</title>
-			</Helmet>
+			<title>{`User Profile for ${user.FullName}`}</title>
 			<div className="mx-auto max-w-3xl rounded-lg border p-6 px-8 shadow-lg">
 				<h2 className="mb-4 py-4 text-center text-2xl font-bold">
 					User Profile

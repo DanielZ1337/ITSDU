@@ -1,6 +1,6 @@
 import SearchResourcesDialog from "@/components/resources/resources-search-dialog.tsx";
 import { cn } from "@/lib/utils.ts";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 // eslint-disable-next-line no-redeclare
 import {
 	CalendarIcon,

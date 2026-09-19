@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { queryClient } from "@/lib/tanstack-client";
 import { TanstackKeys } from "@/types/tanstack-keys";
+import { keepPreviousData } from "@tanstack/react-query";
 
 export default function MessageChat({
 	threadId,
@@ -33,7 +34,7 @@ export default function MessageChat({
 			refetchOnMount: true,
 			refetchInterval: 1000 * 10,
 			refetchIntervalInBackground: true,
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 		},
 	);
 
@@ -48,7 +49,7 @@ export default function MessageChat({
                 messages.pages[0].Messages.EntityArray[0].MessageId,
         }, {
             onSuccess: () => {
-                queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+                queryClient.invalidateQueries({ queryKey: [TanstackKeys.Messagesv2] });
             },
         })
 	}, [messages]);

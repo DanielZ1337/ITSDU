@@ -18,7 +18,7 @@ import {
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
-import { AnimatePresence, m, motion, useCycle } from "framer-motion";
+import { AnimatePresence, m, motion, useCycle } from "motion/react";
 import Linkify from "linkify-react";
 import { CalendarIcon } from "lucide-react";
 import { Suspense } from "react";
@@ -270,7 +270,7 @@ function CoursePlanCard({
 	const courseId = Number(id);
 
 	return (
-		<Card
+        <Card
 			className={cn("p-2")}
 			style={{
 				backgroundColor: plan.topic
@@ -279,7 +279,7 @@ function CoursePlanCard({
 				borderColor: plan.topic && plan.topic.borderColor,
 			}}
 		>
-			<CardContent className="p-4">
+            <CardContent className="p-4">
 				<div className="flex justify-between">
 					<div>
 						<h3 className="text-lg font-semibold mb-2 flex items-center">
@@ -417,8 +417,8 @@ function CoursePlanCard({
 					</ul>
 				</div>
 			</CardContent>
-		</Card>
-	);
+        </Card>
+    );
 }
 
 export function CoursePlansTabButton({

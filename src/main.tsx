@@ -288,10 +288,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 				<Providers>
 					{/* <React.StrictMode> */}
 					<RouterProvider
-						fallbackElement={<ErrorPage />}
-						future={{
-							v7_startTransition: true,
-						}}
 						router={router}
 					/>
 					<ReactQueryDevtools position="top" buttonPosition="top-left" />

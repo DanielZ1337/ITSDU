@@ -3,7 +3,7 @@ import { useAuthSessionStatus } from "@/hooks/useAuthSessionStatus";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { queryClient } from "@/lib/tanstack-client";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { useEffect } from "react";
 import { useErrorBoundary } from "react-error-boundary";
 

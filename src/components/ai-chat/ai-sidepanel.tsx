@@ -8,7 +8,7 @@ import useGETcheckElementID from "@/queries/AI/useGETcheckElementID";
 import useGETpreviousMessages from "@/queries/AI/useGETpreviousMessages";
 import { MessageType } from "@/types/ai-message";
 import { Spinner } from "@/components/ui/spinner";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BsStopCircleFill } from "react-icons/bs";
 import { Loader } from "../ui/loader";

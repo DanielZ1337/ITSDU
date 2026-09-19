@@ -62,17 +62,21 @@ export default function MessageChatMessage({
 
 	const attachmentRef = useRef<string>(attachmentUrl!);
 
-	const { mutate: deleteMessage, isLoading: isDeletingMessage } =
+	const { mutate: deleteMessage, isPending: isDeletingMessage } =
 		useDELETEinstantMessage({
 			onSuccess: () => {
-				queryClient.invalidateQueries(["messagesv2"]);
+				queryClient.invalidateQueries({
+                    queryKey: ["messagesv2"]
+                });
 			},
 		});
 
-	const { mutate: restoreMessage, isLoading: isRestoringMessage } =
+	const { mutate: restoreMessage, isPending: isRestoringMessage } =
 		usePATCHrestoreDeletedMessage({
 			onSuccess: () => {
-				queryClient.invalidateQueries(["messagesv2"]);
+				queryClient.invalidateQueries({
+                    queryKey: ["messagesv2"]
+                });
 			},
 		});
 

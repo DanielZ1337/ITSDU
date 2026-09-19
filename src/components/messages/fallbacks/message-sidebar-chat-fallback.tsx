@@ -1,4 +1,4 @@
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { Skeleton } from "../../ui/skeleton";
 
 export default function MessageSidebarChatFallback() {

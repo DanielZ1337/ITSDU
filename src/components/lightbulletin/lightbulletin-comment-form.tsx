@@ -14,7 +14,7 @@ export default function LightbulletinCommentForm({
 }) {
 	const [comment, setComment] = React.useState<string>("");
 
-	const { mutate, isLoading } = usePOSTlightbulletinAddComment(
+	const { mutate, isPending: isLoading } = usePOSTlightbulletinAddComment(
 		{
 			lightBulletinId: lightbulletinId,
 		},

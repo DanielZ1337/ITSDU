@@ -12,7 +12,7 @@ export default function useCompletionRQ(elementId: string | number) {
 	const [abortController, setAbortController] =
 		useState<AbortController | null>();
 
-	const { mutate, error, isLoading } = useMutation({
+	const { mutate, error, isPending } = useMutation({
 		mutationKey: ["completion", elementId, id],
 		mutationFn: async (prompt: string) => {
 			if (abortController) {
@@ -32,5 +32,5 @@ export default function useCompletionRQ(elementId: string | number) {
 		},
 	});
 
-	return [mutate, { data, error, isLoading }] as const;
+	return [mutate, { data, error, isPending }] as const;
 }

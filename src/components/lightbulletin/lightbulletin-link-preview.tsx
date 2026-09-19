@@ -12,7 +12,7 @@ export default function LightbulletinLinkPreview({
 }) {
 	const { data } = useGETLinkOGPreview(href, {
 		suspense: true,
-		useErrorBoundary: false,
+		throwOnError: false,
 	});
 
 	return (

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import useGETcourseTasklistDailyWorkflowCompleted from "@/queries/courses/useGETcourseTasklistDailyWorkflowCompleted";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { CourseTasksFetchInView } from "./course-tasks-fetch-in-view";
 import { CourseTasksSkeletonsAnimated } from "./fallback/course-tasks-card-skeletons-animated";
 

@@ -6,7 +6,7 @@ import UpdatesTypeSelect, {
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
 import { Bell } from "lucide-react";
 import { Suspense, lazy, memo } from "react";
-import { Helmet } from "react-helmet-async";
+import { keepPreviousData } from "@tanstack/react-query";
 
 const FetchMoreInviewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
@@ -29,7 +29,7 @@ function NotificationUpdates() {
 			UseNewerThan: true,
 		},
 		{
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 		},
 	);
 
@@ -38,9 +38,7 @@ function NotificationUpdates() {
 
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
-			<Helmet>
-				<title>Recent Updates</title>
-			</Helmet>
+			<title>Recent Updates</title>
 			{/* Header */}
 			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
 				<div className="flex items-center justify-between gap-4">

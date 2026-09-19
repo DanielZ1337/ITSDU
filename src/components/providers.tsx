@@ -1,8 +1,7 @@
 import { queryClient } from "@/lib/tanstack-client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { LazyMotion, domAnimation } from "motion/react";
 import { ThemeProvider } from "next-themes";
-import { HelmetProvider } from "react-helmet-async";
 import SettingsEffects from "./settings/settings-effects";
 
 export default function Providers({
@@ -11,7 +10,6 @@ export default function Providers({
 	children: React.ReactNode;
 }) {
 	return (
-		<HelmetProvider>
 			<ThemeProvider attribute={"class"} enableSystem>
 				<QueryClientProvider client={queryClient}>
 					{/*<div className={"overflow-x-auto"}>*/}
@@ -20,6 +18,5 @@ export default function Providers({
 					{/*</div>*/}
 				</QueryClientProvider>
 			</ThemeProvider>
-		</HelmetProvider>
 	);
 }

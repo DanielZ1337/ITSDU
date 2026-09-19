@@ -58,7 +58,7 @@ export default function CourseCard({
 	card,
 }: { card: ItslearningRestApiEntitiesCourseCard }) {
 	const navigate = useNavigate();
-	const { mutate, isLoading } = usePUTcourseFavorite(
+	const { mutate, isPending: isLoading } = usePUTcourseFavorite(
 		{
 			courseId: card.CourseId,
 		},

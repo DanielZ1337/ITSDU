@@ -49,7 +49,7 @@ import {
 	startOfMonth,
 	startOfWeek,
 } from "date-fns";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
 	AlertTriangle,
 	ArrowLeft,
@@ -66,9 +66,9 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { keepPreviousData } from "@tanstack/react-query";
 
 type CalendarProps = {
 	events?: unknown[];
@@ -93,9 +93,7 @@ export default function CalendarIndex() {
 	const t = useT();
 	return (
 		<>
-			<Helmet>
-				<title>{t("nav.calendar")}</title>
-			</Helmet>
+			<title>{t("nav.calendar")}</title>
 			<CalendarPlanner />
 		</>
 	);
@@ -176,7 +174,7 @@ function CalendarPlanner({
 		{ fromDate: fetchStart, page: 0, pageSize },
 		{
 			enabled: externalEvents === undefined,
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 			staleTime: 1000 * 60 * 5,
 			suspense: false,
 		},

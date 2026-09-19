@@ -24,7 +24,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { ImperativePanelHandle } from "react-resizable-panels";
+import { type PanelImperativeHandle } from "react-resizable-panels";
 
 export default function CourseIndex() {
 	const { id } = useParams();
@@ -38,7 +38,7 @@ export default function CourseIndex() {
 		setIsMounted(true);
 	}, []);
 
-	const ref = useRef<ImperativePanelHandle>(null);
+	const ref = useRef<PanelImperativeHandle>(null);
 
 	const handleMouseDown = () => {
 		const timeoutId = setTimeout(() => {
@@ -181,12 +181,13 @@ export default function CourseIndex() {
 
 				{/* Resources Panel */}
 				<ResizablePanel
-					ref={ref}
+					panelRef={ref}
 					collapsible
 					minSize={20}
 					defaultSize={35}
-					onCollapse={() => setIsResourcesPanelCollapsed(true)}
-					onExpand={() => setIsResourcesPanelCollapsed(false)}
+					onResize={() =>
+						setIsResourcesPanelCollapsed(ref.current?.isCollapsed() ?? false)
+					}
 				>
 					{isMounted && (
 						<SearchProvider>

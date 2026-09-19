@@ -43,7 +43,7 @@ export default function MessagesDropdown() {
 			},
 		);
 
-	const { mutate: markAsRead, isLoading } =
+	const { mutate: markAsRead, isPending: isLoading } =
 		usePUTinstantMessageThreadUpdateIsRead();
 
 	const ref = useFetchNextPageOnInView(
@@ -62,8 +62,8 @@ export default function MessagesDropdown() {
 	const queryClient = useQueryClient();
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
 					<MessageCircle />
 					{unreadThreads && unreadThreads.length > 0 && (
@@ -71,7 +71,7 @@ export default function MessagesDropdown() {
 					)}
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-80">
+            <DropdownMenuContent className="w-80">
 				<DropdownMenuLabel className={"flex justify-between items-center"}>
 					<MessagesDropdownHeader
 						disabled={isLoading}
@@ -86,7 +86,9 @@ export default function MessagesDropdown() {
 								});
 							});
 
-							queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+							queryClient.invalidateQueries({
+                                queryKey: [TanstackKeys.Messagesv2]
+                            });
 						}}
 						threads={threads}
 						total={total}
@@ -144,6 +146,6 @@ export default function MessagesDropdown() {
 					)}
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
-		</DropdownMenu>
-	);
+        </DropdownMenu>
+    );
 }

@@ -18,7 +18,7 @@ import useGETcourseTasks from "@/queries/courses/useGETcourseAllTasks";
 import { useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesTaskStatus } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatus";
 import { format, formatDistanceToNow, isPast } from "date-fns";
-import { useCycle } from "framer-motion";
+import { useCycle } from "motion/react";
 import { AlertCircle, Calendar, Clock, ExternalLink } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";

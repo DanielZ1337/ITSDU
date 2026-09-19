@@ -46,6 +46,7 @@ import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { keepPreviousData } from "@tanstack/react-query";
 
 type CachedResourceResult = {
 	elementId: string;
@@ -120,11 +121,11 @@ export default function CommandPalette() {
 
 	const { data: starredCourses } = useGETstarredCourses(
 		{ PageIndex: 0, PageSize: 30, searchText: debouncedQuery, sortBy: "Rank" },
-		{ enabled: isCommandPaletteOpen, suspense: false, keepPreviousData: true },
+		{ enabled: isCommandPaletteOpen, suspense: false, placeholderData: keepPreviousData },
 	);
 	const { data: unstarredCourses } = useGETunstarredCourses(
 		{ PageIndex: 0, PageSize: 30, searchText: debouncedQuery, sortBy: "Rank" },
-		{ enabled: isCommandPaletteOpen, suspense: false, keepPreviousData: true },
+		{ enabled: isCommandPaletteOpen, suspense: false, placeholderData: keepPreviousData },
 	);
 
 	const tasksQuery = useGETpersonalTasks(

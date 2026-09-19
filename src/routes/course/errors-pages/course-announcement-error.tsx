@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 
 export default function CourseAnnouncementError() {
@@ -7,9 +6,7 @@ export default function CourseAnnouncementError() {
 
 	return (
 		<div className="m-auto">
-			<Helmet>
-				<title>Course Announcement Error</title>
-			</Helmet>
+			<title>Course Announcement Error</title>
 			<div className="flex w-full flex-col items-center gap-4 p-4">
 				<p className="text-3xl font-bold text-balance">
 					Course Announcement Error

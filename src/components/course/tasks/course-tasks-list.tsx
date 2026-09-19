@@ -1,4 +1,4 @@
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { ItslearningRestApiEntitiesTaskDailyWorkflow } from "../../../types/api-types/utils/Itslearning.RestApi.Entities.TaskDailyWorkflow";
 import { CourseTaskCard } from "./course-task-card";
 

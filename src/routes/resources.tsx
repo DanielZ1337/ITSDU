@@ -30,7 +30,6 @@ import {
 	WifiOff,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -169,9 +168,7 @@ export default function Resources() {
 
 	return (
 		<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 pb-12 sm:gap-5 sm:p-6 lg:p-8">
-			<Helmet>
-				<title>Resources</title>
-			</Helmet>
+			<title>Resources</title>
 
 			<header className="overflow-hidden rounded-xl border bg-card">
 				<div className="flex flex-col gap-4 border-b bg-muted/20 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">

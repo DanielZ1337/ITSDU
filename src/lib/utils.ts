@@ -191,9 +191,10 @@ export function createQueryFunction<Params, Data>(
 			...(params ? getQueryKeysFromParamsObject(params) : []),
 		];
 
-		return useQuery(
-			queryKeys,
-			async () => {
+		return useQuery({
+            queryKey: queryKeys,
+
+            queryFn: async () => {
 				const res = await axios.get(getApiUrl(params), {
 					params: {
 						access_token: (await getAccessToken()) || "",
@@ -205,10 +206,9 @@ export function createQueryFunction<Params, Data>(
 
 				return res.data as Data;
 			},
-			{
-				...queryConfig,
-			},
-		);
+
+            ...queryConfig
+        });
 	};
 }
 
@@ -228,9 +228,10 @@ export function createMutationFunction<Params, Body, Data>(
 			...(params ? getQueryKeysFromParamsObject(params) : []),
 		];
 
-		return useMutation(
-			queryKeys,
-			async (paramsOrBody) => {
+		return useMutation({
+            mutationKey: queryKeys,
+
+            mutationFn: async (paramsOrBody) => {
 				const axiosConfig = {
 					method, // Use the specified HTTP method
 					url: getApiUrl(params ?? ({} as Params)),
@@ -247,10 +248,9 @@ export function createMutationFunction<Params, Body, Data>(
 
 				return res.data;
 			},
-			{
-				...queryConfig,
-			},
-		);
+
+            ...queryConfig
+        });
 	};
 }
 

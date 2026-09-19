@@ -9,6 +9,7 @@ import useGETcourseNotifications from "@/queries/courses/useGETcourseNotificatio
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense, lazy, memo } from "react";
 import { useParams } from "react-router-dom";
+import { keepPreviousData } from "@tanstack/react-query";
 const FetchMoreInViewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
 		default: module.FetchMoreInview,
@@ -31,7 +32,7 @@ function CourseAnnouncements() {
 			PageSize: DEFAULT_PAGE_SIZE,
 		},
 		{
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 		},
 	);
 

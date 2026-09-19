@@ -3,7 +3,7 @@ import { ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
 import useGETcourseTasklistDailyWorkflow from "@/queries/courses/useGETcourseTasklistDailyWorkflow";
 import useGETcourseTasklistDailyWorkflowViewas from "@/queries/courses/useGETcourseTasklistDailyWorkflowViewas";
 import { GETssoUrlApiUrl } from "@/types/api-types/sso/GETssoUrl";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { CourseTasksFetchInView } from "./course-tasks-fetch-in-view";

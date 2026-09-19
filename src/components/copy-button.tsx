@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import copy from "copy-to-clipboard";
-import { AnimatePresence, MotionConfig, m } from "framer-motion";
+import { AnimatePresence, MotionConfig, m } from "motion/react";
 import { useCallback, useState } from "react";
 
 export default function CopyButton({
