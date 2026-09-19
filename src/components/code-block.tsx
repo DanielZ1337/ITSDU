@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from "motion/react";
 import { useTheme } from "next-themes";
 import { lazy, useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { customCodeTheme } from "@/styles/custom-code-theme";

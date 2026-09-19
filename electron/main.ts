@@ -18,6 +18,7 @@ import {
 	restrictPermissions,
 } from "./security/window-security";
 import { MOCK_URL } from "./services/itslearning/mock-mode";
+import { mark } from "./utils/perf";
 
 process.env.DIST = path.join(__dirname, "../dist");
 process.env.VITE_PUBLIC = app.isPackaged
@@ -166,6 +167,7 @@ async function createMainWindow() {
 
 	// Test active push message to Renderer-process.
 	win.webContents.on("did-finish-load", () => {
+		mark("main window did-finish-load");
 		// win?.show()
 		win?.webContents.send("main-process-message", new Date().toLocaleString());
 	});
@@ -414,7 +416,9 @@ async function sendDeviceStartupPing() {
 }
 
 app.whenReady().then(async () => {
+	mark("app ready");
 	await initializeAllHandlers();
+	mark("handlers initialised");
 	void sendDeviceStartupPing();
 	if (VITE_DEV_SERVER_URL) {
 		const { startProxyDevServer } = await import("./utils/proxy-dev-server.ts");
@@ -556,6 +560,7 @@ app.whenReady().then(async () => {
 		}
 
 		await createMainWindow();
+		mark("main window created");
 		armRefreshTimer();
 		void runBackgroundRefresh();
 	} catch (e) {

@@ -8,8 +8,8 @@ import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { GlobalShortcuts } from "./components/global-shortcuts";
 import { Loader } from "./components/ui/loader";
 import { GlobalErrorBoundaryProvider } from "./contexts/global-error-boundary-context";
-import AllTasks from "./routes/all-tasks";
 
+const AllTasks = lazy(() => import("./routes/all-tasks"));
 const RouterProvider = lazy(() =>
 	import("react-router-dom").then((module) => ({
 		default: module.RouterProvider,
@@ -288,7 +288,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 				<Providers>
 					{/* <React.StrictMode> */}
 					<RouterProvider router={router} />
-					<ReactQueryDevtools position="top" buttonPosition="top-left" />
+					{import.meta.env.DEV && (
+						<ReactQueryDevtools position="top" buttonPosition="top-left" />
+					)}
 					{/* </React.StrictMode> */}
 					<GlobalShortcuts />
 				</Providers>
