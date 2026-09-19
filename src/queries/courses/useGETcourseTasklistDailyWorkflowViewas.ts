@@ -1,3 +1,8 @@
+import axios from "axios";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseTasklistDailyWorkflowApiViewasUrl,
@@ -5,8 +10,6 @@ import {
 	GETcourseTasklistDailyWorkflowViewas,
 } from "@/types/api-types/courses/GETcourseTasklistDailyWorkflowViewas.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseTasklistDailyWorkflowViewas(
 	params: GETcourseTasklistDailyWorkflowParams,
@@ -38,18 +41,18 @@ export default function useGETcourseTasklistDailyWorkflowViewas(
 		initialPageParam: params.PageIndex || 0,
 		...queryConfig,
 		getNextPageParam: (lastPage) => {
-				if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
-					return lastPage.CurrentPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
+			if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+				return lastPage.CurrentPageIndex + 1;
+			} else {
+				return undefined;
+			}
+		},
 		getPreviousPageParam: (firstPage) => {
-				if (firstPage.CurrentPageIndex > 0) {
-					return firstPage.CurrentPageIndex - 1;
-				} else {
-					return undefined;
-				}
-			},
+			if (firstPage.CurrentPageIndex > 0) {
+				return firstPage.CurrentPageIndex - 1;
+			} else {
+				return undefined;
+			}
+		},
 	});
 }

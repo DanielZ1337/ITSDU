@@ -1,3 +1,8 @@
+import axios from "axios";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils";
 import {
 	GETcourseNotifications,
@@ -5,15 +10,16 @@ import {
 	GETcourseNotificationsParams,
 } from "@/types/api-types/courses/GETcourseNotifications";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseNotifications(
 	params: GETcourseNotificationsParams,
 	queryConfig?: InfiniteQueryConfig<GETcourseNotifications>,
 ) {
 	return useInfiniteQueryCompat({
-		queryKey: [TanstackKeys.CourseNotifications, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.CourseNotifications,
+			...getQueryKeysFromParamsObject(params),
+		],
 		queryFn: async ({ pageParam }) => {
 			const res = await axios.get(
 				GETcourseNotificationsApiUrl({
@@ -34,24 +40,24 @@ export default function useGETcourseNotifications(
 		initialPageParam: params.PageIndex,
 		...queryConfig,
 		getNextPageParam: (lastPage) => {
-				console.log(
-					lastPage.PageSize,
-					lastPage.Total,
-					lastPage.CurrentPageIndex,
-					lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total,
-				);
-				if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
-					return lastPage.CurrentPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
+			console.log(
+				lastPage.PageSize,
+				lastPage.Total,
+				lastPage.CurrentPageIndex,
+				lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total,
+			);
+			if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+				return lastPage.CurrentPageIndex + 1;
+			} else {
+				return undefined;
+			}
+		},
 		getPreviousPageParam: (firstPage) => {
-				if (firstPage.CurrentPageIndex > 0) {
-					return firstPage.CurrentPageIndex - 1;
-				} else {
-					return undefined;
-				}
-			},
+			if (firstPage.CurrentPageIndex > 0) {
+				return firstPage.CurrentPageIndex - 1;
+			} else {
+				return undefined;
+			}
+		},
 	});
 }

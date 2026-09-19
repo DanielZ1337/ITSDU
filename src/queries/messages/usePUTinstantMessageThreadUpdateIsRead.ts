@@ -1,11 +1,11 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken } from "@/lib/utils";
 import {
 	PUTinstantMessageThreadUpdateIsReadApiUrl,
 	PUTinstantMessageThreadUpdateIsReadParams,
 } from "@/types/api-types/messages/PUTinstantMessageThreadUpdateIsRead.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTinstantMessageThreadUpdateIsRead(
 	params?: PUTinstantMessageThreadUpdateIsReadParams,
@@ -17,9 +17,9 @@ export default function usePUTinstantMessageThreadUpdateIsRead(
 	>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.PUTinstantMessageThreadUpdateIsRead],
+		mutationKey: [TanstackKeys.PUTinstantMessageThreadUpdateIsRead],
 
-        mutationFn: async (body: PUTinstantMessageThreadUpdateIsReadParams) => {
+		mutationFn: async (body: PUTinstantMessageThreadUpdateIsReadParams) => {
 			const res = await axios.put(
 				PUTinstantMessageThreadUpdateIsReadApiUrl(body || params),
 				{},
@@ -35,6 +35,6 @@ export default function usePUTinstantMessageThreadUpdateIsRead(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

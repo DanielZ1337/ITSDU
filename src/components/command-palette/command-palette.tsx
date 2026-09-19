@@ -1,3 +1,22 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useAtomValue } from "jotai";
+import {
+	CalendarDays,
+	CheckSquare,
+	FolderOpen,
+	GraduationCap,
+	LogOut,
+	MessageSquare,
+	Moon,
+	RefreshCcw,
+	RotateCw,
+	Trash2,
+} from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { updateReadyAtom } from "@/atoms/update-status";
 import { sectionIds, sectionMeta } from "@/components/settings/settings-modal";
 import {
@@ -28,25 +47,6 @@ import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2"
 import useGETpersonalTasks from "@/queries/tasks/useGETpersonalTasks";
 import { ItslearningRestApiEntitiesTaskDeadlineFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDeadlineFilter";
 import { ItslearningRestApiEntitiesTaskStatusFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useAtomValue } from "jotai";
-import {
-	CalendarDays,
-	CheckSquare,
-	FolderOpen,
-	GraduationCap,
-	LogOut,
-	MessageSquare,
-	Moon,
-	RefreshCcw,
-	RotateCw,
-	Trash2,
-} from "lucide-react";
-import { useTheme } from "next-themes";
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { keepPreviousData } from "@tanstack/react-query";
 
 type CachedResourceResult = {
 	elementId: string;
@@ -121,11 +121,19 @@ export default function CommandPalette() {
 
 	const { data: starredCourses } = useGETstarredCourses(
 		{ PageIndex: 0, PageSize: 30, searchText: debouncedQuery, sortBy: "Rank" },
-		{ enabled: isCommandPaletteOpen, suspense: false, placeholderData: keepPreviousData },
+		{
+			enabled: isCommandPaletteOpen,
+			suspense: false,
+			placeholderData: keepPreviousData,
+		},
 	);
 	const { data: unstarredCourses } = useGETunstarredCourses(
 		{ PageIndex: 0, PageSize: 30, searchText: debouncedQuery, sortBy: "Rank" },
-		{ enabled: isCommandPaletteOpen, suspense: false, placeholderData: keepPreviousData },
+		{
+			enabled: isCommandPaletteOpen,
+			suspense: false,
+			placeholderData: keepPreviousData,
+		},
 	);
 
 	const tasksQuery = useGETpersonalTasks(

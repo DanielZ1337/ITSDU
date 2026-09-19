@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button.tsx";
-import { AnimatePresence, m } from "motion/react";
 import { ChevronUp } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function ScrollToTopButton({
 	viewportRef,

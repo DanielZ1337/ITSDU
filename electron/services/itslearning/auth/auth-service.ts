@@ -1,19 +1,18 @@
-import { BrowserWindow, app, ipcMain, safeStorage } from "electron";
-import type Store from "electron-store";
 import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { app, BrowserWindow, ipcMain, safeStorage } from "electron";
+import type Store from "electron-store";
 import type {
 	AuthSessionReason,
 	AuthSessionStatus,
 } from "../../../../src/types/auth";
+import { handle } from "../../../ipc/secure";
 import { ITSLEARNING_URL } from "../itslearning.ts";
 import { storeName as mockAwareStoreName } from "../mock-mode";
+import { openAuthStore } from "./store-key";
 import { GrantType } from "./types/grant_type";
 import { StoreKey } from "./types/store_keys";
-import { handle } from "../../../ipc/secure";
-
-import { openAuthStore } from "./store-key";
 
 // https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=10ae9d30-1853-48ff-81cb-47b58a325685&state=A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y=&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login
 
@@ -107,7 +106,10 @@ export class AuthService {
 	}
 
 	private static clearAuthStore(storeName: string) {
-		const authStorePath = path.join(app.getPath("userData"), `${storeName}.json`);
+		const authStorePath = path.join(
+			app.getPath("userData"),
+			`${storeName}.json`,
+		);
 		fs.rmSync(authStorePath, { force: true });
 		console.error(`Deleted unreadable auth store at ${authStorePath}`);
 	}

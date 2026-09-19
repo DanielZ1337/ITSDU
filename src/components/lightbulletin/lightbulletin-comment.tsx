@@ -1,3 +1,7 @@
+import Linkify from "linkify-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import renderLink from "@/components/custom-render-link-linkify.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
@@ -5,10 +9,6 @@ import { useUser } from "@/hooks/atoms/useUser";
 import { cn, getRelativeTimeString } from "@/lib/utils.ts";
 import usePUTlightbulletinUpdateComment from "@/queries/lightbulletin/usePUTlightbulletinUpdateComment.ts";
 import { ItslearningRestApiEntitiesComment } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment.ts";
-import Linkify from "linkify-react";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import HoverDate from "../hover-date";
 import PersonHoverCard from "../person/person-hover-card";
 import { Loader } from "../ui/loader";
@@ -17,7 +17,9 @@ import LightbulletinCommentDropdown from "./lightbulletin-comment-dropdown";
 
 export default function LightbulletinComment({
 	comment,
-}: { comment: ItslearningRestApiEntitiesComment }) {
+}: {
+	comment: ItslearningRestApiEntitiesComment;
+}) {
 	const [commentText, setCommentText] = useState(comment.CommentText);
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 	const [showUpdate, setShowUpdate] = useState<boolean>(false);
@@ -50,8 +52,8 @@ export default function LightbulletinComment({
 	useEffect(() => {
 		setShowUpdate(
 			isEditing &&
-			commentText.length > 0 &&
-			commentText !== comment.CommentText,
+				commentText.length > 0 &&
+				commentText !== comment.CommentText,
 		);
 	}, [comment.CommentText, commentText, isEditing]);
 
@@ -139,7 +141,12 @@ export default function LightbulletinComment({
 						</div>
 					</form>
 				) : (
-					<p className={cn("text-sm text-foreground/90 mt-0.5 whitespace-pre-wrap", isUpdating && "opacity-50")}>
+					<p
+						className={cn(
+							"text-sm text-foreground/90 mt-0.5 whitespace-pre-wrap",
+							isUpdating && "opacity-50",
+						)}
+					>
 						<Linkify options={{ render: renderLink }}>
 							{comment.CommentText}
 						</Linkify>

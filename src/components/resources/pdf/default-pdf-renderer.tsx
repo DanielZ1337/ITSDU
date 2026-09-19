@@ -4,7 +4,10 @@ import AISidepanelButton from "../../ai-chat/ai-sidepanel-button";
 export default function DefaultPdfRenderer({
 	isLoading,
 	data,
-}: { isLoading: boolean; data: string }) {
+}: {
+	isLoading: boolean;
+	data: string;
+}) {
 	if (isLoading) {
 		return (
 			<div className="flex h-full w-full items-center justify-center">

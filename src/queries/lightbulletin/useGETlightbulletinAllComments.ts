@@ -1,12 +1,12 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETlightbulletinAllComments,
 	GETlightbulletinAllCommentsApiUrl,
 	GETlightbulletinAllCommentsParams,
 } from "@/types/api-types/lightbulletin/GETlightbulletinAllComments.ts";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETlightbulletinAllComments(
 	params: GETlightbulletinAllCommentsParams,
@@ -18,12 +18,12 @@ export default function useGETlightbulletinAllComments(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.LightbulletinAllComments,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETlightbulletinAllCommentsApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETlightbulletinAllComments(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

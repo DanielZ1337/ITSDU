@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { FileIcon, FolderIcon, FolderOpenIcon } from "lucide-react";
 import React, {
@@ -11,9 +8,11 @@ import React, {
 	useCallback,
 	useContext,
 	useEffect,
-	useMemo,
 	useState,
 } from "react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 type TreeViewElement = {
 	id: string;
@@ -215,18 +214,15 @@ const Child = forwardRef<
 	HTMLDivElement,
 	ChildProps & React.HTMLAttributes<HTMLDivElement>
 >(
-	(
-		{
-			className,
-			element,
-			value,
-			isSelectable = true,
-			isSelect,
-			children,
-			...props
-		},
-		ref,
-	) => {
+	({
+		className,
+		element,
+		value,
+		isSelectable = true,
+		isSelect,
+		children,
+		...props
+	}) => {
 		const {
 			direction,
 			handleExpand,
@@ -405,4 +401,4 @@ const CollapseButton = forwardRef<
 
 CollapseButton.displayName = "CollapseButton";
 
-export { Tree, Child, Entry, CollapseButton, type TreeViewElement };
+export { Child, CollapseButton, Entry, Tree, type TreeViewElement };

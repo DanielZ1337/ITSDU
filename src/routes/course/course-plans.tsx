@@ -1,3 +1,9 @@
+import Linkify from "linkify-react";
+import { CalendarIcon } from "lucide-react";
+import { AnimatePresence, m, motion, useCycle } from "motion/react";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { useNavigate, useParams } from "react-router-dom";
 import { CoursePlansSkeletonsAnimated } from "@/components/course/plans/course-plans-card-skeletons-animated";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,18 +24,12 @@ import {
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
-import { AnimatePresence, m, motion, useCycle } from "motion/react";
-import Linkify from "linkify-react";
-import { CalendarIcon } from "lucide-react";
-import { Suspense } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { useNavigate, useParams } from "react-router-dom";
 
 export default function CoursePlans() {
 	const { id } = useParams();
 	const courseId = Number(id);
 
-	const { data, isLoading } = useGETcoursePlansCount({ courseId });
+	const { data, isPending: isLoading } = useGETcoursePlansCount({ courseId });
 
 	const tabs = [
 		{
@@ -97,7 +97,10 @@ export default function CoursePlans() {
 function CoursePlansTabContent({
 	courseId,
 	activeTab,
-}: { courseId: number; activeTab: string }) {
+}: {
+	courseId: number;
+	activeTab: string;
+}) {
 	switch (activeTab) {
 		case "current":
 			return <CoursePlansSwitched courseId={courseId} planType={"current"} />;
@@ -117,7 +120,10 @@ function CoursePlansTabContent({
 function CoursePlansSwitched({
 	courseId,
 	planType,
-}: { courseId: number; planType: string }) {
+}: {
+	courseId: number;
+	planType: string;
+}) {
 	// Determine which API hook to use based on the planType
 	let useGETCoursePlans;
 	switch (planType) {
@@ -134,7 +140,7 @@ function CoursePlansSwitched({
 			throw new Error("Invalid plan type");
 	}
 
-	const { data: plans, isLoading: isLoadingPlans } = useGETCoursePlans({
+	const { data: plans, isPending: isLoadingPlans } = useGETCoursePlans({
 		courseId,
 	});
 
@@ -194,7 +200,7 @@ function CoursePlansSwitched({
 }
 
 function CoursePlansByTopic({ courseId }: { courseId: number }) {
-	const { data: plans, isLoading: isLoadingPlans } = useGETcoursePlansTopics({
+	const { data: plans, isPending: isLoadingPlans } = useGETcoursePlansTopics({
 		courseId,
 	});
 
@@ -231,7 +237,9 @@ function CoursePlansByTopic({ courseId }: { courseId: number }) {
 
 function CoursePlanCard({
 	plan,
-}: { plan: GETcoursePlansCurrent["entityArray"][number] }) {
+}: {
+	plan: GETcoursePlansCurrent["entityArray"][number];
+}) {
 	const dateFormatter = new Intl.DateTimeFormat("en-GB", {
 		year: "numeric",
 		month: "short",
@@ -270,7 +278,7 @@ function CoursePlanCard({
 	const courseId = Number(id);
 
 	return (
-        <Card
+		<Card
 			className={cn("p-2")}
 			style={{
 				backgroundColor: plan.topic
@@ -279,7 +287,7 @@ function CoursePlanCard({
 				borderColor: plan.topic && plan.topic.borderColor,
 			}}
 		>
-            <CardContent className="p-4">
+			<CardContent className="p-4">
 				<div className="flex justify-between">
 					<div>
 						<h3 className="text-lg font-semibold mb-2 flex items-center">
@@ -349,7 +357,7 @@ function CoursePlanCard({
 						indicatorStyle={{
 							backgroundColor:
 								completedTopicsCount === totalTopicsCount
-									? "hsl(var(--nextui-success)/80%)"
+									? "hsl(142 71% 45% / 80%)"
 									: plan.topic && plan.topic.color,
 						}}
 						style={{
@@ -371,7 +379,7 @@ function CoursePlanCard({
 							gridTemplateColumns: "repeat(auto-fill, minmax(300px, 30fr))",
 						}}
 					>
-						{plan.elements.map((element, index) => (
+						{plan.elements.map((element) => (
 							<li key={element.id} className="hover:cursor-pointer pr-2">
 								<span className="flex items-center gap-2">
 									<img
@@ -417,8 +425,8 @@ function CoursePlanCard({
 					</ul>
 				</div>
 			</CardContent>
-        </Card>
-    );
+		</Card>
+	);
 }
 
 export function CoursePlansTabButton({

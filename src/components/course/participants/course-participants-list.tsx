@@ -1,7 +1,7 @@
+import { Link } from "react-router-dom";
 import PersonHoverCard from "@/components/person/person-hover-card";
 import ProfileAvatar from "@/components/profile-avatar";
 import { GETcourseParticipants } from "@/types/api-types/courses/GETcourseParticipants";
-import { Link } from "react-router-dom";
 
 export default function CourseParticipantsList({
 	participants,

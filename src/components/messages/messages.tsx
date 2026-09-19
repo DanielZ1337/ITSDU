@@ -1,14 +1,14 @@
+import { useAtom } from "jotai";
+import { Suspense, useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { useParams } from "react-router-dom";
 import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat.ts";
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
 import useGETinstantMessageThread from "@/queries/messages/useGETinstantMessageThread";
-import { useAtom } from "jotai";
-import { Suspense, useEffect } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
 import MessageChat from "./messages-chat";
-import { useParams } from "react-router-dom";
 
 export default function Messages() {
 	const [currentChat, setCurrentChat] = useAtom(currentChatAtom);
@@ -26,7 +26,7 @@ export default function Messages() {
 		setCurrentChat(Number(params.id));
 	}, [params.id]);
 
-	const { data: messages, isLoading } = useGETinstantMessageThread(
+	const { data: messages, isPending: isLoading } = useGETinstantMessageThread(
 		{
 			threadId: currentChat!,
 			maxMessages: 1,

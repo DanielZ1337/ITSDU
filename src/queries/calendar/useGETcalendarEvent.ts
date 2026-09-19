@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcalenderEvent,
@@ -5,8 +7,6 @@ import {
 	GETcalenderEventParams,
 } from "@/types/api-types/calendar/GETcalenderEvent.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcalendarEvent(
 	params: GETcalenderEventParams,
@@ -18,9 +18,12 @@ export default function useGETcalendarEvent(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.CalendarEvent, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.CalendarEvent,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcalenderEventApiUrl({
 					...params,
@@ -38,6 +41,6 @@ export default function useGETcalendarEvent(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

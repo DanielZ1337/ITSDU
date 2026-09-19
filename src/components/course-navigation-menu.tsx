@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import { Link, useLocation } from "react-router-dom";
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn, getRelativeTimeString } from "@/lib/utils";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
-import { Link, useLocation } from "react-router-dom";
 
 export function CourseNavigationMenu({ title }: { title: string }) {
 	const { data: starredCourses } = useGETstarredCourses({

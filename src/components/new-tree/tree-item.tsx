@@ -11,8 +11,8 @@ export const TreeItem = ({ elements }: TreeItemProps) => {
 				<li key={element.id} className="w-full space-y-2">
 					{element.children && element.children?.length > 0 ? (
 						<Child
-							element={element.name}
 							value={element.id}
+							element={element.name}
 							isSelectable={element.isSelectable}
 							className="px-px pr-1"
 						>
@@ -26,7 +26,6 @@ export const TreeItem = ({ elements }: TreeItemProps) => {
 						<Entry
 							key={element.id}
 							value={element.id}
-							element={element.name}
 							isSelectable={element.isSelectable}
 							className={"px-1"}
 						>

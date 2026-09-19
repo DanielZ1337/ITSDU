@@ -1,9 +1,9 @@
-import { defineConfig } from "vite";
 import { resolve } from "node:path";
-// import electron from 'vite-plugin-electron/simple'
-import electron from "vite-plugin-electron";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+// import electron from 'vite-plugin-electron/simple'
+import electron from "vite-plugin-electron";
 
 // Production-only CSP (dev needs inline scripts for HMR). connect/img stay on https: because course content
 // and API calls go to itslearning-owned hosts that vary per customer; tighten once measured.
@@ -40,48 +40,48 @@ const csp = () => ({
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    outDir: "dist",
-    emptyOutDir: true,
-    // Do not ship sourcemaps in production builds.
-    sourcemap: false,
-    target: "esnext",
-    rollupOptions: {
-      input: {
-        main: resolve(process.cwd(), "index.html"),
-        login: resolve(process.cwd(), "login.html"),
-      },
-    },
-  },
-  plugins: [
-    react(),
-    tailwindcss(),
-    csp(),
-    electron([
-      {
-        entry: "electron/main.ts",
-      },
-      {
-        entry: "electron/preload.ts",
-        onstart({ reload }) {
-          // Notify the Renderer process to reload the page when the Preload scripts build is complete,
-          // instead of restarting the entire Electron App.
-          reload();
-        },
-      },
-      {
-        entry: "electron/login_preload.ts",
-        onstart({ reload }) {
-          // Notify the Renderer process to reload the page when the Preload scripts build is complete,
-          // instead of restarting the entire Electron App.
-          reload();
-        },
-      },
-    ]),
-  ],
-  resolve: {
-    alias: {
-      "@": resolve(process.cwd(), "./src"),
-    },
-  },
+	build: {
+		outDir: "dist",
+		emptyOutDir: true,
+		// Do not ship sourcemaps in production builds.
+		sourcemap: false,
+		target: "esnext",
+		rollupOptions: {
+			input: {
+				main: resolve(process.cwd(), "index.html"),
+				login: resolve(process.cwd(), "login.html"),
+			},
+		},
+	},
+	plugins: [
+		react(),
+		tailwindcss(),
+		csp(),
+		electron([
+			{
+				entry: "electron/main.ts",
+			},
+			{
+				entry: "electron/preload.ts",
+				onstart({ reload }) {
+					// Notify the Renderer process to reload the page when the Preload scripts build is complete,
+					// instead of restarting the entire Electron App.
+					reload();
+				},
+			},
+			{
+				entry: "electron/login_preload.ts",
+				onstart({ reload }) {
+					// Notify the Renderer process to reload the page when the Preload scripts build is complete,
+					// instead of restarting the entire Electron App.
+					reload();
+				},
+			},
+		]),
+	],
+	resolve: {
+		alias: {
+			"@": resolve(process.cwd(), "./src"),
+		},
+	},
 });

@@ -1,3 +1,5 @@
+import { useAtom } from "jotai";
+import { useCallback, useEffect, useRef } from "react";
 import { settingsAtom, settingsHydratedAtom } from "@/atoms/settings";
 import {
 	defaultSettings,
@@ -5,8 +7,6 @@ import {
 	type SettingsKey,
 	type SettingsOptions,
 } from "@/types/settings";
-import { useAtom } from "jotai";
-import { useCallback, useEffect, useRef } from "react";
 
 const legacySettingsStorageKey = "settings";
 const migrationStorageKey = "settings:migrated-to-electron-store";
@@ -96,7 +96,10 @@ export function useSettings() {
 			let nextSettings = settings;
 
 			for (const key of Object.keys(newSettings) as SettingsKey[]) {
-				nextSettings = await window.settings.set(key, newSettings[key] as never);
+				nextSettings = await window.settings.set(
+					key,
+					newSettings[key] as never,
+				);
 			}
 
 			setSettings(nextSettings);

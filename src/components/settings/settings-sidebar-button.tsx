@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
 import { TabsTrigger } from "@radix-ui/react-tabs";
-import { m } from "motion/react";
 import { SetStateAction } from "jotai";
+import { m } from "motion/react";
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 export default function SettingsSidebarButton({

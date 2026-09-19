@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETinstantMessagesv3,
@@ -5,8 +7,6 @@ import {
 	GETinstantMessagesv3Params,
 } from "@/types/api-types/messages/GETinstantMessagesv3.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETinstantMessagesv3(
 	params: GETinstantMessagesv3Params,
@@ -18,9 +18,12 @@ export default function useGETinstantMessagesv3(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.Messagesv3, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.Messagesv3,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			console.log("useGETmessages");
 			const res = await axios.get(GETinstantMessagesv3ApiUrl(params), {
 				params: {
@@ -33,6 +36,6 @@ export default function useGETinstantMessagesv3(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

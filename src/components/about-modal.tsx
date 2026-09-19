@@ -1,6 +1,6 @@
+import { Link } from "lucide-react";
 import { useAboutModal } from "@/hooks/atoms/useAboutModal";
 import { useVersion } from "@/hooks/atoms/useVersion";
-import { Link } from "lucide-react";
 import {
 	Dialog,
 	DialogContent,

@@ -1,3 +1,4 @@
+import { ArrowUpDown } from "lucide-react";
 import {
 	Select,
 	SelectContent,
@@ -10,7 +11,6 @@ import {
 	CourseCardsSortByTypesConst,
 	CourseCardsSortByTypesLabels,
 } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
-import { ArrowUpDown } from "lucide-react";
 
 export default function CourseSortSelect({
 	selectedRankedBy,

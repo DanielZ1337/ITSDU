@@ -1,19 +1,19 @@
 import {
 	BrowserWindow,
-	type OpenDialogOptions,
 	dialog,
 	nativeTheme,
+	type OpenDialogOptions,
 } from "electron";
 import Store from "electron-store";
 import {
-	type SettingsKey,
-	type SettingsOptions,
 	defaultSettings,
 	normalizeSettings,
+	type SettingsKey,
+	type SettingsOptions,
 	validateSetting,
 } from "../../../src/types/settings";
-import { themeStore } from "../theme/theme-service";
 import { handle } from "../../ipc/secure";
+import { themeStore } from "../theme/theme-service";
 
 type SettingsStore = Partial<SettingsOptions>;
 

@@ -1,12 +1,12 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETnotificationElements,
 	GETnotificationElementsApiUrl,
 	GETnotificationElementsParams,
 } from "@/types/api-types/notifications/GETnotificationElements";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETnotificationElements(
 	params: GETnotificationElementsParams,
@@ -18,12 +18,12 @@ export default function useGETnotificationElements(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.NotificationElements,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETnotificationElementsApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETnotificationElements(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

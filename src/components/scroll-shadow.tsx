@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { AnimatePresence, m } from "motion/react";
+import { cn } from "@/lib/utils";
 
 export type ShadowPosition = "top" | "bottom" | "both";
 

@@ -1,11 +1,11 @@
+import { ArrowRightIcon, DownloadIcon } from "lucide-react";
+import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import useGETpreviousChats from "@/queries/AI/useGETpreviousChats";
-import { ArrowRightIcon, DownloadIcon } from "lucide-react";
-import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
 
 export default function AIChats() {
 	let { page } = useParams();
@@ -95,7 +95,10 @@ function AIChatsGrid({ page }: { page: number }) {
 function PaginationControls({
 	pagesNum,
 	page,
-}: { pagesNum: number; page: number }) {
+}: {
+	pagesNum: number;
+	page: number;
+}) {
 	const navigate = useNavigate();
 
 	const handleNext = () => {

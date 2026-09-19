@@ -1,14 +1,14 @@
-import { TanstackKeys } from "@/types/tanstack-keys";
 import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETcoursePlansScraped(
 	courseId: number | string,
 	queryConfig?: QueryConfig<CoursePlan[], Error, CoursePlan[], string[]>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.CoursePlansScraped, String(courseId)],
+		queryKey: [TanstackKeys.CoursePlansScraped, String(courseId)],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const coursePlans = (await window.resources.coursePlans.get(
 				courseId,
 			)) as CoursePlan[];
@@ -18,8 +18,8 @@ export default function useGETcoursePlansScraped(
 			return coursePlans;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }
 
 type CoursePlan = {

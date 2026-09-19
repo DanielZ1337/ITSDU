@@ -20,7 +20,9 @@ export function useGlobalErrorBoundary(): GlobalErrorBoundaryContextType {
 
 export function GlobalErrorBoundaryProvider({
 	children,
-}: { children: React.ReactNode }) {
+}: {
+	children: React.ReactNode;
+}) {
 	const generateRandomKey = () =>
 		crypto.getRandomValues(new Uint32Array(1)).toString();
 

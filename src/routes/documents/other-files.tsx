@@ -1,24 +1,19 @@
-import useResourceByElementID, {
-	ResourceFileType,
-} from "@/queries/resources/useResourceByElementID";
-import Papa from "papaparse";
-import React, { lazy, memo, useEffect } from "react";
-import { useParams } from "react-router-dom";
-
 import {
 	ColumnDef,
 	ColumnFiltersState,
-	SortingState,
-	VisibilityState,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	SortingState,
 	useReactTable,
+	VisibilityState,
 } from "@tanstack/react-table";
 import { ChevronDown, RefreshCcw, WifiOff } from "lucide-react";
-
+import Papa from "papaparse";
+import React, { lazy, memo, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -36,6 +31,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import useResourceByElementID, {
+	ResourceFileType,
+} from "@/queries/resources/useResourceByElementID";
+
 // import CodeBlock from '@/components/code-block';
 const CodeBlock = lazy(() => import("@/components/code-block"));
 
@@ -259,8 +258,13 @@ function OtherFiles() {
 	if (!elementId) {
 		throw new Error("Invalid ID");
 	}
-	const { isLoading, isError, error, data, refetch } =
-		useResourceByElementID(elementId);
+	const {
+		isPending: isLoading,
+		isError,
+		error,
+		data,
+		refetch,
+	} = useResourceByElementID(elementId);
 
 	useEffect(() => {
 		if (data?.type === "text/csv") {
@@ -312,7 +316,7 @@ function OtherFiles() {
 			} else {
 				const parsedData = results?.data;
 				headers = parsedData?.[0] as string[];
-				rows = (parsedData?.slice(1) as string[][]).map((row) => {
+				rows = ((parsedData?.slice(1) ?? []) as string[][]).map((row) => {
 					return row.reduce((acc: any, value: string, index: number) => {
 						acc[headers[index]] = value;
 						return acc;

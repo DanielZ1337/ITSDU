@@ -1,3 +1,35 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import {
+	addDays,
+	addMonths,
+	addWeeks,
+	format,
+	isSameDay,
+	isSameMonth,
+	isToday,
+	startOfDay,
+	startOfMonth,
+	startOfWeek,
+} from "date-fns";
+import {
+	AlertTriangle,
+	ArrowLeft,
+	ArrowRight,
+	CalendarDays,
+	Clock,
+	Copy,
+	ExternalLink,
+	GraduationCap,
+	ListFilter,
+	MapPin,
+	RefreshCcw,
+	Search,
+} from "lucide-react";
+import { motion } from "motion/react";
+import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,57 +50,25 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import {
-	type CalendarAgendaGroup,
-	type NormalizedCalendarEvent,
 	buildMonthGrid,
+	type CalendarAgendaGroup,
 	formatDuration,
 	formatEventTimeRange,
 	getDateEvents,
 	getWeekDays,
 	groupAgendaEvents,
+	type NormalizedCalendarEvent,
 	normalizeCalendarEvent,
 	normalizeCalendarEvents,
 } from "@/lib/calendar/calendar-events";
 import { getEventAccent } from "@/lib/calendar/event-colors";
-import { formatDate, formatTime, useLocale, useT } from "@/lib/i18n";
 import type { TranslationKey } from "@/lib/i18n";
+import { formatDate, formatTime, useLocale, useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import useGETcalendarEvent from "@/queries/calendar/useGETcalendarEvent";
 import useGETcalendarEvents from "@/queries/calendar/useGETcalendarEvents";
 import useGETcourses from "@/queries/course-cards/useGETcourses";
 import type { CalendarViewSetting } from "@/types/settings";
-import {
-	addDays,
-	addMonths,
-	addWeeks,
-	format,
-	isSameDay,
-	isSameMonth,
-	isToday,
-	startOfDay,
-	startOfMonth,
-	startOfWeek,
-} from "date-fns";
-import { motion } from "motion/react";
-import {
-	AlertTriangle,
-	ArrowLeft,
-	ArrowRight,
-	CalendarDays,
-	Clock,
-	Copy,
-	ExternalLink,
-	GraduationCap,
-	ListFilter,
-	MapPin,
-	RefreshCcw,
-	Search,
-} from "lucide-react";
-import type React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
-import { keepPreviousData } from "@tanstack/react-query";
 
 type CalendarProps = {
 	events?: unknown[];
@@ -278,7 +278,7 @@ function CalendarPlanner({
 
 	const isLoading =
 		externalEvents === undefined
-			? calendarQuery.isLoading
+			? calendarQuery.isPending
 			: Boolean(externalIsLoading);
 	const isFetching =
 		externalEvents === undefined ? calendarQuery.isFetching : false;
@@ -717,8 +717,7 @@ function MonthCell({
 				"relative flex min-h-[112px] min-w-0 flex-col gap-1 border-b border-r border-border/40 p-1.5 text-left outline-none transition-colors motion-reduce:transition-none",
 				"hover:bg-foreground/3 focus-visible:bg-foreground/5",
 				!currentMonth && "bg-foreground/1.5",
-				today &&
-					"bg-linear-to-br from-primary/12 via-primary/4 to-transparent",
+				today && "bg-linear-to-br from-primary/12 via-primary/4 to-transparent",
 				selected && "ring-1 ring-inset ring-primary/50",
 			)}
 		>
@@ -1295,6 +1294,7 @@ function RailRow({
 	event: NormalizedCalendarEvent;
 	onClick: () => void;
 }) {
+	const { locale } = useLocale();
 	const accent = getEventAccent(event.courseId);
 	const past = event.isPast;
 
@@ -1748,7 +1748,7 @@ function agendaGroupLabel(
 			return t("calendar.group.today");
 		case "tomorrow":
 			return t("calendar.group.tomorrow");
-		case "thisWeek":
+		case "this-week":
 			return t("calendar.group.thisWeek");
 		case "later":
 			return t("calendar.group.later");

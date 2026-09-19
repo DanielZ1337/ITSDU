@@ -3,7 +3,10 @@ import useGETpersonsRelations from "@/queries/person/useGETpersonsRelations.ts";
 export function PersonRelationships({
 	personId,
 	showTitle = true,
-}: { personId: number; showTitle?: boolean }) {
+}: {
+	personId: number;
+	showTitle?: boolean;
+}) {
 	const { data: relations } = useGETpersonsRelations(
 		{
 			personId,

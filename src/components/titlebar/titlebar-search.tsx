@@ -1,3 +1,10 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { useDebounce } from "@uidotdev/usehooks";
+import { CommandLoading } from "cmdk";
+import { DownloadIcon } from "lucide-react";
+import { motion, useCycle } from "motion/react";
+import React, { useCallback, useEffect } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
 	CommandDialog,
@@ -23,16 +30,9 @@ import {
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItsolutionsItslUtilsConstantsLocationType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType";
-import { useDebounce } from "@uidotdev/usehooks";
-import { CommandLoading } from "cmdk";
-import { motion, useCycle } from "motion/react";
-import { DownloadIcon } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import { isSupportedResourceInApp } from "../../types/api-types/extra/learning-tool-id-types";
 import { useDownloadToast } from "../recursive-file-explorer";
 import TitlebarButton from "./titlebar-button";
-import { keepPreviousData } from "@tanstack/react-query";
 
 export default function TitlebarSearch() {
 	const [isOpen, setIsOpen] = React.useState(false);
@@ -42,7 +42,7 @@ export default function TitlebarSearch() {
 	const t = useT();
 	const navigate = useNavigate();
 
-	const { data: starredCourses, isLoading: isStarredFetching } =
+	const { data: starredCourses, isPending: isStarredFetching } =
 		useGETstarredCourses(
 			{
 				PageIndex: 0,
@@ -56,7 +56,7 @@ export default function TitlebarSearch() {
 			},
 		);
 
-	const { data: unstarredCourses, isLoading: isUnstarredFetching } =
+	const { data: unstarredCourses, isPending: isUnstarredFetching } =
 		useGETunstarredCourses(
 			{
 				PageIndex: 0,
@@ -255,18 +255,19 @@ function ResourcesCommandList({
 
 	const isEnabled = courseId !== undefined && query.length > 2;
 
-	const { data: resources, isLoading } = useGETcourseResourceBySearch(
-		{
-			searchText: query,
-			locationId: courseId ?? 0,
-			locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
-		},
-		{
-			enabled: isEnabled,
-			refetchOnWindowFocus: false,
-			refetchOnReconnect: false,
-		},
-	);
+	const { data: resources, isPending: isLoading } =
+		useGETcourseResourceBySearch(
+			{
+				searchText: query,
+				locationId: courseId ?? 0,
+				locationType: ItsolutionsItslUtilsConstantsLocationType.Course,
+			},
+			{
+				enabled: isEnabled,
+				refetchOnWindowFocus: false,
+				refetchOnReconnect: false,
+			},
+		);
 
 	const { downloadToast } = useDownloadToast();
 
@@ -335,7 +336,6 @@ function ResourcesCommandList({
 										onSelect={() =>
 											handleSelect(() => {
 												console.log("Selected resource", resource);
-												// @ts-ignore
 												if (
 													isSupportedResourceInApp({
 														...resource,

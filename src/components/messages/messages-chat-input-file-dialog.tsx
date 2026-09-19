@@ -1,3 +1,6 @@
+import { DialogClose } from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { AiOutlineLink } from "react-icons/ai";
 import { MessagesFileDrop } from "@/components/messages/messages-file-drop.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -6,9 +9,6 @@ import {
 	DialogFooter,
 	DialogTrigger,
 } from "@/components/ui/dialog.tsx";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
-import { AiOutlineLink } from "react-icons/ai";
 import { Loader } from "../ui/loader";
 
 export default function MessagesChatInputFileDialog({

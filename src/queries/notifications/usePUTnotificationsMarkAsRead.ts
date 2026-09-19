@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { queryClient } from "@/lib/tanstack-client";
 import { getAccessToken } from "@/lib/utils.ts";
 import {
@@ -5,8 +7,6 @@ import {
 	PUTnotificationsMarkAsReadv2Body,
 } from "@/types/api-types/notifications/PUTnotificationsMarkAsRead";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTnotificationsMarkAsRead(
 	queryConfig?: UseMutationOptions<
@@ -17,9 +17,9 @@ export default function usePUTnotificationsMarkAsRead(
 	>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.PUTnotificationsMarkAllAsRead],
+		mutationKey: [TanstackKeys.PUTnotificationsMarkAllAsRead],
 
-        mutationFn: async (body) => {
+		mutationFn: async (body) => {
 			const res = await axios.put(PUTnotificationsMarkAsReadApiUrl(), body, {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -31,22 +31,22 @@ export default function usePUTnotificationsMarkAsRead(
 			return res.data;
 		},
 
-        onSuccess: () => {
-            queryClient.refetchQueries({
-                queryKey: [TanstackKeys.Notifications],
-                exact: false,
-            });
-            queryClient.invalidateQueries({
-                queryKey: [
-                        TanstackKeys.NotificationElements,
-                        TanstackKeys.Notifications,
-                        TanstackKeys.NotificationsStream,
-                        TanstackKeys.NotificationsTopMenu,
-                    ],
-                exact: false,
-            });
-        },
+		onSuccess: () => {
+			queryClient.refetchQueries({
+				queryKey: [TanstackKeys.Notifications],
+				exact: false,
+			});
+			queryClient.invalidateQueries({
+				queryKey: [
+					TanstackKeys.NotificationElements,
+					TanstackKeys.Notifications,
+					TanstackKeys.NotificationsStream,
+					TanstackKeys.NotificationsTopMenu,
+				],
+				exact: false,
+			});
+		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

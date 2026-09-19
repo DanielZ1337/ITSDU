@@ -1,10 +1,10 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/lib/tanstack-client";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import useGETunreadInstantMessageCount from "@/queries/messages/useGETunreadInstantMessageCount";
 import { isQuietHoursActive } from "@/types/settings";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSettings } from "./atoms/useSettings";
 
 const REFETCH_INTERVAL = 1000 * 30; // 30 seconds

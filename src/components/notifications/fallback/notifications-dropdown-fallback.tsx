@@ -1,5 +1,5 @@
-import TitlebarDropdownFallback from "@/components/titlebar/titlebar-dropdown-fallback";
 import { AiOutlineNotification } from "react-icons/ai";
+import TitlebarDropdownFallback from "@/components/titlebar/titlebar-dropdown-fallback";
 
 export default function NotificationsDropDownSkeleton() {
 	return (

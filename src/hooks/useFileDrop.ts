@@ -5,7 +5,7 @@ export default function useFileDrop({
 	setFiles,
 }: {
 	files: File[] | null;
-	setFiles: React.Dispatch<React.SetStateAction<File[] | null>>;
+	setFiles: (files: File[]) => void;
 }) {
 	const [isOver, setIsOver] = useState(false);
 

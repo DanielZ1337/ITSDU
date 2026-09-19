@@ -1,9 +1,10 @@
-import { cn } from "@/lib/utils";
-import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
-import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
+import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses";
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -13,7 +14,6 @@ import {
 	CommandList,
 } from "../ui/command";
 import { Skeleton } from "../ui/skeleton";
-import { keepPreviousData } from "@tanstack/react-query";
 
 function CourseCommandList({
 	starredFetching,
@@ -84,7 +84,7 @@ export default function CourseSearchDialog({
 	const [query, setQuery] = React.useState<string>("");
 	const debouncedSearchTerm = useDebounce(query, 200);
 
-	const { data: starredCourses, isLoading: isStarredFetching } =
+	const { data: starredCourses, isPending: isStarredFetching } =
 		useGETstarredCourses(
 			{
 				PageIndex: 0,
@@ -98,7 +98,7 @@ export default function CourseSearchDialog({
 			},
 		);
 
-	const { data: unstarredCourses, isLoading: isUnstarredFetching } =
+	const { data: unstarredCourses, isPending: isUnstarredFetching } =
 		useGETunstarredCourses(
 			{
 				PageIndex: 0,

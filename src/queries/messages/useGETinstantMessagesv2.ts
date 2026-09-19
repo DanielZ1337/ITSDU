@@ -1,3 +1,8 @@
+import axios from "axios";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETinstantMessagesv2,
@@ -5,15 +10,16 @@ import {
 	GETinstantMessagesv2Params,
 } from "@/types/api-types/messages/GETinstantMessagesv2.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETinstantMessagesv2(
 	params: GETinstantMessagesv2Params,
 	queryConfig?: InfiniteQueryConfig<GETinstantMessagesv2>,
 ) {
 	return useInfiniteQueryCompat({
-		queryKey: [TanstackKeys.Messagesv2, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.Messagesv2,
+			...getQueryKeysFromParamsObject(params),
+		],
 		queryFn: async ({ pageParam }) => {
 			console.log("useGETmessages");
 			const res = await axios.get(
@@ -35,21 +41,21 @@ export default function useGETinstantMessagesv2(
 		initialPageParam: params.threadPage,
 		...queryConfig,
 		getNextPageParam: (lastPage) => {
-				if (
-					(lastPage.CurrentPageIndex + 1) * lastPage.PageSize <
-					lastPage.Total
-				) {
-					return lastPage.CurrentPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
+			if (
+				(lastPage.CurrentPageIndex + 1) * lastPage.PageSize <
+				lastPage.Total
+			) {
+				return lastPage.CurrentPageIndex + 1;
+			} else {
+				return undefined;
+			}
+		},
 		getPreviousPageParam: (firstPage) => {
-				if (firstPage.CurrentPageIndex > 0) {
-					return firstPage.CurrentPageIndex - 1;
-				} else {
-					return undefined;
-				}
-			},
+			if (firstPage.CurrentPageIndex > 0) {
+				return firstPage.CurrentPageIndex - 1;
+			} else {
+				return undefined;
+			}
+		},
 	});
 }

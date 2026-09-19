@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseFolderResources,
@@ -5,8 +7,6 @@ import {
 	GETcourseFolderResourcesParams,
 } from "@/types/api-types/courses/GETcourseFolderResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseFolderResources(
 	params: GETcourseFolderResourcesParams,
@@ -18,12 +18,12 @@ export default function useGETcourseFolderResources(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.CourseFolderResources,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcourseFolderResourcesApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETcourseFolderResources(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

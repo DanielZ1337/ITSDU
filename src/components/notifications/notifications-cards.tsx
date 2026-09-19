@@ -1,5 +1,5 @@
-import { ItslearningRestApiEntitiesStreamItemV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2";
 import { Suspense } from "react";
+import { ItslearningRestApiEntitiesStreamItemV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2";
 import NotificationCard from "./notifications-card";
 import { NotificationsCardSkeleton } from "./notifications-card-skeleton";
 

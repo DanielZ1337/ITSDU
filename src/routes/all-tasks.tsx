@@ -1,6 +1,7 @@
-import { CourseTaskTabButton } from "@/components/course/tasks/course-task-tab-button";
-import { CourseTasksActive } from "@/components/course/tasks/course-tasks-active";
-import { CourseTasksCompleted } from "@/components/course/tasks/course-tasks-completed";
+import { format, formatDistanceToNow, isPast } from "date-fns";
+import { AlertCircle, Calendar, Clock, ExternalLink } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,13 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import useGETcourseTasks from "@/queries/courses/useGETcourseAllTasks";
-import { useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesTaskStatus } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatus";
-import { format, formatDistanceToNow, isPast } from "date-fns";
-import { useCycle } from "motion/react";
-import { AlertCircle, Calendar, Clock, ExternalLink } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
 
 const TASKS_PAGE_SIZE = 100;
 
@@ -33,7 +28,7 @@ const statusTitles = {
 } satisfies Record<keyof typeof ItslearningRestApiEntitiesTaskStatus, string>;
 
 export default function TaskManager() {
-	const { data: tasks, isLoading } = useGETcourseTasks({
+	const { data: tasks, isPending: isLoading } = useGETcourseTasks({
 		PageSize: TASKS_PAGE_SIZE,
 	});
 

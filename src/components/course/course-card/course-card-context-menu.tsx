@@ -1,3 +1,5 @@
+import React, { Suspense } from "react";
+import { useNavigate } from "react-router-dom";
 import { ResourceContextMenu } from "@/components/recursive-file-explorer";
 import {
 	ContextMenu,
@@ -13,13 +15,14 @@ import { courseNavLinks } from "@/lib/routes";
 import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources";
 import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources";
 import { useNavigateToResource } from "@/types/api-types/extra/learning-tool-id-types";
-import React, { Suspense } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function CourseCardContextMenu({
 	courseId,
 	children,
-}: { courseId: number; children: React.ReactNode }) {
+}: {
+	courseId: number;
+	children: React.ReactNode;
+}) {
 	const filteredCourseNavLinks = courseNavLinks.filter(
 		(route) => route.end === false,
 	);
@@ -120,7 +123,10 @@ function RootFolderResources({ courseId }: { courseId: number }) {
 function FolderResources({
 	courseId,
 	folderId,
-}: { courseId: number; folderId: number }) {
+}: {
+	courseId: number;
+	folderId: number;
+}) {
 	const navigate = useNavigate();
 
 	const navigatetoResource = useNavigateToResource(navigate);

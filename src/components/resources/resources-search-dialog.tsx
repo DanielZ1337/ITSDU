@@ -1,3 +1,6 @@
+import { useDebounce } from "@uidotdev/usehooks";
+import { DownloadIcon, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	CommandDialog,
@@ -13,14 +16,13 @@ import { cn, isMacOS } from "@/lib/utils";
 import useGETcourseResourceBySearch from "@/queries/courses/useGETcourseResourceBySearch.ts";
 import { isResourceFile } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItsolutionsItslUtilsConstantsLocationType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
-import { useDebounce } from "@uidotdev/usehooks";
-import { DownloadIcon, Search } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { useDownloadToast } from "../recursive-file-explorer";
 
 export default function SearchResourcesDialog({
 	courseId,
-}: { courseId: number }) {
+}: {
+	courseId: number;
+}) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query, 300);
@@ -38,11 +40,6 @@ export default function SearchResourcesDialog({
 			refetchOnReconnect: false,
 		},
 	);
-
-	function isFile(filename: string): boolean {
-		const regex = /\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip|rar)$/i;
-		return regex.test(filename);
-	}
 
 	const { downloadToast } = useDownloadToast();
 

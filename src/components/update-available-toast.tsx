@@ -1,3 +1,7 @@
+import type { UpdateInfo } from "electron-updater";
+import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
 	updateAvailableVersionAtom,
 	updateCheckErrorAtom,
@@ -7,10 +11,6 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import { useT } from "@/lib/i18n";
 import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
-import type { UpdateInfo } from "electron-updater";
-import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export function useUpdateAvailableToast() {
 	const { version } = useVersion();

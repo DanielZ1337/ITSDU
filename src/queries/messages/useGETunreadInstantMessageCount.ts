@@ -1,11 +1,11 @@
-import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
+import { getAccessToken } from "@/lib/utils.ts";
 import {
 	GETunreadInstantMessagesCount,
 	GETunreadInstantMessagesCountApiUrl,
 } from "@/types/api-types/messages/GETunreadInstantMessagesCount";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETunreadInstantMessageCount(
 	queryConfig?: QueryConfig<
@@ -16,9 +16,9 @@ export default function useGETunreadInstantMessageCount(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.MessagesUnreadCount, ""],
+		queryKey: [TanstackKeys.MessagesUnreadCount, ""],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			console.log("useGETunreadInstantMessageCount");
 			const res = await axios.get(GETunreadInstantMessagesCountApiUrl(), {
 				params: {
@@ -31,6 +31,6 @@ export default function useGETunreadInstantMessageCount(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

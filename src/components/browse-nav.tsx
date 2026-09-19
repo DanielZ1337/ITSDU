@@ -1,15 +1,15 @@
-import { Button } from "@/components/ui/button";
-import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation";
-import { queryClient } from "@/lib/tanstack-client";
-import { AnimatePresence, m } from "motion/react";
 import {
 	ArrowLeftCircleIcon,
 	ArrowRightCircleIcon,
 	HomeIcon,
 	RefreshCwIcon,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, m } from "motion/react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation";
+import { queryClient } from "@/lib/tanstack-client";
 import { Input } from "./ui/input";
 
 export default function BrowserNav() {

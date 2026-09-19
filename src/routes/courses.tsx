@@ -1,5 +1,5 @@
-import useGETcoursesv3 from "@/queries/courses/useGETcoursesv3.ts";
 import { Link } from "react-router-dom";
+import useGETcoursesv3 from "@/queries/courses/useGETcoursesv3.ts";
 
 export default function CoursesIndex() {
 	const { data: courses } = useGETcoursesv3(
@@ -37,9 +37,8 @@ export default function CoursesIndex() {
 											>
 												{teacher.FullName}
 											</a>
-											{/* @ts-ignore */}
 											<p className="text-sm text-gray-500">
-												{teacher.AdditionalInfo}
+												{teacher.AddttionalInfo}
 											</p>
 											{idx !== course.TeachersInCourse.length - 1 && (
 												<div

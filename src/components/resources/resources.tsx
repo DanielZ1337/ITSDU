@@ -1,21 +1,14 @@
-import RecursiveFileExplorer, {
-	ResourceContextMenu,
-	useDownloadToast,
-} from "@/components/recursive-file-explorer.tsx";
-import ErrorPage from "@/error-page.tsx";
-import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources.ts";
-import {
-	File,
-	FolderClosedIcon,
-	FolderOpenIcon,
-	MoreHorizontal,
-} from "lucide-react";
+import { File, FolderClosedIcon, FolderOpenIcon } from "lucide-react";
 import { Suspense, useCallback, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ReactLoading from "react-loading";
+import RecursiveFileExplorer, {
+	ResourceContextMenu,
+} from "@/components/recursive-file-explorer.tsx";
+import ErrorPage from "@/error-page.tsx";
+import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources.ts";
 import "@/styles/3-dots-loading.css";
 import {
-	isResourceFile,
 	isSupportedResourceInApp,
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
@@ -84,7 +77,6 @@ export default function Resources({ courseId }: { courseId: number }) {
 				return (
 					<div key={parent.ElementId}>
 						{/* rendering folders */}
-						{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 						{parent.ElementType ===
 							ItsolutionsItslUtilsConstantsElementType[
 								ItsolutionsItslUtilsConstantsElementType.Folder
@@ -105,7 +97,6 @@ export default function Resources({ courseId }: { courseId: number }) {
 							</button>
 						)}
 						{/* rendering files */}
-						{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 						{parent.ElementType !==
 							ItsolutionsItslUtilsConstantsElementType[
 								ItsolutionsItslUtilsConstantsElementType.Folder

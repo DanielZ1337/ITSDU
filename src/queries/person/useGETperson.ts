@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETperson,
@@ -5,17 +7,15 @@ import {
 	GETpersonParams,
 } from "@/types/api-types/person/GETperson.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETperson(
 	params: GETpersonParams,
 	queryConfig?: QueryConfig<GETpersonParams, Error, GETperson, string[]>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.Person, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [TanstackKeys.Person, ...getQueryKeysFromParamsObject(params)],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(GETpersonApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -27,6 +27,6 @@ export default function useGETperson(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

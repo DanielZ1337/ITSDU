@@ -1,3 +1,15 @@
+import Linkify from "linkify-react";
+import {
+	BellOff,
+	BellRing,
+	ChevronDown,
+	ChevronUp,
+	MessageSquare,
+	Paperclip,
+} from "lucide-react";
+import React, { Suspense, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
 import LightbulletinCommentsLoader from "@/components/lightbulletin/lightbulletin-comments-loader.tsx";
@@ -9,11 +21,6 @@ import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbul
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
 import { ItslearningRestApiEntitiesLightBulletinsLightBulletinV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import { LinkifyType } from "@/types/linkify";
-import Linkify from "linkify-react";
-import { BellOff, BellRing, ChevronDown, ChevronUp, MessageSquare, Paperclip } from "lucide-react";
-import React, { Suspense, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import renderLink from "../custom-render-link-linkify";
 import HoverDate from "../hover-date";
 import { Loader } from "../ui/loader";
@@ -212,7 +219,9 @@ export default function LightbulletinCard({
 						{bulletin.CommentsCount > 0 && (
 							<Suspense
 								fallback={
-									<LightbulletinCommentsLoader count={Math.min(bulletin.CommentsCount, 3)} />
+									<LightbulletinCommentsLoader
+										count={Math.min(bulletin.CommentsCount, 3)}
+									/>
 								}
 							>
 								<LightbulletinComments

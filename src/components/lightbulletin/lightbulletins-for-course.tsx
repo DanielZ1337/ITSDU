@@ -1,10 +1,16 @@
+import * as linkify from "linkifyjs";
+import {
+	ArrowDownNarrowWide,
+	ArrowUpNarrowWide,
+	Calendar,
+	CalendarDays,
+	CalendarRange,
+	Inbox,
+	RotateCcw,
+} from "lucide-react";
+import { useMemo, useState } from "react";
 import LightbulletinCard from "@/components/lightbulletin/lightbulletin-card.tsx";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import useGETlightbulletinsForCourse from "@/queries/lightbulletin-course/useGETlightbulletinsForCourse.ts";
-import * as linkify from "linkifyjs";
-import { ArrowDownNarrowWide, ArrowUpNarrowWide, Calendar, CalendarDays, CalendarRange, Filter, Inbox, RotateCcw } from "lucide-react";
-import { useMemo, useState } from "react";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -14,6 +20,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import useGETlightbulletinsForCourse from "@/queries/lightbulletin-course/useGETlightbulletinsForCourse.ts";
 
 type DateFilter = "all" | "today" | "week" | "month";
 type SortOrder = "newest" | "oldest";
@@ -42,17 +50,27 @@ export default function LightbulletinsForCourse({
 
 		// Apply date filter
 		const now = new Date();
-		const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		const startOfToday = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate(),
+		);
 		const startOfWeek = new Date(startOfToday);
 		startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
 		const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
 		if (dateFilter === "today") {
-			bulletins = bulletins.filter(b => new Date(b.PublishedDate) >= startOfToday);
+			bulletins = bulletins.filter(
+				(b) => new Date(b.PublishedDate) >= startOfToday,
+			);
 		} else if (dateFilter === "week") {
-			bulletins = bulletins.filter(b => new Date(b.PublishedDate) >= startOfWeek);
+			bulletins = bulletins.filter(
+				(b) => new Date(b.PublishedDate) >= startOfWeek,
+			);
 		} else if (dateFilter === "month") {
-			bulletins = bulletins.filter(b => new Date(b.PublishedDate) >= startOfMonth);
+			bulletins = bulletins.filter(
+				(b) => new Date(b.PublishedDate) >= startOfMonth,
+			);
 		}
 
 		// Apply sort order
@@ -67,7 +85,10 @@ export default function LightbulletinsForCourse({
 
 	const hasActiveFilters = dateFilter !== "all" || sortOrder !== "newest";
 
-	const dateFilterLabels: Record<DateFilter, { label: string; icon: React.ElementType }> = {
+	const dateFilterLabels: Record<
+		DateFilter,
+		{ label: string; icon: React.ElementType }
+	> = {
 		all: { label: "All Time", icon: CalendarRange },
 		today: { label: "Today", icon: Calendar },
 		week: { label: "This Week", icon: CalendarDays },
@@ -91,7 +112,7 @@ export default function LightbulletinsForCourse({
 							size="sm"
 							className={cn(
 								"h-8 gap-1.5 text-xs",
-								dateFilter !== "all" && "bg-primary/90 hover:bg-primary"
+								dateFilter !== "all" && "bg-primary/90 hover:bg-primary",
 							)}
 						>
 							{(() => {
@@ -102,7 +123,9 @@ export default function LightbulletinsForCourse({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="start" className="w-40">
-						<DropdownMenuLabel className="text-xs">Filter by Date</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-xs">
+							Filter by Date
+						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
 							{(Object.keys(dateFilterLabels) as DateFilter[]).map((key) => {
@@ -113,7 +136,7 @@ export default function LightbulletinsForCourse({
 										onClick={() => setDateFilter(key)}
 										className={cn(
 											"text-xs gap-2",
-											dateFilter === key && "bg-accent"
+											dateFilter === key && "bg-accent",
 										)}
 									>
 										<Icon className="w-3.5 h-3.5" />
@@ -133,7 +156,7 @@ export default function LightbulletinsForCourse({
 							size="sm"
 							className={cn(
 								"h-8 gap-1.5 text-xs",
-								sortOrder !== "newest" && "bg-primary/90 hover:bg-primary"
+								sortOrder !== "newest" && "bg-primary/90 hover:bg-primary",
 							)}
 						>
 							{sortOrder === "newest" ? (
@@ -145,19 +168,27 @@ export default function LightbulletinsForCourse({
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="start" className="w-40">
-						<DropdownMenuLabel className="text-xs">Sort Order</DropdownMenuLabel>
+						<DropdownMenuLabel className="text-xs">
+							Sort Order
+						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
 							<DropdownMenuItem
 								onClick={() => setSortOrder("newest")}
-								className={cn("text-xs gap-2", sortOrder === "newest" && "bg-accent")}
+								className={cn(
+									"text-xs gap-2",
+									sortOrder === "newest" && "bg-accent",
+								)}
 							>
 								<ArrowDownNarrowWide className="w-3.5 h-3.5" />
 								Newest First
 							</DropdownMenuItem>
 							<DropdownMenuItem
 								onClick={() => setSortOrder("oldest")}
-								className={cn("text-xs gap-2", sortOrder === "oldest" && "bg-accent")}
+								className={cn(
+									"text-xs gap-2",
+									sortOrder === "oldest" && "bg-accent",
+								)}
 							>
 								<ArrowUpNarrowWide className="w-3.5 h-3.5" />
 								Oldest First
@@ -181,7 +212,10 @@ export default function LightbulletinsForCourse({
 
 				{/* Results Count */}
 				<div className="ml-auto text-xs text-muted-foreground">
-					{filteredAndSortedBulletins.length} {filteredAndSortedBulletins.length === 1 ? "announcement" : "announcements"}
+					{filteredAndSortedBulletins.length}{" "}
+					{filteredAndSortedBulletins.length === 1
+						? "announcement"
+						: "announcements"}
 				</div>
 			</div>
 
@@ -191,12 +225,13 @@ export default function LightbulletinsForCourse({
 					<div className="flex items-center justify-center w-12 h-12 rounded-xl bg-secondary/50 mb-3">
 						<Inbox className="w-6 h-6 text-muted-foreground" />
 					</div>
-					<p className="text-sm font-medium text-foreground mb-1">No announcements found</p>
+					<p className="text-sm font-medium text-foreground mb-1">
+						No announcements found
+					</p>
 					<p className="text-xs text-muted-foreground mb-4">
 						{dateFilter !== "all"
 							? "Try adjusting your filters to see more results"
-							: "No announcements have been posted yet"
-						}
+							: "No announcements have been posted yet"}
 					</p>
 					{hasActiveFilters && (
 						<Button
@@ -222,7 +257,8 @@ export default function LightbulletinsForCourse({
 						const currentBulletinDate = new Date(bulletin.PublishedDate);
 						const shouldMakeNewHeader =
 							previousBulletinDate === null ||
-							previousBulletinDate.getMonth() !== currentBulletinDate.getMonth();
+							previousBulletinDate.getMonth() !==
+								currentBulletinDate.getMonth();
 						const showYear =
 							currentBulletinDate.getFullYear() !== new Date().getFullYear();
 

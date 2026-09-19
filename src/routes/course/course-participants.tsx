@@ -1,10 +1,10 @@
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import CourseParticipantsList from "@/components/course/participants/course-participants-list.tsx";
 import CourseParticipantsRolesSelect from "@/components/course/participants/course-participants-roles-select.tsx";
 import { Input } from "@/components/ui/input";
 import useGETcourseParticipants from "@/queries/courses/useGETcourseParticipants";
 import { CourseParticipantRole } from "@/types/course-participants-roles";
-import { useState } from "react";
-import { useParams } from "react-router-dom";
 
 export default function CourseParticipants() {
 	const [searchTerm, setSearchTerm] = useState("");

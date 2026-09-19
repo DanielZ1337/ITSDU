@@ -1,5 +1,3 @@
-import React from "react";
-
 export const Icon = ({ className }: { className: string }) => {
 	return (
 		<svg

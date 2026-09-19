@@ -1,15 +1,15 @@
+import { Command } from "lucide-react";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
 import { isMacOS } from "@/lib/utils";
-import { Spinner } from "@/components/ui/spinner";
-import { Command } from "lucide-react";
-import { Suspense, lazy, useEffect, useRef } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { useUpdateAvailableToast } from "./update-available-toast";
 

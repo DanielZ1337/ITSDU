@@ -3,7 +3,10 @@
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import type { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
-import { ItslearningRestApiEntitiesElementType } from "../utils/Itslearning.RestApi.Entities.ElementType";
+import {
+	ItslearningRestApiEntitiesElementType,
+	type ItslearningRestApiEntitiesElementTypeString,
+} from "../utils/Itslearning.RestApi.Entities.ElementType";
 import { ItsolutionsItslUtilsConstantsElementType } from "../utils/Itsolutions.ItslUtils.Constants.ElementType";
 
 export enum LearningToolIdTypes {
@@ -52,7 +55,8 @@ type ResourceObject = {
 	LearningToolId?: LearningToolIdTypes;
 	ElementType?:
 		| ItsolutionsItslUtilsConstantsElementType
-		| ItslearningRestApiEntitiesElementType;
+		| ItslearningRestApiEntitiesElementType
+		| ItslearningRestApiEntitiesElementTypeString;
 	CourseId?: number;
 };
 
@@ -158,14 +162,15 @@ export function isResourceWithFileExtension(
 export function isResourceFromUrlOnItslearning(
 	resource: ResourceObject | string,
 ) {
-	// @ts-expect-error can't be bothered to fix the types. the resourceobject will not be undefined, but the contenturl or url might be
-	const url = new URL(
-		typeof resource === "string"
-			? resource
-			: (resource.ContentUrl ?? resource.Url),
-	);
+	const raw =
+		typeof resource === "string" ? resource : (resource.ContentUrl ?? resource.Url);
+	if (!raw) return false;
 
-	return url.origin.includes("itslearning.com");
+	try {
+		return new URL(raw).origin.includes("itslearning.com");
+	} catch {
+		return false;
+	}
 }
 
 function getFileExtension(fileName: string) {

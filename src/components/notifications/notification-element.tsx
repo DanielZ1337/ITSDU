@@ -1,14 +1,16 @@
+import { FileText } from "lucide-react";
 import {
 	isSupportedResourceInApp,
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink";
-import { FileText } from "lucide-react";
 import { ResourceContextMenu } from "../recursive-file-explorer";
 
 export default function NotificationElement({
 	element,
-}: { element: ItslearningRestApiEntitiesElementLink }) {
+}: {
+	element: ItslearningRestApiEntitiesElementLink;
+}) {
 	const navigateToResource = useNavigateToResource();
 
 	return (

@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETlightbulletinsForCourse,
@@ -5,8 +7,6 @@ import {
 	GETlightbulletinsForCourseParams,
 } from "@/types/api-types/lightbulletin-course/GETlightbulletinsForCourse.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETlightbulletinsForCourse(
 	params: GETlightbulletinsForCourseParams,
@@ -18,12 +18,12 @@ export default function useGETlightbulletinsForCourse(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.LightbulletinsForCourse,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETlightbulletinsForCourseApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETlightbulletinsForCourse(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import { contextBridge, ipcRenderer } from "electron";
-import { PUSH_CHANNELS, type PushChannel, createEventsApi } from "./ipc/channels";
 import { UpdateInfo } from "electron-updater";
 import slugify from "slugify";
 import type {
@@ -9,6 +8,11 @@ import type {
 } from "../src/types/auth.ts";
 import type { SettingsKey, SettingsOptions } from "../src/types/settings.ts";
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
+import {
+	createEventsApi,
+	PUSH_CHANNELS,
+	type PushChannel,
+} from "./ipc/channels";
 import { StoreKey } from "./services/itslearning/auth/types/store_keys.ts";
 import type { FileRepository } from "./services/itslearning/resources/resources.ts";
 
@@ -256,7 +260,10 @@ declare global {
 	interface Window {
 		runtime: { apiBaseUrl?: string };
 		events: {
-			on: (channel: PushChannel, callback: (payload: any) => void) => () => void;
+			on: (
+				channel: PushChannel,
+				callback: (payload: any) => void,
+			) => () => void;
 		};
 		resources: {
 			officeDocuments: {

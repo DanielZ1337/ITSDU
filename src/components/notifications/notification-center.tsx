@@ -1,3 +1,15 @@
+import { useAtomValue } from "jotai";
+import {
+	Bell,
+	CalendarDays,
+	CheckSquare,
+	Inbox,
+	MessageSquare,
+	RotateCw,
+} from "lucide-react";
+import type React from "react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
 	updateAvailableVersionAtom,
 	updateCheckErrorAtom,
@@ -27,18 +39,6 @@ import type {
 	AppNotificationItem,
 	AppNotificationSource,
 } from "@/types/app-notifications";
-import { useAtomValue } from "jotai";
-import {
-	Bell,
-	CalendarDays,
-	CheckSquare,
-	Inbox,
-	MessageSquare,
-	RotateCw,
-} from "lucide-react";
-import type React from "react";
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const sourceIcon: Record<AppNotificationSource, React.ReactNode> = {
 	message: <MessageSquare className="h-4 w-4" />,

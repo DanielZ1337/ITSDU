@@ -1,6 +1,11 @@
-import { type BrowserWindow, type IpcMainInvokeEvent, type WebContents, ipcMain } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import {
+	type BrowserWindow,
+	type IpcMainInvokeEvent,
+	ipcMain,
+	type WebContents,
+} from "electron";
 
 /** Web contents of the app's own windows (main + login). Guests, hidden scrape windows and popups are never in here. */
 const trustedContents = new WeakSet<WebContents>();
@@ -19,7 +24,9 @@ function isAppUrl(value: string): boolean {
 	const devUrl = process.env.VITE_DEV_SERVER_URL;
 	if (devUrl && url.origin === new URL(devUrl).origin) return true;
 	if (url.protocol !== "file:") return false;
-	const distRoot = pathToFileURL(path.resolve(process.env.DIST) + path.sep).href;
+	const distRoot = pathToFileURL(
+		path.resolve(process.env.DIST) + path.sep,
+	).href;
 	return url.href.startsWith(distRoot);
 }
 
@@ -44,7 +51,9 @@ export function handle(
 	ipcMain.removeHandler(channel);
 	ipcMain.handle(channel, (event, ...args) => {
 		if (!isTrustedSender(event)) {
-			console.warn(`[ipc] rejected "${channel}" from untrusted sender ${event.senderFrame?.url}`);
+			console.warn(
+				`[ipc] rejected "${channel}" from untrusted sender ${event.senderFrame?.url}`,
+			);
 			throw new Error(`Untrusted IPC sender for ${channel}`);
 		}
 		return listener(event, ...args);

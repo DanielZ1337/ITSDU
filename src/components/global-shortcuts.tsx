@@ -1,8 +1,8 @@
+import { useTheme } from "next-themes";
+import { useCallback, useEffect } from "react";
 import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal";
-import { useTheme } from "next-themes";
-import { useCallback, useEffect } from "react";
 
 export function GlobalShortcuts() {
 	const { setTheme, resolvedTheme } = useTheme();

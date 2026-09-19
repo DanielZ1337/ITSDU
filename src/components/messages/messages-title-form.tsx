@@ -1,12 +1,12 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import React, { useState } from "react";
+import { toast } from "sonner";
 import { currentChatAtom } from "@/atoms/current-chat";
 import { useUser } from "@/hooks/atoms/useUser";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread";
 import { ItslearningRestApiEntitiesInstantMessageRecipient } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAtom } from "jotai";
-import React, { useState } from "react";
-import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
@@ -28,7 +28,7 @@ export default function MessageTitleForm({
 	const queryClient = useQueryClient();
 	const [newThreadName, setNewThreadName] = useState<string>("");
 
-	const { data: messages, isLoading } = useGETinstantMessagesv2(
+	const { data: messages, isPending: isLoading } = useGETinstantMessagesv2(
 		{
 			maxMessages: 1,
 			threadPage: 0,

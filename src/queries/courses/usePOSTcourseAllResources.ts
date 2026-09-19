@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	POSTcourseAllResources,
@@ -6,8 +8,6 @@ import {
 	POSTcourseAllResourcesParams,
 } from "@/types/api-types/courses/POSTcourseAllResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTcourseAllResources(
 	params: POSTcourseAllResourcesParams,
@@ -20,9 +20,12 @@ export default function usePOSTcourseAllResources(
 	>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.CourseAllResources, ...getQueryKeysFromParamsObject(params)],
+		mutationKey: [
+			TanstackKeys.CourseAllResources,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        mutationFn: async () => {
+		mutationFn: async () => {
 			const res = await axios.post(
 				POSTcourseAllResourcesApiUrl({
 					...params,
@@ -41,6 +44,6 @@ export default function usePOSTcourseAllResources(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

@@ -1,6 +1,6 @@
+import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
 import { cn } from "@/lib/utils";
-import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { Button, ButtonProps } from "../ui/button";
 
 export default function AISidepanelButton({

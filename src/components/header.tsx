@@ -1,12 +1,12 @@
-import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown.tsx";
-import { Button } from "@/components/ui/button.tsx";
-import HeaderUserFullnameAvatar from "@/header-user-avatar-fullname";
-import { cn } from "@/lib/utils.ts";
 import { MessageCircle } from "lucide-react";
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineNotification } from "react-icons/ai";
 import { Link, NavLink } from "react-router-dom";
+import MessagesDropdown from "@/components/messages/dropdown/messages-dropdown.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import HeaderUserFullnameAvatar from "@/header-user-avatar-fullname";
+import { cn } from "@/lib/utils.ts";
 import NotificationsDropdown from "./notifications/notifications-dropdown";
 
 export default function Header() {

@@ -1,3 +1,6 @@
+import { AnimatePresence, m } from "motion/react";
+import { lazy, Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCourse } from "@/hooks/atoms/useCourse";
 import { useSettings } from "@/hooks/atoms/useSettings";
@@ -5,9 +8,6 @@ import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useT } from "@/lib/i18n";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "motion/react";
-import { Suspense, lazy } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import SidebarUserFallback from "./sidebar-user-fallback";
 
 const LazySidebarItem = lazy(() => import("./sidebar-item"));

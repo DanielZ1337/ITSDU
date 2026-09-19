@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 const FADE = 24;
 
@@ -19,7 +19,9 @@ export function ScrollShadow({
 		if (!el) return;
 		const top = el.scrollTop > 0;
 		const bottom = el.scrollTop + el.clientHeight < el.scrollHeight - 1;
-		setEdges((prev) => (prev.top === top && prev.bottom === bottom ? prev : { top, bottom }));
+		setEdges((prev) =>
+			prev.top === top && prev.bottom === bottom ? prev : { top, bottom },
+		);
 	}, []);
 
 	useEffect(() => {

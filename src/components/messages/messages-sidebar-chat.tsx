@@ -1,3 +1,8 @@
+import he from "he";
+import { convert } from "html-to-text";
+import { useAtom } from "jotai";
+import { Trash2Icon } from "lucide-react";
+import { toast } from "sonner";
 import { currentChatAtom } from "@/atoms/current-chat";
 import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
 import {
@@ -8,12 +13,6 @@ import {
 import { Button } from "@/components/ui/button.tsx";
 import { cn } from "@/lib/utils";
 import useDELETEinstantMessageThread from "@/queries/messages/useDELETEinstantMessageThread.ts";
-import he from "he";
-import { convert } from "html-to-text";
-import { useAtom } from "jotai";
-import { Trash2Icon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { UnreadNotificationIndicator } from "./unread-notification-indicator";
 
 export default function MessagesSidebarChat({
@@ -33,7 +32,6 @@ export default function MessagesSidebarChat({
 }) {
 	const [currentChatAtomId, setcurrentChatAtomId] = useAtom(currentChatAtom);
 	const [, setRecipientsSelected] = useAtom(messageSelectedRecipientsAtom);
-	const navigate = useNavigate();
 
 	const { mutate: DELETEinstantMessageThread } = useDELETEinstantMessageThread(
 		{

@@ -1,6 +1,6 @@
+import { useParams } from "react-router-dom";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import useGETcourseCalendarEvents from "@/queries/courses/useGETcourseCalendarEvents";
-import { useParams } from "react-router-dom";
 import { Calendar } from "../calendar";
 
 export default function CourseSchedule() {
@@ -16,7 +16,7 @@ export default function CourseSchedule() {
 		},
 	);
 
-	const { data, isLoading } = useGETcourseCalendarEvents({
+	const { data, isPending: isLoading } = useGETcourseCalendarEvents({
 		courseId,
 		fromDate: new Date(courseInfo!.CreatedDateTimeUtc),
 	});

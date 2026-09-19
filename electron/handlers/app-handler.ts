@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from "electron";
+import { app, BrowserWindow } from "electron";
 import { autoUpdater } from "electron-updater";
 import { handle } from "../ipc/secure";
 

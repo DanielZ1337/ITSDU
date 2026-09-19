@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken } from "@/lib/utils.ts";
 import { GETcourseFolderResourcesApiUrl } from "@/types/api-types/courses/GETcourseFolderResources";
 import {
@@ -9,8 +11,6 @@ import { ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType } from "@/t
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseAllResources(
 	courseId: number,
@@ -22,14 +22,14 @@ export default function useGETcourseAllResources(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.CourseAllResources, String(courseId)],
+		queryKey: [TanstackKeys.CourseAllResources, String(courseId)],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			return await getCourseAllResources(courseId);
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }
 
 export async function getCourseAllResources(

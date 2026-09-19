@@ -1,3 +1,6 @@
+import { ChevronDown } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -9,9 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import useDELETElightbulletinComment from "@/queries/lightbulletin/useDELETElightbulletinComment";
 import { ItslearningRestApiEntitiesComment } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Comment";
-import { ChevronDown } from "lucide-react";
-import { useEffect } from "react";
-import { toast } from "sonner";
 
 export default function LightbulletinCommentDropdown({
 	comment,
@@ -22,7 +22,6 @@ export default function LightbulletinCommentDropdown({
 }) {
 	const {
 		mutate: deleteComment,
-		isPending: isDeleting,
 		error: err,
 		status,
 	} = useDELETElightbulletinComment(

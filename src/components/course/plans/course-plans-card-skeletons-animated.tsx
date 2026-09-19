@@ -3,7 +3,9 @@ import CoursePlansCardSkeletons from "./course-plans-card-skeletons";
 
 export function CoursePlansSkeletonsAnimated({
 	PageSize,
-}: { PageSize?: number }) {
+}: {
+	PageSize?: number;
+}) {
 	let PageSizeNormalized;
 
 	if (PageSize) {

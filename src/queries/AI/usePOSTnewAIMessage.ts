@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getQueryKeysFromParamsObject } from "@/lib/utils";
 import {
 	POSTnewAIMessageApiUrl,
@@ -5,17 +7,18 @@ import {
 	POSTnewAIMessageParams,
 } from "@/types/api-types/AI/POSTnewAIMessage";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTnewAIMessage(
 	params: POSTnewAIMessageParams,
 	queryConfig?: UseMutationOptions<any, Error, any, string[]>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)],
+		mutationKey: [
+			TanstackKeys.AInewMessage,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        mutationFn: async (body: POSTnewAIMessageBody) => {
+		mutationFn: async (body: POSTnewAIMessageBody) => {
 			const res = await axios.post(POSTnewAIMessageApiUrl(params), body, {
 				params: {
 					...params,
@@ -29,6 +32,6 @@ export default function usePOSTnewAIMessage(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

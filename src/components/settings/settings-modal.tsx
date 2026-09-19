@@ -1,3 +1,25 @@
+import type { UpdateInfo } from "electron-updater";
+import {
+	Bell,
+	BookOpen,
+	Brush,
+	CalendarDays,
+	Database,
+	Download,
+	FileText,
+	Globe2,
+	Info,
+	LayoutDashboard,
+	Lock,
+	RefreshCcw,
+	Settings2,
+	Trash2,
+	X,
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast as sonnerToast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -29,8 +51,8 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import {
-	type TranslationKey,
 	formatFileSize,
+	type TranslationKey,
 	useLocale,
 	useT,
 } from "@/lib/i18n";
@@ -40,38 +62,16 @@ import {
 	type CalendarViewSetting,
 	type CalendarWeekStartSetting,
 	type DownloadAutoOpenSetting,
+	downloadAutoOpenOptions,
 	type LandingPageSetting,
 	type LanguageSetting,
 	type ResourceCacheModeSetting,
+	resourceCacheModeOptions,
 	type SettingsKey,
 	type SettingsOptions,
 	type SidebarDensitySetting,
 	type ThemeSetting,
-	downloadAutoOpenOptions,
-	resourceCacheModeOptions,
 } from "@/types/settings";
-import type { UpdateInfo } from "electron-updater";
-import {
-	Bell,
-	BookOpen,
-	Brush,
-	CalendarDays,
-	Database,
-	Download,
-	FileText,
-	Globe2,
-	Info,
-	LayoutDashboard,
-	Lock,
-	RefreshCcw,
-	Settings2,
-	Trash2,
-	X,
-} from "lucide-react";
-import type React from "react";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast as sonnerToast } from "sonner";
 
 type UpdateStatus =
 	| "idle"
@@ -946,7 +946,10 @@ function AppUpdatesSettings() {
 			setDownloadProgress(progress?.percent ?? 0);
 		};
 
-		const offDownloaded = window.events.on("app:updateDownloaded", onDownloaded);
+		const offDownloaded = window.events.on(
+			"app:updateDownloaded",
+			onDownloaded,
+		);
 		const offProgress = window.events.on("app:downloadProgress", onProgress);
 
 		return () => {

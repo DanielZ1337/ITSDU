@@ -1,9 +1,8 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { cn, getRelativeTimeString } from "@/lib/utils.ts";
-import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 import { ArrowUpRightIcon } from "lucide-react";
 import { useParams } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { getRelativeTimeString } from "@/lib/utils.ts";
+import useGETcourseBasic from "@/queries/courses/useGETcourseBasic.ts";
 
 export default function CourseInformation() {
 	const params = useParams();

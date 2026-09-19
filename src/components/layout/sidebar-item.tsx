@@ -1,14 +1,14 @@
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import { NavLink, useMatch } from "react-router-dom";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
-import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
-import { NavLink, useMatch } from "react-router-dom";
-import { useSettings } from "@/hooks/atoms/useSettings";
 
 export default function SidebarItem({
 	title,
@@ -85,21 +85,19 @@ export default function SidebarItem({
 							</AnimatePresence>
 
 							{/* Icon with subtle scale on hover */}
-							<span className={cn(
-								"relative z-10 transition-transform duration-200",
-								"group-hover/item:scale-110",
-							)}>
+							<span
+								className={cn(
+									"relative z-10 transition-transform duration-200",
+									"group-hover/item:scale-110",
+								)}
+							>
 								{icon}
 							</span>
 						</>
 					)}
 				</NavLink>
 			</TooltipTrigger>
-			<TooltipContent
-				side="right"
-				sideOffset={8}
-				className="font-medium"
-			>
+			<TooltipContent side="right" sideOffset={8} className="font-medium">
 				{title}
 			</TooltipContent>
 		</Tooltip>

@@ -1,7 +1,7 @@
+import { Suspense } from "react";
 import ParseMarkdown from "@/components/parse-markdown.tsx";
 import { cn } from "@/lib/utils";
 import { MessageRole } from "@/types/api-types/AI/GETpreviousMessages";
-import { Suspense } from "react";
 import { Loader } from "../ui/loader";
 import MessageAvatar from "./message-avatar";
 

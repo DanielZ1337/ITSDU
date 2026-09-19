@@ -9,10 +9,17 @@ import {
 
 describe("assertSafeExternalUrl", () => {
 	it("allows web and mail links", () => {
-		expect(assertSafeExternalUrl("https://example.com/a").hostname).toBe("example.com");
+		expect(assertSafeExternalUrl("https://example.com/a").hostname).toBe(
+			"example.com",
+		);
 		expect(assertSafeExternalUrl("mailto:a@b.dk").protocol).toBe("mailto:");
 	});
-	it.each(["file:///C:/Windows/system32/calc.exe", "javascript:alert(1)", "smb://host/share", "ms-msdt:/x"])("blocks %s", (u) => {
+	it.each([
+		"file:///C:/Windows/system32/calc.exe",
+		"javascript:alert(1)",
+		"smb://host/share",
+		"ms-msdt:/x",
+	])("blocks %s", (u) => {
 		expect(() => assertSafeExternalUrl(u)).toThrow();
 	});
 	it("rejects non-strings", () => {
@@ -32,24 +39,34 @@ describe("assertAllowedPathName", () => {
 describe("assertOpenableLocalPath", () => {
 	const root = path.resolve("/tmp/itsdu-downloads");
 	it("allows files and folders inside an allowed root", () => {
-		expect(assertOpenableLocalPath(path.join(root, "a.pdf"), [root])).toBe(path.join(root, "a.pdf"));
+		expect(assertOpenableLocalPath(path.join(root, "a.pdf"), [root])).toBe(
+			path.join(root, "a.pdf"),
+		);
 		expect(assertOpenableLocalPath(root, [root])).toBe(root);
 	});
 	it("blocks traversal, relative paths and other roots", () => {
-		expect(() => assertOpenableLocalPath(path.join(root, "..", "secret.txt"), [root])).toThrow();
+		expect(() =>
+			assertOpenableLocalPath(path.join(root, "..", "secret.txt"), [root]),
+		).toThrow();
 		expect(() => assertOpenableLocalPath("a.pdf", [root])).toThrow();
-		expect(() => assertOpenableLocalPath(path.resolve("/etc/passwd"), [root])).toThrow();
+		expect(() =>
+			assertOpenableLocalPath(path.resolve("/etc/passwd"), [root]),
+		).toThrow();
 	});
 	it("refuses launchable file types even inside an allowed root", () => {
 		for (const name of ["setup.exe", "run.BAT", "x.lnk", "a.ps1", "tool.sh"]) {
-			expect(() => assertOpenableLocalPath(path.join(root, name), [root])).toThrow();
+			expect(() =>
+				assertOpenableLocalPath(path.join(root, name), [root]),
+			).toThrow();
 		}
 	});
 });
 
 describe("assertPublicHttpUrl", () => {
 	it("allows public http(s) hosts", () => {
-		expect(assertPublicHttpUrl("https://example.com/x").hostname).toBe("example.com");
+		expect(assertPublicHttpUrl("https://example.com/x").hostname).toBe(
+			"example.com",
+		);
 	});
 	it.each([
 		"http://localhost:3000",

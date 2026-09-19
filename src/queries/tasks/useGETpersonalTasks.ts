@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETpersonalTasks,
@@ -5,8 +7,6 @@ import {
 	GETpersonalTasksParams,
 } from "@/types/api-types/tasks/GETpersonalTasks.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpersonalTasks(
 	params: GETpersonalTasksParams,
@@ -18,9 +18,12 @@ export default function useGETpersonalTasks(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.PersonalTasks, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.PersonalTasks,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETpersonalTasksApiUrl({
 					...params,
@@ -38,6 +41,6 @@ export default function useGETpersonalTasks(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

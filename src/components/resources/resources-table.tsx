@@ -1,14 +1,14 @@
 import {
 	ColumnDef,
 	ColumnFiltersState,
-	SortingState,
-	VisibilityState,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
 	getPaginationRowModel,
 	getSortedRowModel,
+	SortingState,
 	useReactTable,
+	VisibilityState,
 } from "@tanstack/react-table";
 import {
 	ArrowLeft,
@@ -18,7 +18,8 @@ import {
 	MoreHorizontal,
 } from "lucide-react";
 import * as React from "react";
-
+import { Link, useMatch, useNavigate } from "react-router-dom";
+import { toast as sonnerToast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -28,7 +29,6 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -57,8 +57,6 @@ import {
 	isResourcePDFFromUrlOrElementType,
 } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource.ts";
-import { Link, useMatch, useNavigate } from "react-router-dom";
-import { toast as sonnerToast } from "sonner";
 import {
 	isSupportedResourceInApp,
 	useNavigateToResource,
@@ -671,7 +669,6 @@ function ResourcesDataTable({
 						<Button
 							variant="outline"
 							onClick={() => {
-								// @ts-ignore
 								const elements = table
 									.getFilteredSelectedRowModel()
 									.flatRows.map((row) => row.original.ContentUrl);
@@ -695,7 +692,6 @@ function ResourcesDataTable({
 							<Button
 								variant="outline"
 								onClick={() => {
-									// @ts-ignore
 									const elements = table
 										.getFilteredSelectedRowModel()
 										.flatRows.filter(

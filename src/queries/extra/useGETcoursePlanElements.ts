@@ -1,5 +1,5 @@
-import { TanstackKeys } from "@/types/tanstack-keys";
 import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 type ResponseObject = {
 	title: string;
@@ -31,9 +31,13 @@ export default function useGETcoursePlanElements(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.CoursePlanElements, String(courseId), String(topicId)],
+		queryKey: [
+			TanstackKeys.CoursePlanElements,
+			String(courseId),
+			String(topicId),
+		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const mediaLink = (await window.resources.coursePlans.elements.get(
 				courseId,
 				topicId,
@@ -44,6 +48,6 @@ export default function useGETcoursePlanElements(
 			return mediaLink;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

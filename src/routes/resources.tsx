@@ -1,3 +1,17 @@
+import {
+	AlertTriangle,
+	CheckCircle2,
+	Database,
+	FolderOpen,
+	Inbox,
+	RefreshCcw,
+	Search,
+	Trash2,
+	WifiOff,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,20 +32,6 @@ import {
 	getResourceOpenRoute,
 } from "@/lib/resources/resource-format";
 import { cn } from "@/lib/utils";
-import {
-	AlertTriangle,
-	CheckCircle2,
-	Database,
-	FolderOpen,
-	Inbox,
-	RefreshCcw,
-	Search,
-	Trash2,
-	WifiOff,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 
 type CacheFilter = "all" | "cached" | "problem";
 type SortMode = "recent" | "filename" | "course" | "size" | "cached";

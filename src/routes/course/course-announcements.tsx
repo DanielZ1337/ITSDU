@@ -1,15 +1,16 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { lazy, memo, Suspense } from "react";
+import { useParams } from "react-router-dom";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
 import UpdatesTypeSelect, {
 	useUpdatesTypeSelect,
 } from "@/components/notifications/notifications-updates-type-select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Suspense, lazy, memo } from "react";
-import { useParams } from "react-router-dom";
-import { keepPreviousData } from "@tanstack/react-query";
+
 const FetchMoreInViewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
 		default: module.FetchMoreInview,
@@ -20,7 +21,7 @@ function CourseAnnouncements() {
 	const { id } = useParams();
 	const {
 		data: updates,
-		isLoading,
+		isPending: isLoading,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,

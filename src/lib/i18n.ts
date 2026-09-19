@@ -1,6 +1,6 @@
+import { useEffect, useMemo } from "react";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { fileExtension } from "@/lib/resources/resource-format";
-import { useEffect, useMemo } from "react";
 
 export type Locale = "en" | "da";
 export type LanguagePreference = "system" | Locale;
@@ -329,6 +329,30 @@ const translations = {
 		"errors.updateCheck": "Error checking for updates.",
 	},
 	da: {
+		"settings.appUpdates.devModeNotice":
+			"Udviklingsbuilds kan normalt ikke kontakte opdateringsfeedet.",
+		"settings.appUpdates.latestChecked": "Senest tjekket: v{version}",
+		"settings.appUpdates.checking": "Tjekker...",
+		"settings.appUpdates.downloading": "Henter...",
+		"settings.appUpdates.installing": "Installerer...",
+		"settings.privacy.copyDiagnostics.title": "Kopiér diagnostik",
+		"settings.privacy.copyDiagnostics.description":
+			"Appversion, indstillinger og cachebrug - ingen tokens eller kontodata.",
+		"settings.privacy.copyDiagnostics.action": "Kopiér diagnostik",
+		"settings.privacy.copyDiagnostics.success":
+			"Diagnostik kopieret til udklipsholderen",
+		"settings.advanced.deferred.title": "Udskudte grundindstillinger",
+		"settings.advanced.deferred.description":
+			"Grænser for cachestørrelse og bredere planlægning af opgavenotifikationer kræver håndhævelse i baggrunden, før de bliver rigtige indstillinger, så de vises ikke som indstillinger endnu.",
+		"calendar.detail.importedNotes": "Importerede noter",
+		"calendar.detail.dateUnknown": "Dato ukendt",
+		"calendar.detail.notSpecified": "Ikke angivet",
+		"calendar.detail.noLocation": "Ingen placering",
+		"calendar.detail.noCourseLinked": "Intet kursus tilknyttet",
+		"calendar.detail.noDescription":
+			"Der blev ikke angivet nogen beskrivelse til denne begivenhed.",
+		"calendar.detail.fullDetailsFailed":
+			"Alle detaljer kunne ikke indlæses, men oversigten ovenfor er opdateret.",
 		"common.open": "Åbn",
 		"common.close": "Luk",
 		"common.choose": "Vælg",
@@ -471,6 +495,7 @@ const translations = {
 		"settings.cache.browse.description":
 			"Åbn, søg i og fjern enkelte cachede filer.",
 		"settings.cache.clearProblem.title": "Ryd forældede cacheposter",
+		"settings.cache.clearProblem.action": "Ryd forældede",
 		"settings.cache.clearProblem.description":
 			"Fjerner ødelagte cacheposter uden at slette raske offlinefiler.",
 		"settings.cache.clearProblem.empty": "Ingen forældede cacheposter fundet",
@@ -654,7 +679,7 @@ export function createTranslator(locale: Locale) {
 	return (key: TranslationKey, values?: Record<string, string | number>) => {
 		const template = getTranslation(locale, key);
 		if (!values) return template;
-		return template.replace(/\{(\w+)\}/g, (_match, name) =>
+		return template.replace(/\{(\w+)\}/g, (_match: string, name: string) =>
 			values[name] !== undefined ? String(values[name]) : `{${name}}`,
 		);
 	};

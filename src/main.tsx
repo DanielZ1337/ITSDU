@@ -1,10 +1,10 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Navigate, createHashRouter } from "react-router-dom";
+import { createHashRouter, Navigate } from "react-router-dom";
+import { useSettings } from "@/hooks/atoms/useSettings";
+import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { GlobalShortcuts } from "./components/global-shortcuts";
 import { Loader } from "./components/ui/loader";
 import { GlobalErrorBoundaryProvider } from "./contexts/global-error-boundary-context";
@@ -287,9 +287,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 			<SuspenseWrapper max>
 				<Providers>
 					{/* <React.StrictMode> */}
-					<RouterProvider
-						router={router}
-					/>
+					<RouterProvider router={router} />
 					<ReactQueryDevtools position="top" buttonPosition="top-left" />
 					{/* </React.StrictMode> */}
 					<GlobalShortcuts />

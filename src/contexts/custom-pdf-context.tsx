@@ -14,11 +14,7 @@ interface CustomPDFContextProps {
 	currPage: number;
 	setNumPages: (value: React.SetStateAction<number | undefined>) => void;
 	setCurrPage: (value: React.SetStateAction<number>) => void;
-	handlePageSubmit: ({
-		page,
-	}: {
-		page: string;
-	}) => void;
+	handlePageSubmit: ({ page }: { page: string }) => void;
 	handlePageIncrease: () => void;
 	handlePageDecrease: () => void;
 	register: UseFormRegister<{

@@ -1,8 +1,8 @@
+import { UploadIcon } from "lucide-react";
+import { ChangeEvent } from "react";
 import { Progress } from "@/components/ui/progress.tsx";
 import useFileDrop from "@/hooks/useFileDrop.ts";
 import { cn } from "@/lib/utils.ts";
-import { UploadIcon } from "lucide-react";
-import React, { ChangeEvent } from "react";
 
 export function MessagesFileDrop({
 	files,
@@ -39,10 +39,8 @@ export function MessagesFileDrop({
 				fileInput.multiple = true;
 				fileInput.style.display = "none"; // Hide the input element
 				document.body.appendChild(fileInput);
-				// @ts-ignore
-				fileInput.addEventListener(
-					"change",
-					(e: ChangeEvent<HTMLInputElement>) => handleFiles(e),
+				fileInput.addEventListener("change", (e) =>
+					handleFiles(e as unknown as ChangeEvent<HTMLInputElement>),
 				);
 				fileInput.click();
 				document.body.removeChild(fileInput);

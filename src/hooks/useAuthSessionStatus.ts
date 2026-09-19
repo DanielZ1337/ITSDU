@@ -1,5 +1,5 @@
-import type { AuthSessionStatus } from "@/types/auth";
 import { useEffect, useState } from "react";
+import type { AuthSessionStatus } from "@/types/auth";
 
 const initialStatus: AuthSessionStatus = {
 	state: "unknown",

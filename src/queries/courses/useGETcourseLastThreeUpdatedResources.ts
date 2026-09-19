@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseLastThreeUpdatedResources,
@@ -5,8 +7,6 @@ import {
 	GETcourseLastThreeUpdatedResourcesParams,
 } from "@/types/api-types/courses/GETcourseLastThreeUpdatedResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseLastThreeUpdatedResources(
 	params: GETcourseLastThreeUpdatedResourcesParams,
@@ -18,12 +18,12 @@ export default function useGETcourseLastThreeUpdatedResources(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.CourseFolderResources,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcourseLastThreeUpdatedResourcesApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETcourseLastThreeUpdatedResources(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

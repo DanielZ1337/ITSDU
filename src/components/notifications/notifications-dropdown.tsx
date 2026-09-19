@@ -1,3 +1,6 @@
+import { ArrowRightIcon } from "lucide-react";
+import { AiOutlineNotification } from "react-icons/ai";
+import { Link } from "react-router-dom";
 import { UnreadNotificationIndicator } from "@/components/messages/unread-notification-indicator.tsx";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,17 +10,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotifications from "@/queries/notifications/useGETnotifications";
-import usePUTnotificationsMarkAllAsRead from "@/queries/notifications/usePUTnotificationsMarkAllAsRead";
 import usePUTnotificationsMarkAllAsReadv2 from "@/queries/notifications/usePUTnotificationsMarkAllAsReadv2";
-import { ScrollShadow } from "@/components/ui/scroll-shadow";
-import { ArrowRightIcon } from "lucide-react";
-import { AiOutlineNotification } from "react-icons/ai";
-import { Link } from "react-router-dom";
 import NotificationsDropdownInfiniteFallback from "./fallback/notifications-dropdown-infinite-fallback";
 import NotificationsDropdownInfiniteEnd from "./notifications-dropdown-infinite-end";
 

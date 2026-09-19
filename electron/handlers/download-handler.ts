@@ -1,13 +1,10 @@
-import { assertAllowedPathName, assertOpenableLocalPath, assertSafeExternalUrl } from "../ipc/validators";
-import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
-import * as fs from "fs";
-import path from "path";
 import axios from "axios";
-import { BrowserWindow, app, shell } from "electron";
+import { app, BrowserWindow, shell } from "electron";
+import * as fs from "fs";
 import type JSZip from "jszip";
+import path from "path";
 import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 import {
-	ITSLEARNING_RESOURCE_URL,
 	getCourseByElementId,
 	getDirectUrlBySSOLink,
 	getFileRepositoryBySSOLink,
@@ -16,16 +13,23 @@ import {
 	getResourceDownloadLink,
 	getResourceLinkByElementID,
 	getSSOLink,
+	ITSLEARNING_RESOURCE_URL,
 } from "../../electron/services/itslearning/resources/resources.ts";
 import {
 	createScrapeWindow,
 	getCookiesForDomain,
 } from "../../electron/services/scrape/scraper.ts";
+import { handle } from "../ipc/secure";
+import {
+	assertAllowedPathName,
+	assertOpenableLocalPath,
+	assertSafeExternalUrl,
+} from "../ipc/validators";
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { SettingsService } from "../services/settings/settings-service.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
-import { handle } from "../ipc/secure";
+import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
 
 const authService = AuthService.getInstance();
 
@@ -106,7 +110,9 @@ async function openLocalOrLink(target: unknown) {
 		await shell.openExternal(assertSafeExternalUrl(target).href);
 		return;
 	}
-	const error = await shell.openPath(assertOpenableLocalPath(target, openableRoots()));
+	const error = await shell.openPath(
+		assertOpenableLocalPath(target, openableRoots()),
+	);
 	if (error) throw new Error(error);
 }
 
@@ -126,59 +132,53 @@ function getResourceDownloadLinkForElementId() {
 }
 
 async function getBlobFromUrl() {
-	handle(
-		"get-blob-from-element-id",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
-			const cookiesFormatted = getFormattedCookies(cookies);
-			const resourceLink = await getResourceDownloadLink(ssoLink, win);
+	handle("get-blob-from-element-id", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+		const cookiesFormatted = getFormattedCookies(cookies);
+		const resourceLink = await getResourceDownloadLink(ssoLink, win);
 
-			const { data } = await axios.get(resourceLink, {
-				headers: {
-					Cookie: cookiesFormatted,
-				},
-				responseType: "arraybuffer",
-			});
+		const { data } = await axios.get(resourceLink, {
+			headers: {
+				Cookie: cookiesFormatted,
+			},
+			responseType: "arraybuffer",
+		});
 
-			win.close();
+		win.close();
 
-			return data;
-		},
-	);
+		return data;
+	});
 }
 
 async function getResourceAsFileHandler() {
-	handle(
-		"resources:get-file",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
-			let resourceLink: string;
-			try {
-				resourceLink = (await getFileRepositoryBySSOLink(win)).directUrl;
-			} catch (error) {
-				console.error(error);
-				resourceLink = await getResourceDownloadLink(ssoLink, win);
-			}
+	handle("resources:get-file", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+		let resourceLink: string;
+		try {
+			resourceLink = (await getFileRepositoryBySSOLink(win)).directUrl;
+		} catch (error) {
+			console.error(error);
+			resourceLink = await getResourceDownloadLink(ssoLink, win);
+		}
 
-			if (!resourceLink) throw new Error("Could not get resource link");
+		if (!resourceLink) throw new Error("Could not get resource link");
 
-			const resource = await getResourceAsFile(resourceLink, cookies);
+		const resource = await getResourceAsFile(resourceLink, cookies);
 
-			win.close();
+		win.close();
 
-			return resource;
-		},
-	);
+		return resource;
+	});
 }
 
 async function getResourceDirectFileRepositoryHandler() {
@@ -198,19 +198,16 @@ async function getResourceDirectFileRepositoryHandler() {
 }
 
 async function getResourceDirectUrlHandler() {
-	handle(
-		"resources:get-direct-url",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const directUrl = await getDirectUrlBySSOLink(win);
-			win.close();
-			return directUrl;
-		},
-	);
+	handle("resources:get-direct-url", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const directUrl = await getDirectUrlBySSOLink(win);
+		win.close();
+		return directUrl;
+	});
 }
 
 async function getMicrosoftOfficeDocument() {
@@ -697,32 +694,29 @@ function downloadStartHandler() {
 }
 
 function getVideoLinkHandler() {
-	handle(
-		"resources:get-media",
-		async (_, elementId: string | number) => {
-			try {
-				const win = createScrapeWindow();
-				const ssoLink = await getResourceLinkByElementID(elementId);
-				await win.loadURL(ssoLink);
-				const iframeSrc = await win.webContents.executeJavaScript(
-					`document.querySelectorAll('iframe')[1].src`,
-				);
-				await win.loadURL(iframeSrc);
-				const videoIframeSrc = await win.webContents.executeJavaScript(
-					`document.querySelector('iframe').src`,
-				);
-				await win.loadURL(videoIframeSrc);
-				const mediaLink = await win.webContents.executeJavaScript(
-					`document.querySelector('body').querySelector('[src]').src`,
-				);
-				win.close();
-				return mediaLink;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("resources:get-media", async (_, elementId: string | number) => {
+		try {
+			const win = createScrapeWindow();
+			const ssoLink = await getResourceLinkByElementID(elementId);
+			await win.loadURL(ssoLink);
+			const iframeSrc = await win.webContents.executeJavaScript(
+				`document.querySelectorAll('iframe')[1].src`,
+			);
+			await win.loadURL(iframeSrc);
+			const videoIframeSrc = await win.webContents.executeJavaScript(
+				`document.querySelector('iframe').src`,
+			);
+			await win.loadURL(videoIframeSrc);
+			const mediaLink = await win.webContents.executeJavaScript(
+				`document.querySelector('body').querySelector('[src]').src`,
+			);
+			win.close();
+			return mediaLink;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 function getPlannerPayloadUrl(courseId: string | number) {
@@ -815,20 +809,17 @@ async function getCoursePlans(url: string) {
 }
 
 function getCoursePlansHandler() {
-	handle(
-		"resources:get-course-plans",
-		async (_, courseId: string | number) => {
-			try {
-				const payloadUrl = getPlannerPayloadUrl(courseId);
-				const ssoLink = await getSSOLink(payloadUrl);
-				const coursePlans = await getCoursePlans(ssoLink);
-				return coursePlans;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("resources:get-course-plans", async (_, courseId: string | number) => {
+		try {
+			const payloadUrl = getPlannerPayloadUrl(courseId);
+			const ssoLink = await getSSOLink(payloadUrl);
+			const coursePlans = await getCoursePlans(ssoLink);
+			return coursePlans;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 async function getCoursePlansElements(html: string) {

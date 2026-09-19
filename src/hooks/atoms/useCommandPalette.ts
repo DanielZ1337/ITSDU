@@ -1,5 +1,5 @@
-import { commandPaletteAtom } from "@/atoms/command-palette";
 import { useAtom } from "jotai";
+import { commandPaletteAtom } from "@/atoms/command-palette";
 
 export const useCommandPalette = () => {
 	const [isCommandPaletteOpen, setIsCommandPaletteOpen] =

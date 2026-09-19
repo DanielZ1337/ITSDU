@@ -1,3 +1,6 @@
+import { InfiniteData } from "@tanstack/react-query";
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -7,9 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { GETcourseNotifications } from "@/types/api-types/courses/GETcourseNotifications";
 import { GETnotificationsStream } from "@/types/api-types/notifications/GETnotificationsStream";
-import { InfiniteData } from "@tanstack/react-query";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 export type UpdatesType = "update" | "announcement" | "all";
 

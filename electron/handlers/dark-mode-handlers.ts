@@ -1,6 +1,6 @@
 import { nativeTheme } from "electron";
-import { SettingsService } from "../services/settings/settings-service";
 import { handle } from "../ipc/secure";
+import { SettingsService } from "../services/settings/settings-service";
 
 function darkModeToggleHandler() {
 	handle("dark-mode:toggle", () => {

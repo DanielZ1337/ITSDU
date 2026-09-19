@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcoursePlansWithoutDate,
@@ -5,8 +7,6 @@ import {
 	GETcoursePlansWithoutDateParams,
 } from "@/types/api-types/courses/GETcoursePlansWithoutDate.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcoursePlansWithoutDate(
 	params: GETcoursePlansWithoutDateParams,
@@ -18,12 +18,12 @@ export default function useGETcoursePlansWithoutDate(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.CoursePlansWithoutDate,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcoursePlansWithoutDateApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETcoursePlansWithoutDate(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

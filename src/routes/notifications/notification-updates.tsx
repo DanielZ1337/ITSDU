@@ -1,12 +1,12 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { Bell } from "lucide-react";
+import { lazy, memo, Suspense } from "react";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
 import UpdatesTypeSelect, {
 	useUpdatesTypeSelect,
 } from "@/components/notifications/notifications-updates-type-select";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
-import { Bell } from "lucide-react";
-import { Suspense, lazy, memo } from "react";
-import { keepPreviousData } from "@tanstack/react-query";
 
 const FetchMoreInviewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
@@ -17,7 +17,7 @@ const FetchMoreInviewLazy = lazy(() =>
 function NotificationUpdates() {
 	const {
 		data: notifications,
-		isLoading,
+		isPending: isLoading,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
@@ -47,8 +47,12 @@ function NotificationUpdates() {
 							<Bell className="h-5 w-5 text-primary" />
 						</div>
 						<div>
-							<h1 className="text-xl font-semibold text-foreground">Recent Updates</h1>
-							<p className="text-sm text-muted-foreground">Stay up to date with your courses</p>
+							<h1 className="text-xl font-semibold text-foreground">
+								Recent Updates
+							</h1>
+							<p className="text-sm text-muted-foreground">
+								Stay up to date with your courses
+							</p>
 						</div>
 					</div>
 					<UpdatesTypeSelect

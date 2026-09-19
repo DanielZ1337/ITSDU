@@ -1,8 +1,8 @@
+import { useAtom } from "jotai/index";
 import {
 	settingsModalAtom,
 	settingsModalSectionAtom,
 } from "@/atoms/settings-modal.ts";
-import { useAtom } from "jotai/index";
 
 export const useShowSettingsModal = () => {
 	const [showSettingsModal, setShowSettingsModal] = useAtom(settingsModalAtom);

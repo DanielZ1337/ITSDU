@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import { PersonRelationships } from "@/components/person/person-relationships.tsx";
 import {
 	HoverCard,
@@ -5,7 +6,6 @@ import {
 	HoverCardTrigger,
 } from "@/components/ui/hover-card.tsx";
 import { ScrollArea } from "@/components/ui/scroll-area.tsx";
-import React, { Suspense } from "react";
 
 export default function PersonHoverCard({
 	children,

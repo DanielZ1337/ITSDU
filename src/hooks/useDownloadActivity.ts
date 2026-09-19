@@ -1,9 +1,9 @@
+import { useAtom } from "jotai";
+import { useCallback, useEffect } from "react";
 import {
 	type DownloadActivityEntry,
 	downloadActivityAtom,
 } from "@/atoms/download-activity";
-import { useAtom } from "jotai";
-import { useCallback, useEffect } from "react";
 
 const MAX_ENTRIES = 20;
 
@@ -48,9 +48,7 @@ export function useDownloadActivityEvents() {
 	const [, setEntries] = useAtom(downloadActivityAtom);
 
 	useEffect(() => {
-		const onProgress = (
-			payload?: { id?: string; percent?: number },
-		) => {
+		const onProgress = (payload?: { id?: string; percent?: number }) => {
 			if (!payload?.id) return;
 			setEntries((current) =>
 				current.map((entry) =>
@@ -60,14 +58,12 @@ export function useDownloadActivityEvents() {
 				),
 			);
 		};
-		const onComplete = (
-			payload?: {
-				id?: string;
-				path?: string;
-				filename?: string;
-				size?: number;
-			},
-		) => {
+		const onComplete = (payload?: {
+			id?: string;
+			path?: string;
+			filename?: string;
+			size?: number;
+		}) => {
 			if (!payload?.id) return;
 			setEntries((current) =>
 				current.map((entry) =>
@@ -84,9 +80,7 @@ export function useDownloadActivityEvents() {
 				),
 			);
 		};
-		const onError = (
-			payload?: { id?: string; error?: string } | string,
-		) => {
+		const onError = (payload?: { id?: string; error?: string } | string) => {
 			const id = typeof payload === "object" ? payload.id : undefined;
 			if (!id) return;
 			setEntries((current) =>

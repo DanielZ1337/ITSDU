@@ -1,9 +1,7 @@
-import { Loader } from "@/components/ui/loader";
-import useGETMediaDocument from "@/queries/extra/useGETMediaDocument";
-import useDirectFileUrlByElementID from "@/queries/resources/useDirectFileUrlByElementID";
-import useFileRepositoryResourceByElementID from "@/queries/resources/useFileRepositoryResourceByElementID";
 import { memo } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { Loader } from "@/components/ui/loader";
+import useDirectFileUrlByElementID from "@/queries/resources/useDirectFileUrlByElementID";
 
 type MediaDocumentType = "video" | "image";
 
@@ -21,7 +19,7 @@ function MediaDocuments() {
 	}
 
 	// const {data, isLoading} = useGETMediaDocument(elementId)
-	const { data, isLoading } = useDirectFileUrlByElementID(elementId);
+	const { data, isPending: isLoading } = useDirectFileUrlByElementID(elementId);
 	const Comp = type === "video" ? "video" : "img";
 
 	return (

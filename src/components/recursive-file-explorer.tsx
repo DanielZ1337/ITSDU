@@ -1,11 +1,13 @@
-import ErrorPage from "@/error-page.tsx";
-import { useCachedResources } from "@/hooks/useCachedResources";
-import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources.ts";
 // eslint-disable-next-line no-redeclare
 import { Database, File, FolderClosedIcon, FolderOpenIcon } from "lucide-react";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import ErrorPage from "@/error-page.tsx";
+import { useCachedResources } from "@/hooks/useCachedResources";
+import useGETcourseFolderResources from "@/queries/courses/useGETcourseFolderResources.ts";
 import "@/styles/3-dots-loading.css";
+import ReactLoading from "react-loading";
+import { toast as sonnerToast } from "sonner";
 import {
 	ContextMenu,
 	ContextMenuContent,
@@ -23,8 +25,6 @@ import {
 import type { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink";
 import type { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType.ts";
-import ReactLoading from "react-loading";
-import { toast as sonnerToast } from "sonner";
 import { Highlight } from "./ui/hightlight";
 import { useSearch } from "./ui/search-input";
 
@@ -56,7 +56,7 @@ export default function RecursiveFileExplorer({
 		[cachedIds, cachedResources.resources],
 	);
 
-	const { data, isLoading } = useGETcourseFolderResources({
+	const { data, isPending: isLoading } = useGETcourseFolderResources({
 		courseId: courseId,
 		folderId: folderId,
 	});
@@ -133,7 +133,6 @@ export default function RecursiveFileExplorer({
 										/>
 									}
 								>
-									{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 									{parent.ElementType ===
 										ItsolutionsItslUtilsConstantsElementType[
 											ItsolutionsItslUtilsConstantsElementType.Folder
@@ -171,7 +170,6 @@ export default function RecursiveFileExplorer({
 								</Suspense>
 							</ErrorBoundary>
 							{/* rendering files */}
-							{/*@ts-ignore documentation for itslearning is wrong, so this gives a wrong type*/}
 							{isOpen &&
 								parent.ElementType !==
 									ItsolutionsItslUtilsConstantsElementType[

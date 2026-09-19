@@ -1,5 +1,8 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
+import { CommandLoading } from "cmdk";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import Providers from "@/components/providers";
 import {
 	Command,
@@ -9,15 +12,6 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
-import { CommandLoading } from "cmdk";
-import React, {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-	useMemo,
-} from "react";
-import { RouterProvider, createHashRouter } from "react-router-dom";
 import { Loader } from "./components/ui/loader";
 import { cn } from "./lib/utils";
 
@@ -40,8 +34,8 @@ const router = createHashRouter([
 const baseUrl =
 	window.runtime?.apiBaseUrl ??
 	(import.meta.env.DEV
-	? "http://localhost:8080/"
-	: "https://sdu.itslearning.com/");
+		? "http://localhost:8080/"
+		: "https://sdu.itslearning.com/");
 
 function Login() {
 	const [organisations, setOrganisations] =
@@ -126,9 +120,7 @@ function Login() {
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<React.StrictMode>
 		<Providers>
-			<RouterProvider
-				router={router}
-			/>
+			<RouterProvider router={router} />
 		</Providers>
 	</React.StrictMode>,
 );

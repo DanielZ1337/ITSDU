@@ -9,7 +9,9 @@ import { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api-type
 
 export default function MessageDropdownItem({
 	thread,
-}: { thread: ItslearningRestApiEntitiesInstantMessageThread }) {
+}: {
+	thread: ItslearningRestApiEntitiesInstantMessageThread;
+}) {
 	return (
 		<div
 			className="flex items-center justify-between pr-2 group"

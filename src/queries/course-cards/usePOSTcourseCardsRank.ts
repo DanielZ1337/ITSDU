@@ -1,11 +1,11 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken } from "@/lib/utils";
 import {
 	POSTcourseCardsRankApiUrl,
 	POSTcourseCardsRankBody,
 } from "@/types/api-types/course-cards/POSTcourseCardsRank.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTcourseCardsRank(
 	queryConfig?: UseMutationOptions<
@@ -16,9 +16,9 @@ export default function usePOSTcourseCardsRank(
 	>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.CourseCardsRank],
+		mutationKey: [TanstackKeys.CourseCardsRank],
 
-        mutationFn: async (body) => {
+		mutationFn: async (body) => {
 			const res = await axios.post(POSTcourseCardsRankApiUrl, body, {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -30,6 +30,6 @@ export default function usePOSTcourseCardsRank(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

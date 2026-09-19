@@ -1,3 +1,7 @@
+import Linkify from "linkify-react";
+import { ArrowLeft, Calendar, FileText, Megaphone, User } from "lucide-react";
+import { useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import renderLink from "@/components/custom-render-link-linkify";
 import PersonHoverCard from "@/components/person/person-hover-card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,10 +12,6 @@ import {
 	isSupportedResourceInApp,
 	useNavigateToResource,
 } from "@/types/api-types/extra/learning-tool-id-types";
-import Linkify from "linkify-react";
-import { ArrowLeft, Calendar, FileText, Megaphone, User } from "lucide-react";
-import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
 import useGETnotificationElements from "../../queries/notifications/useGETnotificationElements";
 
 function NotificationDetailSkeleton() {
@@ -45,16 +45,17 @@ export default function NotificationID() {
 
 	if (!notificationId) throw new Error("notificationId is required");
 
-	const { data: notification, isLoading } = useGETnotificationsStream(
-		{
-			FromId: Number(notificationId),
-			PageSize: 1,
-			showLightBulletins: true,
-		},
-		{
-			suspense: false,
-		},
-	);
+	const { data: notification, isPending: isLoading } =
+		useGETnotificationsStream(
+			{
+				FromId: Number(notificationId),
+				PageSize: 1,
+				showLightBulletins: true,
+			},
+			{
+				suspense: false,
+			},
+		);
 
 	const currentNotification = notification?.pages[0]?.EntityArray[0];
 
@@ -123,7 +124,9 @@ export default function NotificationID() {
 									<div className="flex items-center gap-3 text-sm text-muted-foreground">
 										<span className="flex items-center gap-1">
 											<Calendar className="h-3.5 w-3.5" />
-											{getRelativeTimeString(new Date(currentNotification.PublishedDate))}
+											{getRelativeTimeString(
+												new Date(currentNotification.PublishedDate),
+											)}
 										</span>
 										<span className="flex items-center gap-1">
 											<User className="h-3.5 w-3.5" />
@@ -151,7 +154,9 @@ export default function NotificationID() {
 								<div className="rounded-lg border border-border/50 bg-muted/20 overflow-hidden">
 									<div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/30">
 										<Megaphone className="h-4 w-4 text-primary" />
-										<span className="text-sm font-medium text-foreground">Announcement</span>
+										<span className="text-sm font-medium text-foreground">
+											Announcement
+										</span>
 									</div>
 									<div className="p-4">
 										<p className="whitespace-pre-wrap text-sm text-foreground/90">
@@ -164,41 +169,45 @@ export default function NotificationID() {
 							)}
 
 							{/* Resources */}
-							{currentNotification.ElementsCount > 0 && resources?.EntityArray && resources.EntityArray.length > 0 && (
-								<div className="rounded-lg border border-border/50 bg-muted/20 overflow-hidden">
-									<div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/30">
-										<FileText className="h-4 w-4 text-primary" />
-										<span className="text-sm font-medium text-foreground">
-											Resources ({resources.EntityArray.length})
-										</span>
+							{currentNotification.ElementsCount > 0 &&
+								resources?.EntityArray &&
+								resources.EntityArray.length > 0 && (
+									<div className="rounded-lg border border-border/50 bg-muted/20 overflow-hidden">
+										<div className="flex items-center gap-2 px-4 py-2.5 border-b border-border/50 bg-muted/30">
+											<FileText className="h-4 w-4 text-primary" />
+											<span className="text-sm font-medium text-foreground">
+												Resources ({resources.EntityArray.length})
+											</span>
+										</div>
+										<div className="p-2">
+											{resources.EntityArray.map((resource) => (
+												<button
+													key={resource.ElementId}
+													onClick={async () => {
+														if (isSupportedResourceInApp(resource)) {
+															navigateToResource(resource);
+														} else {
+															await window.app.openExternal(
+																resource.ContentUrl,
+															);
+														}
+													}}
+													className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/50 group"
+												>
+													<img
+														loading="lazy"
+														src={resource.IconUrl}
+														alt=""
+														className="h-8 w-8 rounded-md bg-muted p-1"
+													/>
+													<span className="text-sm text-foreground group-hover:text-primary transition-colors">
+														{resource.Title}
+													</span>
+												</button>
+											))}
+										</div>
 									</div>
-									<div className="p-2">
-										{resources.EntityArray.map((resource) => (
-											<button
-												key={resource.ElementId}
-												onClick={async () => {
-													if (isSupportedResourceInApp(resource)) {
-														navigateToResource(resource);
-													} else {
-														await window.app.openExternal(resource.ContentUrl);
-													}
-												}}
-												className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors hover:bg-muted/50 group"
-											>
-												<img
-													loading="lazy"
-													src={resource.IconUrl}
-													alt=""
-													className="h-8 w-8 rounded-md bg-muted p-1"
-												/>
-												<span className="text-sm text-foreground group-hover:text-primary transition-colors">
-													{resource.Title}
-												</span>
-											</button>
-										))}
-									</div>
-								</div>
-							)}
+								)}
 						</div>
 					</div>
 				</div>

@@ -1,11 +1,8 @@
 import ProfileAvatar from "@/components/profile-avatar";
 import { useUser } from "@/hooks/atoms/useUser.ts";
-import { usePOSTpersonUpdateProfileImage } from "@/queries/person/usePOSTpersonUpdateProfileImage";
 
 export default function UserProfile() {
 	const user = useUser()!;
-
-	const { mutate: updateProfilePicture } = usePOSTpersonUpdateProfileImage();
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -77,7 +74,10 @@ export default function UserProfile() {
 function UserItem({
 	title,
 	value,
-}: { title: string; value: string | boolean | number }) {
+}: {
+	title: string;
+	value: string | boolean | number;
+}) {
 	return (
 		<div className="flex items-center justify-between">
 			<div className="font-semibold">{title}</div>

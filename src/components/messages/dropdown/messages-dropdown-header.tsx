@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button.tsx";
-import { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread.ts";
 import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button.tsx";
+import { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread.ts";
 
 export default function MessagesDropdownHeader({
 	disabled,

@@ -1,11 +1,11 @@
+import { AnimatePresence, m } from "motion/react";
+import { useEffect } from "react";
+import { useErrorBoundary } from "react-error-boundary";
 import { useGlobalErrorBoundary } from "@/contexts/global-error-boundary-context";
 import { useAuthSessionStatus } from "@/hooks/useAuthSessionStatus";
 import { useIsOnline } from "@/hooks/useIsOnline";
 import { queryClient } from "@/lib/tanstack-client";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "motion/react";
-import { useEffect } from "react";
-import { useErrorBoundary } from "react-error-boundary";
 
 export default function IsOnlineIndicator() {
 	const { isOnline, debouncedIsOnline } = useIsOnline();

@@ -1,13 +1,16 @@
+import axios from "axios";
 import { useUser } from "@/hooks/atoms/useUser";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETpreviousChatsApiUrl,
 	GETpreviousChatsParams,
 	GETpreviousChatsResponse,
 } from "@/types/api-types/AI/GETpreviousChats.ts";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
-import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpreviousChats(
 	params?: Omit<GETpreviousChatsParams, "userId">,
@@ -40,15 +43,15 @@ export default function useGETpreviousChats(
 		initialPageParam: params?.pageIndex,
 		...queryConfig,
 		getNextPageParam: (lastPage) => {
-				const { totalFiles, pageSize, pageIndex } = lastPage;
-				const parsedTotalMessages = Number(totalFiles);
-				const parsedPageSize = Number(pageSize);
-				const parsedPageIndex = Number(pageIndex);
-				if (parsedTotalMessages > parsedPageSize * parsedPageIndex) {
-					return parsedPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
+			const { totalFiles, pageSize, pageIndex } = lastPage;
+			const parsedTotalMessages = Number(totalFiles);
+			const parsedPageSize = Number(pageSize);
+			const parsedPageIndex = Number(pageIndex);
+			if (parsedTotalMessages > parsedPageSize * parsedPageIndex) {
+				return parsedPageIndex + 1;
+			} else {
+				return undefined;
+			}
+		},
 	});
 }

@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETstarredCourses,
@@ -10,8 +12,6 @@ import {
 	GETunstarredCoursesParams,
 } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourses(
 	isStarred: "Starred" | "Unstarred" | "All" = "Starred",
@@ -24,9 +24,13 @@ export default function useGETcourses(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.Courses, isStarred, ...getQueryKeysFromParamsObject(params)],
+		queryKey: [
+			TanstackKeys.Courses,
+			isStarred,
+			...getQueryKeysFromParamsObject(params),
+		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			if (isStarred === "All") {
 				const starredRes = await axios.get(
 					GETstarredCoursesApiUrl({
@@ -92,7 +96,7 @@ export default function useGETcourses(
 			}
 		},
 
-        suspense: true,
-        ...queryConfig
-    });
+		suspense: true,
+		...queryConfig,
+	});
 }

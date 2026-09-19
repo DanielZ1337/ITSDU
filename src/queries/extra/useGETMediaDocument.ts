@@ -1,14 +1,14 @@
-import { TanstackKeys } from "@/types/tanstack-keys";
 import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
+import { TanstackKeys } from "@/types/tanstack-keys";
 
 export default function useGETMediaDocument(
 	elementId: number | string,
 	queryConfig?: QueryConfig<string, Error, string, string[]>,
 ) {
 	return useQueryCompat({
-        queryKey: [TanstackKeys.ResourceMediaByElementID, String(elementId)],
+		queryKey: [TanstackKeys.ResourceMediaByElementID, String(elementId)],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const mediaLink = await window.resources.media.get(elementId);
 
 			if (!mediaLink) throw new Error("Media link not found");
@@ -16,14 +16,14 @@ export default function useGETMediaDocument(
 			return mediaLink;
 		},
 
-        ...queryConfig,
+		...queryConfig,
 
-        // complete caching of resources
-        refetchInterval: false,
+		// complete caching of resources
+		refetchInterval: false,
 
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-        refetchIntervalInBackground: false
-    });
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchIntervalInBackground: false,
+	});
 }

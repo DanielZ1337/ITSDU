@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { contextBridge, ipcRenderer } from "electron";
-import { LOGIN_PUSH_CHANNELS, createEventsApi } from "./ipc/channels";
+import { createEventsApi, LOGIN_PUSH_CHANNELS } from "./ipc/channels";
 
 // --------- Expose some API to the Renderer process ---------
 // Set by the main process (mock mode); undefined means "use the default itslearning site".

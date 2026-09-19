@@ -1,6 +1,12 @@
-import { type BrowserWindow, type Session, app, session, shell } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import {
+	app,
+	type BrowserWindow,
+	type Session,
+	session,
+	shell,
+} from "electron";
 
 export const WEBVIEW_PARTITION = "persist:itsdu-webview";
 
@@ -28,7 +34,9 @@ function isAppUrl(url: string): boolean {
 		if (dev && parsed.origin === new URL(dev).origin) return true;
 		return (
 			parsed.protocol === "file:" &&
-			parsed.href.startsWith(pathToFileURL(path.resolve(process.env.DIST) + path.sep).href)
+			parsed.href.startsWith(
+				pathToFileURL(path.resolve(process.env.DIST) + path.sep).href,
+			)
 		);
 	} catch {
 		return false;

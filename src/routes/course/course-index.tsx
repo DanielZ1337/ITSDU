@@ -1,10 +1,18 @@
-import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
-import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
-import Resources from "@/components/resources/resources.tsx";
-import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { Bell, Files, PanelRightClose, PanelRightOpen, Search, X } from "lucide-react";
+import {
+	Bell,
+	Files,
+	PanelRightClose,
+	PanelRightOpen,
+	Search,
+	X,
+} from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { type PanelImperativeHandle } from "react-resizable-panels";
 import { useParams } from "react-router-dom";
+import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
+import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
+import Resources from "@/components/resources/resources.tsx";
+import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -16,14 +24,13 @@ import {
 	SearchProvider,
 	useSearch,
 } from "@/components/ui/search-input";
+import { Skeleton } from "@/components/ui/skeleton.tsx";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { type PanelImperativeHandle } from "react-resizable-panels";
 
 export default function CourseIndex() {
 	const { id } = useParams();
@@ -31,7 +38,8 @@ export default function CourseIndex() {
 	const [longPress, setLongPress] = useState(false);
 	const [openTooltip, setOpenTooltip] = useState(false);
 	const [isMounted, setIsMounted] = useState(false);
-	const [isResourcesPanelCollapsed, setIsResourcesPanelCollapsed] = useState(false);
+	const [isResourcesPanelCollapsed, setIsResourcesPanelCollapsed] =
+		useState(false);
 
 	useEffect(() => {
 		setIsMounted(true);
@@ -122,7 +130,9 @@ export default function CourseIndex() {
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent>
-								{isResourcesPanelCollapsed ? "Show Resources Panel" : "Hide Resources Panel"}
+								{isResourcesPanelCollapsed
+									? "Show Resources Panel"
+									: "Hide Resources Panel"}
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
@@ -130,7 +140,11 @@ export default function CourseIndex() {
 			</div>
 
 			{/* Content Area with Resizable Panels */}
-			<ResizablePanelGroup autoSaveId="course-index" direction="horizontal" className="flex-1">
+			<ResizablePanelGroup
+				autoSaveId="course-index"
+				direction="horizontal"
+				className="flex-1"
+			>
 				{/* Announcements Panel */}
 				<ResizablePanel
 					minSize={30}
@@ -202,7 +216,10 @@ export default function CourseIndex() {
 function ResourcesPanel({
 	courseId,
 	shouldAutoSearch = true,
-}: { courseId: number; shouldAutoSearch?: boolean }) {
+}: {
+	courseId: number;
+	shouldAutoSearch?: boolean;
+}) {
 	const inputs = document.querySelectorAll("input");
 	const isInputFocused = Array.from(inputs).some(
 		(input) => input === document.activeElement,

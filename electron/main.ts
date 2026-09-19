@@ -1,23 +1,23 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import {
+	app,
+	BrowserWindow,
+	dialog,
+	Menu,
+	nativeTheme,
+	net,
+	protocol,
+	session,
+	Tray,
+} from "electron";
 import { registerTrustedWindow } from "./ipc/secure";
-import { MOCK_URL } from "./services/itslearning/mock-mode";
 import {
 	hardenWebviews,
 	lockNavigation,
 	restrictPermissions,
 } from "./security/window-security";
-import {
-	net,
-	BrowserWindow,
-	Menu,
-	Tray,
-	app,
-	dialog,
-	nativeTheme,
-	protocol,
-	session,
-} from "electron";
+import { MOCK_URL } from "./services/itslearning/mock-mode";
 
 process.env.DIST = path.join(__dirname, "../dist");
 process.env.VITE_PUBLIC = app.isPackaged
@@ -432,7 +432,10 @@ app.whenReady().then(async () => {
 		);
 		const root = path.resolve(process.env.VITE_PUBLIC);
 		const filePath = path.resolve(root, relative);
-		if (path.relative(root, filePath).startsWith("..") || path.isAbsolute(path.relative(root, filePath))) {
+		if (
+			path.relative(root, filePath).startsWith("..") ||
+			path.isAbsolute(path.relative(root, filePath))
+		) {
 			return new Response("Forbidden", { status: 403 });
 		}
 		try {

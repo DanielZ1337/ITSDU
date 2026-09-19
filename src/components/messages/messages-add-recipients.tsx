@@ -1,3 +1,8 @@
+import { DialogClose } from "@radix-ui/react-dialog";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 import { currentChatEnum } from "@/atoms/current-chat";
 import { currentChatAtom } from "@/atoms/current-chat.ts";
 import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients.ts";
@@ -20,11 +25,6 @@ import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import useGETinstantMessagesRecipientsSearch from "@/queries/messages/useGETinstantMessagesRecipientsSearch.ts";
 import { ItslearningRestApiEntitiesInstantMessageRecipient } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
 
 export default function MessagesAddRecipients() {
 	const [recipientsSearchInput, setRecipientsSearchInput] =

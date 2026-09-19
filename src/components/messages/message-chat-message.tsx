@@ -1,3 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
+import he from "he";
+import Linkify from "linkify-react";
+import { ChevronDown } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import renderLink from "@/components/custom-render-link-linkify.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -14,12 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { cn } from "@/lib/utils.ts";
 import useDELETEinstantMessage from "@/queries/messages/useDELETEinstantMessage";
-import { useQueryClient } from "@tanstack/react-query";
-import he from "he";
-import Linkify from "linkify-react";
-import { ChevronDown } from "lucide-react";
-import { useRef, useState } from "react";
-import { toast } from "sonner";
 import usePATCHrestoreDeletedMessage from "../../queries/messages/usePATCHrestoreDeletedMessage";
 import ProfileAvatar from "../profile-avatar";
 import { Loader } from "../ui/loader";
@@ -66,8 +66,8 @@ export default function MessageChatMessage({
 		useDELETEinstantMessage({
 			onSuccess: () => {
 				queryClient.invalidateQueries({
-                    queryKey: ["messagesv2"]
-                });
+					queryKey: ["messagesv2"],
+				});
 			},
 		});
 
@@ -75,8 +75,8 @@ export default function MessageChatMessage({
 		usePATCHrestoreDeletedMessage({
 			onSuccess: () => {
 				queryClient.invalidateQueries({
-                    queryKey: ["messagesv2"]
-                });
+					queryKey: ["messagesv2"],
+				});
 			},
 		});
 

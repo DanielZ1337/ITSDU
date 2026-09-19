@@ -1,5 +1,5 @@
-import { FetchMoreInview } from "@/components/fetch-more-in-view";
 import { AnimatePresence } from "motion/react";
+import { FetchMoreInview } from "@/components/fetch-more-in-view";
 import { CourseTaskEmpty } from "./course-task-empty";
 import { CourseTaskError } from "./course-task-error";
 

@@ -1,8 +1,8 @@
-import { app, safeStorage } from "electron";
-import Store from "electron-store";
 import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { app, safeStorage } from "electron";
+import Store from "electron-store";
 
 const KEY_FILE = "itsdu-store-key.bin";
 const PLAIN_PREFIX = "plain:";
@@ -54,7 +54,10 @@ function migrateLegacyAuthStore(
 	const legacyFile = path.join(app.getPath("userData"), `${base}.json`);
 	if (!legacyKey || v2.size > 0 || !fs.existsSync(legacyFile)) return;
 	try {
-		const legacy = new Store<AuthData>({ name: base, encryptionKey: legacyKey });
+		const legacy = new Store<AuthData>({
+			name: base,
+			encryptionKey: legacyKey,
+		});
 		const data = legacy.store;
 		if (Object.keys(data).length === 0) return;
 		v2.store = data;
@@ -62,7 +65,9 @@ function migrateLegacyAuthStore(
 			throw new Error("verification failed");
 		}
 		fs.rmSync(legacyFile, { force: true });
-		console.log("[auth] migrated persisted session to the per-install store key");
+		console.log(
+			"[auth] migrated persisted session to the per-install store key",
+		);
 	} catch (error) {
 		// Keep the legacy file untouched; the user can still sign in again.
 		console.warn("[auth] could not migrate the legacy auth store", error);

@@ -1,3 +1,13 @@
+import {
+	ArrowLeftToLine,
+	ArrowRightToLine,
+	RefreshCcw,
+	WifiOff,
+} from "lucide-react";
+import { m } from "motion/react";
+import { lazy, memo, useEffect, useMemo } from "react";
+import { useResizeDetector } from "react-resize-detector";
+import { useParams } from "react-router-dom";
 import AISidePanel from "@/components/ai-chat/ai-sidepanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,16 +16,6 @@ import { CustomPDFProvider } from "@/contexts/custom-pdf-context";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import useResourceByElementID from "@/queries/resources/useResourceByElementID";
-import { m } from "motion/react";
-import {
-	ArrowLeftToLine,
-	ArrowRightToLine,
-	RefreshCcw,
-	WifiOff,
-} from "lucide-react";
-import { lazy, memo, useEffect, useMemo } from "react";
-import { useResizeDetector } from "react-resize-detector";
-import { useParams } from "react-router-dom";
 
 const PdfRenderer = lazy(
 	() => import("@/components/resources/pdf/pdf-renderer"),
@@ -28,8 +28,13 @@ function Documents() {
 		throw new Error("No elementId provided");
 	}
 
-	const { isLoading, isError, error, data, refetch } =
-		useResourceByElementID(elementId);
+	const {
+		isPending: isLoading,
+		isError,
+		error,
+		data,
+		refetch,
+	} = useResourceByElementID(elementId);
 	const { aiSidepanel, setAISidepanel, toggleSidebar } = useAISidepanel();
 	const { ref: aiSidepanelRef } = useResizeDetector();
 

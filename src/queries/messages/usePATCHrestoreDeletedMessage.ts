@@ -1,11 +1,11 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken } from "@/lib/utils";
 import {
 	PATCHrestoreDeletedMessageApiUrl,
 	PATCHrestoreDeletedMessageParams,
 } from "@/types/api-types/messages/PATCHrestoreDeletedMessage.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePATCHrestoreDeletedMessage(
 	queryConfig?: UseMutationOptions<
@@ -16,9 +16,9 @@ export default function usePATCHrestoreDeletedMessage(
 	>,
 ) {
 	return useMutation({
-        mutationKey: [TanstackKeys.PATCHrestoreDeletedMessage],
+		mutationKey: [TanstackKeys.PATCHrestoreDeletedMessage],
 
-        mutationFn: async (params) => {
+		mutationFn: async (params) => {
 			const res = await axios.patch(
 				PATCHrestoreDeletedMessageApiUrl(params),
 				{},
@@ -34,6 +34,6 @@ export default function usePATCHrestoreDeletedMessage(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

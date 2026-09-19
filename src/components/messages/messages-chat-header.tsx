@@ -1,9 +1,9 @@
-import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
-import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
-import MessagesChatHeaderExistingChat from "@/components/messages/messages-chat-header-existing-chat.tsx";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
+import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
+import MessagesChatHeaderExistingChat from "@/components/messages/messages-chat-header-existing-chat.tsx";
 import MessageTitleForm from "./messages-title-form";
 
 export default function MessagesChatHeader({

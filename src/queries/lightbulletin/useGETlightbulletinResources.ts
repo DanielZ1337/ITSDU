@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETlightbulletinResources,
@@ -5,8 +7,6 @@ import {
 	GETlightbulletinResourcesParams,
 } from "@/types/api-types/lightbulletin/GETlightbulletinResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETlightbulletinResources(
 	params: GETlightbulletinResourcesParams,
@@ -18,12 +18,12 @@ export default function useGETlightbulletinResources(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.LightbulletinResources,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETlightbulletinResourcesApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETlightbulletinResources(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

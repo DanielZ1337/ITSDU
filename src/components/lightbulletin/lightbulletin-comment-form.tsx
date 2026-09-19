@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
 import { Loader2 } from "lucide-react";
 import React, { FormEvent, useCallback, useEffect } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
+import usePOSTlightbulletinAddComment from "@/queries/lightbulletin/usePOSTlightbulletinAddComment.ts";
 
 export default function LightbulletinCommentForm({
 	lightbulletinId,
@@ -65,7 +65,10 @@ export default function LightbulletinCommentForm({
 	}, [handleSubmit]);
 
 	return (
-		<form className={`mt-3 pt-3 ${hasComments ? 'border-t border-border/30' : ''}`} onSubmit={handleSubmit}>
+		<form
+			className={`mt-3 pt-3 ${hasComments ? "border-t border-border/30" : ""}`}
+			onSubmit={handleSubmit}
+		>
 			<div className="flex gap-2">
 				<Input
 					className="flex-1 h-9 text-sm bg-background/50"
@@ -84,11 +87,7 @@ export default function LightbulletinCommentForm({
 						className="h-9"
 						type="submit"
 					>
-						{isLoading ? (
-							<Loader2 className="w-4 h-4 animate-spin" />
-						) : (
-							"Post"
-						)}
+						{isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Post"}
 					</Button>
 				)}
 			</div>

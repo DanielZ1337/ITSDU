@@ -1,9 +1,9 @@
+import { ImageIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { ItslearningRestApiEntitiesLightBulletinsLightBulletinImage } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinImage";
-import { ImageIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 
 export default function LightbulletinImage({
 	image,

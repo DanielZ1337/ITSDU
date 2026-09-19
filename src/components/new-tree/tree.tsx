@@ -1,12 +1,10 @@
 import {
 	Child,
-	CollapseButton,
 	Entry,
 	Tree,
 	TreeViewElement,
 } from "@/components/ui/tree-view-api";
 import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources";
-import { Minus, MoreHorizontal, Plus } from "lucide-react";
 
 export function ResourcesTreeRoot({ courseId }: { courseId: number }) {
 	const { data } = useGETcourseRootResources(

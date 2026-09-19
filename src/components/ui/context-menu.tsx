@@ -24,8 +24,10 @@ const ContextMenuSubTrigger = React.forwardRef<
 	React.ElementRef<typeof ContextMenuPrimitive.SubTrigger>,
 	React.ComponentPropsWithoutRef<typeof ContextMenuPrimitive.SubTrigger> & {
 		inset?: boolean;
+		/** Show the trailing chevron (default true). */
+		chevron?: boolean;
 	}
->(({ className, inset, children, ...props }, ref) => (
+>(({ className, inset, chevron = true, children, ...props }, ref) => (
 	<ContextMenuPrimitive.SubTrigger
 		ref={ref}
 		className={cn(
@@ -36,7 +38,7 @@ const ContextMenuSubTrigger = React.forwardRef<
 		{...props}
 	>
 		{children}
-		<ChevronRightIcon className="ml-auto h-4 w-4" />
+		{chevron && <ChevronRightIcon className="ml-auto h-4 w-4" />}
 	</ContextMenuPrimitive.SubTrigger>
 ));
 ContextMenuSubTrigger.displayName = ContextMenuPrimitive.SubTrigger.displayName;
@@ -185,18 +187,18 @@ ContextMenuShortcut.displayName = "ContextMenuShortcut";
 
 export {
 	ContextMenu,
-	ContextMenuTrigger,
-	ContextMenuContent,
-	ContextMenuItem,
 	ContextMenuCheckboxItem,
-	ContextMenuRadioItem,
+	ContextMenuContent,
+	ContextMenuGroup,
+	ContextMenuItem,
 	ContextMenuLabel,
+	ContextMenuPortal,
+	ContextMenuRadioGroup,
+	ContextMenuRadioItem,
 	ContextMenuSeparator,
 	ContextMenuShortcut,
-	ContextMenuGroup,
-	ContextMenuPortal,
 	ContextMenuSub,
 	ContextMenuSubContent,
 	ContextMenuSubTrigger,
-	ContextMenuRadioGroup,
+	ContextMenuTrigger,
 };

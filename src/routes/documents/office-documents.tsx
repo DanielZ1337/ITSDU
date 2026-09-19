@@ -1,6 +1,6 @@
-import { Loader } from "@/components/ui/loader";
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { Loader } from "@/components/ui/loader";
 import useOfficeDocumentByElementId from "../../queries/resources/useOfficeDocumentByElementID";
 
 function OfficeDocuments() {
@@ -8,7 +8,11 @@ function OfficeDocuments() {
 	if (!elementId) {
 		throw new Error("Invalid ID");
 	}
-	const { isLoading, isError, data } = useOfficeDocumentByElementId(elementId);
+	const {
+		isPending: isLoading,
+		isError,
+		data,
+	} = useOfficeDocumentByElementId(elementId);
 
 	const handleSubmit = useCallback(
 		(accessToken: string, downloadUrl: string) => {

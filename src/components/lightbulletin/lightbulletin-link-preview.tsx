@@ -30,7 +30,9 @@ export default function LightbulletinLinkPreview({
 				alt={href}
 				className="w-4 h-4 rounded-sm"
 			/>
-			<span className="truncate max-w-[200px]">{data?.meta.title || title}</span>
+			<span className="truncate max-w-[200px]">
+				{data?.meta.title || title}
+			</span>
 		</LightbulletinLink>
 	);
 }

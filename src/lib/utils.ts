@@ -80,8 +80,8 @@ export function getFormattedSize(size: number) {
 export const baseUrl =
 	(typeof window !== "undefined" ? window.runtime?.apiBaseUrl : undefined) ??
 	(import.meta.env.DEV
-	? "http://localhost:8080/"
-	: "https://sdu.itslearning.com/");
+		? "http://localhost:8080/"
+		: "https://sdu.itslearning.com/");
 
 export const apiUrl = (
 	route: string,
@@ -192,9 +192,9 @@ export function createQueryFunction<Params, Data>(
 		];
 
 		return useQuery({
-            queryKey: queryKeys,
+			queryKey: queryKeys,
 
-            queryFn: async () => {
+			queryFn: async () => {
 				const res = await axios.get(getApiUrl(params), {
 					params: {
 						access_token: (await getAccessToken()) || "",
@@ -207,8 +207,8 @@ export function createQueryFunction<Params, Data>(
 				return res.data as Data;
 			},
 
-            ...queryConfig
-        });
+			...queryConfig,
+		});
 	};
 }
 
@@ -229,9 +229,9 @@ export function createMutationFunction<Params, Body, Data>(
 		];
 
 		return useMutation({
-            mutationKey: queryKeys,
+			mutationKey: queryKeys,
 
-            mutationFn: async (paramsOrBody) => {
+			mutationFn: async (paramsOrBody) => {
 				const axiosConfig = {
 					method, // Use the specified HTTP method
 					url: getApiUrl(params ?? ({} as Params)),
@@ -249,8 +249,8 @@ export function createMutationFunction<Params, Body, Data>(
 				return res.data;
 			},
 
-            ...queryConfig
-        });
+			...queryConfig,
+		});
 	};
 }
 

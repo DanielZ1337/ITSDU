@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETpersonalTasklistDailyWorkflow,
@@ -5,8 +7,6 @@ import {
 	GETpersonalTasklistDailyWorkflowParams,
 } from "@/types/api-types/tasks/GETpersonalTasklistDailyWorkflow";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import axios from "axios";
-import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpersonalTasklistDailyWorkflow(
 	params: GETpersonalTasklistDailyWorkflowParams,
@@ -18,12 +18,12 @@ export default function useGETpersonalTasklistDailyWorkflow(
 	>,
 ) {
 	return useQueryCompat({
-        queryKey: [
+		queryKey: [
 			TanstackKeys.PersonalTasklistDailyWorkflow,
 			...getQueryKeysFromParamsObject(params),
 		],
 
-        queryFn: async () => {
+		queryFn: async () => {
 			const res = await axios.get(
 				GETpersonalTasklistDailyWorkflowApiUrl({
 					...params,
@@ -41,6 +41,6 @@ export default function useGETpersonalTasklistDailyWorkflow(
 			return res.data;
 		},
 
-        ...queryConfig
-    });
+		...queryConfig,
+	});
 }

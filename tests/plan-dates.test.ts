@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { parseCoursePlanDate, parseDateAndTime } from "../electron/utils/plan-dates";
+import {
+	parseCoursePlanDate,
+	parseDateAndTime,
+} from "../electron/utils/plan-dates";
 
 describe("parseCoursePlanDate", () => {
 	it("parses dd-MM-yyyy", () => {

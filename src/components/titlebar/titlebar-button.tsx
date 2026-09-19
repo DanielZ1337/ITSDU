@@ -1,6 +1,6 @@
-import { cn, isMacOS } from "@/lib/utils";
 import { Search } from "lucide-react";
-import React, { forwardRef } from "react";
+import { forwardRef } from "react";
+import { cn, isMacOS } from "@/lib/utils";
 import { Button, ButtonProps } from "../ui/button";
 
 const TitlebarButton = forwardRef<HTMLButtonElement, ButtonProps>(

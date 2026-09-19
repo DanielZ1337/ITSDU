@@ -1,5 +1,5 @@
 import { Check, ChevronsUpDown } from "lucide-react";
-
+import React from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/popover";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import React from "react";
 
 const languages = [
 	{ label: "English", value: "en" },

@@ -2,22 +2,22 @@ import axios from "axios";
 import { BrowserWindow } from "electron";
 import { createAuthWindow } from "../../electron/main.ts";
 import type { AuthRefreshOptions } from "../../src/types/auth.ts";
+import { handle } from "../ipc/secure";
+import { assertPublicHttpUrl } from "../ipc/validators";
 import {
 	AuthRefreshError,
 	AuthService,
 } from "../services/itslearning/auth/auth-service.ts";
 import { StoreKey } from "../services/itslearning/auth/types/store_keys.ts";
 import {
-	ITSLEARNING_RESOURCE_URL,
 	getResourceLinkByElementID,
+	ITSLEARNING_RESOURCE_URL,
 } from "../services/itslearning/resources/resources.ts";
 import {
 	createScrapeWindow,
 	getCookiesForDomain,
 } from "../services/scrape/scraper";
-import { assertPublicHttpUrl } from "../ipc/validators";
 import { getFormattedCookies } from "../utils/cookies.ts";
-import { handle } from "../ipc/secure";
 
 const authService = AuthService.getInstance();
 
@@ -61,35 +61,26 @@ function authStatusHandler() {
 		return authService.getSessionStatus();
 	});
 
-	handle(
-		"itslearning-store:setOnlineStatus",
-		(_, isOnline: boolean) => {
-			authService.setOnlineStatus(isOnline);
-			return authService.getSessionStatus();
-		},
-	);
+	handle("itslearning-store:setOnlineStatus", (_, isOnline: boolean) => {
+		authService.setOnlineStatus(isOnline);
+		return authService.getSessionStatus();
+	});
 }
 
 function getCookies() {
-	handle(
-		"itslearning-store:get-cookies-for-resource",
-		async (_, elementId) => {
-			try {
-				const win = createScrapeWindow();
-				const ssoLink = await getResourceLinkByElementID(elementId);
-				await win.loadURL(ssoLink);
-				const cookies = await getCookiesForDomain(
-					win,
-					ITSLEARNING_RESOURCE_URL,
-				);
-				const cookiesFormatted = getFormattedCookies(cookies);
-				return cookiesFormatted;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("itslearning-store:get-cookies-for-resource", async (_, elementId) => {
+		try {
+			const win = createScrapeWindow();
+			const ssoLink = await getResourceLinkByElementID(elementId);
+			await win.loadURL(ssoLink);
+			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+			const cookiesFormatted = getFormattedCookies(cookies);
+			return cookiesFormatted;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 function logoutHandler() {

@@ -1,5 +1,5 @@
-import TitlebarDropdownFallback from "@/components/titlebar/titlebar-dropdown-fallback";
 import { MessageCircle } from "lucide-react";
+import TitlebarDropdownFallback from "@/components/titlebar/titlebar-dropdown-fallback";
 
 export default function MessagesDropDownSkeleton() {
 	return (

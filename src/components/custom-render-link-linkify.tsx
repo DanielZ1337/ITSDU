@@ -1,5 +1,6 @@
-// @ts-ignore
-const renderLink = ({ attributes, content }) => {
+import type { IntermediateRepresentation } from "linkifyjs";
+
+const renderLink = ({ attributes, content }: IntermediateRepresentation) => {
 	const { href, ...props } = attributes;
 	return (
 		<a

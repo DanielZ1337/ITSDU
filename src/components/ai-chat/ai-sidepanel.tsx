@@ -1,4 +1,8 @@
+import { m } from "motion/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { BsStopCircleFill } from "react-icons/bs";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useAISidepanel } from "@/hooks/atoms/useAISidepanel";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useUser } from "@/hooks/atoms/useUser";
@@ -7,17 +11,15 @@ import { cn } from "@/lib/utils";
 import useGETcheckElementID from "@/queries/AI/useGETcheckElementID";
 import useGETpreviousMessages from "@/queries/AI/useGETpreviousMessages";
 import { MessageType } from "@/types/ai-message";
-import { Spinner } from "@/components/ui/spinner";
-import { m } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { BsStopCircleFill } from "react-icons/bs";
 import { Loader } from "../ui/loader";
 import { Textarea } from "../ui/textarea";
 import Message from "./message";
 
 export default function AISidePanel({
 	elementId,
-}: { elementId: string | number }) {
+}: {
+	elementId: string | number;
+}) {
 	const { aiSidepanel } = useAISidepanel();
 	const { settings } = useSettings();
 	const user = useUser()!;
@@ -33,7 +35,7 @@ export default function AISidePanel({
 
 	const {
 		data: elementExists,
-		isLoading: elementExistsLoading,
+		isPending: elementExistsLoading,
 		refetch,
 	} = useGETcheckElementID(elementId, {
 		enabled: aiSidepanel,
@@ -41,7 +43,7 @@ export default function AISidePanel({
 
 	const {
 		data: previousMessages,
-		isLoading: isPreviousMessagesLoading,
+		isPending: isPreviousMessagesLoading,
 		hasNextPage,
 		fetchNextPage,
 		isFetchingNextPage,
@@ -93,7 +95,14 @@ export default function AISidePanel({
 			}
 		};
 		uploadDocumentForAI();
-	}, [elementExists, elementExistsLoading, elementId, refetch, refetchCount, settings.UploadAIChats]);
+	}, [
+		elementExists,
+		elementExistsLoading,
+		elementId,
+		refetch,
+		refetchCount,
+		settings.UploadAIChats,
+	]);
 
 	const handleSubmit = async (
 		e:
