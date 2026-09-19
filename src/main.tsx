@@ -90,7 +90,7 @@ function LandingRedirect() {
 			calendar: "/calendar",
 			tasks: "/all-tasks",
 			messages: "/messages",
-		}[settings.defaultLandingPage] ?? "/overview";
+		}[settings.navigation.defaultLandingPage] ?? "/overview";
 
 	return <Navigate to={landingPath} replace />;
 }

@@ -253,7 +253,7 @@ export default function PdfRenderer({
 		handlePageSubmit,
 	} = useCustomPDFContext();
 	const { settings, updateSettings } = useSettings();
-	const { CustomPDFSidebarOpened } = settings;
+	const { sidebarOpened: isSidebarOpen } = settings.pdf;
 	const [scale, setScale] = useState<number>(1);
 	const [rotation, setRotation] = useState<number>(0);
 	const [fitMode, setFitMode] = useState<"width" | "page" | "custom">("page");
@@ -577,11 +577,11 @@ export default function PdfRenderer({
 									className="h-8 w-8"
 									onClick={() =>
 										updateSettings({
-											CustomPDFSidebarOpened: !CustomPDFSidebarOpened,
+											"pdf.sidebarOpened": !isSidebarOpen,
 										})
 									}
 								>
-									{CustomPDFSidebarOpened ? (
+									{isSidebarOpen ? (
 										<PanelLeftClose className="h-4 w-4" />
 									) : (
 										<PanelLeftOpen className="h-4 w-4" />
@@ -589,7 +589,7 @@ export default function PdfRenderer({
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent side="bottom">
-								{CustomPDFSidebarOpened ? "Hide" : "Show"} thumbnails
+								{isSidebarOpen ? "Hide" : "Show"} thumbnails
 							</TooltipContent>
 						</Tooltip>
 
@@ -798,10 +798,10 @@ export default function PdfRenderer({
 				>
 					{/* Thumbnail Sidebar */}
 					<div
-						data-open={CustomPDFSidebarOpened}
+						data-open={isSidebarOpen}
 						className={cn(
 							"shrink-0 overflow-hidden transition-all duration-300 ease-in-out border-r bg-muted/20",
-							CustomPDFSidebarOpened ? "w-48" : "w-0 border-r-0",
+							isSidebarOpen ? "w-48" : "w-0 border-r-0",
 						)}
 					>
 						{/* Fixed width inner container - slides and fades with parent */}
@@ -809,7 +809,7 @@ export default function PdfRenderer({
 							ref={sidebarRef}
 							className={cn(
 								"h-full w-48 overflow-y-auto overflow-x-hidden scrollbar-thin p-2 transition-all duration-300 ease-out",
-								CustomPDFSidebarOpened
+								isSidebarOpen
 									? "opacity-100 translate-x-0"
 									: "opacity-0 -translate-x-12",
 							)}
@@ -825,7 +825,7 @@ export default function PdfRenderer({
 								{Array.from(new Array(numPages), (_, index) => (
 									<Thumbnail
 										key={`thumbnail-${index + 1}`}
-										sidebarOpen={CustomPDFSidebarOpened}
+										sidebarOpen={isSidebarOpen}
 										pageNumber={index + 1}
 										onClick={() => {
 											setCurrPage(index + 1);

@@ -6,7 +6,11 @@ import type {
 	AuthRefreshOptions,
 	AuthSessionStatus,
 } from "../src/types/auth.ts";
-import type { SettingsKey, SettingsOptions } from "../src/types/settings.ts";
+import type {
+	SettingsOptions,
+	SettingsPath,
+	SettingValue,
+} from "../src/types/settings.ts";
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
 import {
 	createEventsApi,
@@ -63,12 +67,12 @@ contextBridge.exposeInMainWorld("darkMode", {
 });
 contextBridge.exposeInMainWorld("settings", {
 	getAll: () => ipcRenderer.invoke("settings:getAll"),
-	get: (key: SettingsKey) => ipcRenderer.invoke("settings:get", key),
-	set: <K extends SettingsKey>(key: K, value: SettingsOptions[K]) =>
-		ipcRenderer.invoke("settings:set", key, value),
-	reset: (key: SettingsKey) => ipcRenderer.invoke("settings:reset", key),
+	get: (path: SettingsPath) => ipcRenderer.invoke("settings:get", path),
+	set: <P extends SettingsPath>(path: P, value: SettingValue<P>) =>
+		ipcRenderer.invoke("settings:set", path, value),
+	reset: (path: SettingsPath) => ipcRenderer.invoke("settings:reset", path),
 	resetAll: () => ipcRenderer.invoke("settings:resetAll"),
-	migrateLocalStorage: (values: Partial<SettingsOptions>) =>
+	migrateLocalStorage: (values: unknown) =>
 		ipcRenderer.invoke("settings:migrateLocalStorage", values),
 	chooseDownloadDirectory: () =>
 		ipcRenderer.invoke("settings:chooseDownloadDirectory"),
@@ -136,7 +140,7 @@ contextBridge.exposeInMainWorld("ai", {
 	upload: async (elementId: number) => {
 		const allowUpload = await ipcRenderer.invoke(
 			"settings:get",
-			"UploadAIChats",
+			"ai.uploadChats",
 		);
 		if (!allowUpload) {
 			throw new Error("AI document uploads are disabled in settings.");
@@ -306,16 +310,14 @@ declare global {
 		};
 		settings: {
 			getAll: () => Promise<SettingsOptions>;
-			get: <K extends SettingsKey>(key: K) => Promise<SettingsOptions[K]>;
-			set: <K extends SettingsKey>(
-				key: K,
-				value: SettingsOptions[K],
+			get: <P extends SettingsPath>(path: P) => Promise<SettingValue<P>>;
+			set: <P extends SettingsPath>(
+				path: P,
+				value: SettingValue<P>,
 			) => Promise<SettingsOptions>;
-			reset: (key: SettingsKey) => Promise<SettingsOptions>;
+			reset: (path: SettingsPath) => Promise<SettingsOptions>;
 			resetAll: () => Promise<SettingsOptions>;
-			migrateLocalStorage: (
-				values: Partial<SettingsOptions>,
-			) => Promise<SettingsOptions>;
+			migrateLocalStorage: (values: unknown) => Promise<SettingsOptions>;
 			chooseDownloadDirectory: () => Promise<SettingsOptions>;
 			subscribe: (callback: (settings: SettingsOptions) => void) => () => void;
 		};
@@ -474,7 +476,10 @@ function useLoading() {
 
 	return {
 		async appendLoading() {
-			const theme = await ipcRenderer.invoke("settings:get", "theme");
+			const theme = await ipcRenderer.invoke(
+				"settings:get",
+				"appearance.theme",
+			);
 			const resolvedTheme =
 				theme === "system"
 					? window.matchMedia("(prefers-color-scheme: dark)").matches

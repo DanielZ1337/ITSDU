@@ -62,7 +62,7 @@ export default function NotificationCenter() {
 	const messagesQuery = useGETinstantMessagesv2(
 		{ maxThreadCount: 15, threadPage: 0, maxMessages: 1 },
 		{
-			enabled: open && settings.notificationsMessages,
+			enabled: open && settings.notifications.messages,
 			staleTime: 1000 * 60,
 		},
 	);
@@ -74,7 +74,7 @@ export default function NotificationCenter() {
 			deadline: ItslearningRestApiEntitiesTaskDeadlineFilter.All,
 		},
 		{
-			enabled: open && settings.notificationsTasks,
+			enabled: open && settings.notifications.tasks,
 			suspense: false,
 			staleTime: 1000 * 60,
 		},
@@ -85,10 +85,10 @@ export default function NotificationCenter() {
 	);
 
 	const items = useMemo(() => {
-		const threads = settings.notificationsMessages
+		const threads = settings.notifications.messages
 			? (messagesQuery.data?.pages.flatMap((page) => page.EntityArray) ?? [])
 			: [];
-		const tasks = settings.notificationsTasks
+		const tasks = settings.notifications.tasks
 			? (tasksQuery.data?.EntityArray ?? [])
 			: [];
 		const events = normalizeCalendarEvents(
@@ -99,7 +99,7 @@ export default function NotificationCenter() {
 			threads,
 			tasks,
 			events,
-			update: settings.notificationsAppUpdates
+			update: settings.notifications.appUpdates
 				? {
 						ready: updateReady,
 						availableVersion: updateAvailableVersion,
@@ -112,9 +112,9 @@ export default function NotificationCenter() {
 		calendarQuery.data,
 		messagesQuery.data,
 		seenIds,
-		settings.notificationsAppUpdates,
-		settings.notificationsMessages,
-		settings.notificationsTasks,
+		settings.notifications.appUpdates,
+		settings.notifications.messages,
+		settings.notifications.tasks,
 		tasksQuery.data,
 		updateAvailableVersion,
 		updateError,

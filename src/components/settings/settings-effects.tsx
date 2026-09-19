@@ -8,8 +8,8 @@ export default function SettingsEffects() {
 
 	useEffect(() => {
 		if (!isHydrated) return;
-		setTheme(settings.theme);
-	}, [isHydrated, setTheme, settings.theme]);
+		setTheme(settings.appearance.theme);
+	}, [isHydrated, setTheme, settings.appearance.theme]);
 
 	return null;
 }

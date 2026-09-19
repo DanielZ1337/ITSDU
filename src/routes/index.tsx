@@ -22,14 +22,14 @@ export default function Index() {
 	const [searchInput, setSearchInput] = useState<string>("");
 	const debouncedSearchTerm = useDebounce(searchInput, 100);
 	const [selectedRankedBy, setSelectedRankedBy] =
-		useState<CourseCardsSortByTypes>(settings.courseSortBy);
+		useState<CourseCardsSortByTypes>(settings.navigation.courseSortBy);
 	const [selectedStarredOption, setSelectedStarredOption] =
 		useState<CourseCardsSelectOptions>(CourseCardsSelectOptionsEnum.Starred);
 	const cardsRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		setSelectedRankedBy(settings.courseSortBy);
-	}, [settings.courseSortBy]);
+		setSelectedRankedBy(settings.navigation.courseSortBy);
+	}, [settings.navigation.courseSortBy]);
 
 	return (
 		<div className="flex flex-col flex-1 h-full w-full">
@@ -68,7 +68,7 @@ export default function Index() {
 								selectedRankedBy={selectedRankedBy}
 								setSelectedRankedBy={(sortBy) => {
 									setSelectedRankedBy(sortBy);
-									void setSetting("courseSortBy", sortBy);
+									void setSetting("navigation.courseSortBy", sortBy);
 								}}
 							/>
 							<CourseCardStarredSelect

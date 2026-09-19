@@ -6,14 +6,14 @@ function darkModeToggleHandler() {
 	handle("dark-mode:toggle", () => {
 		const settingsService = SettingsService.getInstance();
 		const nextTheme = nativeTheme.shouldUseDarkColors ? "light" : "dark";
-		settingsService.set("theme", nextTheme);
+		settingsService.set("appearance.theme", nextTheme);
 		return nextTheme === "dark";
 	});
 }
 
 function darkModeSetSystemHandler() {
 	handle("dark-mode:system", () => {
-		SettingsService.getInstance().set("theme", "system");
+		SettingsService.getInstance().set("appearance.theme", "system");
 	});
 }
 
@@ -25,7 +25,10 @@ function darkModeGetHandler() {
 
 function darkModeSetHandler() {
 	handle("dark-mode:set", (_, value) => {
-		SettingsService.getInstance().set("theme", value ? "dark" : "light");
+		SettingsService.getInstance().set(
+			"appearance.theme",
+			value ? "dark" : "light",
+		);
 	});
 }
 

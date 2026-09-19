@@ -66,7 +66,7 @@ function createRenderableResource(
 }
 
 function shouldCacheOpenedResource(
-	mode: Awaited<ReturnType<typeof window.settings.getAll>>["resourceCacheMode"],
+	mode: Awaited<ReturnType<typeof window.settings.getAll>>["cache"]["mode"],
 	file: { name: string; type?: string },
 ) {
 	if (mode === "manual") return false;
@@ -161,19 +161,15 @@ export default function useResourceByElementID(
 			};
 
 			const settings = await window.settings.getAll();
-			if (shouldCacheOpenedResource(settings.resourceCacheMode, file)) {
+			if (shouldCacheOpenedResource(settings.cache.mode, file)) {
 				await db.getIndexedDB().checkRemainingSpace(file.size / 1024 / 1024, {
 					onStorageAvailable: async () => {
 						await db.insertResource(insertResourceObject);
-						await db.enforceMaxSize(
-							settings.resourceCacheMaxSizeMb * 1024 * 1024,
-						);
+						await db.enforceMaxSize(settings.cache.maxSizeMb * 1024 * 1024);
 					},
 					onStorageUnavailable: async () => {
 						await db.insertResource(insertResourceObject);
-						await db.enforceMaxSize(
-							settings.resourceCacheMaxSizeMb * 1024 * 1024,
-						);
+						await db.enforceMaxSize(settings.cache.maxSizeMb * 1024 * 1024);
 					},
 				});
 			}
@@ -182,10 +178,7 @@ export default function useResourceByElementID(
 				{
 					...file,
 					...resourceInfo,
-					cacheStatus: shouldCacheOpenedResource(
-						settings.resourceCacheMode,
-						file,
-					)
+					cacheStatus: shouldCacheOpenedResource(settings.cache.mode, file)
 						? "cached"
 						: "missing",
 				},

@@ -18,7 +18,7 @@ export function useUnreadMessagesNotification() {
 	const { settings, isHydrated } = useSettings();
 	const notificationsEnabled =
 		isHydrated &&
-		settings.notificationsMessages &&
+		settings.notifications.messages &&
 		!isQuietHoursActive(settings);
 
 	// Fetch unread message count.

@@ -235,7 +235,7 @@ export default function CommandPalette() {
 	const toggleTheme = () => {
 		const next = resolvedTheme === "dark" ? "light" : "dark";
 		setTheme(next);
-		void setSetting("theme", next);
+		void setSetting("appearance.theme", next);
 	};
 
 	const checkForUpdates = async () => {
@@ -259,7 +259,7 @@ export default function CommandPalette() {
 
 	const openDownloadsFolder = async () => {
 		const directory =
-			settings.downloadDirectory ?? (await window.app.getDownloadPath());
+			settings.downloads.directory ?? (await window.app.getDownloadPath());
 		await window.app.openShell(directory);
 	};
 

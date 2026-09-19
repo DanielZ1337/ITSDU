@@ -45,16 +45,16 @@ function Documents() {
 	useEffect(() => {
 		if (!isHydrated) return;
 		setAISidepanel(
-			settings.CustomPDFrenderer
-				? settings.pdfAIChatSidepanelOpenByDefault
+			settings.pdf.customRenderer
+				? settings.pdf.aiChatSidepanelOpenByDefault
 				: false,
 		);
 	}, [
 		elementId,
 		isHydrated,
 		setAISidepanel,
-		settings.CustomPDFrenderer,
-		settings.pdfAIChatSidepanelOpenByDefault,
+		settings.pdf.customRenderer,
+		settings.pdf.aiChatSidepanelOpenByDefault,
 	]);
 
 	if (isError && !data) {
@@ -82,7 +82,7 @@ function Documents() {
 					</Badge>
 				</div>
 			)}
-			{settings.CustomPDFrenderer ? (
+			{settings.pdf.customRenderer ? (
 				<CustomPDFProvider>
 					<PdfRenderer
 						key={memoizedData?.url}

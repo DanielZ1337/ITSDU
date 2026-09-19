@@ -141,7 +141,7 @@ function CalendarPlanner({
 	const { settings, isHydrated } = useSettings();
 	const availableViews = allowedViews ?? ["month", "week", "day", "agenda"];
 	const [view, setView] = useState<CalendarViewSetting>(
-		defaultViewOverride ?? settings.calendarDefaultView,
+		defaultViewOverride ?? settings.calendar.defaultView,
 	);
 	const [anchorDate, setAnchorDate] = useState(() => new Date());
 	const [selectedDay, setSelectedDay] = useState(() => startOfDay(new Date()));
@@ -156,18 +156,18 @@ function CalendarPlanner({
 		if (!isHydrated || hydratedDefaultView.current || defaultViewOverride)
 			return;
 		hydratedDefaultView.current = true;
-		setView(settings.calendarDefaultView);
-	}, [defaultViewOverride, isHydrated, settings.calendarDefaultView]);
+		setView(settings.calendar.defaultView);
+	}, [defaultViewOverride, isHydrated, settings.calendar.defaultView]);
 
 	const fetchStart = useMemo(
 		() =>
 			getFetchStartDate(
 				view,
 				anchorDate,
-				settings.calendarWeekStartsOn,
+				settings.calendar.weekStartsOn,
 				selectedDay,
 			),
-		[anchorDate, selectedDay, settings.calendarWeekStartsOn, view],
+		[anchorDate, selectedDay, settings.calendar.weekStartsOn, view],
 	);
 
 	const calendarQuery = useGETcalendarEvents(
@@ -356,8 +356,8 @@ function CalendarPlanner({
 								anchorDate={anchorDate}
 								events={filteredEvents}
 								selectedDay={selectedDay}
-								weekStartsOn={settings.calendarWeekStartsOn}
-								showWeekends={settings.calendarShowWeekends}
+								weekStartsOn={settings.calendar.weekStartsOn}
+								showWeekends={settings.calendar.showWeekends}
 								onSelectDay={setSelectedDay}
 								onOpenEvent={setSelectedEvent}
 							/>
@@ -367,8 +367,8 @@ function CalendarPlanner({
 								anchorDate={anchorDate}
 								events={filteredEvents}
 								selectedDay={selectedDay}
-								weekStartsOn={settings.calendarWeekStartsOn}
-								showWeekends={settings.calendarShowWeekends}
+								weekStartsOn={settings.calendar.weekStartsOn}
+								showWeekends={settings.calendar.showWeekends}
 								onSelectDay={setSelectedDay}
 								onOpenEvent={setSelectedEvent}
 							/>

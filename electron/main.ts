@@ -63,7 +63,7 @@ async function createMainWindow() {
 	const { SettingsService } = await import(
 		"./services/settings/settings-service.ts"
 	);
-	const startUpTheme = SettingsService.getInstance().get("theme");
+	const startUpTheme = SettingsService.getInstance().get("appearance.theme");
 	const shouldUseDarkTheme =
 		startUpTheme === "system"
 			? nativeTheme.shouldUseDarkColors
@@ -199,7 +199,7 @@ export async function createAuthWindow(
 	const { SettingsService } = await import(
 		"./services/settings/settings-service.ts"
 	);
-	const startUpTheme = SettingsService.getInstance().get("theme");
+	const startUpTheme = SettingsService.getInstance().get("appearance.theme");
 	const shouldUseDarkTheme =
 		startUpTheme === "system"
 			? nativeTheme.shouldUseDarkColors
@@ -536,7 +536,9 @@ app.whenReady().then(async () => {
 
 		const armRefreshTimer = () => {
 			if (refreshTimer) clearInterval(refreshTimer);
-			const intervalMinutes = settingsService.get("authRefreshIntervalMinutes");
+			const intervalMinutes = settingsService.get(
+				"auth.refreshIntervalMinutes",
+			);
 			refreshTimer = setInterval(
 				() => void runBackgroundRefresh(),
 				intervalMinutes * 60 * 1000,

@@ -93,20 +93,20 @@ export function useUpdateAvailableToast() {
 		if (
 			!isHydrated ||
 			import.meta.env.DEV ||
-			!settings.updatesAutoCheckOnStartup ||
-			!settings.notificationsAppUpdates
+			!settings.updates.autoCheckOnStartup ||
+			!settings.notifications.appUpdates
 		) {
 			return;
 		}
 		checkForUpdate();
 	}, [
 		isHydrated,
-		settings.notificationsAppUpdates,
-		settings.updatesAutoCheckOnStartup,
+		settings.notifications.appUpdates,
+		settings.updates.autoCheckOnStartup,
 	]);
 
 	useEffect(() => {
-		if (settings.notificationsAppUpdates && isUpdateAvailable) {
+		if (settings.notifications.appUpdates && isUpdateAvailable) {
 			toast.info(t("settings.appUpdates.download.title"), {
 				duration: 10000,
 				action: {
@@ -118,13 +118,13 @@ export function useUpdateAvailableToast() {
 	}, [
 		handleUpdateClick,
 		isUpdateAvailable,
-		settings.notificationsAppUpdates,
+		settings.notifications.appUpdates,
 		t,
 	]);
 
 	useEffect(() => {
-		if (settings.notificationsAppUpdates && isError) {
+		if (settings.notifications.appUpdates && isError) {
 			toast.error(t("errors.updateCheck"));
 		}
-	}, [isError, settings.notificationsAppUpdates, t]);
+	}, [isError, settings.notifications.appUpdates, t]);
 }

@@ -31,7 +31,7 @@ export default function SidebarItem({
 					onClick={(e) => disabled && e.preventDefault()}
 					className={cn(
 						"group/item relative flex items-center justify-center",
-						settings.sidebarDensity === "compact"
+						settings.appearance.sidebarDensity === "compact"
 							? "p-2 mx-0.5 rounded-lg"
 							: "p-2.5 mx-1 rounded-xl",
 						"cursor-pointer",

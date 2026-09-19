@@ -48,7 +48,7 @@ function getConfiguredDownloadDirectory() {
 }
 
 async function applyDownloadOpenPreference(filePath: string) {
-	const autoOpen = SettingsService.getInstance().get("downloadAutoOpen");
+	const autoOpen = SettingsService.getInstance().get("downloads.autoOpen");
 
 	if (autoOpen === "file") {
 		await shell.openPath(filePath);

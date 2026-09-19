@@ -28,7 +28,9 @@ export default function Sidebar() {
 				className={cn(
 					"group/sidebar no-drag h-full flex flex-col",
 					"z-20 bg-background/80 backdrop-blur-sm",
-					settings.sidebarDensity === "compact" ? "py-2 px-1" : "py-4 px-2",
+					settings.appearance.sidebarDensity === "compact"
+						? "py-2 px-1"
+						: "py-4 px-2",
 				)}
 			>
 				{/* Main navigation */}

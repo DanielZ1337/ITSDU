@@ -38,7 +38,7 @@ export default function SettingsDropdown({
 
 	const handleDarkModeToggle = useCallback(async () => {
 		const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
-		await setSetting("theme", nextTheme);
+		await setSetting("appearance.theme", nextTheme);
 		setTheme(nextTheme);
 	}, [resolvedTheme, setSetting, setTheme]);
 

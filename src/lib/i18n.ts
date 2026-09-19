@@ -687,7 +687,7 @@ export function createTranslator(locale: Locale) {
 
 export function useLocale() {
 	const { settings } = useSettings();
-	const locale = resolveLocale(settings.language);
+	const locale = resolveLocale(settings.appearance.language);
 
 	useEffect(() => {
 		document.documentElement.lang = locale;
@@ -695,7 +695,7 @@ export function useLocale() {
 
 	return {
 		locale,
-		language: settings.language,
+		language: settings.appearance.language,
 	};
 }
 

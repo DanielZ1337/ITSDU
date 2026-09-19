@@ -32,5 +32,5 @@ export async function cacheResourceForOffline({
 	});
 
 	const settings = await window.settings.getAll();
-	await db.enforceMaxSize(settings.resourceCacheMaxSizeMb * 1024 * 1024);
+	await db.enforceMaxSize(settings.cache.maxSizeMb * 1024 * 1024);
 }

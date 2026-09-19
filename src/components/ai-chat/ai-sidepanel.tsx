@@ -73,7 +73,7 @@ export default function AISidePanel({
 
 	useEffect(() => {
 		const uploadDocumentForAI = async () => {
-			if (!settings.UploadAIChats) {
+			if (!settings.ai.uploadChats) {
 				setError("AI document uploads are disabled in Settings.");
 				return;
 			}
@@ -101,7 +101,7 @@ export default function AISidePanel({
 		elementId,
 		refetch,
 		refetchCount,
-		settings.UploadAIChats,
+		settings.ai.uploadChats,
 	]);
 
 	const handleSubmit = async (
