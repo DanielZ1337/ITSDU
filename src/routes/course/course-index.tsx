@@ -47,6 +47,7 @@ export default function CourseIndex() {
 
 	const ref = useRef<PanelImperativeHandle>(null);
 
+	// Hide the tooltip while the handle is being held/dragged. The separator may swallow mouseup, so listen to pointer events.
 	const handleMouseDown = () => {
 		const timeoutId = setTimeout(() => {
 			setLongPress(true);
@@ -55,14 +56,26 @@ export default function CourseIndex() {
 		const clearLongPress = () => {
 			clearTimeout(timeoutId);
 			setLongPress(false);
-			document.removeEventListener("touchend", clearLongPress);
-			document.removeEventListener("touchcancel", clearLongPress);
-			document.removeEventListener("mouseup", clearLongPress);
+			for (const type of [
+				"pointerup",
+				"pointercancel",
+				"mouseup",
+				"touchend",
+				"touchcancel",
+			]) {
+				document.removeEventListener(type, clearLongPress, true);
+			}
 		};
 
-		document.addEventListener("mouseup", clearLongPress);
-		document.addEventListener("touchend", clearLongPress);
-		document.addEventListener("touchcancel", clearLongPress);
+		for (const type of [
+			"pointerup",
+			"pointercancel",
+			"mouseup",
+			"touchend",
+			"touchcancel",
+		]) {
+			document.addEventListener(type, clearLongPress, true);
+		}
 	};
 
 	const toggleResourcesPanel = () => {
