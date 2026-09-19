@@ -1,4 +1,4 @@
-import { useAtom } from "jotai/index";
+import { useAtom } from "jotai";
 import { browseNavigationAtom } from "@/atoms/browse-navigation.ts";
 
 export const useBrowseNavigation = () => {

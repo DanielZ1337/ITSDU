@@ -1,4 +1,4 @@
-import { useAtom } from "jotai/index";
+import { useAtom } from "jotai";
 import { sidebarActiveAtom } from "@/atoms/sidebar.ts";
 
 export const useSidebar = () => {
