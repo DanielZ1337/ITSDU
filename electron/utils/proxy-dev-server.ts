@@ -25,7 +25,11 @@ export async function startProxyDevServer() {
 	);
 
 	// Loopback only: never expose the proxy to the local network.
-	proxy.listen(8080, "127.0.0.1", () => {
+	const server = proxy.listen(8080, "127.0.0.1", () => {
 		console.log("API Proxy Server with CORS enabled is listening on port 8080");
+	});
+	server.on("error", (error: NodeJS.ErrnoException) => {
+		if (error.code !== "EADDRINUSE") throw error;
+		console.warn("Port 8080 is already in use; reusing the running API proxy.");
 	});
 }

@@ -60,6 +60,14 @@ export default defineConfig({
 		electron([
 			{
 				entry: "electron/main.ts",
+				vite: {
+					build: {
+						rollupOptions: {
+							// Dev-only API proxy: loaded from node_modules in development, never shipped.
+							external: ["express", "cors", "http-proxy-middleware"],
+						},
+					},
+				},
 			},
 			{
 				entry: "electron/preload.ts",

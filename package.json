@@ -73,7 +73,8 @@
 		"release:mac": "npm run build && electron-builder --mac --publish always",
 		"release:linux": "npm run build && electron-builder --linux --x64 --publish always",
 		"release:win": "npm run build && electron-builder --win --x64 --publish always",
-		"package:dir": "npm run build && electron-builder --dir"
+		"package:dir": "npm run build && electron-builder --dir",
+		"predev": "node scripts/clean.mjs"
 	},
 	"dependencies": {
 		"axios": "^1.20.0",

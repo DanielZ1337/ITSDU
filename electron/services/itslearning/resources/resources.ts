@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BrowserWindow, Cookie } from "electron";
-import { apiUrl } from "../../../../src/lib/utils.ts";
+import { apiUrl } from "../../../../src/lib/api-url.ts";
 import { getFormattedCookies } from "../../../utils/cookies.ts";
 import { createScrapeWindow } from "../../scrape/scraper.ts";
 import { AuthService } from "../auth/auth-service.ts";
