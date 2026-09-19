@@ -208,6 +208,13 @@
 		@apply border-border;
 	}
 
+	/* Tailwind 4's preflight no longer gives buttons a pointer cursor (v3 did). */
+	button:not(:disabled),
+	[role="button"]:not(:disabled),
+	summary {
+		cursor: pointer;
+	}
+
 	body {
 		@apply bg-background text-foreground;
 		/* font-feature-settings: "rlig" 1, "calt" 1; */
