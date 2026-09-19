@@ -1,33 +1,34 @@
-import { BrowserWindow, app, ipcMain } from "electron";
-import { autoUpdater } from "electron-updater";
+import { app, BrowserWindow } from "electron";
+import { handle } from "../ipc/secure";
+import { getAutoUpdater } from "../services/updater/updater";
 
 function exitHandler() {
-	ipcMain.handle("app:exit", () => {
+	handle("app:exit", () => {
 		app.exit(0);
 	});
 }
 
 function quitHandler() {
-	ipcMain.handle("app:quit", () => {
+	handle("app:quit", () => {
 		app.quit();
 	});
 }
 
 function getVersionHandler() {
-	ipcMain.handle("app:getVersion", () => {
+	handle("app:getVersion", () => {
 		return app.getVersion();
 	});
 }
 
 function relaunchHandler() {
-	ipcMain.handle("app:relaunch", () => {
+	handle("app:relaunch", () => {
 		app.relaunch();
 		app.quit();
 	});
 }
 
 function MinimizerHandler() {
-	ipcMain.handle("app:minimize", () => {
+	handle("app:minimize", () => {
 		const windows = BrowserWindow.getAllWindows();
 		windows.forEach((window) => {
 			window.minimize();
@@ -36,7 +37,7 @@ function MinimizerHandler() {
 }
 
 function MaximizerHandler() {
-	ipcMain.handle("app:maximize", () => {
+	handle("app:maximize", () => {
 		const focusedWindow = BrowserWindow.getFocusedWindow();
 		if (focusedWindow) {
 			if (focusedWindow.isMaximized()) {
@@ -49,13 +50,18 @@ function MaximizerHandler() {
 }
 
 function checkForUpdatesHandler() {
-	ipcMain.handle("app:checkForUpdates", async (event) => {
-		return (await autoUpdater.checkForUpdates())?.updateInfo;
+	handle("app:checkForUpdates", async (_event) => {
+		return (await (await getAutoUpdater()).checkForUpdates())?.updateInfo;
 	});
 }
 
 function downloadUpdateHandler() {
-	ipcMain.handle("app:downloadUpdate", async (event) => {
+	handle("app:downloadUpdate", async (event) => {
+		const autoUpdater = await getAutoUpdater();
+		// Replace listeners from an earlier attempt so progress is not reported twice.
+		autoUpdater.removeAllListeners("download-progress");
+		autoUpdater.removeAllListeners("update-downloaded");
+
 		autoUpdater.on("download-progress", (progress) => {
 			event.sender.send("app:downloadProgress", progress);
 		});
@@ -69,13 +75,13 @@ function downloadUpdateHandler() {
 }
 
 function updateHandler() {
-	ipcMain.handle("app:update", async (event) => {
-		return autoUpdater.quitAndInstall();
+	handle("app:update", async (_event) => {
+		return (await getAutoUpdater()).quitAndInstall();
 	});
 }
 
 function focusHandler() {
-	ipcMain.handle("app:focus", () => {
+	handle("app:focus", () => {
 		const window = BrowserWindow.getAllWindows()[0];
 
 		if (window) {

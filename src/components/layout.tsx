@@ -1,15 +1,15 @@
+import { Command } from "lucide-react";
+import { lazy, Suspense, useEffect, useRef } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
 import { isMacOS } from "@/lib/utils";
-import { Spinner } from "@nextui-org/spinner";
-import { Command } from "lucide-react";
-import { Suspense, lazy, useEffect, useRef } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { useUpdateAvailableToast } from "./update-available-toast";
 
@@ -92,14 +92,9 @@ export default function Layout() {
 	}, [navigate]);
 
 	useEffect(() => {
-		const handleTrayNavigate = (_event: unknown, routePath: string) => {
+		return window.events.on("tray:navigate", (routePath: string) => {
 			navigate(routePath);
-		};
-
-		window.ipcRenderer.on("tray:navigate", handleTrayNavigate);
-		return () => {
-			window.ipcRenderer.removeAllListeners("tray:navigate");
-		};
+		});
 	}, [navigate]);
 
 	return (
@@ -185,13 +180,13 @@ export default function Layout() {
 			<Suspense fallback={null}>
 				<BrowserNavLazy />
 			</Suspense>
-			<div className="relative flex max-h-screen flex-1 overflow-hidden drag bg-background transition-colors ">
+			<div className="relative flex max-h-screen flex-1 overflow-hidden bg-background transition-colors">
 				<Suspense fallback={null}>
 					<SidebarLazy />
 				</Suspense>
 				<div
 					className={
-						"no-drag h-full flex flex-1 overflow-hidden dark:bg-foreground/[2%] transition-colors rounded-tl-md border-t border-l"
+						"no-drag h-full flex flex-1 overflow-hidden dark:bg-foreground/2 transition-colors rounded-tl-md border-t border-l"
 					}
 				>
 					<ErrorBoundary fallback={<div>ERROR</div>}>

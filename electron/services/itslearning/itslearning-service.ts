@@ -1,6 +1,8 @@
 import axios from "axios";
 import { ipcMain } from "electron";
 import Store from "electron-store";
+import { handle } from "../../ipc/secure";
+import { MOCK_URL, storeName } from "./mock-mode";
 
 export type ItslearningStore = {
 	IsFronterUpgradedSite: boolean;
@@ -40,19 +42,16 @@ export const initializeItslearningPreload = () => {
 	} catch (error) {
 		console.error(error);
 	}
-	ipcMain.handle(
-		"itslearning:setOrganisation",
-		async (event, customerId: number) => {
-			await ItslearningService.getInstance().setCustomerById(customerId);
-		},
-	);
+	handle("itslearning:setOrganisation", async (_event, customerId: number) => {
+		await ItslearningService.getInstance().setCustomerById(customerId);
+	});
 };
 
 export class ItslearningService {
 	private static instance: ItslearningService;
 	private store = new Store<ItslearningStore>({
 		watch: true,
-		name: "itsdu-itslearning-store",
+		name: storeName("itsdu-itslearning-store"),
 		defaults: defaultStore,
 	});
 
@@ -67,17 +66,28 @@ export class ItslearningService {
 
 	async setCustomerById(customerId: number) {
 		const API_URL = new URL(
-			`https://sdu.itslearning.com/restapi/sites/${customerId}/v1`,
+			`${MOCK_URL ?? "https://sdu.itslearning.com"}/restapi/sites/${customerId}/v1`,
 		);
 
 		const response = await axios.get(API_URL.toString());
 
 		const store = response.data as ItslearningStore;
+		if (!store?.BaseUrl) {
+			throw new Error(
+				`Site ${customerId} response from ${API_URL.origin} has no BaseUrl; keeping the current site settings`,
+			);
+		}
 
 		this.store.store = store;
 	}
 
 	getStore(): ItslearningStore {
+		if (MOCK_URL)
+			return {
+				...this.store.store,
+				BaseUrl: MOCK_URL,
+				OrgApiBaseUrl: MOCK_URL,
+			};
 		return this.store.store;
 	}
 
@@ -86,11 +96,11 @@ export class ItslearningService {
 	}
 
 	getBaseUrl() {
-		return this.store.store.BaseUrl;
+		return MOCK_URL ?? this.store.store.BaseUrl;
 	}
 
 	getOrgApiBaseUrl() {
-		return this.store.store.OrgApiBaseUrl;
+		return MOCK_URL ?? this.store.store.OrgApiBaseUrl;
 	}
 
 	getCustomerId() {

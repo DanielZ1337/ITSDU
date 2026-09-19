@@ -1,5 +1,5 @@
-import { AnimatePresence, m } from "framer-motion";
 import { StarHalfIcon, StarIcon } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import { useState } from "react";
 
 export default function AllStarredCoursesButton() {

@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	PUTinstantMessageThreadApiUrl,
@@ -5,8 +7,6 @@ import {
 	PUTinstantMessageThreadParams,
 } from "@/types/api-types/messages/PUTinstantMessageThread.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTinstantMessageThread(
 	params: PUTinstantMessageThreadParams,
@@ -17,12 +17,13 @@ export default function usePUTinstantMessageThread(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+		mutationKey: [
 			TanstackKeys.PUTinstantMessageThread,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async (body) => {
+
+		mutationFn: async (body) => {
 			const res = await axios.put(PUTinstantMessageThreadApiUrl(params), body, {
 				params: {
 					access_token: await getAccessToken(),
@@ -35,8 +36,7 @@ export default function usePUTinstantMessageThread(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

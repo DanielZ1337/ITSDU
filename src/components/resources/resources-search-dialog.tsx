@@ -1,3 +1,6 @@
+import { useDebounce } from "@uidotdev/usehooks";
+import { DownloadIcon, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	CommandDialog,
@@ -13,14 +16,13 @@ import { cn, isMacOS } from "@/lib/utils";
 import useGETcourseResourceBySearch from "@/queries/courses/useGETcourseResourceBySearch.ts";
 import { isResourceFile } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItsolutionsItslUtilsConstantsLocationType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.LocationType.ts";
-import { useDebounce } from "@uidotdev/usehooks";
-import { DownloadIcon, Search } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { useDownloadToast } from "../recursive-file-explorer";
 
 export default function SearchResourcesDialog({
 	courseId,
-}: { courseId: number }) {
+}: {
+	courseId: number;
+}) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [query, setQuery] = useState("");
 	const debouncedQuery = useDebounce(query, 300);
@@ -38,11 +40,6 @@ export default function SearchResourcesDialog({
 			refetchOnReconnect: false,
 		},
 	);
-
-	function isFile(filename: string): boolean {
-		const regex = /\.(pdf|docx?|xlsx?|pptx?|txt|csv|zip|rar)$/i;
-		return regex.test(filename);
-	}
 
 	const { downloadToast } = useDownloadToast();
 
@@ -146,7 +143,7 @@ export default function SearchResourcesDialog({
 				className={cn(
 					"h-9 border-0 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground",
 					sidebarActive
-						? "lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 justify-start"
+						? "lg:border lg:py-2 lg:pr-12 lg:w-40 xl:w-52 justify-start"
 						: "w-full mx-auto justify-center",
 				)}
 				onClick={() => {
@@ -195,7 +192,7 @@ export default function SearchResourcesDialog({
 										<CommandItem
 											data-elementid={resource.ElementId}
 											key={resource.ElementId}
-											value={resource.Title}
+											value={`${resource.Title} ${resource.ElementId}`}
 											className="flex items-center justify-between"
 											onSelect={() =>
 												handleSelect(() => {

@@ -1,5 +1,5 @@
-import { aiSidepanelAtom } from "@/atoms/ai-sidepanel";
 import { useAtom } from "jotai";
+import { aiSidepanelAtom } from "@/atoms/ai-sidepanel";
 
 export const useAISidepanel = () => {
 	const [aiSidepanel, setAISidepanel] = useAtom(aiSidepanelAtom);

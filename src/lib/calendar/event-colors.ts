@@ -90,9 +90,9 @@ const PALETTE: CalendarEventAccent[] = [
 
 const NEUTRAL: CalendarEventAccent = {
 	dot: "bg-muted-foreground",
-	chipBg: "bg-foreground/[0.06] group-hover:bg-foreground/10",
+	chipBg: "bg-foreground/6 group-hover:bg-foreground/10",
 	chipText: "text-foreground/80",
-	soft: "bg-foreground/[0.04]",
+	soft: "bg-foreground/4",
 	ring: "ring-border",
 	gradient: "from-foreground/10",
 };

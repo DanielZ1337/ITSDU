@@ -6,7 +6,7 @@ export default function HeaderUserFullnameAvatar() {
 	const user = useUser();
 	return (
 		<div className={"flex flex-row items-center justify-center gap-2"}>
-			<Avatar className={"flex-shrink-0 w-8 h-8"}>
+			<Avatar className={"shrink-0 w-8 h-8"}>
 				<AvatarImage
 					src={user?.ProfileImageUrl}
 					alt={user?.FullName}

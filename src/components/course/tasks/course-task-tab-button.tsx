@@ -1,6 +1,6 @@
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 export function CourseTaskTabButton({
 	active,

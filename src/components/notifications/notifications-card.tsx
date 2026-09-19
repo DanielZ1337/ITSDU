@@ -1,10 +1,10 @@
+import * as linkify from "linkifyjs";
+import { ChevronDown, Megaphone } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
+import { useState } from "react";
 import { cn, getRelativeTimeString } from "@/lib/utils";
 import useGETnotificationElements from "@/queries/notifications/useGETnotificationElements";
 import { ItslearningRestApiEntitiesStreamItemV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.StreamItemV2";
-import { AnimatePresence, m } from "framer-motion";
-import * as linkify from "linkifyjs";
-import { ChevronDown, Megaphone } from "lucide-react";
-import { useState } from "react";
 import LightbulletinCard from "../lightbulletin/lightbulletin-card";
 import NotificationElement from "./notification-element";
 import NotificationTitle from "./notification-title";
@@ -35,12 +35,14 @@ export default function NotificationCard({
 		<div className="rounded-xl border border-border/50 bg-card/50 p-4 transition-colors hover:bg-card/80">
 			{/* Header */}
 			<div className="flex items-start gap-3">
-				<div className={cn(
-					"flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0 overflow-hidden",
-					isAnnouncement
-						? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 ring-1 ring-purple-500/20"
-						: "bg-gradient-to-br from-primary/10 to-orange-500/10 ring-1 ring-primary/20"
-				)}>
+				<div
+					className={cn(
+						"flex h-11 w-11 items-center justify-center rounded-xl shrink-0 overflow-hidden",
+						isAnnouncement
+							? "bg-linear-to-br from-purple-500/20 to-pink-500/20 ring-1 ring-purple-500/20"
+							: "bg-linear-to-br from-primary/10 to-orange-500/10 ring-1 ring-primary/20",
+					)}
+				>
 					<img
 						loading="lazy"
 						src={notification.IconUrl}
@@ -70,16 +72,18 @@ export default function NotificationCard({
 					className={cn(
 						"mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
 						"text-primary hover:bg-primary/10",
-						showLightBulletin && "bg-primary/10"
+						showLightBulletin && "bg-primary/10",
 					)}
 					onClick={() => setShowLightBulletin((prev) => !prev)}
 				>
 					<Megaphone className="h-4 w-4" />
 					{showLightBulletin ? "Hide" : "Show"} announcement
-					<ChevronDown className={cn(
-						"h-4 w-4 transition-transform",
-						showLightBulletin && "rotate-180"
-					)} />
+					<ChevronDown
+						className={cn(
+							"h-4 w-4 transition-transform",
+							showLightBulletin && "rotate-180",
+						)}
+					/>
 				</button>
 			)}
 
@@ -100,7 +104,11 @@ export default function NotificationCard({
 									animate={{
 										opacity: 1,
 										y: 0,
-										transition: { delay: i * 0.05, type: "tween", duration: 0.2 },
+										transition: {
+											delay: i * 0.05,
+											type: "tween",
+											duration: 0.2,
+										},
 									}}
 									exit={{ opacity: 0, y: 10 }}
 								>

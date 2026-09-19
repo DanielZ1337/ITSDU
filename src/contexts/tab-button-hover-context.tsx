@@ -12,7 +12,9 @@ export const TabButtonHoverContext = createContext<TabContext>([
 
 export function TabButtonHoverProvider({
 	children,
-}: { children: React.ReactNode }) {
+}: {
+	children: React.ReactNode;
+}) {
 	const [hoveredTab, setHoveredTab] = useState<Tab>(null);
 
 	return (

@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	PUTlightbulletinNotifications,
@@ -6,8 +8,6 @@ import {
 	PUTlightbulletinNotificationsParams,
 } from "@/types/api-types/lightbulletin/PUTlightbulletinNotifications.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTlightbulletinNotifications(
 	params: PUTlightbulletinNotificationsParams,
@@ -18,12 +18,13 @@ export default function usePUTlightbulletinNotifications(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+		mutationKey: [
 			TanstackKeys.LightbulletinNotifications,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async (body) => {
+
+		mutationFn: async (body) => {
 			const res = await axios.put(
 				PUTlightbulletinNotificationsApiUrl({
 					...params,
@@ -41,8 +42,7 @@ export default function usePUTlightbulletinNotifications(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

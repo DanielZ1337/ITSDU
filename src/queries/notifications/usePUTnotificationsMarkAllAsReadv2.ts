@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { queryClient } from "@/lib/tanstack-client";
 import { getAccessToken } from "@/lib/utils.ts";
 import {
@@ -7,15 +9,14 @@ import {
 } from "@/types/api-types/notifications/GETnotifications";
 import { PUTnotificationsMarkAsReadApiUrl } from "@/types/api-types/notifications/PUTnotificationsMarkAsRead";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTnotificationsMarkAllAsReadv2(
 	queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>,
 ) {
-	return useMutation(
-		[TanstackKeys.PUTnotificationsMarkAllAsRead],
-		async () => {
+	return useMutation({
+		mutationKey: [TanstackKeys.PUTnotificationsMarkAllAsRead],
+
+		mutationFn: async () => {
 			const allNotifications = await getNotificationsRecursively({
 				PageSize: 100,
 			});
@@ -39,32 +40,25 @@ export default function usePUTnotificationsMarkAllAsReadv2(
 
 			return res.data;
 		},
-		{
-			onSuccess: () => {
-				queryClient.refetchQueries([TanstackKeys.Notifications], {
-					exact: false,
-				});
-				queryClient.invalidateQueries(
-					[
-						TanstackKeys.NotificationElements,
-						TanstackKeys.Notifications,
-						TanstackKeys.NotificationsStream,
-						TanstackKeys.NotificationsTopMenu,
-					],
-					{
-						exact: false,
-						queryKey: [
-							TanstackKeys.NotificationElements,
-							TanstackKeys.Notifications,
-							TanstackKeys.NotificationsStream,
-							TanstackKeys.NotificationsTopMenu,
-						],
-					},
-				);
-			},
-			...queryConfig,
+
+		onSuccess: () => {
+			queryClient.refetchQueries({
+				queryKey: [TanstackKeys.Notifications],
+				exact: false,
+			});
+			queryClient.invalidateQueries({
+				queryKey: [
+					TanstackKeys.NotificationElements,
+					TanstackKeys.Notifications,
+					TanstackKeys.NotificationsStream,
+					TanstackKeys.NotificationsTopMenu,
+				],
+				exact: false,
+			});
 		},
-	);
+
+		...queryConfig,
+	});
 }
 
 // Recursive function to fetch all notifications

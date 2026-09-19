@@ -1,5 +1,5 @@
-import type { AuthSessionStatus } from "@/types/auth";
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
+import type { AuthSessionStatus } from "@/types/auth";
 
 type RetriableAxiosConfig = AxiosRequestConfig & {
 	__itsduAuthRetry?: boolean;

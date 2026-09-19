@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseParticipants,
@@ -5,12 +7,10 @@ import {
 	GETcourseParticipantsParams,
 } from "@/types/api-types/courses/GETcourseParticipants.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETcourseParticipants(
 	params: GETcourseParticipantsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcourseParticipants,
 		Error,
 		GETcourseParticipants,
@@ -49,11 +49,12 @@ export default function useGETcourseParticipants(
 		};
 	};
 
-	return useQuery(
-		[TanstackKeys.CourseParticipants, ...getQueryKeysFromParamsObject(params)],
-		() => fetchAllPages(),
-		{
-			...queryConfig,
-		},
-	);
+	return useQueryCompat({
+		queryKey: [
+			TanstackKeys.CourseParticipants,
+			...getQueryKeysFromParamsObject(params),
+		],
+		queryFn: () => fetchAllPages(),
+		...queryConfig,
+	});
 }

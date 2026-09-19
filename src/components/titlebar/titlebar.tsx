@@ -1,8 +1,8 @@
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { cn } from "@/lib/utils";
 import { Maximize2Icon, Minimize2Icon } from "lucide-react";
 import { BiWindows } from "react-icons/bi";
 import { MdMinimize, MdOutlineClose } from "react-icons/md";
+import { useSettings } from "@/hooks/atoms/useSettings";
+import { cn } from "@/lib/utils";
 
 export default function TitlebarButtons() {
 	const minimize = () => {
@@ -19,7 +19,7 @@ export default function TitlebarButtons() {
 
 	const { settings } = useSettings();
 
-	const showCustomTitlebar = settings.CustomTitleBarButtons;
+	const showCustomTitlebar = settings.appearance.customTitleBarButtons;
 
 	return (
 		<div className="flex items-center justify-center gap-1 rounded-full border px-4 py-2 no-drag">

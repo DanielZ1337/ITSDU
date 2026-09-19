@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken } from "@/lib/utils";
 import {
 	POSTinstantMessagev2,
@@ -5,8 +7,6 @@ import {
 	POSTinstantMessagev2Body,
 } from "@/types/api-types/messages/POSTinstantMessagev2.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTinstantMessagev2(
 	queryConfig?: UseMutationOptions<
@@ -16,9 +16,10 @@ export default function usePOSTinstantMessagev2(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.POSTinstantMessagev2],
-		async (body) => {
+	return useMutation({
+		mutationKey: [TanstackKeys.POSTinstantMessagev2],
+
+		mutationFn: async (body) => {
 			const res = await axios.post(POSTinstantMessagev2ApiUrl(), body, {
 				params: {
 					access_token: await getAccessToken(),
@@ -31,8 +32,7 @@ export default function usePOSTinstantMessagev2(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

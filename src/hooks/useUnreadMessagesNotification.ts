@@ -1,10 +1,10 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { queryClient } from "@/lib/tanstack-client";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import useGETunreadInstantMessageCount from "@/queries/messages/useGETunreadInstantMessageCount";
 import { isQuietHoursActive } from "@/types/settings";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useSettings } from "./atoms/useSettings";
 
 const REFETCH_INTERVAL = 1000 * 30; // 30 seconds
@@ -18,19 +18,20 @@ export function useUnreadMessagesNotification() {
 	const { settings, isHydrated } = useSettings();
 	const notificationsEnabled =
 		isHydrated &&
-		settings.notificationsMessages &&
+		settings.notifications.messages &&
 		!isQuietHoursActive(settings);
 
 	// Fetch unread message count.
 	// `refetchIntervalInBackground` is intentionally omitted so React Query pauses
 	// polling while the window is hidden/minimized/unfocused.
-	useGETunreadInstantMessageCount({
+	const { data: unreadData } = useGETunreadInstantMessageCount({
 		enabled: notificationsEnabled,
 		refetchInterval: REFETCH_INTERVAL,
-		onSuccess: (data) => {
-			setUnreadCount(data);
-		},
 	});
+	// React Query v5 removed onSuccess on queries: mirror the fetched count into state instead.
+	useEffect(() => {
+		if (unreadData !== undefined) setUnreadCount(unreadData);
+	}, [unreadData]);
 
 	// Only fetch message details when there's exactly 1 unread message
 	const { data: messageThreads } = useGETinstantMessagesv2(
@@ -96,6 +97,6 @@ export function useUnreadMessagesNotification() {
 		lastNotificationCount.current = unreadCount;
 
 		// Invalidate the state other places
-		queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+		queryClient.invalidateQueries({ queryKey: [TanstackKeys.Messagesv2] });
 	}, [notificationsEnabled, unreadCount, messageThreads, navigate]);
 }

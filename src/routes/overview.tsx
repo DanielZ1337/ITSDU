@@ -1,3 +1,23 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import {
+	AlertTriangle,
+	ArrowRight,
+	CalendarDays,
+	CheckCircle2,
+	CheckSquare,
+	File as FileIcon,
+	GraduationCap,
+	Inbox,
+	MessageSquare,
+	RefreshCcw,
+	Settings,
+	Star,
+	WifiOff,
+} from "lucide-react";
+import type React from "react";
+import { useMemo } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { Link } from "react-router-dom";
 import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,9 +28,9 @@ import {
 	useCachedResources,
 } from "@/hooks/useCachedResources";
 import {
-	type NormalizedCalendarEvent,
 	formatEventTimeRange,
 	groupAgendaEvents,
+	type NormalizedCalendarEvent,
 	normalizeCalendarEvents,
 } from "@/lib/calendar/calendar-events";
 import {
@@ -32,25 +52,6 @@ import type { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api
 import type { ItslearningRestApiEntitiesTask } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Task";
 import { ItslearningRestApiEntitiesTaskDeadlineFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskDeadlineFilter";
 import { ItslearningRestApiEntitiesTaskStatusFilter } from "@/types/api-types/utils/Itslearning.RestApi.Entities.TaskStatusFilter";
-import {
-	AlertTriangle,
-	ArrowRight,
-	CalendarDays,
-	CheckCircle2,
-	CheckSquare,
-	File as FileIcon,
-	GraduationCap,
-	Inbox,
-	MessageSquare,
-	RefreshCcw,
-	Settings,
-	Star,
-	WifiOff,
-} from "lucide-react";
-import type React from "react";
-import { useMemo } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Link } from "react-router-dom";
 
 type TaskUrgency = "overdue" | "today" | "upcoming" | "none";
 
@@ -70,7 +71,7 @@ export default function Overview() {
 
 	const calendarQuery = useGETcalendarEvents(
 		{ fromDate: today, page: 0, pageSize: 16 },
-		{ keepPreviousData: true, staleTime: 1000 * 60 * 5 },
+		{ placeholderData: keepPreviousData, staleTime: 1000 * 60 * 5 },
 	);
 	const tasksQuery = useGETpersonalTasks(
 		{
@@ -79,7 +80,7 @@ export default function Overview() {
 			status: ItslearningRestApiEntitiesTaskStatusFilter.Active,
 			deadline: ItslearningRestApiEntitiesTaskDeadlineFilter.All,
 		},
-		{ keepPreviousData: true, staleTime: 1000 * 60 * 5 },
+		{ placeholderData: keepPreviousData, staleTime: 1000 * 60 * 5 },
 	);
 	const messagesQuery = useGETinstantMessagesv2(
 		{ maxThreadCount: 8, threadPage: 0, maxMessages: 1 },

@@ -1,14 +1,14 @@
+import { BookOpen, GraduationCap, Star } from "lucide-react";
+import React from "react";
 import CourseCard from "@/components/course/course-card/course-card.tsx";
 import { cn } from "@/lib/utils.ts";
 import useGETcourses from "@/queries/course-cards/useGETcourses.ts";
 import { GETstarredCoursesParams } from "@/types/api-types/course-cards/GETstarredCourses.ts";
 import { GETunstarredCoursesParams } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
-import { BookOpen, GraduationCap, Star } from "lucide-react";
-import React from "react";
 
 function EmptyState({
 	type,
-	icon: Icon
+	icon: Icon,
 }: {
 	type: "starred" | "unstarred" | "all";
 	icon: React.ElementType;
@@ -32,15 +32,15 @@ function EmptyState({
 
 	return (
 		<div className="flex flex-col items-center justify-center py-16 px-4">
-			<div className={cn(
-				"flex items-center justify-center w-16 h-16 rounded-2xl mb-4",
-				"bg-secondary/50 dark:bg-secondary/30",
-			)}>
+			<div
+				className={cn(
+					"flex items-center justify-center w-16 h-16 rounded-2xl mb-4",
+					"bg-secondary/50 dark:bg-secondary/30",
+				)}
+			>
 				<Icon className="w-8 h-8 text-muted-foreground" />
 			</div>
-			<h3 className="text-lg font-semibold text-foreground mb-1">
-				{title}
-			</h3>
+			<h3 className="text-lg font-semibold text-foreground mb-1">{title}</h3>
 			<p className="text-sm text-muted-foreground text-center max-w-xs">
 				{description}
 			</p>
@@ -61,26 +61,28 @@ function SectionHeader({
 }) {
 	return (
 		<div className="flex items-center gap-3 mb-6">
-			<div className={cn(
-				"flex items-center justify-center w-10 h-10 rounded-xl",
-				isStarred
-					? "bg-yellow-500/10 dark:bg-yellow-500/20"
-					: "bg-secondary/50 dark:bg-secondary/30",
-			)}>
-				<Icon className={cn(
-					"w-5 h-5",
+			<div
+				className={cn(
+					"flex items-center justify-center w-10 h-10 rounded-xl",
 					isStarred
-						? "text-yellow-600 dark:text-yellow-400"
-						: "text-muted-foreground",
-				)} />
+						? "bg-yellow-500/10 dark:bg-yellow-500/20"
+						: "bg-secondary/50 dark:bg-secondary/30",
+				)}
+			>
+				<Icon
+					className={cn(
+						"w-5 h-5",
+						isStarred
+							? "text-yellow-600 dark:text-yellow-400"
+							: "text-muted-foreground",
+					)}
+				/>
 			</div>
 			<div className="flex items-baseline gap-2">
 				<h2 className="text-xl font-semibold text-foreground tracking-tight">
 					{title}
 				</h2>
-				<span className="text-sm text-muted-foreground">
-					({count})
-				</span>
+				<span className="text-sm text-muted-foreground">({count})</span>
 			</div>
 		</div>
 	);
@@ -91,7 +93,7 @@ function CourseGrid({ children }: { children: React.ReactNode }) {
 		<div
 			className={cn(
 				"grid gap-4",
-				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
 			)}
 			style={{ alignItems: "stretch" }}
 		>
@@ -117,12 +119,10 @@ export default function CourseCards({
 		},
 	);
 
-	const starredCourses = data?.EntityArray.filter(
-		(course) => course.IsFavouriteCourse,
-	) ?? [];
-	const unstarredCourses = data?.EntityArray.filter(
-		(course) => !course.IsFavouriteCourse,
-	) ?? [];
+	const starredCourses =
+		data?.EntityArray.filter((course) => course.IsFavouriteCourse) ?? [];
+	const unstarredCourses =
+		data?.EntityArray.filter((course) => !course.IsFavouriteCourse) ?? [];
 
 	if (data?.EntityArray.length === 0) {
 		return <EmptyState type="all" icon={GraduationCap} />;

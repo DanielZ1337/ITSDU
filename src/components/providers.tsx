@@ -1,25 +1,18 @@
-import { queryClient } from "@/lib/tanstack-client";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { domAnimation, LazyMotion } from "motion/react";
 import { ThemeProvider } from "next-themes";
-import { HelmetProvider } from "react-helmet-async";
+import { queryClient } from "@/lib/tanstack-client";
 import SettingsEffects from "./settings/settings-effects";
 
-export default function Providers({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export default function Providers({ children }: { children: React.ReactNode }) {
 	return (
-		<HelmetProvider>
-			<ThemeProvider attribute={"class"} enableSystem>
-				<QueryClientProvider client={queryClient}>
-					{/*<div className={"overflow-x-auto"}>*/}
-					<SettingsEffects />
-					<LazyMotion features={domAnimation}>{children}</LazyMotion>
-					{/*</div>*/}
-				</QueryClientProvider>
-			</ThemeProvider>
-		</HelmetProvider>
+		<ThemeProvider attribute={"class"} enableSystem>
+			<QueryClientProvider client={queryClient}>
+				{/*<div className={"overflow-x-auto"}>*/}
+				<SettingsEffects />
+				<LazyMotion features={domAnimation}>{children}</LazyMotion>
+				{/*</div>*/}
+			</QueryClientProvider>
+		</ThemeProvider>
 	);
 }

@@ -1,10 +1,10 @@
+import { AnimatePresence, m } from "motion/react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "framer-motion";
 
 export type ShadowPosition = "top" | "bottom" | "both";
 
 export function calculateShadowPosition(
-	viewportRef?: React.RefObject<HTMLDivElement>,
+	viewportRef?: React.RefObject<HTMLDivElement | null>,
 ): ShadowPosition {
 	if (!viewportRef || !viewportRef.current) return "bottom";
 
@@ -29,9 +29,9 @@ export function Shadow({ position }: { position: ShadowPosition }) {
 
 	//bg-neutral-100 dark:bg-neutral-800
 	const topClassName =
-		"top-0 bg-gradient-to-t from-transparent dark:to-neutral-800 to-neutral-100";
+		"top-0 bg-linear-to-t from-transparent dark:to-neutral-800 to-neutral-100";
 	const bottomClassName =
-		"bottom-0 bg-gradient-to-b from-transparent dark:to-neutral-800 to-neutral-100";
+		"bottom-0 bg-linear-to-b from-transparent dark:to-neutral-800 to-neutral-100";
 
 	const topComponent = () => {
 		return (
@@ -42,7 +42,7 @@ export function Shadow({ position }: { position: ShadowPosition }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				transition={{ type: "just", stiffness: 500, damping: 30, mass: 0.8 }}
+				transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
 				className={cn(defaultClassName, topClassName)}
 			/>
 		);
@@ -57,7 +57,7 @@ export function Shadow({ position }: { position: ShadowPosition }) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				transition={{ type: "just", stiffness: 500, damping: 30, mass: 0.8 }}
+				transition={{ type: "spring", stiffness: 500, damping: 30, mass: 0.8 }}
 				className={cn(defaultClassName, bottomClassName)}
 			/>
 		);

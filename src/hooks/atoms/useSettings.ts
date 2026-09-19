@@ -1,12 +1,15 @@
+import { useAtom } from "jotai";
+import { useCallback, useEffect, useRef } from "react";
 import { settingsAtom, settingsHydratedAtom } from "@/atoms/settings";
 import {
 	defaultSettings,
+	isSettingsPath,
 	normalizeSettings,
-	type SettingsKey,
+	type SettingsChanges,
 	type SettingsOptions,
+	type SettingsPath,
+	type SettingValue,
 } from "@/types/settings";
-import { useAtom } from "jotai";
-import { useCallback, useEffect, useRef } from "react";
 
 const legacySettingsStorageKey = "settings";
 const migrationStorageKey = "settings:migrated-to-electron-store";
@@ -17,11 +20,15 @@ function readLegacySettings() {
 		const rawTheme = localStorage.getItem("theme");
 		const parsedSettings = rawSettings ? JSON.parse(rawSettings) : {};
 
-		return normalizeSettings({
-			...defaultSettings,
-			...parsedSettings,
-			...(rawTheme ? { theme: rawTheme } : {}),
-		});
+		// `settings` may hold the grouped shape or the older flat one; normalizeSettings reads both.
+		const normalized = normalizeSettings(parsedSettings);
+		if (rawTheme) {
+			return normalizeSettings({
+				...normalized,
+				appearance: { ...normalized.appearance, theme: rawTheme },
+			});
+		}
+		return normalized;
 	} catch (error) {
 		console.error("Failed to read legacy settings:", error);
 		return null;
@@ -31,7 +38,7 @@ function readLegacySettings() {
 function persistCompatibilityCopy(settings: SettingsOptions) {
 	try {
 		localStorage.setItem(legacySettingsStorageKey, JSON.stringify(settings));
-		localStorage.setItem("theme", settings.theme);
+		localStorage.setItem("theme", settings.appearance.theme);
 	} catch (error) {
 		console.error("Failed to write settings compatibility copy:", error);
 	}
@@ -92,11 +99,12 @@ export function useSettings() {
 	}, [setIsHydrated, setSettings]);
 
 	const updateSettings = useCallback(
-		async (newSettings: Partial<SettingsOptions>) => {
+		async (changes: SettingsChanges) => {
 			let nextSettings = settings;
 
-			for (const key of Object.keys(newSettings) as SettingsKey[]) {
-				nextSettings = await window.settings.set(key, newSettings[key] as never);
+			for (const path of Object.keys(changes)) {
+				if (!isSettingsPath(path)) continue;
+				nextSettings = await window.settings.set(path, changes[path] as never);
 			}
 
 			setSettings(nextSettings);
@@ -107,8 +115,8 @@ export function useSettings() {
 	);
 
 	const setSetting = useCallback(
-		async <K extends SettingsKey>(key: K, value: SettingsOptions[K]) => {
-			const nextSettings = await window.settings.set(key, value);
+		async <P extends SettingsPath>(path: P, value: SettingValue<P>) => {
+			const nextSettings = await window.settings.set(path, value);
 			setSettings(nextSettings);
 			persistCompatibilityCopy(nextSettings);
 			return nextSettings;
@@ -117,8 +125,8 @@ export function useSettings() {
 	);
 
 	const resetSetting = useCallback(
-		async (key: SettingsKey) => {
-			const nextSettings = await window.settings.reset(key);
+		async (path: SettingsPath) => {
+			const nextSettings = await window.settings.reset(path);
 			setSettings(nextSettings);
 			persistCompatibilityCopy(nextSettings);
 			return nextSettings;

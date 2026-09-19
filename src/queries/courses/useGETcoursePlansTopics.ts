@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcoursePlansTopics,
@@ -5,21 +7,23 @@ import {
 	GETcoursePlansTopicsParams,
 } from "@/types/api-types/courses/GETcoursePlansTopics.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETcoursePlansTopics(
 	params: GETcoursePlansTopicsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcoursePlansTopics,
 		Error,
 		GETcoursePlansTopics,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.CoursePlansTopics, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [
+			TanstackKeys.CoursePlansTopics,
+			...getQueryKeysFromParamsObject(params),
+		],
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcoursePlansTopicsApiUrl({
 					...params,
@@ -36,8 +40,7 @@ export default function useGETcoursePlansTopics(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

@@ -1,3 +1,7 @@
+import type { UpdateInfo } from "electron-updater";
+import { useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
 	updateAvailableVersionAtom,
 	updateCheckErrorAtom,
@@ -7,10 +11,6 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import { useT } from "@/lib/i18n";
 import { getUpdateErrorMessage } from "@/lib/updates/format-update-error";
-import type { UpdateInfo } from "electron-updater";
-import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export function useUpdateAvailableToast() {
 	const { version } = useVersion();
@@ -42,19 +42,21 @@ export function useUpdateAvailableToast() {
 	}
 
 	useEffect(() => {
-		if (isUpdateAvailable) {
-			window.ipcRenderer.on("app:updateDownloaded", () => {
-				setIsDownloading(false);
-				setUpdateReady(true);
-			});
-			window.ipcRenderer.on("app:downloadProgress", (_event, progress) => {
+		if (!isUpdateAvailable) return;
+		const offDownloaded = window.events.on("app:updateDownloaded", () => {
+			setIsDownloading(false);
+			setUpdateReady(true);
+		});
+		const offProgress = window.events.on(
+			"app:downloadProgress",
+			(progress: { percent: number }) => {
 				setDownloadProgress(progress.percent);
-			});
-		}
+			},
+		);
 
 		return () => {
-			window.ipcRenderer.removeAllListeners("app:updateDownloaded");
-			window.ipcRenderer.removeAllListeners("app:downloadProgress");
+			offDownloaded();
+			offProgress();
 		};
 	}, [isUpdateAvailable, setUpdateReady]);
 
@@ -91,20 +93,20 @@ export function useUpdateAvailableToast() {
 		if (
 			!isHydrated ||
 			import.meta.env.DEV ||
-			!settings.updatesAutoCheckOnStartup ||
-			!settings.notificationsAppUpdates
+			!settings.updates.autoCheckOnStartup ||
+			!settings.notifications.appUpdates
 		) {
 			return;
 		}
 		checkForUpdate();
 	}, [
 		isHydrated,
-		settings.notificationsAppUpdates,
-		settings.updatesAutoCheckOnStartup,
+		settings.notifications.appUpdates,
+		settings.updates.autoCheckOnStartup,
 	]);
 
 	useEffect(() => {
-		if (settings.notificationsAppUpdates && isUpdateAvailable) {
+		if (settings.notifications.appUpdates && isUpdateAvailable) {
 			toast.info(t("settings.appUpdates.download.title"), {
 				duration: 10000,
 				action: {
@@ -116,13 +118,13 @@ export function useUpdateAvailableToast() {
 	}, [
 		handleUpdateClick,
 		isUpdateAvailable,
-		settings.notificationsAppUpdates,
+		settings.notifications.appUpdates,
 		t,
 	]);
 
 	useEffect(() => {
-		if (settings.notificationsAppUpdates && isError) {
+		if (settings.notifications.appUpdates && isError) {
 			toast.error(t("errors.updateCheck"));
 		}
-	}, [isError, settings.notificationsAppUpdates, t]);
+	}, [isError, settings.notifications.appUpdates, t]);
 }

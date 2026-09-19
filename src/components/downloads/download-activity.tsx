@@ -1,14 +1,3 @@
-import { Button } from "@/components/ui/button";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-	useDownloadActivity,
-	useDownloadActivityEvents,
-} from "@/hooks/useDownloadActivity";
-import { formatSize } from "@/lib/resources/resource-format";
 import {
 	AlertTriangle,
 	CheckCircle2,
@@ -20,6 +9,17 @@ import {
 	X,
 } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+	useDownloadActivity,
+	useDownloadActivityEvents,
+} from "@/hooks/useDownloadActivity";
+import { formatSize } from "@/lib/resources/resource-format";
 
 const statusIcon = {
 	downloading: (

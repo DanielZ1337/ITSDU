@@ -1,10 +1,3 @@
-import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
-import { Button } from "@/components/ui/button.tsx";
-import { Loader } from "@/components/ui/loader.tsx";
-import { cn } from "@/lib/utils.ts";
-import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
-import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
-import { Checkbox } from "@nextui-org/react";
 import { useAtom } from "jotai";
 import {
 	ArrowRight,
@@ -16,28 +9,87 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { isCoursesBulkStarEditingAtom } from "@/atoms/courses-bulk-star-edit.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader } from "@/components/ui/loader.tsx";
+import { cn } from "@/lib/utils.ts";
+import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
+import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 import CourseCardContextMenu from "./course-card-context-menu.tsx";
 import CourseCardInfo from "./course-card-info.tsx";
 
 // Color palette for course cards - creates visual variety
 const courseColors = [
-	{ bg: "from-orange-500/10 to-amber-500/5", accent: "bg-orange-500", text: "text-orange-600 dark:text-orange-400" },
-	{ bg: "from-blue-500/10 to-cyan-500/5", accent: "bg-blue-500", text: "text-blue-600 dark:text-blue-400" },
-	{ bg: "from-emerald-500/10 to-teal-500/5", accent: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400" },
-	{ bg: "from-purple-500/10 to-violet-500/5", accent: "bg-purple-500", text: "text-purple-600 dark:text-purple-400" },
-	{ bg: "from-rose-500/10 to-pink-500/5", accent: "bg-rose-500", text: "text-rose-600 dark:text-rose-400" },
-	{ bg: "from-indigo-500/10 to-blue-500/5", accent: "bg-indigo-500", text: "text-indigo-600 dark:text-indigo-400" },
-	{ bg: "from-teal-500/10 to-emerald-500/5", accent: "bg-teal-500", text: "text-teal-600 dark:text-teal-400" },
-	{ bg: "from-amber-500/10 to-yellow-500/5", accent: "bg-amber-500", text: "text-amber-600 dark:text-amber-400" },
-	{ bg: "from-gray-500/10 to-slate-500/5", accent: "bg-gray-500", text: "text-gray-600 dark:text-gray-400" },
-	{ bg: "from-red-500/10 to-rose-500/5", accent: "bg-red-500", text: "text-red-600 dark:text-red-400" },
-	{ bg: "from-cyan-500/10 to-blue-500/5", accent: "bg-cyan-500", text: "text-cyan-600 dark:text-cyan-400" },
-	{ bg: "from-lime-500/10 to-green-500/5", accent: "bg-lime-500", text: "text-lime-600 dark:text-lime-400" },
-	{ bg: "from-slate-500/10 to-gray-500/5", accent: "bg-slate-500", text: "text-slate-600 dark:text-slate-400" },
+	{
+		bg: "from-orange-500/10 to-amber-500/5",
+		accent: "bg-orange-500",
+		text: "text-orange-600 dark:text-orange-400",
+	},
+	{
+		bg: "from-blue-500/10 to-cyan-500/5",
+		accent: "bg-blue-500",
+		text: "text-blue-600 dark:text-blue-400",
+	},
+	{
+		bg: "from-emerald-500/10 to-teal-500/5",
+		accent: "bg-emerald-500",
+		text: "text-emerald-600 dark:text-emerald-400",
+	},
+	{
+		bg: "from-purple-500/10 to-violet-500/5",
+		accent: "bg-purple-500",
+		text: "text-purple-600 dark:text-purple-400",
+	},
+	{
+		bg: "from-rose-500/10 to-pink-500/5",
+		accent: "bg-rose-500",
+		text: "text-rose-600 dark:text-rose-400",
+	},
+	{
+		bg: "from-indigo-500/10 to-blue-500/5",
+		accent: "bg-indigo-500",
+		text: "text-indigo-600 dark:text-indigo-400",
+	},
+	{
+		bg: "from-teal-500/10 to-emerald-500/5",
+		accent: "bg-teal-500",
+		text: "text-teal-600 dark:text-teal-400",
+	},
+	{
+		bg: "from-amber-500/10 to-yellow-500/5",
+		accent: "bg-amber-500",
+		text: "text-amber-600 dark:text-amber-400",
+	},
+	{
+		bg: "from-gray-500/10 to-slate-500/5",
+		accent: "bg-gray-500",
+		text: "text-gray-600 dark:text-gray-400",
+	},
+	{
+		bg: "from-red-500/10 to-rose-500/5",
+		accent: "bg-red-500",
+		text: "text-red-600 dark:text-red-400",
+	},
+	{
+		bg: "from-cyan-500/10 to-blue-500/5",
+		accent: "bg-cyan-500",
+		text: "text-cyan-600 dark:text-cyan-400",
+	},
+	{
+		bg: "from-lime-500/10 to-green-500/5",
+		accent: "bg-lime-500",
+		text: "text-lime-600 dark:text-lime-400",
+	},
+	{
+		bg: "from-slate-500/10 to-gray-500/5",
+		accent: "bg-slate-500",
+		text: "text-slate-600 dark:text-slate-400",
+	},
 ];
 
 // Map CourseColorClass from API to our color palette
-const colorMap: Record<string, typeof courseColors[0]> = {
+const colorMap: Record<string, (typeof courseColors)[0]> = {
 	"smog-1": courseColors[8], // gray
 	"moss--100": courseColors[2], // emerald
 	"olive--100": courseColors[6], // teal
@@ -56,9 +108,11 @@ function getColorForCourse(courseId: number) {
 
 export default function CourseCard({
 	card,
-}: { card: ItslearningRestApiEntitiesCourseCard }) {
+}: {
+	card: ItslearningRestApiEntitiesCourseCard;
+}) {
 	const navigate = useNavigate();
-	const { mutate, isLoading } = usePUTcourseFavorite(
+	const { mutate, isPending: isLoading } = usePUTcourseFavorite(
 		{
 			courseId: card.CourseId,
 		},
@@ -82,9 +136,13 @@ export default function CourseCard({
 		},
 	);
 	const [isCoursesBulkEditing] = useAtom(isCoursesBulkStarEditingAtom);
-	const color = colorMap[card.CourseColorClass] || getColorForCourse(card.CourseId);
+	const color =
+		colorMap[card.CourseColorClass] || getColorForCourse(card.CourseId);
 
-	const totalNotifications = card.NumberOfAnnouncements + card.NumberOfFollowUpTasks + card.NumberOfTasks;
+	const totalNotifications =
+		card.NumberOfAnnouncements +
+		card.NumberOfFollowUpTasks +
+		card.NumberOfTasks;
 	const hasNotifications = totalNotifications > 0;
 
 	function navigateToCourse() {
@@ -111,27 +169,33 @@ export default function CourseCard({
 				)}
 			>
 				{/* Top accent gradient bar */}
-				<div className={cn(
-					"absolute inset-x-0 top-0 h-1 rounded-t-xl",
-					color.accent,
-				)} />
+				<div
+					className={cn(
+						"absolute inset-x-0 top-0 h-1 rounded-t-xl",
+						color.accent,
+					)}
+				/>
 
 				{/* Subtle gradient background on hover */}
-				<div className={cn(
-					"absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-					color.bg,
-				)} />
+				<div
+					className={cn(
+						"absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+						color.bg,
+					)}
+				/>
 
 				{/* Card content */}
 				<div className="relative flex flex-col p-4 gap-3 flex-1">
 					{/* Header with title and star */}
 					<div className="flex items-start justify-between gap-3">
 						<div className="flex-1 min-w-0">
-							<h3 className={cn(
-								"font-semibold text-foreground leading-tight tracking-tight",
-								"line-clamp-2 text-sm sm:text-base",
-								"group-hover:text-primary transition-colors duration-200",
-							)}>
+							<h3
+								className={cn(
+									"font-semibold text-foreground leading-tight tracking-tight",
+									"line-clamp-2 text-sm sm:text-base",
+									"group-hover:text-primary transition-colors duration-200",
+								)}
+							>
 								{card.Title}
 							</h3>
 							{card.LastUpdatedDisplayTime && (
@@ -173,9 +237,7 @@ export default function CourseCard({
 							) : (
 								<Checkbox
 									className="m-0 p-0 w-fit"
-									defaultChecked={card.IsFavouriteCourse}
 									checked={card.IsFavouriteCourse}
-									defaultSelected={card.IsFavouriteCourse}
 								/>
 							)}
 						</Button>
@@ -184,10 +246,12 @@ export default function CourseCard({
 					{/* Notification badge */}
 					{hasNotifications && (
 						<div className="flex items-center gap-1">
-							<span className={cn(
-								"inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
-								"bg-primary/10 text-primary",
-							)}>
+							<span
+								className={cn(
+									"inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium",
+									"bg-primary/10 text-primary",
+								)}
+							>
 								<span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
 								{totalNotifications} new
 							</span>
@@ -235,11 +299,13 @@ export default function CourseCard({
 						</div>
 
 						{/* Arrow indicator */}
-						<ArrowRight className={cn(
-							"w-4 h-4 text-muted-foreground shrink-0",
-							"opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0",
-							"transition-all duration-200",
-						)} />
+						<ArrowRight
+							className={cn(
+								"w-4 h-4 text-muted-foreground shrink-0",
+								"opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0",
+								"transition-all duration-200",
+							)}
+						/>
 					</div>
 				</div>
 			</div>

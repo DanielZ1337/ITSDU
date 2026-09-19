@@ -1,3 +1,8 @@
+import axios from "axios";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETcourseTasklistDailyWorkflowCompleted,
@@ -5,28 +10,17 @@ import {
 	GETcourseTasklistDailyWorkflowCompletedParams,
 } from "@/types/api-types/courses/GETcourseTasklistDailyWorkflowCompleted.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETcourseTasklistDailyWorkflowCompleted(
 	params: GETcourseTasklistDailyWorkflowCompletedParams,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETcourseTasklistDailyWorkflowCompleted,
-		Error,
-		GETcourseTasklistDailyWorkflowCompleted,
-		GETcourseTasklistDailyWorkflowCompleted,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETcourseTasklistDailyWorkflowCompleted>,
 ) {
-	return useInfiniteQuery(
-		[
+	return useInfiniteQueryCompat({
+		queryKey: [
 			TanstackKeys.CourseTasklistDailyWorkflowCompleted,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async ({ pageParam = params.PageIndex || 0 }) => {
+		queryFn: async ({ pageParam }) => {
 			const res = await axios.get(
 				GETcourseTasklistDailyWorkflowCompletedApiUrl({
 					...params,
@@ -44,22 +38,21 @@ export default function useGETcourseTasklistDailyWorkflowCompleted(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
-				if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
-					return lastPage.CurrentPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
-			getPreviousPageParam: (firstPage) => {
-				if (firstPage.CurrentPageIndex > 0) {
-					return firstPage.CurrentPageIndex - 1;
-				} else {
-					return undefined;
-				}
-			},
+		initialPageParam: params.PageIndex || 0,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
+			if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
+				return lastPage.CurrentPageIndex + 1;
+			} else {
+				return undefined;
+			}
 		},
-	);
+		getPreviousPageParam: (firstPage) => {
+			if (firstPage.CurrentPageIndex > 0) {
+				return firstPage.CurrentPageIndex - 1;
+			} else {
+				return undefined;
+			}
+		},
+	});
 }

@@ -1,7 +1,7 @@
-import CourseHeader from "@/components/course/layout/course-header.tsx";
-import { useCourse } from "@/hooks/atoms/useCourse";
 import { Suspense, useEffect } from "react";
 import { Outlet, useParams } from "react-router-dom";
+import CourseHeader from "@/components/course/layout/course-header.tsx";
+import { useCourse } from "@/hooks/atoms/useCourse";
 import CourseHeaderFallback from "./course-header-fallback";
 
 export default function CourseLayout() {

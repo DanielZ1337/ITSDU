@@ -1,21 +1,17 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { useUser } from "@/hooks/atoms/useUser.ts";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
+import { queryClient } from "@/lib/tanstack-client";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
-import { ErrorBoundary } from "react-error-boundary";
+import usePUTinstantMessageThreadUpdateIsRead from "@/queries/messages/usePUTinstantMessageThreadUpdateIsRead";
+import { TanstackKeys } from "@/types/tanstack-keys";
 import { Loader } from "../ui/loader";
 import MessageChatMessage from "./message-chat-message";
-import usePUTinstantMessageThreadUpdateIsRead from "@/queries/messages/usePUTinstantMessageThreadUpdateIsRead";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { queryClient } from "@/lib/tanstack-client";
-import { TanstackKeys } from "@/types/tanstack-keys";
 
-export default function MessageChat({
-	threadId,
-}: {
-	threadId: number;
-}) {
+export default function MessageChat({ threadId }: { threadId: number }) {
 	const {
 		data: messages,
 		isFetchingNextPage,
@@ -33,24 +29,28 @@ export default function MessageChat({
 			refetchOnMount: true,
 			refetchInterval: 1000 * 10,
 			refetchIntervalInBackground: true,
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 		},
 	);
 
-	const { mutate: markAsRead } =
-		usePUTinstantMessageThreadUpdateIsRead();
+	const { mutate: markAsRead } = usePUTinstantMessageThreadUpdateIsRead();
 
 	useEffect(() => {
-        if(!messages) return;
-		markAsRead({
-            threadId,
-            lastReadInstantMessageId:
-                messages.pages[0].Messages.EntityArray[0].MessageId,
-        }, {
-            onSuccess: () => {
-                queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
-            },
-        })
+		if (!messages) return;
+		markAsRead(
+			{
+				threadId,
+				lastReadInstantMessageId:
+					messages.pages[0].Messages.EntityArray[0].MessageId,
+			},
+			{
+				onSuccess: () => {
+					queryClient.invalidateQueries({
+						queryKey: [TanstackKeys.Messagesv2],
+					});
+				},
+			},
+		);
 	}, [messages]);
 
 	const user = useUser();

@@ -1,38 +1,46 @@
 import {
 	BrowserWindow,
-	type OpenDialogOptions,
 	dialog,
-	ipcMain,
 	nativeTheme,
+	type OpenDialogOptions,
 } from "electron";
 import Store from "electron-store";
 import {
-	type SettingsKey,
-	type SettingsOptions,
 	defaultSettings,
+	getSetting,
+	hasLegacySettingKeys,
+	isSettingsPath,
 	normalizeSettings,
+	type SettingsOptions,
+	type SettingsPath,
+	type SettingValue,
+	settingPaths,
 	validateSetting,
 } from "../../../src/types/settings";
+import { handle } from "../../ipc/secure";
 import { themeStore } from "../theme/theme-service";
 
-type SettingsStore = Partial<SettingsOptions>;
+// The store holds the grouped shape ({ notifications: { messages: true } }); electron-store reads and writes it by
+// dotted path ("notifications.messages"). Older versions wrote flat keys ("notificationsMessages").
+type SettingsStore = Record<string, unknown>;
+
+function assertPath(path: unknown): asserts path is SettingsPath {
+	if (!isSettingsPath(path))
+		throw new Error(`Unknown setting: ${String(path)}`);
+}
 
 export class SettingsService {
 	private static instance: SettingsService;
 	private readonly store: Store<SettingsStore>;
-	private readonly keysPresentBeforeDefaults: Set<SettingsKey>;
 	private readonly listeners = new Set<(settings: SettingsOptions) => void>();
 
 	private constructor() {
 		this.store = new Store<SettingsStore>({
 			watch: true,
 			name: "itsdu-settings",
-			defaults: defaultSettings,
 		});
-		this.keysPresentBeforeDefaults = new Set(
-			Object.keys(this.store.store) as SettingsKey[],
-		);
 
+		this.migrateFlatStore();
 		this.ensureDefaults();
 		this.applySideEffects(this.getAll());
 		this.registerIpcListeners();
@@ -49,56 +57,45 @@ export class SettingsService {
 		return normalizeSettings(this.store.store);
 	}
 
-	get<K extends SettingsKey>(key: K): SettingsOptions[K] {
-		return validateSetting(key, this.store.get(key));
+	get<P extends SettingsPath>(path: P): SettingValue<P> {
+		return validateSetting(path, this.store.get(path));
 	}
 
-	set<K extends SettingsKey>(
-		key: K,
-		value: SettingsOptions[K],
+	set<P extends SettingsPath>(
+		path: P,
+		value: SettingValue<P>,
 	): SettingsOptions {
-		this.store.set(key, validateSetting(key, value));
-		const settings = this.getAll();
-		this.applySideEffects(settings);
-		this.emitChange(settings);
-		return settings;
+		this.store.set(path, validateSetting(path, value));
+		return this.commit();
 	}
 
-	reset(key: SettingsKey): SettingsOptions {
-		this.store.set(key, defaultSettings[key]);
-		const settings = this.getAll();
-		this.applySideEffects(settings);
-		this.emitChange(settings);
-		return settings;
+	reset(path: SettingsPath): SettingsOptions {
+		this.store.set(path, getSetting(defaultSettings, path));
+		return this.commit();
 	}
 
 	resetAll(): SettingsOptions {
 		this.store.clear();
 		this.store.set(defaultSettings);
-		const settings = this.getAll();
-		this.applySideEffects(settings);
-		this.emitChange(settings);
-		return settings;
+		return this.commit();
 	}
 
-	migrate(values: Partial<SettingsOptions>): SettingsOptions {
-		for (const key of Object.keys(defaultSettings) as SettingsKey[]) {
-			const hasDurableUserValue =
-				this.keysPresentBeforeDefaults.has(key) &&
-				this.store.get(key) !== defaultSettings[key];
-			if (hasDurableUserValue) continue;
-			if (!(key in values)) continue;
-			this.store.set(key, validateSetting(key, values[key]));
+	/**
+	 * Import values saved by an older renderer (grouped or flat). A value is only taken over while the current one is
+	 * still the default, so anything the user already changed is kept.
+	 */
+	migrate(values: unknown): SettingsOptions {
+		const incoming = normalizeSettings(values);
+		for (const path of settingPaths) {
+			const current = this.get(path);
+			if (current !== getSetting(defaultSettings, path)) continue;
+			this.store.set(path, getSetting(incoming, path));
 		}
-
-		const settings = this.getAll();
-		this.applySideEffects(settings);
-		this.emitChange(settings);
-		return settings;
+		return this.commit();
 	}
 
 	getDownloadDirectory() {
-		return this.get("downloadDirectory") ?? undefined;
+		return this.get("downloads.directory") ?? undefined;
 	}
 
 	subscribe(listener: (settings: SettingsOptions) => void) {
@@ -106,25 +103,36 @@ export class SettingsService {
 		return () => this.listeners.delete(listener);
 	}
 
+	/** One-time: rewrite a store that still has the old flat keys into the grouped shape. */
+	private migrateFlatStore() {
+		if (!hasLegacySettingKeys(this.store.store)) return;
+		const migrated = normalizeSettings(this.store.store);
+		this.store.clear();
+		this.store.set(migrated);
+	}
+
 	private ensureDefaults() {
-		for (const key of Object.keys(defaultSettings) as SettingsKey[]) {
-			if (!this.store.has(key)) {
-				this.store.set(key, defaultSettings[key]);
-			} else {
-				this.store.set(key, validateSetting(key, this.store.get(key)));
-			}
+		for (const path of settingPaths) {
+			this.store.set(path, validateSetting(path, this.store.get(path)));
 		}
 	}
 
+	private commit(): SettingsOptions {
+		const settings = this.getAll();
+		this.applySideEffects(settings);
+		this.emitChange(settings);
+		return settings;
+	}
+
 	private applySideEffects(settings: SettingsOptions) {
-		nativeTheme.themeSource = settings.theme;
+		nativeTheme.themeSource = settings.appearance.theme;
 		themeStore.set(
 			"theme",
-			settings.theme === "system"
+			settings.appearance.theme === "system"
 				? nativeTheme.shouldUseDarkColors
 					? "dark"
 					: "light"
-				: settings.theme,
+				: settings.appearance.theme,
 		);
 	}
 
@@ -138,32 +146,35 @@ export class SettingsService {
 	}
 
 	private registerIpcListeners(): void {
-		ipcMain.handle("settings:getAll", () => this.getAll());
+		handle("settings:getAll", () => this.getAll());
 
-		ipcMain.handle("settings:get", (_, key: SettingsKey) => {
-			return this.get(key);
+		handle("settings:get", (_, path: SettingsPath) => {
+			assertPath(path);
+			return this.get(path);
 		});
 
-		ipcMain.handle(
+		handle(
 			"settings:set",
-			(_, key: SettingsKey, value: SettingsOptions[SettingsKey]) => {
-				return this.set(key, value);
+			(_, path: SettingsPath, value: SettingValue<SettingsPath>) => {
+				assertPath(path);
+				return this.set(path, value as never);
 			},
 		);
 
-		ipcMain.handle("settings:reset", (_, key: SettingsKey) => {
-			return this.reset(key);
+		handle("settings:reset", (_, path: SettingsPath) => {
+			assertPath(path);
+			return this.reset(path);
 		});
 
-		ipcMain.handle("settings:resetAll", () => {
+		handle("settings:resetAll", () => {
 			return this.resetAll();
 		});
 
-		ipcMain.handle("settings:migrateLocalStorage", (_, values) => {
-			return this.migrate(normalizeSettings(values));
+		handle("settings:migrateLocalStorage", (_, values) => {
+			return this.migrate(values);
 		});
 
-		ipcMain.handle("settings:chooseDownloadDirectory", async (event) => {
+		handle("settings:chooseDownloadDirectory", async (event) => {
 			const window = BrowserWindow.fromWebContents(event.sender);
 			const dialogOptions: OpenDialogOptions = {
 				title: "Choose download folder",
@@ -177,7 +188,7 @@ export class SettingsService {
 				return this.getAll();
 			}
 
-			return this.set("downloadDirectory", result.filePaths[0]);
+			return this.set("downloads.directory", result.filePaths[0]);
 		});
 	}
 }

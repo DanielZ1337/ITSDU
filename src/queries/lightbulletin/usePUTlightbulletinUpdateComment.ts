@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	PUTlightbulletinUpdateComment,
@@ -6,8 +8,6 @@ import {
 	PUTlightbulletinUpdateCommentParams,
 } from "@/types/api-types/lightbulletin/PUTlightbulletinUpdateComment.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePUTlightbulletinUpdateComment(
 	params: PUTlightbulletinUpdateCommentParams,
@@ -18,12 +18,13 @@ export default function usePUTlightbulletinUpdateComment(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+		mutationKey: [
 			TanstackKeys.LightbulletinUpdateComment,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async (body) => {
+
+		mutationFn: async (body) => {
 			const res = await axios.put(
 				PUTlightbulletinUpdateCommentApiUrl({
 					...params,
@@ -41,8 +42,7 @@ export default function usePUTlightbulletinUpdateComment(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

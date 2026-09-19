@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import { SearchIcon } from "lucide-react";
 import React, { forwardRef, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { Input, type InputProps } from "./input";
 
 export type SearchProps = React.InputHTMLAttributes<HTMLInputElement>;

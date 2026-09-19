@@ -1,3 +1,8 @@
+import { DialogClose } from "@radix-ui/react-dialog";
+import { useDebounce } from "@uidotdev/usehooks";
+import { useAtom } from "jotai";
+import { useEffect, useState } from "react";
+import { AiOutlineSearch } from "react-icons/ai";
 import { currentChatEnum } from "@/atoms/current-chat";
 import { currentChatAtom } from "@/atoms/current-chat.ts";
 import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients.ts";
@@ -20,11 +25,6 @@ import { Input } from "@/components/ui/input.tsx";
 import { cn } from "@/lib/utils.ts";
 import useGETinstantMessagesRecipientsSearch from "@/queries/messages/useGETinstantMessagesRecipientsSearch.ts";
 import { ItslearningRestApiEntitiesInstantMessageRecipient } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageRecipient.ts";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { useDebounce } from "@uidotdev/usehooks";
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
-import { AiOutlineSearch } from "react-icons/ai";
 
 export default function MessagesAddRecipients() {
 	const [recipientsSearchInput, setRecipientsSearchInput] =
@@ -72,7 +72,7 @@ export default function MessagesAddRecipients() {
 				onPointerDownOutside={() => {
 					setRecipientsSearchInput("");
 				}}
-				className={"min-w-[50rem] max-h-[30rem] flex flex-col"}
+				className={"min-w-200 max-h-120 flex flex-col"}
 			>
 				<DialogHeader>
 					<DialogTitle>Create a new chat</DialogTitle>
@@ -126,7 +126,7 @@ export default function MessagesAddRecipients() {
 											setRecipientsSelected([...recipientsSelected!, recipient])
 										}
 									>
-										<Avatar className={"flex-shrink-0 w-9 h-9"}>
+										<Avatar className={"shrink-0 w-9 h-9"}>
 											<AvatarImage
 												src={recipient.ProfileImageUrl}
 												alt={recipient.SearchLabel}
@@ -164,7 +164,7 @@ export default function MessagesAddRecipients() {
 							style={{
 								scrollbarGutter: "stable",
 							}}
-							className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 min-w-[15rem] max-h-[30rem]"
+							className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 min-w-60 max-h-120"
 						>
 							{recipientsSelected.map((recipient) => (
 								<Button
@@ -179,7 +179,7 @@ export default function MessagesAddRecipients() {
 										)
 									}
 								>
-									<Avatar className={"flex-shrink-0 w-9 h-9"}>
+									<Avatar className={"shrink-0 w-9 h-9"}>
 										<AvatarImage
 											src={recipient.ProfileImageUrl}
 											alt={recipient.SearchLabel}

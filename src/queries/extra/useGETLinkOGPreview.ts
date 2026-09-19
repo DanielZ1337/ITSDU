@@ -1,23 +1,24 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import {
 	GETLinkOGPreview,
 	GETLinkOGPreviewApiUrl,
 } from "@/types/api-types/extra/GETLinkOGPreview";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
 
 export default function useGETLinkOGPreview(
 	href: string,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETLinkOGPreview,
 		Error,
 		GETLinkOGPreview,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.LinkOGPreview, href],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.LinkOGPreview, href],
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETLinkOGPreviewApiUrl({
 					url: href,
@@ -55,8 +56,7 @@ export default function useGETLinkOGPreview(
 
 			return data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

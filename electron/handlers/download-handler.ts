@@ -1,11 +1,10 @@
-import * as fs from "fs";
-import path from "path";
 import axios from "axios";
-import { BrowserWindow, app, ipcMain, shell } from "electron";
+import { app, BrowserWindow, shell } from "electron";
+import * as fs from "fs";
 import type JSZip from "jszip";
+import path from "path";
 import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 import {
-	ITSLEARNING_RESOURCE_URL,
 	getCourseByElementId,
 	getDirectUrlBySSOLink,
 	getFileRepositoryBySSOLink,
@@ -14,15 +13,23 @@ import {
 	getResourceDownloadLink,
 	getResourceLinkByElementID,
 	getSSOLink,
+	ITSLEARNING_RESOURCE_URL,
 } from "../../electron/services/itslearning/resources/resources.ts";
 import {
 	createScrapeWindow,
 	getCookiesForDomain,
 } from "../../electron/services/scrape/scraper.ts";
+import { handle } from "../ipc/secure";
+import {
+	assertAllowedPathName,
+	assertOpenableLocalPath,
+	assertSafeExternalUrl,
+} from "../ipc/validators";
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { SettingsService } from "../services/settings/settings-service.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
+import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
 
 const authService = AuthService.getInstance();
 
@@ -41,7 +48,7 @@ function getConfiguredDownloadDirectory() {
 }
 
 async function applyDownloadOpenPreference(filePath: string) {
-	const autoOpen = SettingsService.getInstance().get("downloadAutoOpen");
+	const autoOpen = SettingsService.getInstance().get("downloads.autoOpen");
 
 	if (autoOpen === "file") {
 		await shell.openPath(filePath);
@@ -66,103 +73,116 @@ export async function openLinkInBrowser(url: string, sso: boolean = true) {
 		url = data.Url;
 	}
 
-	// open the url with the default browser
-	await shell.openExternal(url);
+	// open the url with the default browser (never a non-web scheme, even if the server returned one)
+	await shell.openExternal(assertSafeExternalUrl(url).href);
 }
 
 function openExternalHandler() {
-	ipcMain.handle("app:openExternal", async (_, url, sso) => {
-		await openLinkInBrowser(url, sso);
+	handle("app:openExternal", async (_, url, sso) => {
+		await openLinkInBrowser(assertSafeExternalUrl(url).href, sso);
 	});
 }
 
 function getPathHandler() {
-	ipcMain.handle("app:getPath", async (_, path) => {
-		return app.getPath(path);
+	handle("app:getPath", async (_, name) => {
+		return app.getPath(assertAllowedPathName(name));
 	});
 
-	ipcMain.handle("app:getDownloadPath", async () => {
+	handle("app:getDownloadPath", async () => {
 		return getConfiguredDownloadDirectory();
 	});
 }
 
+function openableRoots() {
+	return [
+		getConfiguredDownloadDirectory(),
+		app.getPath("downloads"),
+		app.getPath("documents"),
+		app.getPath("desktop"),
+		app.getPath("temp"),
+		app.getPath("userData"),
+	];
+}
+
+/** Open a local file/folder, or hand a web/mail link to the default handler. */
+async function openLocalOrLink(target: unknown) {
+	if (typeof target === "string" && /^(https?|mailto):/i.test(target)) {
+		await shell.openExternal(assertSafeExternalUrl(target).href);
+		return;
+	}
+	const error = await shell.openPath(
+		assertOpenableLocalPath(target, openableRoots()),
+	);
+	if (error) throw new Error(error);
+}
+
 function openShellHandler() {
-	ipcMain.handle("app:openShell", async (_, path) => {
-		await shell.openPath(path);
-	});
+	handle("app:openShell", async (_, path) => openLocalOrLink(path));
 }
 
 function openItemHandler() {
-	ipcMain.handle("app:openItem", async (_, path) => {
-		await shell.openPath(path);
-	});
+	handle("app:openItem", async (_, path) => openLocalOrLink(path));
 }
 
 function getResourceDownloadLinkForElementId() {
-	ipcMain.handle(
+	handle(
 		"get-resource-download-link",
 		async (_, elementId) => await getResourceLinkByElementID(elementId),
 	);
 }
 
 async function getBlobFromUrl() {
-	ipcMain.handle(
-		"get-blob-from-element-id",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
-			const cookiesFormatted = getFormattedCookies(cookies);
-			const resourceLink = await getResourceDownloadLink(ssoLink, win);
+	handle("get-blob-from-element-id", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+		const cookiesFormatted = getFormattedCookies(cookies);
+		const resourceLink = await getResourceDownloadLink(ssoLink, win);
 
-			const { data } = await axios.get(resourceLink, {
-				headers: {
-					Cookie: cookiesFormatted,
-				},
-				responseType: "arraybuffer",
-			});
+		const { data } = await axios.get(resourceLink, {
+			headers: {
+				Cookie: cookiesFormatted,
+			},
+			responseType: "arraybuffer",
+		});
 
-			win.close();
+		win.close();
 
-			return data;
-		},
-	);
+		return data;
+	});
 }
 
 async function getResourceAsFileHandler() {
-	ipcMain.handle(
-		"resources:get-file",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
-			let resourceLink: string;
-			try {
-				resourceLink = (await getFileRepositoryBySSOLink(win)).directUrl;
-			} catch (error) {
-				console.error(error);
-				resourceLink = await getResourceDownloadLink(ssoLink, win);
-			}
+	handle("resources:get-file", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+		let resourceLink: string;
+		try {
+			resourceLink = (await getFileRepositoryBySSOLink(win)).directUrl;
+		} catch (error) {
+			console.error(error);
+			resourceLink = await getResourceDownloadLink(ssoLink, win);
+		}
 
-			if (!resourceLink) throw new Error("Could not get resource link");
+		if (!resourceLink) throw new Error("Could not get resource link");
 
-			const resource = await getResourceAsFile(resourceLink, cookies);
+		const resource = await getResourceAsFile(resourceLink, cookies);
 
-			win.close();
+		win.close();
 
-			return resource;
-		},
-	);
+		return resource;
+	});
 }
 
 async function getResourceDirectFileRepositoryHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-direct-file-repository",
 		async (_, elementId: string | number) => {
 			const win = createScrapeWindow({
@@ -178,23 +198,20 @@ async function getResourceDirectFileRepositoryHandler() {
 }
 
 async function getResourceDirectUrlHandler() {
-	ipcMain.handle(
-		"resources:get-direct-url",
-		async (_, elementId: string | number) => {
-			const win = createScrapeWindow({
-				webPreferences: { webSecurity: false },
-			});
-			const ssoLink = await getResourceLinkByElementID(elementId);
-			await win.loadURL(ssoLink);
-			const directUrl = await getDirectUrlBySSOLink(win);
-			win.close();
-			return directUrl;
-		},
-	);
+	handle("resources:get-direct-url", async (_, elementId: string | number) => {
+		const win = createScrapeWindow({
+			webPreferences: { webSecurity: false },
+		});
+		const ssoLink = await getResourceLinkByElementID(elementId);
+		await win.loadURL(ssoLink);
+		const directUrl = await getDirectUrlBySSOLink(win);
+		win.close();
+		return directUrl;
+	});
 }
 
 async function getMicrosoftOfficeDocument() {
-	ipcMain.handle(
+	handle(
 		"resources:get-office-document",
 		async (_, elementId: string | number) => {
 			try {
@@ -215,7 +232,7 @@ async function getMicrosoftOfficeDocument() {
 }
 
 function uploadDocumentForAI() {
-	ipcMain.handle(
+	handle(
 		"uploadfile-for-ai",
 		async (
 			event,
@@ -279,7 +296,7 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-	ipcMain.handle(
+	handle(
 		"itslearning-element:download",
 		async (event, { url, filename, id }) => {
 			try {
@@ -407,7 +424,7 @@ async function downloadPDF(win: BrowserWindow, url: string) {
 }
 
 function mergePDFsHandler() {
-	ipcMain.handle(
+	handle(
 		"app:mergePDFs",
 		async (event, { elementIds }: { elementIds: string[] }) => {
 			try {
@@ -476,7 +493,7 @@ function mergePDFsHandler() {
 }
 
 function zipDownloadAllCourseResourcesHandler() {
-	ipcMain.handle(
+	handle(
 		"app:zipDownloadAllCourseResources",
 		async (
 			event,
@@ -619,7 +636,7 @@ function zipDownloadAllCourseResourcesHandler() {
 }
 
 function downloadExternalHandler() {
-	ipcMain.handle("download:external", async (event, { url, filename, id }) => {
+	handle("download:external", async (event, { url, filename, id }) => {
 		try {
 			console.log(url, filename);
 
@@ -665,7 +682,7 @@ function downloadExternalHandler() {
 }
 
 function downloadStartHandler() {
-	ipcMain.handle("download:start", async (_, url) => {
+	handle("download:start", async (_, url) => {
 		try {
 			const fileLink = await getResourceDownloadLink(url);
 			return fileLink;
@@ -677,32 +694,29 @@ function downloadStartHandler() {
 }
 
 function getVideoLinkHandler() {
-	ipcMain.handle(
-		"resources:get-media",
-		async (_, elementId: string | number) => {
-			try {
-				const win = createScrapeWindow();
-				const ssoLink = await getResourceLinkByElementID(elementId);
-				await win.loadURL(ssoLink);
-				const iframeSrc = await win.webContents.executeJavaScript(
-					`document.querySelectorAll('iframe')[1].src`,
-				);
-				await win.loadURL(iframeSrc);
-				const videoIframeSrc = await win.webContents.executeJavaScript(
-					`document.querySelector('iframe').src`,
-				);
-				await win.loadURL(videoIframeSrc);
-				const mediaLink = await win.webContents.executeJavaScript(
-					`document.querySelector('body').querySelector('[src]').src`,
-				);
-				win.close();
-				return mediaLink;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("resources:get-media", async (_, elementId: string | number) => {
+		try {
+			const win = createScrapeWindow();
+			const ssoLink = await getResourceLinkByElementID(elementId);
+			await win.loadURL(ssoLink);
+			const iframeSrc = await win.webContents.executeJavaScript(
+				`document.querySelectorAll('iframe')[1].src`,
+			);
+			await win.loadURL(iframeSrc);
+			const videoIframeSrc = await win.webContents.executeJavaScript(
+				`document.querySelector('iframe').src`,
+			);
+			await win.loadURL(videoIframeSrc);
+			const mediaLink = await win.webContents.executeJavaScript(
+				`document.querySelector('body').querySelector('[src]').src`,
+			);
+			win.close();
+			return mediaLink;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 function getPlannerPayloadUrl(courseId: string | number) {
@@ -765,13 +779,8 @@ async function getCoursePlansInformation(body: string) {
 		const fromDateString = dates[0];
 		const toDateString = dates[2];
 
-		import("moment").then((momentImport) => {
-			const moment = momentImport.default;
-			fromDate =
-				fromDateString && moment(fromDateString, "DD-MM-YYYY").toDate();
-
-			toDate = toDateString && moment(toDateString, "DD-MM-YYYY").toDate();
-		});
+		fromDate = parseCoursePlanDate(fromDateString);
+		toDate = parseCoursePlanDate(toDateString);
 
 		const coursePlan = {
 			dataTopicId,
@@ -800,20 +809,17 @@ async function getCoursePlans(url: string) {
 }
 
 function getCoursePlansHandler() {
-	ipcMain.handle(
-		"resources:get-course-plans",
-		async (_, courseId: string | number) => {
-			try {
-				const payloadUrl = getPlannerPayloadUrl(courseId);
-				const ssoLink = await getSSOLink(payloadUrl);
-				const coursePlans = await getCoursePlans(ssoLink);
-				return coursePlans;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("resources:get-course-plans", async (_, courseId: string | number) => {
+		try {
+			const payloadUrl = getPlannerPayloadUrl(courseId);
+			const ssoLink = await getSSOLink(payloadUrl);
+			const coursePlans = await getCoursePlans(ssoLink);
+			return coursePlans;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 async function getCoursePlansElements(html: string) {
@@ -862,8 +868,8 @@ async function getCoursePlansElements(html: string) {
 		let fromDate;
 		let toDate;
 
-		fromDate = date.from && date.from.toDate();
-		toDate = date.to && date.to.toDate();
+		fromDate = date.from;
+		toDate = date.to;
 
 		const descriptionContainer = row.find(".itsl-planner-htmltext-viewer");
 		const descriptionText = descriptionContainer.text().trim();
@@ -920,7 +926,7 @@ async function getCoursePlansElements(html: string) {
 }
 
 function getCoursePlanElementsHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-course-plan-elements",
 		async (_, courseId: string | number, topicId: string | number) => {
 			try {
@@ -970,44 +976,8 @@ function getCoursePlanElementsHandler() {
 	);
 }
 
-function parseDateAndTime(dateString: string) {
-	const dateRegex =
-		/(\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2}) – (\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2})/;
-	const timeRegex = /(\d{1,2}:\d{2}) – (\d{1,2}:\d{2})/;
-
-	let fromDate, toDate;
-
-	const dateMatch = dateString.match(dateRegex);
-	const timeMatch = dateString.match(timeRegex);
-
-	const moment = require("moment");
-
-	if (dateMatch) {
-		fromDate = moment(dateMatch[1], "DD. MMM HH:mm");
-		toDate = moment(dateMatch[3], "DD. MMM HH:mm");
-		if (!toDate.isValid()) {
-			toDate = moment(dateMatch[3], "DD. MMM HH:mm").add(1, "day");
-		}
-	} else if (timeMatch) {
-		const currentTime = moment().format("DD. MMM");
-		fromDate = moment(`${currentTime} ${timeMatch[1]}`, "DD. MMM HH:mm");
-		toDate = moment(`${currentTime} ${timeMatch[2]}`, "DD. MMM HH:mm");
-		if (!toDate.isValid() || toDate.isBefore(fromDate)) {
-			toDate = moment(`${currentTime} ${timeMatch[2]}`, "DD. MMM HH:mm").add(
-				1,
-				"day",
-			);
-		}
-	} else {
-		fromDate = null;
-		toDate = null;
-	}
-
-	return { from: fromDate, to: toDate };
-}
-
 function streamFileHandler() {
-	ipcMain.handle("resources:stream-start", async (event, elementId) => {
+	handle("resources:stream-start", async (event, elementId) => {
 		try {
 			const win = createScrapeWindow();
 			const ssoLink = await getResourceLinkByElementID(elementId);

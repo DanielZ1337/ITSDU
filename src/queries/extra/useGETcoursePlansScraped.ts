@@ -1,13 +1,14 @@
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export default function useGETcoursePlansScraped(
 	courseId: number | string,
-	queryConfig?: UseQueryOptions<CoursePlan[], Error, CoursePlan[], string[]>,
+	queryConfig?: QueryConfig<CoursePlan[], Error, CoursePlan[], string[]>,
 ) {
-	return useQuery(
-		[TanstackKeys.CoursePlansScraped, String(courseId)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.CoursePlansScraped, String(courseId)],
+
+		queryFn: async () => {
 			const coursePlans = (await window.resources.coursePlans.get(
 				courseId,
 			)) as CoursePlan[];
@@ -16,10 +17,9 @@ export default function useGETcoursePlansScraped(
 
 			return coursePlans;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }
 
 type CoursePlan = {

@@ -1,9 +1,9 @@
-import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
-import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
-import MessagesChatHeaderExistingChat from "@/components/messages/messages-chat-header-existing-chat.tsx";
 import { useAtom } from "jotai";
 import { useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
+import MessagesAddRecipients from "@/components/messages/messages-add-recipients.tsx";
+import MessagesChatHeaderExistingChat from "@/components/messages/messages-chat-header-existing-chat.tsx";
 import MessageTitleForm from "./messages-title-form";
 
 export default function MessagesChatHeader({
@@ -20,7 +20,7 @@ export default function MessagesChatHeader({
 	const [recipientsSelected] = useAtom(messageSelectedRecipientsAtom);
 
 	return (
-		<div className="flex w-full items-center justify-between border-b p-4 min-h-[5rem]">
+		<div className="flex w-full items-center justify-between border-b p-4 min-h-20">
 			<MessageTitleForm
 				isChatNew={isChatNew}
 				isChatUndefined={isChatUndefined}
@@ -29,7 +29,7 @@ export default function MessagesChatHeader({
 				isSettingNewThreadName={isSettingNewThreadName}
 			/>
 			{!disabledInputsField && (
-				<div className="flex-shrink-0">
+				<div className="shrink-0">
 					{!isChatNew && !isChatUndefined && (
 						<ErrorBoundary fallback={<div>Untitled</div>}>
 							<MessagesChatHeaderExistingChat

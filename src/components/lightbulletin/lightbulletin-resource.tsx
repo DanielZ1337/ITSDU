@@ -1,7 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { isSupportedResourceInApp } from "@/types/api-types/extra/learning-tool-id-types";
 import { ItslearningRestApiEntitiesElementLink } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementLink";
 import { ItslearningRestApiEntitiesElementType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ElementType";
-import { useNavigate } from "react-router-dom";
 import { useNavigateToResource } from "../../types/api-types/extra/learning-tool-id-types";
 import { ResourceContextMenu } from "../recursive-file-explorer";
 import LightbulletinLink from "./lightbulletin-link";
@@ -21,9 +21,8 @@ export default function LightbulletinResource({
 				onClick={() => {
 					if (isSupportedResourceInApp(resource)) {
 						navigateToResource(resource);
-						// @ts-ignore
 					} else if (
-						resource.ElementType ===
+						(resource.ElementType as unknown as string) ===
 						ItslearningRestApiEntitiesElementType[
 							ItslearningRestApiEntitiesElementType.Folder
 						]

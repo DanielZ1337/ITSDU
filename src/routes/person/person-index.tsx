@@ -1,9 +1,9 @@
+import { Suspense } from "react";
+import { useParams } from "react-router-dom";
 import PersonRelationshipsListFallback from "@/components/person/fallback/person-relationships-list-fallback";
 import PersonRelationshipsPersonInfoFallback from "@/components/person/fallback/person-relationships-person-info-fallback";
 import { PersonInfo } from "@/components/person/person-info.tsx";
 import { PersonRelationships } from "@/components/person/person-relationships.tsx";
-import { Suspense } from "react";
-import { useParams } from "react-router-dom";
 
 export default function PersonIndex() {
 	const params = useParams();

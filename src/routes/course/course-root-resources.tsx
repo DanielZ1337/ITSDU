@@ -1,12 +1,12 @@
+import { useParams } from "react-router-dom";
 import ResourcesDataTable from "@/components/resources/resources-table.tsx";
 import useGETcourseRootResources from "@/queries/courses/useGETcourseRootResources";
-import { useParams } from "react-router-dom";
 
 export default function CourseRootResources() {
 	const params = useParams();
 	const courseId = Number(params.id);
 
-	const { data, isLoading } = useGETcourseRootResources({
+	const { data, isPending: isLoading } = useGETcourseRootResources({
 		courseId: courseId,
 	});
 

@@ -1,3 +1,25 @@
+import type { UpdateInfo } from "electron-updater";
+import {
+	Bell,
+	BookOpen,
+	Brush,
+	CalendarDays,
+	Database,
+	Download,
+	FileText,
+	Globe2,
+	Info,
+	LayoutDashboard,
+	Lock,
+	RefreshCcw,
+	Settings2,
+	Trash2,
+	X,
+} from "lucide-react";
+import type React from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast as sonnerToast } from "sonner";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -29,8 +51,8 @@ import { useSettings } from "@/hooks/atoms/useSettings";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion";
 import {
-	type TranslationKey,
 	formatFileSize,
+	type TranslationKey,
 	useLocale,
 	useT,
 } from "@/lib/i18n";
@@ -40,38 +62,17 @@ import {
 	type CalendarViewSetting,
 	type CalendarWeekStartSetting,
 	type DownloadAutoOpenSetting,
+	downloadAutoOpenOptions,
+	getSetting,
 	type LandingPageSetting,
 	type LanguageSetting,
 	type ResourceCacheModeSetting,
-	type SettingsKey,
-	type SettingsOptions,
+	resourceCacheModeOptions,
+	type SettingsPath,
+	type SettingValue,
 	type SidebarDensitySetting,
 	type ThemeSetting,
-	downloadAutoOpenOptions,
-	resourceCacheModeOptions,
 } from "@/types/settings";
-import type { UpdateInfo } from "electron-updater";
-import {
-	Bell,
-	BookOpen,
-	Brush,
-	CalendarDays,
-	Database,
-	Download,
-	FileText,
-	Globe2,
-	Info,
-	LayoutDashboard,
-	Lock,
-	RefreshCcw,
-	Settings2,
-	Trash2,
-	X,
-} from "lucide-react";
-import type React from "react";
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast as sonnerToast } from "sonner";
 
 type UpdateStatus =
 	| "idle"
@@ -303,9 +304,9 @@ function AppearanceSettings() {
 				description={t("settings.appearance.theme.description")}
 			>
 				<Select
-					value={settings.theme}
+					value={settings.appearance.theme}
 					onValueChange={(value) =>
-						void setSetting("theme", value as ThemeSetting)
+						void setSetting("appearance.theme", value as ThemeSetting)
 					}
 				>
 					<SelectTrigger className="w-[180px]">
@@ -321,7 +322,7 @@ function AppearanceSettings() {
 				</Select>
 			</SettingRow>
 			<SettingSwitch
-				settingKey="CustomTitleBarButtons"
+				settingKey="appearance.customTitleBarButtons"
 				title={t("settings.appearance.customTitlebar.title")}
 				description={t("settings.appearance.customTitlebar.description")}
 			/>
@@ -340,9 +341,9 @@ function LanguageSettings() {
 				description={t("settings.language.description")}
 			>
 				<Select
-					value={settings.language}
+					value={settings.appearance.language}
 					onValueChange={(value) =>
-						void setSetting("language", value as LanguageSetting)
+						void setSetting("appearance.language", value as LanguageSetting)
 					}
 				>
 					<SelectTrigger className="w-[180px]">
@@ -378,9 +379,12 @@ function NavigationSettings() {
 				description={t("settings.navigation.defaultLanding.description")}
 			>
 				<Select
-					value={settings.defaultLandingPage}
+					value={settings.navigation.defaultLandingPage}
 					onValueChange={(value) =>
-						void setSetting("defaultLandingPage", value as LandingPageSetting)
+						void setSetting(
+							"navigation.defaultLandingPage",
+							value as LandingPageSetting,
+						)
 					}
 				>
 					<SelectTrigger className="w-[180px]">
@@ -408,11 +412,11 @@ function NavigationSettings() {
 				description={t("settings.navigation.courseSort.description")}
 			>
 				<Select
-					value={settings.courseSortBy}
+					value={settings.navigation.courseSortBy}
 					onValueChange={(value) =>
 						void setSetting(
-							"courseSortBy",
-							value as SettingsOptions["courseSortBy"],
+							"navigation.courseSortBy",
+							value as SettingValue<"navigation.courseSortBy">,
 						)
 					}
 				>
@@ -440,9 +444,12 @@ function NavigationSettings() {
 				description={t("settings.navigation.sidebarDensity.description")}
 			>
 				<Select
-					value={settings.sidebarDensity}
+					value={settings.appearance.sidebarDensity}
 					onValueChange={(value) =>
-						void setSetting("sidebarDensity", value as SidebarDensitySetting)
+						void setSetting(
+							"appearance.sidebarDensity",
+							value as SidebarDensitySetting,
+						)
 					}
 				>
 					<SelectTrigger className="w-[180px]">
@@ -473,9 +480,12 @@ function CalendarSettings() {
 				description={t("settings.calendar.defaultView.description")}
 			>
 				<Select
-					value={settings.calendarDefaultView}
+					value={settings.calendar.defaultView}
 					onValueChange={(value) =>
-						void setSetting("calendarDefaultView", value as CalendarViewSetting)
+						void setSetting(
+							"calendar.defaultView",
+							value as CalendarViewSetting,
+						)
 					}
 				>
 					<SelectTrigger className="w-[180px]">
@@ -494,10 +504,10 @@ function CalendarSettings() {
 				description={t("settings.calendar.weekStartsOn.description")}
 			>
 				<Select
-					value={settings.calendarWeekStartsOn}
+					value={settings.calendar.weekStartsOn}
 					onValueChange={(value) =>
 						void setSetting(
-							"calendarWeekStartsOn",
+							"calendar.weekStartsOn",
 							value as CalendarWeekStartSetting,
 						)
 					}
@@ -512,7 +522,7 @@ function CalendarSettings() {
 				</Select>
 			</SettingRow>
 			<SettingSwitch
-				settingKey="calendarShowWeekends"
+				settingKey="calendar.showWeekends"
 				title={t("settings.calendar.showWeekends.title")}
 				description={t("settings.calendar.showWeekends.description")}
 			/>
@@ -549,36 +559,36 @@ function NotificationSettings() {
 				</div>
 			</SettingRow>
 			<SettingSwitch
-				settingKey="notificationsMessages"
+				settingKey="notifications.messages"
 				title={t("settings.notifications.messages.title")}
 				description={t("settings.notifications.messages.description")}
 			/>
 			<SettingSwitch
-				settingKey="notificationsTasks"
+				settingKey="notifications.tasks"
 				title={t("settings.notifications.tasks.title")}
 				description={t("settings.notifications.tasks.description")}
 			/>
 			<SettingSwitch
-				settingKey="notificationsAppUpdates"
+				settingKey="notifications.appUpdates"
 				title={t("settings.notifications.updates.title")}
 				description={t("settings.notifications.updates.description")}
 			/>
 			<SettingSwitch
-				settingKey="notificationQuietHoursEnabled"
+				settingKey="notifications.quietHoursEnabled"
 				title={t("settings.notifications.quietHours.title")}
 				description={t("settings.notifications.quietHours.description")}
 			/>
-			{settings.notificationQuietHoursEnabled && (
+			{settings.notifications.quietHoursEnabled && (
 				<div className="grid grid-cols-1 gap-4 rounded-md border bg-muted/20 p-4 sm:grid-cols-2">
 					<div className="space-y-2">
 						<Label htmlFor="quiet-start">{t("common.start")}</Label>
 						<Input
 							id="quiet-start"
 							type="time"
-							value={settings.notificationQuietHoursStart}
+							value={settings.notifications.quietHoursStart}
 							onChange={(event) =>
 								void setSetting(
-									"notificationQuietHoursStart",
+									"notifications.quietHoursStart",
 									event.target.value,
 								)
 							}
@@ -589,9 +599,12 @@ function NotificationSettings() {
 						<Input
 							id="quiet-end"
 							type="time"
-							value={settings.notificationQuietHoursEnd}
+							value={settings.notifications.quietHoursEnd}
 							onChange={(event) =>
-								void setSetting("notificationQuietHoursEnd", event.target.value)
+								void setSetting(
+									"notifications.quietHoursEnd",
+									event.target.value,
+								)
 							}
 						/>
 					</div>
@@ -618,7 +631,7 @@ function DownloadSettings() {
 			>
 				<div className="flex max-w-md items-center gap-2">
 					<div className="min-w-0 truncate rounded-md border bg-muted/30 px-3 py-2 text-sm">
-						{settings.downloadDirectory ?? systemDownloadPath ?? "Downloads"}
+						{settings.downloads.directory ?? systemDownloadPath ?? "Downloads"}
 					</div>
 					<Button
 						type="button"
@@ -628,12 +641,12 @@ function DownloadSettings() {
 					>
 						{t("common.choose")}
 					</Button>
-					{settings.downloadDirectory && (
+					{settings.downloads.directory && (
 						<Button
 							type="button"
 							variant="ghost"
 							size="sm"
-							onClick={() => void setSetting("downloadDirectory", null)}
+							onClick={() => void setSetting("downloads.directory", null)}
 						>
 							{t("common.reset")}
 						</Button>
@@ -645,10 +658,10 @@ function DownloadSettings() {
 				description={t("settings.downloads.after.description")}
 			>
 				<Select
-					value={settings.downloadAutoOpen}
+					value={settings.downloads.autoOpen}
 					onValueChange={(value) =>
 						void setSetting(
-							"downloadAutoOpen",
+							"downloads.autoOpen",
 							value as DownloadAutoOpenSetting,
 						)
 					}
@@ -773,12 +786,9 @@ function CacheSettings() {
 				description={t("settings.cache.behavior.description")}
 			>
 				<Select
-					value={settings.resourceCacheMode}
+					value={settings.cache.mode}
 					onValueChange={(value) =>
-						void setSetting(
-							"resourceCacheMode",
-							value as ResourceCacheModeSetting,
-						)
+						void setSetting("cache.mode", value as ResourceCacheModeSetting)
 					}
 				>
 					<SelectTrigger className="w-[220px]">
@@ -808,11 +818,11 @@ function CacheSettings() {
 						max={10240}
 						step={50}
 						className="w-28"
-						value={settings.resourceCacheMaxSizeMb}
+						value={settings.cache.maxSizeMb}
 						onChange={(event) => {
 							const value = Number(event.target.value);
 							if (!Number.isFinite(value)) return;
-							void setSetting("resourceCacheMaxSizeMb", value);
+							void setSetting("cache.maxSizeMb", value);
 						}}
 					/>
 					<span className="text-sm text-muted-foreground">MB</span>
@@ -823,7 +833,7 @@ function CacheSettings() {
 						onClick={async () => {
 							const db = await ItsduResourcesDBWrapper.getInstance();
 							const removed = await db.enforceMaxSize(
-								settings.resourceCacheMaxSizeMb * 1024 * 1024,
+								settings.cache.maxSizeMb * 1024 * 1024,
 							);
 							await refreshCacheInfo();
 							sonnerToast.success(
@@ -901,19 +911,19 @@ function PdfSettings() {
 	return (
 		<SettingsGroup>
 			<SettingSwitch
-				settingKey="CustomPDFrenderer"
+				settingKey="pdf.customRenderer"
 				title={t("settings.pdf.useViewer.title")}
 				description={t("settings.pdf.useViewer.description")}
 			/>
-			{settings.CustomPDFrenderer && (
+			{settings.pdf.customRenderer && (
 				<SettingSwitch
-					settingKey="pdfAIChatSidepanelOpenByDefault"
+					settingKey="pdf.aiChatSidepanelOpenByDefault"
 					title={t("settings.pdf.aiPanel.title")}
 					description={t("settings.pdf.aiPanel.description")}
 				/>
 			)}
 			<SettingSwitch
-				settingKey="CustomPDFSidebarOpened"
+				settingKey="pdf.sidebarOpened"
 				title={t("settings.pdf.sidebar.title")}
 				description={t("settings.pdf.sidebar.description")}
 			/>
@@ -937,21 +947,24 @@ function AppUpdatesSettings() {
 		status === "installing";
 
 	useEffect(() => {
-		const onDownloaded = (_event: unknown, info?: UpdateInfo) => {
+		const onDownloaded = (info?: UpdateInfo) => {
 			if (info) setUpdateInfo(info);
 			setDownloadProgress(100);
 			setStatus("downloaded");
 		};
-		const onProgress = (_event: unknown, progress?: DownloadProgress) => {
+		const onProgress = (progress?: DownloadProgress) => {
 			setDownloadProgress(progress?.percent ?? 0);
 		};
 
-		window.ipcRenderer.on("app:updateDownloaded", onDownloaded);
-		window.ipcRenderer.on("app:downloadProgress", onProgress);
+		const offDownloaded = window.events.on(
+			"app:updateDownloaded",
+			onDownloaded,
+		);
+		const offProgress = window.events.on("app:downloadProgress", onProgress);
 
 		return () => {
-			window.ipcRenderer.removeListener("app:updateDownloaded", onDownloaded);
-			window.ipcRenderer.removeListener("app:downloadProgress", onProgress);
+			offDownloaded();
+			offProgress();
 		};
 	}, []);
 
@@ -1094,7 +1107,7 @@ function AppUpdatesSettings() {
 				</div>
 			</SettingRow>
 			<SettingSwitch
-				settingKey="updatesAutoCheckOnStartup"
+				settingKey="updates.autoCheckOnStartup"
 				title={t("settings.appUpdates.check.title")}
 				description={t("settings.appUpdates.autoCheck.description")}
 			/>
@@ -1107,7 +1120,7 @@ function PrivacySettings() {
 	return (
 		<SettingsGroup>
 			<SettingSwitch
-				settingKey="UploadAIChats"
+				settingKey="ai.uploadChats"
 				title={t("settings.privacy.uploadAi.title")}
 				description={t("settings.privacy.uploadAi.description")}
 			/>
@@ -1152,11 +1165,11 @@ function AdvancedSettings() {
 						max={240}
 						step={5}
 						className="w-24"
-						value={settings.authRefreshIntervalMinutes}
+						value={settings.auth.refreshIntervalMinutes}
 						onChange={(event) => {
 							const value = Number(event.target.value);
 							if (!Number.isFinite(value)) return;
-							void setSetting("authRefreshIntervalMinutes", value);
+							void setSetting("auth.refreshIntervalMinutes", value);
 						}}
 					/>
 					<span className="text-sm text-muted-foreground">min</span>
@@ -1224,12 +1237,12 @@ function SettingSwitch({
 	title,
 	description,
 }: {
-	settingKey: SettingsKey;
+	settingKey: SettingsPath;
 	title: string;
 	description: string;
 }) {
 	const { settings, setSetting } = useSettings();
-	const checked = Boolean(settings[settingKey]);
+	const checked = Boolean(getSetting(settings, settingKey));
 
 	return (
 		<SettingRow title={title} description={description}>

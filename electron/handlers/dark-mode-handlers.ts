@@ -1,35 +1,39 @@
-import { ipcMain, nativeTheme } from "electron";
+import { nativeTheme } from "electron";
+import { handle } from "../ipc/secure";
 import { SettingsService } from "../services/settings/settings-service";
 
 function darkModeToggleHandler() {
-	ipcMain.handle("dark-mode:toggle", () => {
+	handle("dark-mode:toggle", () => {
 		const settingsService = SettingsService.getInstance();
 		const nextTheme = nativeTheme.shouldUseDarkColors ? "light" : "dark";
-		settingsService.set("theme", nextTheme);
+		settingsService.set("appearance.theme", nextTheme);
 		return nextTheme === "dark";
 	});
 }
 
 function darkModeSetSystemHandler() {
-	ipcMain.handle("dark-mode:system", () => {
-		SettingsService.getInstance().set("theme", "system");
+	handle("dark-mode:system", () => {
+		SettingsService.getInstance().set("appearance.theme", "system");
 	});
 }
 
 function darkModeGetHandler() {
-	ipcMain.handle("dark-mode:get", () => {
+	handle("dark-mode:get", () => {
 		return nativeTheme.shouldUseDarkColors;
 	});
 }
 
 function darkModeSetHandler() {
-	ipcMain.handle("dark-mode:set", (_, value) => {
-		SettingsService.getInstance().set("theme", value ? "dark" : "light");
+	handle("dark-mode:set", (_, value) => {
+		SettingsService.getInstance().set(
+			"appearance.theme",
+			value ? "dark" : "light",
+		);
 	});
 }
 
 function darkModeSubscribeHandle() {
-	ipcMain.handle("dark-mode:subscribe", (event) => {
+	handle("dark-mode:subscribe", (event) => {
 		nativeTheme.on("updated", () => {
 			event.sender.send("dark-mode:updated", nativeTheme.shouldUseDarkColors);
 		});

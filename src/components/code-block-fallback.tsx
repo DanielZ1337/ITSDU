@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 import { Loader } from "./ui/loader";
 
 export default function CodeBlockFallback() {

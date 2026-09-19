@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETmessages,
@@ -5,16 +7,15 @@ import {
 	GETmessagesParams,
 } from "@/types/api-types/messages/GETmessages.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETmessages(
 	params: GETmessagesParams,
-	queryConfig?: UseQueryOptions<GETmessages, Error, GETmessages, string[]>,
+	queryConfig?: QueryConfig<GETmessages, Error, GETmessages, string[]>,
 ) {
-	return useQuery(
-		[TanstackKeys.Messages, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.Messages, ...getQueryKeysFromParamsObject(params)],
+
+		queryFn: async () => {
 			console.log("useGETmessages");
 			const res = await axios.get(GETmessagesApiUrl(params), {
 				params: {
@@ -26,8 +27,7 @@ export default function useGETmessages(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

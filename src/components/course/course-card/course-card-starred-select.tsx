@@ -1,3 +1,4 @@
+import { Filter } from "lucide-react";
 import {
 	Select,
 	SelectContent,
@@ -9,7 +10,6 @@ import {
 	CourseCardsSelectOptions,
 	CourseCardsSelectOptionsEnum,
 } from "@/types/course-cards-select-options.ts";
-import { Filter } from "lucide-react";
 
 export default function CourseCardStarredSelect({
 	selectedStarredOption,

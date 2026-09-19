@@ -1,4 +1,4 @@
-import { ITSLEARNING_API_MAX_PAGESIZE, apiUrl } from "@/lib/utils.ts";
+import { apiUrl } from "@/lib/utils.ts";
 import { CourseCardsSortByTypes } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
 import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
 
@@ -24,7 +24,7 @@ export type GETstarredCourses = {
 
 export type GETstarredCoursesParams = {
 	PageIndex?: number;
-	PageSize?: ITSLEARNING_API_MAX_PAGESIZE;
+	PageSize?: number;
 	sortBy?: CourseCardsSortByTypes;
 	searchText?: string;
 	isShowMore?: boolean;

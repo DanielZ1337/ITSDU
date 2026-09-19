@@ -1,14 +1,14 @@
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import { NavLink, useMatch } from "react-router-dom";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { cn } from "@/lib/utils";
 import { NavigationType } from "@/types/navigation-link";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { NavLink, useMatch } from "react-router-dom";
-import { useSettings } from "@/hooks/atoms/useSettings";
 
 export default function SidebarItem({
 	title,
@@ -31,12 +31,12 @@ export default function SidebarItem({
 					onClick={(e) => disabled && e.preventDefault()}
 					className={cn(
 						"group/item relative flex items-center justify-center",
-						settings.sidebarDensity === "compact"
+						settings.appearance.sidebarDensity === "compact"
 							? "p-2 mx-0.5 rounded-lg"
 							: "p-2.5 mx-1 rounded-xl",
 						"cursor-pointer",
 						"transition-all duration-200 ease-out",
-						"hover:bg-foreground/[0.08] active:scale-95",
+						"hover:bg-foreground/8 active:scale-95",
 						isActive
 							? "text-foreground"
 							: "text-muted-foreground hover:text-foreground",
@@ -85,21 +85,19 @@ export default function SidebarItem({
 							</AnimatePresence>
 
 							{/* Icon with subtle scale on hover */}
-							<span className={cn(
-								"relative z-10 transition-transform duration-200",
-								"group-hover/item:scale-110",
-							)}>
+							<span
+								className={cn(
+									"relative z-10 transition-transform duration-200",
+									"group-hover/item:scale-110",
+								)}
+							>
 								{icon}
 							</span>
 						</>
 					)}
 				</NavLink>
 			</TooltipTrigger>
-			<TooltipContent
-				side="right"
-				sideOffset={8}
-				className="font-medium"
-			>
+			<TooltipContent side="right" sideOffset={8} className="font-medium">
 				{title}
 			</TooltipContent>
 		</Tooltip>

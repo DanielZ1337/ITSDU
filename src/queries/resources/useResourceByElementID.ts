@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { ItsduResourcesDBWrapper } from "@/lib/resource-indexeddb/resourceIndexedDB";
 import { fileExtension } from "@/lib/resources/resource-format";
 import { getAccessToken } from "@/lib/utils";
@@ -5,8 +7,6 @@ import {
 	GETcourseResourceInfo,
 	GETcourseResourceInfoApiUrl,
 } from "@/types/api-types/courses/GETcourseResourceInfo";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
 
 export type ResourceFileType = {
@@ -66,7 +66,7 @@ function createRenderableResource(
 }
 
 function shouldCacheOpenedResource(
-	mode: Awaited<ReturnType<typeof window.settings.getAll>>["resourceCacheMode"],
+	mode: Awaited<ReturnType<typeof window.settings.getAll>>["cache"]["mode"],
 	file: { name: string; type?: string },
 ) {
 	if (mode === "manual") return false;
@@ -87,16 +87,17 @@ function offlineResourceError(elementId: number | string) {
 
 export default function useResourceByElementID(
 	elementId: number | string,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		ResourceFileType,
 		Error,
 		ResourceFileType,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.ResourceByElementID, elementId.toString()],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.ResourceByElementID, elementId.toString()],
+
+		queryFn: async () => {
 			const db = await ItsduResourcesDBWrapper.getInstance();
 			const resource = await db.getResourceById(elementId.toString());
 			const last_accessed = new Date();
@@ -160,19 +161,15 @@ export default function useResourceByElementID(
 			};
 
 			const settings = await window.settings.getAll();
-			if (shouldCacheOpenedResource(settings.resourceCacheMode, file)) {
+			if (shouldCacheOpenedResource(settings.cache.mode, file)) {
 				await db.getIndexedDB().checkRemainingSpace(file.size / 1024 / 1024, {
 					onStorageAvailable: async () => {
 						await db.insertResource(insertResourceObject);
-						await db.enforceMaxSize(
-							settings.resourceCacheMaxSizeMb * 1024 * 1024,
-						);
+						await db.enforceMaxSize(settings.cache.maxSizeMb * 1024 * 1024);
 					},
 					onStorageUnavailable: async () => {
 						await db.insertResource(insertResourceObject);
-						await db.enforceMaxSize(
-							settings.resourceCacheMaxSizeMb * 1024 * 1024,
-						);
+						await db.enforceMaxSize(settings.cache.maxSizeMb * 1024 * 1024);
 					},
 				});
 			}
@@ -181,24 +178,22 @@ export default function useResourceByElementID(
 				{
 					...file,
 					...resourceInfo,
-					cacheStatus: shouldCacheOpenedResource(
-						settings.resourceCacheMode,
-						file,
-					)
+					cacheStatus: shouldCacheOpenedResource(settings.cache.mode, file)
 						? "cached"
 						: "missing",
 				},
 				{ fromCache: false },
 			);
 		},
-		{
-			...queryConfig,
-			// complete caching of resources
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchIntervalInBackground: false,
-		},
-	);
+
+		...queryConfig,
+
+		// complete caching of resources
+		refetchInterval: false,
+
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchIntervalInBackground: false,
+	});
 }

@@ -39,3 +39,9 @@ release
 *.env.production
 *.env.production.local
 .env
+
+test-results
+playwright-report
+
+# Graphify's generated AST cache is local rebuild state, not a source artifact.
+graphify-out/cache/

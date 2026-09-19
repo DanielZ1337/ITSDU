@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button.tsx";
-import { AnimatePresence, m } from "framer-motion";
 import { ChevronUp } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button.tsx";
 
 export default function ScrollToTopButton({
 	viewportRef,
 }: {
-	viewportRef: React.RefObject<HTMLDivElement>;
+	viewportRef: React.RefObject<HTMLDivElement | null>;
 }) {
 	const [showToTopButton, setShowToTopButton] = useState<boolean>(false);
 

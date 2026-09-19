@@ -1,8 +1,9 @@
-import { cn } from "@/lib/utils";
 import React, { lazy, Suspense } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cn } from "@/lib/utils";
 import CodeBlockFallback from "./code-block-fallback";
+
 // import remarkMath from "remark-math";
 const CodeBlock = lazy(() => import("@/components/code-block"));
 
@@ -89,10 +90,7 @@ function ParseMarkdown({
 			);
 		},
 		p: ({ className, ...props }: ComponentTypes) => (
-			<p
-				className={cn("leading-7 [&:not(:first-child)]:mt-4", className)}
-				{...props}
-			/>
+			<p className={cn("leading-7 not-first:mt-4", className)} {...props} />
 		),
 		ul: ({ className, ...props }: ComponentTypes) => (
 			<ul className={cn("my-6 ml-6 list-disc", className)} {...props} />
@@ -105,10 +103,7 @@ function ParseMarkdown({
 		),
 		blockquote: ({ className, ...props }: ComponentTypes) => (
 			<blockquote
-				className={cn(
-					"mt-6 border-l-2 pl-6 italic [&>*]:text-gray-500",
-					className,
-				)}
+				className={cn("mt-6 border-l-2 pl-6 italic *:text-gray-500", className)}
 				{...props}
 			/>
 		),
@@ -146,7 +141,7 @@ function ParseMarkdown({
 		th: ({ className, ...props }: ComponentTypes) => (
 			<th
 				className={cn(
-					"border px-4 py-2 text-left font-bold  [&[align=center]]:text-center [&[align=right]]:text-right",
+					"border px-4 py-2 text-left font-bold  [[align=center]]:text-center [[align=right]]:text-right",
 					className,
 				)}
 				{...props}
@@ -155,7 +150,7 @@ function ParseMarkdown({
 		td: ({ className, ...props }: ComponentTypes) => (
 			<td
 				className={cn(
-					"border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right",
+					"border px-4 py-2 text-left [[align=center]]:text-center [[align=right]]:text-right",
 					className,
 				)}
 				{...props}

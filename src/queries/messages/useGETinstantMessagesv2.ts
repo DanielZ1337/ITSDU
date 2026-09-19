@@ -1,3 +1,8 @@
+import axios from "axios";
+import {
+	InfiniteQueryConfig,
+	useInfiniteQueryCompat,
+} from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETinstantMessagesv2,
@@ -5,25 +10,17 @@ import {
 	GETinstantMessagesv2Params,
 } from "@/types/api-types/messages/GETinstantMessagesv2.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETinstantMessagesv2(
 	params: GETinstantMessagesv2Params,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETinstantMessagesv2,
-		Error,
-		GETinstantMessagesv2,
-		GETinstantMessagesv2,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETinstantMessagesv2>,
 ) {
-	return useInfiniteQuery(
-		[TanstackKeys.Messagesv2, ...getQueryKeysFromParamsObject(params)],
-		async ({ pageParam = params.threadPage }) => {
+	return useInfiniteQueryCompat({
+		queryKey: [
+			TanstackKeys.Messagesv2,
+			...getQueryKeysFromParamsObject(params),
+		],
+		queryFn: async ({ pageParam }) => {
 			console.log("useGETmessages");
 			const res = await axios.get(
 				GETinstantMessagesv2ApiUrl({
@@ -41,25 +38,24 @@ export default function useGETinstantMessagesv2(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
-				if (
-					(lastPage.CurrentPageIndex + 1) * lastPage.PageSize <
-					lastPage.Total
-				) {
-					return lastPage.CurrentPageIndex + 1;
-				} else {
-					return undefined;
-				}
-			},
-			getPreviousPageParam: (firstPage) => {
-				if (firstPage.CurrentPageIndex > 0) {
-					return firstPage.CurrentPageIndex - 1;
-				} else {
-					return undefined;
-				}
-			},
+		initialPageParam: params.threadPage,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
+			if (
+				(lastPage.CurrentPageIndex + 1) * lastPage.PageSize <
+				lastPage.Total
+			) {
+				return lastPage.CurrentPageIndex + 1;
+			} else {
+				return undefined;
+			}
 		},
-	);
+		getPreviousPageParam: (firstPage) => {
+			if (firstPage.CurrentPageIndex > 0) {
+				return firstPage.CurrentPageIndex - 1;
+			} else {
+				return undefined;
+			}
+		},
+	});
 }

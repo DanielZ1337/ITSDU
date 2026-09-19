@@ -1,6 +1,5 @@
-import { BrowserWindow } from "electron";
-
-const Store = require("electron-store");
+import { BrowserWindow, screen } from "electron";
+import Store from "electron-store";
 
 interface WindowOptions {
 	width: number;
@@ -16,17 +15,15 @@ const DEFAULT_WINDOW_SIZE = {
 };
 
 export class WindowOptionsService {
-	// @ts-ignore
-	private readonly store: typeof Store<WindowOptions>;
+	private readonly store: Store<WindowOptions>;
 
 	constructor() {
-		this.store = new Store({
+		this.store = new Store<WindowOptions>({
 			name: "itslearning-window-options-store",
 		});
 	}
 
 	public getWindowOptions(): WindowOptions {
-		const screen = require("electron").screen;
 		const display = screen.getPrimaryDisplay();
 
 		const defaultOptions: WindowOptions = {

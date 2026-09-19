@@ -1,7 +1,7 @@
 import useGETLinkOGPreview from "@/queries/extra/useGETLinkOGPreview";
 
 export default function OgImagePreview({ url }: { url: string }) {
-	const { isLoading, isError, data } = useGETLinkOGPreview(url);
+	const { isPending: isLoading, isError, data } = useGETLinkOGPreview(url);
 
 	if (isLoading) {
 		return (
@@ -35,22 +35,26 @@ export default function OgImagePreview({ url }: { url: string }) {
 		);
 	}
 
-	if (isError || !data || !data.image.url) {
+	const image = data?.links?.thumbnail?.[0]?.href;
+	if (isError || !data || !image) {
 		return null;
 	}
+	const title = data.meta?.title;
+	const description = data.meta?.description;
+	const target = data.meta?.canonical || url;
 
 	return (
 		<a
 			className={
 				"my-6 w-full h-full max-w-lg flex-wrap border-neutral-300 dark:border-neutral-500 border rounded-lg overflow-clip shadow-xl"
 			}
-			href={data.url}
+			href={target}
 			target={"_blank"}
 			rel={"noopener noreferrer"}
 		>
 			<img
-				src={data.image.url}
-				alt={data.image.alt ?? data.title}
+				src={image}
+				alt={title}
 				width={0}
 				height={0}
 				sizes={"100vw"}
@@ -62,10 +66,10 @@ export default function OgImagePreview({ url }: { url: string }) {
 				<h1
 					className={"sm:text-xl text-base font-bold text-center mb-2 truncate"}
 				>
-					{data.title}
+					{title}
 				</h1>
-				<h3 className={"sm:text-base text-sm truncate"}>{data.description}</h3>
-				<span className={"underline text-blue-500 text-xs"}>{data.url}</span>
+				<h3 className={"sm:text-base text-sm truncate"}>{description}</h3>
+				<span className={"underline text-blue-500 text-xs"}>{target}</span>
 			</div>
 		</a>
 	);

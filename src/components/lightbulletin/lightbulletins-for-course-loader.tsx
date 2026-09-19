@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import { MessageSquare, Paperclip } from "lucide-react";
 
 export default function LightbulletinsForCourseLoader() {
 	return (

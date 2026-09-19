@@ -1,11 +1,18 @@
-import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
-import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
-import Resources from "@/components/resources/resources.tsx";
-import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { Bell, Files, PanelRightClose, PanelRightOpen, Search, X } from "lucide-react";
+import {
+	Bell,
+	Files,
+	PanelRightClose,
+	PanelRightOpen,
+	Search,
+	X,
+} from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { type PanelImperativeHandle } from "react-resizable-panels";
 import { useParams } from "react-router-dom";
-import "@/styles/splitter-custom.css";
+import LightbulletinsForCourse from "@/components/lightbulletin/lightbulletins-for-course.tsx";
+import LightbulletinsForCourseLoader from "@/components/lightbulletin/lightbulletins-for-course-loader.tsx";
+import Resources from "@/components/resources/resources.tsx";
+import { Button } from "@/components/ui/button";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -17,14 +24,13 @@ import {
 	SearchProvider,
 	useSearch,
 } from "@/components/ui/search-input";
+import { Skeleton } from "@/components/ui/skeleton.tsx";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "@/components/ui/button";
-import { ImperativePanelHandle } from "react-resizable-panels";
 
 export default function CourseIndex() {
 	const { id } = useParams();
@@ -32,14 +38,16 @@ export default function CourseIndex() {
 	const [longPress, setLongPress] = useState(false);
 	const [openTooltip, setOpenTooltip] = useState(false);
 	const [isMounted, setIsMounted] = useState(false);
-	const [isResourcesPanelCollapsed, setIsResourcesPanelCollapsed] = useState(false);
+	const [isResourcesPanelCollapsed, setIsResourcesPanelCollapsed] =
+		useState(false);
 
 	useEffect(() => {
 		setIsMounted(true);
 	}, []);
 
-	const ref = useRef<ImperativePanelHandle>(null);
+	const ref = useRef<PanelImperativeHandle>(null);
 
+	// Hide the tooltip while the handle is being held/dragged. The separator may swallow mouseup, so listen to pointer events.
 	const handleMouseDown = () => {
 		const timeoutId = setTimeout(() => {
 			setLongPress(true);
@@ -48,29 +56,25 @@ export default function CourseIndex() {
 		const clearLongPress = () => {
 			clearTimeout(timeoutId);
 			setLongPress(false);
-			document.removeEventListener("touchend", clearLongPress);
-			document.removeEventListener("touchcancel", clearLongPress);
-			document.removeEventListener("mouseup", clearLongPress);
+			for (const type of [
+				"pointerup",
+				"pointercancel",
+				"mouseup",
+				"touchend",
+				"touchcancel",
+			]) {
+				document.removeEventListener(type, clearLongPress, true);
+			}
 		};
 
-		document.addEventListener("mouseup", clearLongPress);
-		document.addEventListener("touchend", clearLongPress);
-		document.addEventListener("touchcancel", clearLongPress);
-	};
-
-	const handleClick = () => {
-		if (!longPress) {
-			const panel = ref.current;
-			if (panel) {
-				const isCollapsed = panel.isCollapsed();
-				if (isCollapsed) {
-					panel.expand();
-					setIsResourcesPanelCollapsed(false);
-				} else {
-					panel.collapse();
-					setIsResourcesPanelCollapsed(true);
-				}
-			}
+		for (const type of [
+			"pointerup",
+			"pointercancel",
+			"mouseup",
+			"touchend",
+			"touchcancel",
+		]) {
+			document.addEventListener(type, clearLongPress, true);
 		}
 	};
 
@@ -88,10 +92,25 @@ export default function CourseIndex() {
 		}
 	};
 
+	// react-resizable-panels v4 handles the pointer on the separator itself, so a plain click is detected from
+	// capture-phase pointer events: press and release close together, without dragging.
+	const pressRef = useRef<{ x: number; y: number; t: number } | null>(null);
+	const handlePointerDown = (event: React.PointerEvent) => {
+		pressRef.current = { x: event.clientX, y: event.clientY, t: Date.now() };
+		handleMouseDown();
+	};
+	const handlePointerUp = (event: React.PointerEvent) => {
+		const press = pressRef.current;
+		pressRef.current = null;
+		if (!press) return;
+		const moved = Math.hypot(event.clientX - press.x, event.clientY - press.y);
+		if (moved < 4 && Date.now() - press.t < 400) toggleResourcesPanel();
+	};
+
 	return (
 		<div className="flex flex-col flex-1 h-full max-h-full overflow-hidden">
 			{/* Unified Header */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-background">
+			<div className="shrink-0 border-b border-border/50 bg-background">
 				<div className="flex items-center justify-between px-6 py-3">
 					<div className="flex items-center gap-3">
 						<div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
@@ -123,7 +142,9 @@ export default function CourseIndex() {
 								</Button>
 							</TooltipTrigger>
 							<TooltipContent>
-								{isResourcesPanelCollapsed ? "Show Resources Panel" : "Hide Resources Panel"}
+								{isResourcesPanelCollapsed
+									? "Show Resources Panel"
+									: "Hide Resources Panel"}
 							</TooltipContent>
 						</Tooltip>
 					</TooltipProvider>
@@ -131,7 +152,11 @@ export default function CourseIndex() {
 			</div>
 
 			{/* Content Area with Resizable Panels */}
-			<ResizablePanelGroup autoSaveId="course-index" direction="horizontal" className="flex-1">
+			<ResizablePanelGroup
+				autoSaveId="course-index"
+				direction="horizontal"
+				className="flex-1"
+			>
 				{/* Announcements Panel */}
 				<ResizablePanel
 					minSize={30}
@@ -156,9 +181,8 @@ export default function CourseIndex() {
 						<TooltipTrigger asChild>
 							<button
 								type="button"
-								onMouseUp={handleClick}
-								onMouseDown={handleMouseDown}
-								onTouchStart={handleMouseDown}
+								onPointerUpCapture={handlePointerUp}
+								onPointerDownCapture={handlePointerDown}
 								className="py-40 hover:py-20 active:py-0 transition-all duration-1000 ease-in-out group"
 							>
 								<ResizableHandle
@@ -181,12 +205,13 @@ export default function CourseIndex() {
 
 				{/* Resources Panel */}
 				<ResizablePanel
-					ref={ref}
+					panelRef={ref}
 					collapsible
 					minSize={20}
 					defaultSize={35}
-					onCollapse={() => setIsResourcesPanelCollapsed(true)}
-					onExpand={() => setIsResourcesPanelCollapsed(false)}
+					onResize={() =>
+						setIsResourcesPanelCollapsed(ref.current?.isCollapsed() ?? false)
+					}
 				>
 					{isMounted && (
 						<SearchProvider>
@@ -202,7 +227,10 @@ export default function CourseIndex() {
 function ResourcesPanel({
 	courseId,
 	shouldAutoSearch = true,
-}: { courseId: number; shouldAutoSearch?: boolean }) {
+}: {
+	courseId: number;
+	shouldAutoSearch?: boolean;
+}) {
 	const inputs = document.querySelectorAll("input");
 	const isInputFocused = Array.from(inputs).some(
 		(input) => input === document.activeElement,
@@ -213,7 +241,7 @@ function ResourcesPanel({
 	return (
 		<div className="flex flex-col h-full max-h-full overflow-hidden border-l border-border/50 bg-muted/30">
 			{/* Resources Header with Search */}
-			<div className="flex-shrink-0 p-3 border-b border-border/30">
+			<div className="shrink-0 p-3 border-b border-border/30">
 				<div className="relative">
 					<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
 					<SearchInput
@@ -260,7 +288,7 @@ function ResourcesSkeleton() {
 		<div className="space-y-2 p-2">
 			{Array.from({ length: 10 }).map((_, i) => (
 				<div key={i} className="flex items-center gap-2">
-					<Skeleton className="h-6 w-6 rounded flex-shrink-0 bg-foreground/20" />
+					<Skeleton className="h-6 w-6 rounded shrink-0 bg-foreground/20" />
 					<Skeleton
 						className="h-6 rounded bg-foreground/20"
 						style={{ width: `${60 + (i % 3) * 15}%` }}

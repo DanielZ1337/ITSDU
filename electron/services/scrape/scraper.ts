@@ -3,7 +3,9 @@ import { BrowserWindow } from "electron";
 const DEFAULT_WINDOW_SCRAPER_OPTIONS = {
 	show: false,
 	webPreferences: {
-		nodeIntegration: true,
+		nodeIntegration: false,
+		contextIsolation: true,
+		sandbox: true,
 	},
 } as Electron.BrowserWindowConstructorOptions;
 

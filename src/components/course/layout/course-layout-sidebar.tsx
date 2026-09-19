@@ -1,6 +1,3 @@
-import SearchResourcesDialog from "@/components/resources/resources-search-dialog.tsx";
-import { cn } from "@/lib/utils.ts";
-import { m } from "framer-motion";
 // eslint-disable-next-line no-redeclare
 import {
 	CalendarIcon,
@@ -11,8 +8,11 @@ import {
 	Megaphone,
 	Users2,
 } from "lucide-react";
+import { m } from "motion/react";
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
+import SearchResourcesDialog from "@/components/resources/resources-search-dialog.tsx";
+import { cn } from "@/lib/utils.ts";
 
 const SideBarNavLinks = [
 	{

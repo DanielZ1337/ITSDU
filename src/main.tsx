@@ -1,15 +1,15 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
-import { useSettings } from "@/hooks/atoms/useSettings";
-import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Navigate, createHashRouter } from "react-router-dom";
+import { createHashRouter, Navigate } from "react-router-dom";
+import { useSettings } from "@/hooks/atoms/useSettings";
+import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { GlobalShortcuts } from "./components/global-shortcuts";
 import { Loader } from "./components/ui/loader";
 import { GlobalErrorBoundaryProvider } from "./contexts/global-error-boundary-context";
-import AllTasks from "./routes/all-tasks";
 
+const AllTasks = lazy(() => import("./routes/all-tasks"));
 const RouterProvider = lazy(() =>
 	import("react-router-dom").then((module) => ({
 		default: module.RouterProvider,
@@ -90,7 +90,7 @@ function LandingRedirect() {
 			calendar: "/calendar",
 			tasks: "/all-tasks",
 			messages: "/messages",
-		}[settings.defaultLandingPage] ?? "/overview";
+		}[settings.navigation.defaultLandingPage] ?? "/overview";
 
 	return <Navigate to={landingPath} replace />;
 }
@@ -287,14 +287,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 			<SuspenseWrapper max>
 				<Providers>
 					{/* <React.StrictMode> */}
-					<RouterProvider
-						fallbackElement={<ErrorPage />}
-						future={{
-							v7_startTransition: true,
-						}}
-						router={router}
-					/>
-					<ReactQueryDevtools position="top" buttonPosition="top-left" />
+					<RouterProvider router={router} />
+					{import.meta.env.DEV && (
+						<ReactQueryDevtools position="top" buttonPosition="top-left" />
+					)}
 					{/* </React.StrictMode> */}
 					<GlobalShortcuts />
 				</Providers>
@@ -307,6 +303,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 postMessage({ payload: "removeLoading" }, "*");
 
 // Use contextBridge
-window.ipcRenderer.on("main-process-message", (_event, message) => {
+window.events.on("main-process-message", (message) => {
 	console.log(message);
 });

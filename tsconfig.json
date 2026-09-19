@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
       ]
     },
-    "target": "ES2020",
+    "target": "ES2023",
     "useDefineForClassFields": true,
     "lib": [
-      "ES2020",
+      "ES2023",
       "DOM",
       "DOM.Iterable"
     ],
@@ -30,6 +29,10 @@
   },
   "include": [
     "src",
+    "tests",
+    "e2e",
+    "playwright.config.ts",
+    "vitest.config.mts",
     "electron"
   ],
   "references": [

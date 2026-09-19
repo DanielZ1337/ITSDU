@@ -1,3 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
 import { messageSelectedRecipientsAtom } from "@/atoms/message-selected-recipients";
 import MessagesChatInputFileDialog from "@/components/messages/messages-chat-input-file-dialog.tsx";
@@ -6,10 +10,7 @@ import { Textarea } from "@/components/ui/textarea.tsx";
 import useGETinstantMessagesForThread from "@/queries/messages/useGETinstantMessagesForThread";
 import usePOSTinstantMessagev2 from "@/queries/messages/usePOSTinstantMessagev2";
 import usePOSTmessageAttachment from "@/queries/messages/usePOSTmessageAttachment";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAtom } from "jotai";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { ItslearningRestApiEntitiesReferencedInstantMessageType } from "@/types/api-types/utils/Itslearning.RestApi.Entities.ReferencedInstantMessageType";
 
 export default function MessagesChatInputsField() {
 	const [files, setFiles] = useState<File[] | null>(null);
@@ -51,7 +52,7 @@ export default function MessagesChatInputsField() {
 		return interval;
 	}, [uploadProgress]);
 
-	const { mutate: sendMessage, isLoading: isSendingMessage } =
+	const { mutate: sendMessage, isPending: isSendingMessage } =
 		usePOSTinstantMessagev2({
 			onSuccess: () => {
 				queryClient.invalidateQueries({
@@ -68,7 +69,7 @@ export default function MessagesChatInputsField() {
 			},
 		});
 
-	const { mutate: sendFile, isLoading: isSendingFile } =
+	const { mutate: sendFile, isPending: isSendingFile } =
 		usePOSTmessageAttachment();
 
 	const handleSubmit = useCallback(
@@ -102,11 +103,11 @@ export default function MessagesChatInputsField() {
 						InstantMessageThreadId: isNewChat ? undefined : currentChat,
 						// ToPersonIds: isNewChat ? personIds : undefined,
 						SendAsIndividualMessages: isNewChat ? false : undefined,
-						// @ts-ignore
+						// The API expects the member name ("None"), not the numeric enum value.
 						ReferencedInstantMessageType: isNewChat
-							? ItslearningRestApiEntitiesReferencedInstantMessageType[
+							? (ItslearningRestApiEntitiesReferencedInstantMessageType[
 									ItslearningRestApiEntitiesReferencedInstantMessageType.None
-								]
+								] as unknown as ItslearningRestApiEntitiesReferencedInstantMessageType)
 							: undefined,
 						FileIds: data.map((file) => file.m_Item1),
 					},
@@ -129,11 +130,11 @@ export default function MessagesChatInputsField() {
 				InstantMessageThreadId: isNewChat ? undefined : currentChat,
 				// ToPersonIds: isNewChat ? personIds : undefined,
 				SendAsIndividualMessages: isNewChat ? false : undefined,
-				// @ts-ignore
+				// The API expects the member name ("None"), not the numeric enum value.
 				ReferencedInstantMessageType: isNewChat
-					? ItslearningRestApiEntitiesReferencedInstantMessageType[
+					? (ItslearningRestApiEntitiesReferencedInstantMessageType[
 							ItslearningRestApiEntitiesReferencedInstantMessageType.None
-						]
+						] as unknown as ItslearningRestApiEntitiesReferencedInstantMessageType)
 					: undefined,
 				Text: message,
 			},
@@ -190,7 +191,7 @@ export default function MessagesChatInputsField() {
 				<div className={"flex-1 relative"}>
 					<Textarea
 						rows={1}
-						className="max-h-48 w-full overflow-hidden min-h-[2.5rem]"
+						className="max-h-48 w-full overflow-hidden min-h-10"
 						ref={textareaRef}
 						autoFocus
 						onInput={(e) => {

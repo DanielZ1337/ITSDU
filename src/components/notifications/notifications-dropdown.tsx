@@ -1,3 +1,5 @@
+import { ArrowRightIcon, Megaphone } from "lucide-react";
+import { Link } from "react-router-dom";
 import { UnreadNotificationIndicator } from "@/components/messages/unread-notification-indicator.tsx";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,17 +9,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotifications from "@/queries/notifications/useGETnotifications";
-import usePUTnotificationsMarkAllAsRead from "@/queries/notifications/usePUTnotificationsMarkAllAsRead";
 import usePUTnotificationsMarkAllAsReadv2 from "@/queries/notifications/usePUTnotificationsMarkAllAsReadv2";
-import { ScrollShadow } from "@nextui-org/react";
-import { ArrowRightIcon } from "lucide-react";
-import { AiOutlineNotification } from "react-icons/ai";
-import { Link } from "react-router-dom";
 import NotificationsDropdownInfiniteFallback from "./fallback/notifications-dropdown-infinite-fallback";
 import NotificationsDropdownInfiniteEnd from "./notifications-dropdown-infinite-end";
 
@@ -38,7 +36,7 @@ export default function NotificationsDropdown() {
 		},
 	);
 
-	const { mutate: markAllAsRead, isLoading: isMarkingAllAsRead } =
+	const { mutate: markAllAsRead, isPending: isMarkingAllAsRead } =
 		usePUTnotificationsMarkAllAsReadv2();
 
 	const notificationsFlatMap = notifications!.pages.flatMap(
@@ -59,7 +57,7 @@ export default function NotificationsDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
-					<AiOutlineNotification className={"w-7 h-7"} />
+					<Megaphone className="h-5 w-5" />
 					{unreadNotifications.length > 0 && (
 						<UnreadNotificationsPingIndicator
 							amount={unreadNotifications.length}

@@ -1,11 +1,11 @@
-import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
-import { Button } from "@/components/ui/button.tsx";
-import { Input } from "@/components/ui/input.tsx";
 import { useAtom } from "jotai";
 import { Plus } from "lucide-react";
 import React, { Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { AiOutlineSearch } from "react-icons/ai";
+import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat";
+import { Button } from "@/components/ui/button.tsx";
+import { Input } from "@/components/ui/input.tsx";
 import MessageSidebarChatFallback from "./fallbacks/message-sidebar-chat-fallback";
 import MessagesSidebarChat from "./messages-sidebar-chat";
 import MessagesSidebarChatList from "./messages-sidebar-chat-list";

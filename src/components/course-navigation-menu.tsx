@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import { Link, useLocation } from "react-router-dom";
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/navigation-menu";
 import { cn, getRelativeTimeString } from "@/lib/utils";
 import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
-import { Link, useLocation } from "react-router-dom";
 
 export function CourseNavigationMenu({ title }: { title: string }) {
 	const { data: starredCourses } = useGETstarredCourses({
@@ -23,11 +22,11 @@ export function CourseNavigationMenu({ title }: { title: string }) {
 			<NavigationMenuList>
 				<NavigationMenuItem>
 					<NavigationMenuTrigger className="bg-transparent px-4 text-lg font-semibold text-balance">
-						<span className="max-w-sm truncate lg:max-w-[40rem] xl:max-w-full">
+						<span className="max-w-sm truncate lg:max-w-160 xl:max-w-full">
 							{title}
 						</span>
 					</NavigationMenuTrigger>
-					<NavigationMenuContent className="rounded-md bg-foreground/10 z-[1000] md:w-96 max-h-[calc(75vh-4rem)] overflow-auto">
+					<NavigationMenuContent className="rounded-md bg-foreground/10 z-1000 md:w-96 max-h-[calc(75vh-4rem)] overflow-auto">
 						<ul className="space-y-1">
 							{starredCourses?.EntityArray.map((course) => (
 								<ListItem

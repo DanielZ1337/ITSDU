@@ -1,3 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { MessageCircle } from "lucide-react";
+import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 import { currentChatAtom } from "@/atoms/current-chat.ts";
 import MessagesDropdownInfiniteFallback from "@/components/messages/dropdown/fallbacks/messages-dropdown-infinite-fallback.tsx";
 import MessagesDropdownHeader from "@/components/messages/dropdown/messages-dropdown-header.tsx";
@@ -14,18 +19,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import { Separator } from "@/components/ui/separator.tsx";
 import UnreadNotificationsPingIndicator from "@/components/unread-notifications-ping-indicator.tsx";
 import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView.ts";
 import { cn } from "@/lib/utils.ts";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
 import { TanstackKeys } from "@/types/tanstack-keys.ts";
-import { ScrollShadow } from "@nextui-org/react";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAtom } from "jotai";
-import { MessageCircle } from "lucide-react";
-import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
 import usePUTinstantMessageThreadUpdateIsRead from "../../../queries/messages/usePUTinstantMessageThreadUpdateIsRead.ts";
 import MessagesDropdownFallback from "./fallbacks/messages-dropdown-fallback.tsx";
 
@@ -43,7 +43,7 @@ export default function MessagesDropdown() {
 			},
 		);
 
-	const { mutate: markAsRead, isLoading } =
+	const { mutate: markAsRead, isPending: isLoading } =
 		usePUTinstantMessageThreadUpdateIsRead();
 
 	const ref = useFetchNextPageOnInView(
@@ -65,7 +65,7 @@ export default function MessagesDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
-					<MessageCircle />
+					<MessageCircle className="h-5 w-5" />
 					{unreadThreads && unreadThreads.length > 0 && (
 						<UnreadNotificationsPingIndicator amount={unreadThreads.length} />
 					)}
@@ -86,7 +86,9 @@ export default function MessagesDropdown() {
 								});
 							});
 
-							queryClient.invalidateQueries([TanstackKeys.Messagesv2]);
+							queryClient.invalidateQueries({
+								queryKey: [TanstackKeys.Messagesv2],
+							});
 						}}
 						threads={threads}
 						total={total}

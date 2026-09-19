@@ -1,3 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
+import he from "he";
+import Linkify from "linkify-react";
+import { ChevronDown } from "lucide-react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import renderLink from "@/components/custom-render-link-linkify.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -14,12 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu.tsx";
 import { cn } from "@/lib/utils.ts";
 import useDELETEinstantMessage from "@/queries/messages/useDELETEinstantMessage";
-import { useQueryClient } from "@tanstack/react-query";
-import he from "he";
-import Linkify from "linkify-react";
-import { ChevronDown } from "lucide-react";
-import { useRef, useState } from "react";
-import { toast } from "sonner";
 import usePATCHrestoreDeletedMessage from "../../queries/messages/usePATCHrestoreDeletedMessage";
 import ProfileAvatar from "../profile-avatar";
 import { Loader } from "../ui/loader";
@@ -62,17 +62,21 @@ export default function MessageChatMessage({
 
 	const attachmentRef = useRef<string>(attachmentUrl!);
 
-	const { mutate: deleteMessage, isLoading: isDeletingMessage } =
+	const { mutate: deleteMessage, isPending: isDeletingMessage } =
 		useDELETEinstantMessage({
 			onSuccess: () => {
-				queryClient.invalidateQueries(["messagesv2"]);
+				queryClient.invalidateQueries({
+					queryKey: ["messagesv2"],
+				});
 			},
 		});
 
-	const { mutate: restoreMessage, isLoading: isRestoringMessage } =
+	const { mutate: restoreMessage, isPending: isRestoringMessage } =
 		usePATCHrestoreDeletedMessage({
 			onSuccess: () => {
-				queryClient.invalidateQueries(["messagesv2"]);
+				queryClient.invalidateQueries({
+					queryKey: ["messagesv2"],
+				});
 			},
 		});
 
@@ -132,7 +136,7 @@ export default function MessageChatMessage({
 									<DropdownMenuItem
 										onClick={handleDelete}
 										disabled={isDeletingMessage}
-										className="hover:!bg-destructive"
+										className="hover:bg-destructive!"
 									>
 										Delete
 									</DropdownMenuItem>

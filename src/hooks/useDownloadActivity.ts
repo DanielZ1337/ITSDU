@@ -1,9 +1,9 @@
+import { useAtom } from "jotai";
+import { useCallback, useEffect } from "react";
 import {
 	type DownloadActivityEntry,
 	downloadActivityAtom,
 } from "@/atoms/download-activity";
-import { useAtom } from "jotai";
-import { useCallback, useEffect } from "react";
 
 const MAX_ENTRIES = 20;
 
@@ -48,10 +48,7 @@ export function useDownloadActivityEvents() {
 	const [, setEntries] = useAtom(downloadActivityAtom);
 
 	useEffect(() => {
-		const onProgress = (
-			_event: unknown,
-			payload?: { id?: string; percent?: number },
-		) => {
+		const onProgress = (payload?: { id?: string; percent?: number }) => {
 			if (!payload?.id) return;
 			setEntries((current) =>
 				current.map((entry) =>
@@ -61,15 +58,12 @@ export function useDownloadActivityEvents() {
 				),
 			);
 		};
-		const onComplete = (
-			_event: unknown,
-			payload?: {
-				id?: string;
-				path?: string;
-				filename?: string;
-				size?: number;
-			},
-		) => {
+		const onComplete = (payload?: {
+			id?: string;
+			path?: string;
+			filename?: string;
+			size?: number;
+		}) => {
 			if (!payload?.id) return;
 			setEntries((current) =>
 				current.map((entry) =>
@@ -86,10 +80,7 @@ export function useDownloadActivityEvents() {
 				),
 			);
 		};
-		const onError = (
-			_event: unknown,
-			payload?: { id?: string; error?: string } | string,
-		) => {
+		const onError = (payload?: { id?: string; error?: string } | string) => {
 			const id = typeof payload === "object" ? payload.id : undefined;
 			if (!id) return;
 			setEntries((current) =>
@@ -108,13 +99,13 @@ export function useDownloadActivityEvents() {
 			);
 		};
 
-		window.ipcRenderer.on("download:progress", onProgress);
-		window.ipcRenderer.on("download:complete", onComplete);
-		window.ipcRenderer.on("download:error", onError);
+		const offs = [
+			window.events.on("download:progress", onProgress),
+			window.events.on("download:complete", onComplete),
+			window.events.on("download:error", onError),
+		];
 		return () => {
-			window.ipcRenderer.removeListener("download:progress", onProgress);
-			window.ipcRenderer.removeListener("download:complete", onComplete);
-			window.ipcRenderer.removeListener("download:error", onError);
+			for (const off of offs) off();
 		};
 	}, [setEntries]);
 }

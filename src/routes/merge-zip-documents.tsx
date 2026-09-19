@@ -1,32 +1,15 @@
 import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn, getFormattedSize } from "@/lib/utils";
-import useGETcourses from "@/queries/course-cards/useGETcourses";
-import useGETcourseAllResources from "@/queries/courses/useGETcourseAllResources";
-import useGETcoursesv3 from "@/queries/courses/useGETcoursesv3";
-import {
-	isSupportedResourceInApp,
-	useNavigateToResource,
-} from "@/types/api-types/extra/learning-tool-id-types";
-import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import {
+	closestCenter,
 	DndContext,
 	KeyboardSensor,
 	PointerSensor,
 	UniqueIdentifier,
-	closestCenter,
 	useSensor,
 	useSensors,
 } from "@dnd-kit/core";
 import {
-	SortableContext,
 	arrayMove,
+	SortableContext,
 	sortableKeyboardCoordinates,
 	useSortable,
 	verticalListSortingStrategy,
@@ -50,6 +33,23 @@ import {
 import { createContext, useContext, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn, getFormattedSize } from "@/lib/utils";
+import useGETcourses from "@/queries/course-cards/useGETcourses";
+import useGETcourseAllResources from "@/queries/courses/useGETcourseAllResources";
+import useGETcoursesv3 from "@/queries/courses/useGETcoursesv3";
+import {
+	isSupportedResourceInApp,
+	useNavigateToResource,
+} from "@/types/api-types/extra/learning-tool-id-types";
+import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 
 type SelectedDocument = {
 	ElementId: number;
@@ -67,9 +67,9 @@ const MergeDocumentsContext = createContext<{
 	removeSelectedDocument: (selectedDocument: SelectedDocument) => void;
 }>({
 	selectedDocuments: null,
-	setSelectedDocuments: () => { },
-	addSelectedDocument: () => { },
-	removeSelectedDocument: () => { },
+	setSelectedDocuments: () => {},
+	addSelectedDocument: () => {},
+	removeSelectedDocument: () => {},
 });
 
 const useMergeDocumentsContext = () => {
@@ -87,7 +87,7 @@ function PageSkeleton() {
 	return (
 		<div className="flex h-full w-full gap-6 p-6">
 			{/* Left panel skeleton */}
-			<div className="flex w-80 flex-shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 p-4">
+			<div className="flex w-80 shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 p-4">
 				<Skeleton className="mb-4 h-8 w-48" />
 				<Skeleton className="mb-6 h-4 w-full" />
 				<div className="flex gap-2 mb-6">
@@ -142,7 +142,9 @@ export default function MergeZIPDocuments() {
 		number,
 		SelectedDocument
 	> | null>(null);
-	const [openedStarredUnstarred, setOpenedStarredUnstarred] = useState<string[]>(["starred"]);
+	const [openedStarredUnstarred, setOpenedStarredUnstarred] = useState<
+		string[]
+	>(["starred"]);
 	const [openedCourses, setOpenedCourses] = useState<string[]>([]);
 	const [isDownloading, setIsDownloading] = useState(false);
 	const [isMerging, setIsMerging] = useState(false);
@@ -178,8 +180,8 @@ export default function MergeZIPDocuments() {
 		],
 	);
 
-	const { data, isLoading } = useGETcoursesv3({});
-	const { data: data2, isLoading: isLoading2 } = useGETcourses("All", {});
+	const { data, isPending: isLoading } = useGETcoursesv3({});
+	const { data: data2, isPending: isLoading2 } = useGETcourses("All", {});
 
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -226,15 +228,23 @@ export default function MergeZIPDocuments() {
 		return { ...course, ...course2 };
 	});
 
-	const starredCourses = combinedData?.filter((course) => course.IsFavouriteCourse);
-	const unstarredCourses = combinedData?.filter((course) => !course.IsFavouriteCourse);
+	const starredCourses = combinedData?.filter(
+		(course) => course.IsFavouriteCourse,
+	);
+	const unstarredCourses = combinedData?.filter(
+		(course) => !course.IsFavouriteCourse,
+	);
 
 	const downloadAsZip = () => {
-		const selectedDocumentsArray = Array.from(selectedDocuments?.values() || []);
+		const selectedDocumentsArray = Array.from(
+			selectedDocuments?.values() || [],
+		);
 		if (selectedDocumentsArray.length === 0) return;
 
 		setIsDownloading(true);
-		const allElementIds = selectedDocumentsArray.map((document) => document.ElementId);
+		const allElementIds = selectedDocumentsArray.map(
+			(document) => document.ElementId,
+		);
 
 		window.app
 			.zipDownloadAllCourseResources(allElementIds, { organizeByCourse })
@@ -262,10 +272,14 @@ export default function MergeZIPDocuments() {
 		if (isMerging) return;
 		setIsMerging(true);
 
-		const selectedDocumentsArray = Array.from(selectedDocuments?.values() || []);
+		const selectedDocumentsArray = Array.from(
+			selectedDocuments?.values() || [],
+		);
 		if (selectedDocumentsArray.length === 0 || !selectedDocuments) return;
 
-		const allElementIds = selectedDocumentsArray.map((document) => String(document.ElementId));
+		const allElementIds = selectedDocumentsArray.map((document) =>
+			String(document.ElementId),
+		);
 
 		window.app
 			.mergePDFs(allElementIds)
@@ -296,11 +310,13 @@ export default function MergeZIPDocuments() {
 		<MergeDocumentsContext.Provider value={contextValue}>
 			<div className="flex h-full w-full gap-6 p-6 overflow-hidden">
 				{/* Left Panel - Selected Documents */}
-				<div className="flex w-96 flex-shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden">
+				<div className="flex w-96 shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
+					<div className="shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
 						<div className="flex items-center justify-between mb-1">
-							<h2 className="text-lg font-semibold text-foreground">Selected Documents</h2>
+							<h2 className="text-lg font-semibold text-foreground">
+								Selected Documents
+							</h2>
 							{selectedCount > 0 && (
 								<span className="flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-2 text-xs font-medium text-primary-foreground">
 									{selectedCount}
@@ -314,7 +330,7 @@ export default function MergeZIPDocuments() {
 
 					{/* Action Buttons */}
 					{selectedCount > 0 && (
-						<div className="flex-shrink-0 border-b border-border/50 p-3 space-y-2">
+						<div className="shrink-0 border-b border-border/50 p-3 space-y-2">
 							<div className="flex gap-2">
 								<Button
 									variant="default"
@@ -351,7 +367,7 @@ export default function MergeZIPDocuments() {
 									size="sm"
 									className={cn(
 										"flex-1 text-xs",
-										organizeByCourse && "bg-muted"
+										organizeByCourse && "bg-muted",
 									)}
 									onClick={() => setOrganizeByCourse(true)}
 								>
@@ -363,7 +379,7 @@ export default function MergeZIPDocuments() {
 									size="sm"
 									className={cn(
 										"flex-1 text-xs",
-										!organizeByCourse && "bg-muted"
+										!organizeByCourse && "bg-muted",
 									)}
 									onClick={() => setOrganizeByCourse(false)}
 								>
@@ -395,15 +411,17 @@ export default function MergeZIPDocuments() {
 							>
 								{selectedCount > 0 ? (
 									<div className="space-y-2">
-										{Array.from(selectedDocuments!.values()).map((document, index) => (
-											<SortableDocumentItem
-												key={document.ElementId}
-												id={document.ElementId}
-												document={document}
-												index={index}
-												onRemove={() => removeSelectedDocument(document)}
-											/>
-										))}
+										{Array.from(selectedDocuments!.values()).map(
+											(document, index) => (
+												<SortableDocumentItem
+													key={document.ElementId}
+													id={document.ElementId}
+													document={document}
+													index={index}
+													onRemove={() => removeSelectedDocument(document)}
+												/>
+											),
+										)}
 									</div>
 								) : (
 									<EmptySelection />
@@ -416,8 +434,10 @@ export default function MergeZIPDocuments() {
 				{/* Right Panel - Course Browser */}
 				<div className="flex flex-1 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden min-w-0">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
-						<h2 className="text-lg font-semibold text-foreground">Browse Courses</h2>
+					<div className="shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
+						<h2 className="text-lg font-semibold text-foreground">
+							Browse Courses
+						</h2>
 						<p className="text-sm text-muted-foreground">
 							Select documents from your courses
 						</p>
@@ -532,17 +552,17 @@ function SortableDocumentItem({
 			style={style}
 			className={cn(
 				"group flex items-center gap-2 rounded-lg border border-border/50 bg-card p-3 transition-all",
-				isDragging && "opacity-50 shadow-lg ring-2 ring-primary/20"
+				isDragging && "opacity-50 shadow-lg ring-2 ring-primary/20",
 			)}
 		>
 			<button
 				{...attributes}
 				{...listeners}
-				className="flex-shrink-0 cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
+				className="shrink-0 cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
 			>
 				<GripVertical className="h-4 w-4" />
 			</button>
-			<span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-primary">
+			<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-primary">
 				{index + 1}
 			</span>
 			<div className="flex-1 min-w-0">
@@ -555,7 +575,7 @@ function SortableDocumentItem({
 			</div>
 			<button
 				onClick={onRemove}
-				className="flex-shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+				className="shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
 			>
 				<X className="h-4 w-4" />
 			</button>
@@ -582,16 +602,13 @@ function CourseAccordionItem({
 			value={openedCourses}
 			onValueChange={setOpenedCourses}
 		>
-			<AccordionItem
-				value={String(course.CourseId)}
-				className="border-0"
-			>
+			<AccordionItem value={String(course.CourseId)} className="border-0">
 				<AccordionTrigger className="rounded-md px-3 py-2 hover:no-underline hover:bg-muted/50 [&>svg]:hidden [&[data-state=open]_.chevron-icon]:rotate-90">
 					<div className="flex items-center gap-2 flex-1 min-w-0">
-						<FolderOpen className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+						<FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
 						<span className="text-sm truncate">{course.Title}</span>
 					</div>
-					<ChevronRight className="chevron-icon h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200" />
+					<ChevronRight className="chevron-icon h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
 				</AccordionTrigger>
 				<AccordionContent className="pl-4 pt-1 pb-2">
 					{isOpen && (
@@ -630,8 +647,9 @@ function CourseDocuments({
 	courseTitle?: string;
 	isDownloading?: boolean;
 }) {
-	const { data, isLoading } = useGETcourseAllResources(courseId);
-	const { setSelectedDocuments, selectedDocuments } = useMergeDocumentsContext();
+	const { data, isPending: isLoading } = useGETcourseAllResources(courseId);
+	const { setSelectedDocuments, selectedDocuments } =
+		useMergeDocumentsContext();
 
 	if (isLoading || !data) {
 		return <CourseDocumentsSkeleton />;
@@ -690,7 +708,7 @@ function CourseDocuments({
 				onClick={() => toggleSelectAll(!allSelected)}
 				className={cn(
 					"w-full justify-start gap-2 text-sm",
-					allSelected && "text-primary"
+					allSelected && "text-primary",
 				)}
 			>
 				<div
@@ -700,11 +718,13 @@ function CourseDocuments({
 							? "border-primary bg-primary text-primary-foreground"
 							: someSelected
 								? "border-primary bg-primary/20"
-								: "border-muted-foreground/30"
+								: "border-muted-foreground/30",
 					)}
 				>
 					{allSelected && <Check className="h-3 w-3" />}
-					{someSelected && <div className="h-1.5 w-1.5 rounded-sm bg-primary" />}
+					{someSelected && (
+						<div className="h-1.5 w-1.5 rounded-sm bg-primary" />
+					)}
 				</div>
 				{allSelected ? "Deselect all" : "Select all"} ({data.length})
 			</Button>
@@ -771,7 +791,7 @@ function SelectableDocumentCard({
 		<div
 			className={cn(
 				"group flex items-center gap-2 rounded-md px-2 py-1.5 transition-colors cursor-pointer",
-				selected ? "bg-primary/10" : "hover:bg-muted/50"
+				selected ? "bg-primary/10" : "hover:bg-muted/50",
 			)}
 			onClick={handleToggle}
 		>
@@ -779,15 +799,15 @@ function SelectableDocumentCard({
 				disabled={isLoading}
 				onClick={handleToggle}
 				className={cn(
-					"flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-colors",
+					"flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
 					selected
 						? "border-primary bg-primary text-primary-foreground"
-						: "border-muted-foreground/30 group-hover:border-muted-foreground/50"
+						: "border-muted-foreground/30 group-hover:border-muted-foreground/50",
 				)}
 			>
 				{selected && <Check className="h-3 w-3" />}
 			</button>
-			<FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+			<FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
 			<span
 				className="flex-1 text-sm truncate cursor-pointer hover:text-primary hover:underline"
 				onClick={openResource}
@@ -801,7 +821,7 @@ function SelectableDocumentCard({
 					"h-7 px-2 text-xs opacity-0 transition-opacity group-hover:opacity-100",
 					selected
 						? "text-destructive hover:text-destructive hover:bg-destructive/10"
-						: "text-primary hover:text-primary hover:bg-primary/10"
+						: "text-primary hover:text-primary hover:bg-primary/10",
 				)}
 				onClick={(e) => {
 					e.stopPropagation();

@@ -1,9 +1,11 @@
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import CourseTasksCardSkeletons from "./course-tasks-card-skeletons";
 
 export function CourseTasksSkeletonsAnimated({
 	PageSize,
-}: { PageSize?: number }) {
+}: {
+	PageSize?: number;
+}) {
 	let PageSizeNormalized;
 
 	if (PageSize) {

@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import {
 	DropdownMenu,
@@ -9,8 +11,6 @@ import {
 	CourseParticipantRole,
 	CourseParticipantRoleLabels,
 } from "@/types/course-participants-roles.ts";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 export default function CourseParticipantsRolesSelect({
 	roleIds,
@@ -19,7 +19,6 @@ export default function CourseParticipantsRolesSelect({
 	roleIds: CourseParticipantRole[];
 	onChange: (roleIds: CourseParticipantRole[]) => void;
 }) {
-	// @ts-ignore
 	const [selectedRolesIds, setSelectedRolesIds] =
 		useState<CourseParticipantRole[]>(roleIds);
 
@@ -37,7 +36,6 @@ export default function CourseParticipantsRolesSelect({
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className={"w-52"}>
-				{/* @ts-ignore */}
 				{Object.entries(CourseParticipantRoleLabelsFromRoleIds).map(
 					([roleId, label]) => (
 						<DropdownMenuCheckboxItem

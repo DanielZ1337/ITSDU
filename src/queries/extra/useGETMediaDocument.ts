@@ -1,27 +1,29 @@
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 
 export default function useGETMediaDocument(
 	elementId: number | string,
-	queryConfig?: UseQueryOptions<string, Error, string, string[]>,
+	queryConfig?: QueryConfig<string, Error, string, string[]>,
 ) {
-	return useQuery(
-		[TanstackKeys.ResourceMediaByElementID, String(elementId)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.ResourceMediaByElementID, String(elementId)],
+
+		queryFn: async () => {
 			const mediaLink = await window.resources.media.get(elementId);
 
 			if (!mediaLink) throw new Error("Media link not found");
 
 			return mediaLink;
 		},
-		{
-			...queryConfig,
-			// complete caching of resources
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchIntervalInBackground: false,
-		},
-	);
+
+		...queryConfig,
+
+		// complete caching of resources
+		refetchInterval: false,
+
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
+		refetchOnReconnect: false,
+		refetchIntervalInBackground: false,
+	});
 }

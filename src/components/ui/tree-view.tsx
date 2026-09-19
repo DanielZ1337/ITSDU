@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import React, { forwardRef, useCallback, useRef } from "react";
-import useResizeObserver from "use-resize-observer";
+import { useResizeDetector } from "react-resize-detector";
+import { cn } from "@/lib/utils";
 import {
 	Child,
 	CollapseButton,
@@ -45,8 +45,8 @@ export const TreeView = ({
 		overscan: 5,
 	});
 
-	const { height = getTotalSize(), width } = useResizeObserver({
-		ref: containerRef,
+	const { height = getTotalSize(), width } = useResizeDetector({
+		targetRef: containerRef,
 	});
 	return (
 		<div

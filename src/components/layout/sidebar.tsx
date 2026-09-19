@@ -1,3 +1,6 @@
+import { AnimatePresence, m } from "motion/react";
+import { lazy, Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useCourse } from "@/hooks/atoms/useCourse";
 import { useSettings } from "@/hooks/atoms/useSettings";
@@ -5,9 +8,6 @@ import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useT } from "@/lib/i18n";
 import { courseNavLinks, navlinks } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, m } from "framer-motion";
-import { Suspense, lazy } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import SidebarUserFallback from "./sidebar-user-fallback";
 
 const LazySidebarItem = lazy(() => import("./sidebar-item"));
@@ -28,7 +28,9 @@ export default function Sidebar() {
 				className={cn(
 					"group/sidebar no-drag h-full flex flex-col",
 					"z-20 bg-background/80 backdrop-blur-sm",
-					settings.sidebarDensity === "compact" ? "py-2 px-1" : "py-4 px-2",
+					settings.appearance.sidebarDensity === "compact"
+						? "py-2 px-1"
+						: "py-4 px-2",
 				)}
 			>
 				{/* Main navigation */}
@@ -68,7 +70,7 @@ export default function Sidebar() {
 								}}
 								className="flex flex-col gap-0.5"
 							>
-								<div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+								<div className="my-3 mx-2 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 								{courseNavLinks.map((link, index) => (
 									<Suspense fallback={null} key={link.href}>
 										<m.div
@@ -99,7 +101,7 @@ export default function Sidebar() {
 
 				{/* User section */}
 				<div className="mt-auto pt-2">
-					<div className="mx-2 mb-3 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+					<div className="mx-2 mb-3 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 					<ErrorBoundary fallback={<SidebarUserFallback />}>
 						<Suspense fallback={<SidebarUserFallback />}>
 							<LazySidebarUser />

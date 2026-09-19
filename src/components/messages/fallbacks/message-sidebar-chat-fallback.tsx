@@ -1,4 +1,4 @@
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { Skeleton } from "../../ui/skeleton";
 
 export default function MessageSidebarChatFallback() {
@@ -18,7 +18,7 @@ export default function MessageSidebarChatFallback() {
 			}
 		>
 			<div className="mr-3">
-				<Skeleton className={"w-10 h-10 flex-shrink-0 rounded-full"} />
+				<Skeleton className={"w-10 h-10 shrink-0 rounded-full"} />
 			</div>
 			<div className={"w-5/6"}>
 				<Skeleton className={"w-1/2 h-4 mb-1"} />

@@ -1,44 +1,39 @@
+import { useDebounce } from "@uidotdev/usehooks";
+import { GraduationCap, Search } from "lucide-react";
+import { motion } from "motion/react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import CourseCardStarredSelect from "@/components/course/course-card/course-card-starred-select.tsx";
 import CourseCards from "@/components/course/course-card/course-cards.tsx";
 import CourseSearchDialog from "@/components/course/course-search-dialog";
 import CourseSortSelect from "@/components/course/course-sort-select.tsx";
-import { useSettings } from "@/hooks/atoms/useSettings";
 import { Input } from "@/components/ui/input.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSettings } from "@/hooks/atoms/useSettings";
 import { cn, isMacOS } from "@/lib/utils";
-import {
-	CourseCardsSortByTypes,
-} from "@/types/api-types/extra/course-cards-sort-by-types.ts";
+import { CourseCardsSortByTypes } from "@/types/api-types/extra/course-cards-sort-by-types.ts";
 import {
 	CourseCardsSelectOptions,
 	CourseCardsSelectOptionsEnum,
 } from "@/types/course-cards-select-options.ts";
-import { useDebounce } from "@uidotdev/usehooks";
-import { motion } from "framer-motion";
-import { GraduationCap, Search } from "lucide-react";
-import { Suspense, useEffect, useRef, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Helmet } from "react-helmet-async";
 
 export default function Index() {
 	const { settings, setSetting } = useSettings();
 	const [searchInput, setSearchInput] = useState<string>("");
 	const debouncedSearchTerm = useDebounce(searchInput, 100);
 	const [selectedRankedBy, setSelectedRankedBy] =
-		useState<CourseCardsSortByTypes>(settings.courseSortBy);
+		useState<CourseCardsSortByTypes>(settings.navigation.courseSortBy);
 	const [selectedStarredOption, setSelectedStarredOption] =
 		useState<CourseCardsSelectOptions>(CourseCardsSelectOptionsEnum.Starred);
 	const cardsRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		setSelectedRankedBy(settings.courseSortBy);
-	}, [settings.courseSortBy]);
+		setSelectedRankedBy(settings.navigation.courseSortBy);
+	}, [settings.navigation.courseSortBy]);
 
 	return (
 		<div className="flex flex-col flex-1 h-full w-full">
-			<Helmet>
-				<title>itslearning</title>
-			</Helmet>
+			<title>itslearning</title>
 
 			{/* Header section */}
 			<div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/50">
@@ -73,7 +68,7 @@ export default function Index() {
 								selectedRankedBy={selectedRankedBy}
 								setSelectedRankedBy={(sortBy) => {
 									setSelectedRankedBy(sortBy);
-									void setSetting("courseSortBy", sortBy);
+									void setSetting("navigation.courseSortBy", sortBy);
 								}}
 							/>
 							<CourseCardStarredSelect
@@ -190,10 +185,12 @@ function CourseCardSkeletonGrid() {
 			</div>
 
 			{/* Grid */}
-			<div className={cn(
-				"grid gap-4",
-				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
-			)}>
+			<div
+				className={cn(
+					"grid gap-4",
+					"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+				)}
+			>
 				{Array.from({ length: 8 }).map((_, i) => (
 					<CourseCardSkeleton key={i} index={i} />
 				))}

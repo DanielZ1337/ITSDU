@@ -1,12 +1,12 @@
+import { keepPreviousData } from "@tanstack/react-query";
+import { Bell } from "lucide-react";
+import { lazy, memo, Suspense } from "react";
 import NotificationsCardsFallback from "@/components/notifications/fallback/notifications-card-skeletons";
 import NotificationCards from "@/components/notifications/notifications-cards";
 import UpdatesTypeSelect, {
 	useUpdatesTypeSelect,
 } from "@/components/notifications/notifications-updates-type-select";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
-import { Bell } from "lucide-react";
-import { Suspense, lazy, memo } from "react";
-import { Helmet } from "react-helmet-async";
 
 const FetchMoreInviewLazy = lazy(() =>
 	import("@/components/fetch-more-in-view").then((module) => ({
@@ -17,7 +17,7 @@ const FetchMoreInviewLazy = lazy(() =>
 function NotificationUpdates() {
 	const {
 		data: notifications,
-		isLoading,
+		isPending: isLoading,
 		fetchNextPage,
 		hasNextPage,
 		isFetchingNextPage,
@@ -29,7 +29,7 @@ function NotificationUpdates() {
 			UseNewerThan: true,
 		},
 		{
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 		},
 	);
 
@@ -38,19 +38,21 @@ function NotificationUpdates() {
 
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
-			<Helmet>
-				<title>Recent Updates</title>
-			</Helmet>
+			<title>Recent Updates</title>
 			{/* Header */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
+			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
 				<div className="flex items-center justify-between gap-4">
 					<div className="flex items-center gap-3">
 						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
 							<Bell className="h-5 w-5 text-primary" />
 						</div>
 						<div>
-							<h1 className="text-xl font-semibold text-foreground">Recent Updates</h1>
-							<p className="text-sm text-muted-foreground">Stay up to date with your courses</p>
+							<h1 className="text-xl font-semibold text-foreground">
+								Recent Updates
+							</h1>
+							<p className="text-sm text-muted-foreground">
+								Stay up to date with your courses
+							</p>
 						</div>
 					</div>
 					<UpdatesTypeSelect

@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@nextui-org/react";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 export default function CourseHeaderFallback() {
 	const [starred, setStarred] = useState(true);
@@ -33,7 +33,7 @@ export default function CourseHeaderFallback() {
 						/>
 					</Button>
 					{/* course title */}
-					<Skeleton className="h-9 rounded-sm w-[26rem]" />
+					<Skeleton className="h-9 rounded-sm w-104" />
 				</div>
 				<span className="my-auto ml-6 text-sm text-gray-500 text-nowrap dark:text-gray-400">
 					{/* course code */}

@@ -1,15 +1,17 @@
 import axios from "axios";
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow } from "electron";
 import { createAuthWindow } from "../../electron/main.ts";
 import type { AuthRefreshOptions } from "../../src/types/auth.ts";
+import { handle } from "../ipc/secure";
+import { assertPublicHttpUrl } from "../ipc/validators";
 import {
 	AuthRefreshError,
 	AuthService,
 } from "../services/itslearning/auth/auth-service.ts";
 import { StoreKey } from "../services/itslearning/auth/types/store_keys.ts";
 import {
-	ITSLEARNING_RESOURCE_URL,
 	getResourceLinkByElementID,
+	ITSLEARNING_RESOURCE_URL,
 } from "../services/itslearning/resources/resources.ts";
 import {
 	createScrapeWindow,
@@ -20,32 +22,20 @@ import { getFormattedCookies } from "../utils/cookies.ts";
 const authService = AuthService.getInstance();
 
 function getTokenHandler() {
-	ipcMain.handle("itslearning-store:get", (_, val: StoreKey) => {
+	handle("itslearning-store:get", (_, val: StoreKey) => {
 		if (val !== "access_token") return null;
 		return authService.getToken(val);
 	});
 }
 
-function setTokenHandler() {
-	ipcMain.handle("itslearning-store:set", (_, key: StoreKey, val) => {
-		authService.setToken(key, val);
-	});
-}
-
-function deleteTokenHandler() {
-	ipcMain.handle("itslearning-store:delete", (_, key: StoreKey) => {
-		authService.deleteToken(key);
-	});
-}
-
 function clearTokensHandler() {
-	ipcMain.handle("itslearning-store:clear", () => {
+	handle("itslearning-store:clear", () => {
 		authService.clearTokens();
 	});
 }
 
 function refreshTokensHandler() {
-	ipcMain.handle(
+	handle(
 		"itslearning-store:refresh",
 		async (_, options?: AuthRefreshOptions) => {
 			try {
@@ -67,43 +57,34 @@ function refreshTokensHandler() {
 }
 
 function authStatusHandler() {
-	ipcMain.handle("itslearning-store:getStatus", () => {
+	handle("itslearning-store:getStatus", () => {
 		return authService.getSessionStatus();
 	});
 
-	ipcMain.handle(
-		"itslearning-store:setOnlineStatus",
-		(_, isOnline: boolean) => {
-			authService.setOnlineStatus(isOnline);
-			return authService.getSessionStatus();
-		},
-	);
+	handle("itslearning-store:setOnlineStatus", (_, isOnline: boolean) => {
+		authService.setOnlineStatus(isOnline);
+		return authService.getSessionStatus();
+	});
 }
 
 function getCookies() {
-	ipcMain.handle(
-		"itslearning-store:get-cookies-for-resource",
-		async (_, elementId) => {
-			try {
-				const win = createScrapeWindow();
-				const ssoLink = await getResourceLinkByElementID(elementId);
-				await win.loadURL(ssoLink);
-				const cookies = await getCookiesForDomain(
-					win,
-					ITSLEARNING_RESOURCE_URL,
-				);
-				const cookiesFormatted = getFormattedCookies(cookies);
-				return cookiesFormatted;
-			} catch (e) {
-				console.error(e);
-				return null;
-			}
-		},
-	);
+	handle("itslearning-store:get-cookies-for-resource", async (_, elementId) => {
+		try {
+			const win = createScrapeWindow();
+			const ssoLink = await getResourceLinkByElementID(elementId);
+			await win.loadURL(ssoLink);
+			const cookies = await getCookiesForDomain(win, ITSLEARNING_RESOURCE_URL);
+			const cookiesFormatted = getFormattedCookies(cookies);
+			return cookiesFormatted;
+		} catch (e) {
+			console.error(e);
+			return null;
+		}
+	});
 }
 
 function logoutHandler() {
-	ipcMain.handle("itslearning-store:logout", async () => {
+	handle("itslearning-store:logout", async () => {
 		authService.clearTokens();
 		const wins = BrowserWindow.getAllWindows();
 		const newWin = await createAuthWindow();
@@ -115,15 +96,18 @@ function logoutHandler() {
 }
 
 function scrapePageHandler() {
-	ipcMain.handle("scrape-page", async (_, url) => {
+	handle("scrape-page", async (_, url) => {
 		try {
-			const response = await axios.get(url, {
+			const safeUrl = assertPublicHttpUrl(url).href;
+			const response = await axios.get(safeUrl, {
 				headers: {
 					responseType: "text",
 					"User-Agent":
 						"Mozilla/5.0 (compatible; Googlebot/2.1; https://www.google.com/bot.html)",
 				},
-				timeout: 1000,
+				timeout: 3000,
+				maxRedirects: 3,
+				maxContentLength: 2 * 1024 * 1024,
 			});
 
 			const { data, status, statusText } = response;
@@ -140,8 +124,6 @@ export default function initAuthIpcHandlers() {
 	scrapePageHandler();
 	authStatusHandler();
 	getTokenHandler();
-	setTokenHandler();
-	deleteTokenHandler();
 	clearTokensHandler();
 	refreshTokensHandler();
 	getCookies();

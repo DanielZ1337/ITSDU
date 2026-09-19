@@ -1,3 +1,6 @@
+import { DialogClose } from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { AiOutlineLink } from "react-icons/ai";
 import { MessagesFileDrop } from "@/components/messages/messages-file-drop.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {
@@ -6,9 +9,6 @@ import {
 	DialogFooter,
 	DialogTrigger,
 } from "@/components/ui/dialog.tsx";
-import { DialogClose } from "@radix-ui/react-dialog";
-import { X } from "lucide-react";
-import { AiOutlineLink } from "react-icons/ai";
 import { Loader } from "../ui/loader";
 
 export default function MessagesChatInputFileDialog({
@@ -49,7 +49,7 @@ export default function MessagesChatInputFileDialog({
 				/>
 				<div
 					className={
-						"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] p-1"
+						"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-80 p-1"
 					}
 				>
 					{files?.map((file, idx) => (

@@ -1,3 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { Star } from "lucide-react";
+import { AnimatePresence, m } from "motion/react";
+import { Link } from "react-router-dom";
 import { CourseNavigationMenu } from "@/components/course-navigation-menu";
 import { Button } from "@/components/ui/button.tsx";
 import { Loader } from "@/components/ui/loader";
@@ -7,17 +11,8 @@ import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourse
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence, m } from "framer-motion";
-import { Star } from "lucide-react";
-import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 
-export default function CourseHeader({
-	courseId,
-}: {
-	courseId: number;
-}) {
+export default function CourseHeader({ courseId }: { courseId: number }) {
 	const { data: course } = useGETcourseBasic(
 		{
 			courseId: courseId,
@@ -57,7 +52,7 @@ export default function CourseHeader({
 	const unstarredCourse = unstarredCourses!.EntityArray[0];
 	const starredCourse = starredCourses!.EntityArray[0];
 
-	const { mutate: toggleStarred, isLoading: isTogglingStarred } =
+	const { mutate: toggleStarred, isPending: isTogglingStarred } =
 		usePUTcourseFavorite(
 			{
 				courseId,
@@ -78,9 +73,7 @@ export default function CourseHeader({
 
 	return (
 		<header className="sticky top-0 z-10 flex w-full items-center gap-4 border-b bg-zinc-100/40 px-6 shadow h-[60px] dark:bg-zinc-800/40">
-			<Helmet>
-				<title>{course!.Title}</title>
-			</Helmet>
+			<title>{course!.Title}</title>
 			<div className="flex w-full flex-1 justify-between">
 				<div className={"flex flex-row items-center gap-2"}>
 					<Button
@@ -97,14 +90,15 @@ export default function CourseHeader({
 								},
 								{
 									onSuccess: () => {
-										queryClient.invalidateQueries([
-											TanstackKeys.Courses,
-											courseId,
-										]);
-										queryClient.invalidateQueries([
-											TanstackKeys.StarredCourses,
-											TanstackKeys.UnstarredCourses,
-										]);
+										queryClient.invalidateQueries({
+											queryKey: [TanstackKeys.Courses, courseId],
+										});
+										queryClient.invalidateQueries({
+											queryKey: [
+												TanstackKeys.StarredCourses,
+												TanstackKeys.UnstarredCourses,
+											],
+										});
 									},
 								},
 							)

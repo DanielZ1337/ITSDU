@@ -1,11 +1,11 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	DELETEinstantMessageThreadApiUrl,
 	DELETEinstantMessageThreadParams,
 } from "@/types/api-types/messages/DELETEinstantMessageThread.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useDELETEinstantMessageThread(
 	params: DELETEinstantMessageThreadParams,
@@ -16,12 +16,13 @@ export default function useDELETEinstantMessageThread(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+		mutationKey: [
 			TanstackKeys.DELETEinstantMessageThread,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+		mutationFn: async () => {
 			const res = await axios.delete(DELETEinstantMessageThreadApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -32,8 +33,7 @@ export default function useDELETEinstantMessageThread(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

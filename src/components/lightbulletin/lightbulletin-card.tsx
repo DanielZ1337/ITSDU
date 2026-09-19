@@ -1,3 +1,15 @@
+import Linkify from "linkify-react";
+import {
+	BellOff,
+	BellRing,
+	ChevronDown,
+	ChevronUp,
+	MessageSquare,
+	Paperclip,
+} from "lucide-react";
+import React, { Suspense, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import LightbulletinCommentForm from "@/components/lightbulletin/lightbulletin-comment-form.tsx";
 import LightbulletinComments from "@/components/lightbulletin/lightbulletin-comments.tsx";
 import LightbulletinCommentsLoader from "@/components/lightbulletin/lightbulletin-comments-loader.tsx";
@@ -9,11 +21,6 @@ import useGETlightbulletinResources from "@/queries/lightbulletin/useGETlightbul
 import usePUTlightbulletinNotifications from "@/queries/lightbulletin/usePUTlightbulletinNotifications.ts";
 import { ItslearningRestApiEntitiesLightBulletinsLightBulletinV2 } from "@/types/api-types/utils/Itslearning.RestApi.Entities.LightBulletins.LightBulletinV2";
 import { LinkifyType } from "@/types/linkify";
-import Linkify from "linkify-react";
-import { BellOff, BellRing, ChevronDown, ChevronUp, MessageSquare, Paperclip } from "lucide-react";
-import React, { Suspense, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import renderLink from "../custom-render-link-linkify";
 import HoverDate from "../hover-date";
 import { Loader } from "../ui/loader";
@@ -36,7 +43,7 @@ export default function LightbulletinCard({
 	const [showResources, setShowResources] = useState<boolean>(false);
 	const { courseId } = useCourse();
 
-	const { mutate, isLoading } = usePUTlightbulletinNotifications({
+	const { mutate, isPending: isLoading } = usePUTlightbulletinNotifications({
 		lightbulletinId: bulletin.LightBulletinId,
 	});
 
@@ -57,7 +64,7 @@ export default function LightbulletinCard({
 			data-readmore={readMore}
 			data-hasreadmore={hasReadMore}
 			key={bulletin.LightBulletinId}
-			className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-300 hover:bg-gradient-to-b hover:from-muted/30 hover:to-muted/10 overflow-hidden"
+			className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-300 hover:bg-linear-to-b hover:from-muted/30 hover:to-muted/10 overflow-hidden"
 		>
 			{/* Card Header */}
 			<div className="flex items-start justify-between gap-4 p-4 pb-0">
@@ -112,7 +119,7 @@ export default function LightbulletinCard({
 					}}
 					size="icon"
 					variant="ghost"
-					className="h-8 w-8 rounded-full flex-shrink-0 hover:bg-muted"
+					className="h-8 w-8 rounded-full shrink-0 hover:bg-muted"
 				>
 					{bulletin.IsSubscribed ? (
 						<BellRing className="w-4 h-4 text-primary" />
@@ -212,7 +219,9 @@ export default function LightbulletinCard({
 						{bulletin.CommentsCount > 0 && (
 							<Suspense
 								fallback={
-									<LightbulletinCommentsLoader count={Math.min(bulletin.CommentsCount, 3)} />
+									<LightbulletinCommentsLoader
+										count={Math.min(bulletin.CommentsCount, 3)}
+									/>
 								}
 							>
 								<LightbulletinComments

@@ -1,12 +1,8 @@
 import ProfileAvatar from "@/components/profile-avatar";
 import { useUser } from "@/hooks/atoms/useUser.ts";
-import { usePOSTpersonUpdateProfileImage } from "@/queries/person/usePOSTpersonUpdateProfileImage";
-import { Helmet } from "react-helmet-async";
 
 export default function UserProfile() {
 	const user = useUser()!;
-
-	const { mutate: updateProfilePicture } = usePOSTpersonUpdateProfileImage();
 
 	const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -18,16 +14,14 @@ export default function UserProfile() {
 
 	return (
 		<div className="m-auto w-full p-10">
-			<Helmet>
-				<title>User Profile for {user.FullName}</title>
-			</Helmet>
+			<title>{`User Profile for ${user.FullName}`}</title>
 			<div className="mx-auto max-w-3xl rounded-lg border p-6 px-8 shadow-lg">
 				<h2 className="mb-4 py-4 text-center text-2xl font-bold">
 					User Profile
 				</h2>
 				<div className="rounded-lg border px-4 py-8 bg-foreground/10">
 					<div className="mb-4 flex items-center justify-center space-x-20">
-						<div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full group">
+						<div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full group">
 							<button className="absolute inset-0 z-10 flex items-center justify-center rounded-full opacity-0 backdrop-blur-sm transition-all group-hover:bg-black/20 group-hover:opacity-100">
 								<label className="absolute inset-0 flex cursor-pointer items-center justify-center text-sm font-semibold text-white">
 									Upload
@@ -80,7 +74,10 @@ export default function UserProfile() {
 function UserItem({
 	title,
 	value,
-}: { title: string; value: string | boolean | number }) {
+}: {
+	title: string;
+	value: string | boolean | number;
+}) {
 	return (
 		<div className="flex items-center justify-between">
 			<div className="font-semibold">{title}</div>

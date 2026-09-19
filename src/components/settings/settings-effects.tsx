@@ -1,6 +1,6 @@
-import { useSettings } from "@/hooks/atoms/useSettings";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
+import { useSettings } from "@/hooks/atoms/useSettings";
 
 export default function SettingsEffects() {
 	const { settings, isHydrated } = useSettings();
@@ -8,8 +8,8 @@ export default function SettingsEffects() {
 
 	useEffect(() => {
 		if (!isHydrated) return;
-		setTheme(settings.theme);
-	}, [isHydrated, setTheme, settings.theme]);
+		setTheme(settings.appearance.theme);
+	}, [isHydrated, setTheme, settings.appearance.theme]);
 
 	return null;
 }

@@ -1,9 +1,10 @@
-import { cn } from "@/lib/utils";
-import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
-import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useDebounce } from "@uidotdev/usehooks";
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import useGETstarredCourses from "@/queries/course-cards/useGETstarredCourses";
+import useGETunstarredCourses from "@/queries/course-cards/useGETunstarredCourses";
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -83,7 +84,7 @@ export default function CourseSearchDialog({
 	const [query, setQuery] = React.useState<string>("");
 	const debouncedSearchTerm = useDebounce(query, 200);
 
-	const { data: starredCourses, isLoading: isStarredFetching } =
+	const { data: starredCourses, isPending: isStarredFetching } =
 		useGETstarredCourses(
 			{
 				PageIndex: 0,
@@ -93,11 +94,11 @@ export default function CourseSearchDialog({
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 
-	const { data: unstarredCourses, isLoading: isUnstarredFetching } =
+	const { data: unstarredCourses, isPending: isUnstarredFetching } =
 		useGETunstarredCourses(
 			{
 				PageIndex: 0,
@@ -107,7 +108,7 @@ export default function CourseSearchDialog({
 			},
 			{
 				suspense: false,
-				keepPreviousData: true,
+				placeholderData: keepPreviousData,
 			},
 		);
 
@@ -151,7 +152,7 @@ export default function CourseSearchDialog({
 						element={(resource: any) => (
 							<CommandItem
 								key={resource.CourseId}
-								value={resource.Title}
+								value={`${resource.Title} ${resource.CourseId}`}
 								className="truncate break-all line-clamp-1"
 								onSelect={() =>
 									handleSelect(() => {
@@ -166,7 +167,7 @@ export default function CourseSearchDialog({
 						element1={(resource: any) => (
 							<CommandItem
 								key={resource.CourseId}
-								value={resource.Title}
+								value={`${resource.Title} ${resource.CourseId}`}
 								className="truncate break-all line-clamp-1"
 								onSelect={() =>
 									handleSelect(() => {

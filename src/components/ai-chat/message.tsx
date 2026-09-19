@@ -1,7 +1,7 @@
+import { Suspense } from "react";
 import ParseMarkdown from "@/components/parse-markdown.tsx";
 import { cn } from "@/lib/utils";
 import { MessageRole } from "@/types/api-types/AI/GETpreviousMessages";
-import { Suspense } from "react";
 import { Loader } from "../ui/loader";
 import MessageAvatar from "./message-avatar";
 
@@ -21,7 +21,7 @@ export default function Message({
 				role === "user" && "flex-row-reverse",
 			)}
 		>
-			<div className="flex-shrink-0">
+			<div className="shrink-0">
 				<MessageAvatar role={role} />
 			</div>
 			<div className="mx-2 flex flex-col overflow-x-hidden drop-shadow">

@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETpersonalFollowUpTasks,
@@ -5,24 +7,23 @@ import {
 	GETpersonalFollowUpTasksParams,
 } from "@/types/api-types/tasks/GETpersonalFollowUpTasks.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETpersonalFollowUpTasks(
 	params: GETpersonalFollowUpTasksParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETpersonalFollowUpTasks,
 		Error,
 		GETpersonalFollowUpTasks,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+		queryKey: [
 			TanstackKeys.PersonalFollowUpTasks,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETpersonalFollowUpTasksApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useGETpersonalFollowUpTasks(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

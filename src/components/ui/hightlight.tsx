@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface HighlightProps {
 	text: string;

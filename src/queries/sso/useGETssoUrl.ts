@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETssoUrl,
@@ -5,16 +7,15 @@ import {
 	GETssoUrlParams,
 } from "@/types/api-types/sso/GETssoUrl.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETssoUrl(
 	params: GETssoUrlParams,
-	queryConfig?: UseQueryOptions<GETssoUrl, Error, GETssoUrl, string[]>,
+	queryConfig?: QueryConfig<GETssoUrl, Error, GETssoUrl, string[]>,
 ) {
-	return useQuery(
-		[TanstackKeys.SsoUrl, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.SsoUrl, ...getQueryKeysFromParamsObject(params)],
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETssoUrlApiUrl({
 					...params,
@@ -31,10 +32,10 @@ export default function useGETssoUrl(
 
 			return res.data;
 		},
-		{
-			// just in case the sso url changes
-			cacheTime: 60 * 1000 * 5,
-			...queryConfig,
-		},
-	);
+
+		// just in case the sso url changes
+		gcTime: 60 * 1000 * 5,
+
+		...queryConfig,
+	});
 }

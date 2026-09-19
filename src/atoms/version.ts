@@ -1,8 +1,3 @@
 import { atom } from "jotai";
 
-// @ts-ignore
-export const versionAtom = atom<string>(() => {
-	return (async () => {
-		return await window.app.getVersion();
-	})();
-});
+export const versionAtom = atom(async () => await window.app.getVersion());

@@ -1,5 +1,5 @@
-import useGETperson from "@/queries/person/useGETperson.ts";
 import { toast } from "sonner";
+import useGETperson from "@/queries/person/useGETperson.ts";
 import CopyButton from "../copy-button";
 import ProfileAvatar from "../profile-avatar";
 
@@ -31,13 +31,11 @@ export function PersonInfo({ personId }: { personId: number }) {
 				</h1>
 				<span className="flex gap-2 items-center justify-center py-2">
 					<p className="mt-1 text-center text-sm text-foreground/50 text-balance relative h-fit w-fit">
-						{/*@ts-ignore*/}
-						{person.AdditionalInfo}
+						{person.AddttionalInfo}
 					</p>
 					<CopyButton
 						className="relative top-0.5 bottom-0 left-0 right-0 bg-primary/20 text-primary"
-						/*@ts-ignore*/
-						value={person.AdditionalInfo}
+						value={person.AddttionalInfo}
 						isBlockHovered
 						onCopy={() => toast.success("Copied to clipboard")}
 					/>

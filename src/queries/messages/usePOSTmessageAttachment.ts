@@ -1,11 +1,11 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken } from "@/lib/utils";
 import {
 	POSTmessageAttachment,
 	POSTmessageAttachmentApiUrl,
 } from "@/types/api-types/messages/POSTmessageAttachment.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTmessageAttachment(
 	queryConfig?: UseMutationOptions<
@@ -15,9 +15,10 @@ export default function usePOSTmessageAttachment(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.POSTmessageAttachment],
-		async (files) => {
+	return useMutation({
+		mutationKey: [TanstackKeys.POSTmessageAttachment],
+
+		mutationFn: async (files) => {
 			const formData = new FormData();
 			files.forEach((file) => {
 				formData.append(`${file.name}`, file);
@@ -34,8 +35,7 @@ export default function usePOSTmessageAttachment(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

@@ -1,5 +1,5 @@
-import { Separator } from "@/components/ui/separator.tsx";
 import { AlertCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator.tsx";
 
 export default function MessagesDropdownInfiniteEnd() {
 	return (

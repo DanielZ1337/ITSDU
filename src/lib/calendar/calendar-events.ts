@@ -1,5 +1,3 @@
-import { type Locale, formatTime } from "@/lib/i18n";
-import type { CalendarWeekStartSetting } from "@/types/settings";
 import {
 	addDays,
 	isToday as dateFnsIsToday,
@@ -18,6 +16,8 @@ import {
 } from "date-fns";
 import he from "he";
 import { convert } from "html-to-text";
+import { formatTime, type Locale } from "@/lib/i18n";
+import type { CalendarWeekStartSetting } from "@/types/settings";
 
 export type NormalizedCalendarEvent = {
 	id: string;

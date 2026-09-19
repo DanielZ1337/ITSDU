@@ -1,3 +1,17 @@
+import {
+	AlertTriangle,
+	CheckCircle2,
+	Database,
+	FolderOpen,
+	Inbox,
+	RefreshCcw,
+	Search,
+	Trash2,
+	WifiOff,
+} from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,21 +32,6 @@ import {
 	getResourceOpenRoute,
 } from "@/lib/resources/resource-format";
 import { cn } from "@/lib/utils";
-import {
-	AlertTriangle,
-	CheckCircle2,
-	Database,
-	FolderOpen,
-	Inbox,
-	RefreshCcw,
-	Search,
-	Trash2,
-	WifiOff,
-} from "lucide-react";
-import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
 
 type CacheFilter = "all" | "cached" | "problem";
 type SortMode = "recent" | "filename" | "course" | "size" | "cached";
@@ -169,9 +168,7 @@ export default function Resources() {
 
 	return (
 		<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 pb-12 sm:gap-5 sm:p-6 lg:p-8">
-			<Helmet>
-				<title>Resources</title>
-			</Helmet>
+			<title>Resources</title>
 
 			<header className="overflow-hidden rounded-xl border bg-card">
 				<div className="flex flex-col gap-4 border-b bg-muted/20 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">

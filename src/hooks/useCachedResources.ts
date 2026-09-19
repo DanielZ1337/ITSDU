@@ -1,9 +1,9 @@
+import { useCallback, useEffect, useState } from "react";
 import {
 	type CachedResourceStatus,
 	ItsduResourcesDBWrapper,
 	type ResourceCacheHealth,
 } from "@/lib/resource-indexeddb/resourceIndexedDB";
-import { useCallback, useEffect, useState } from "react";
 
 export type CachedResourceSummary = {
 	elementId: string;

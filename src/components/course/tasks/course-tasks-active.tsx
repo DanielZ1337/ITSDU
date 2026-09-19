@@ -1,11 +1,9 @@
-import { Badge } from "@/components/ui/badge";
-import { ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
-import useGETcourseTasklistDailyWorkflow from "@/queries/courses/useGETcourseTasklistDailyWorkflow";
-import useGETcourseTasklistDailyWorkflowViewas from "@/queries/courses/useGETcourseTasklistDailyWorkflowViewas";
-import { GETssoUrlApiUrl } from "@/types/api-types/sso/GETssoUrl";
-import { m } from "framer-motion";
+import { m } from "motion/react";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { ITSLEARNING_API_MAX_PAGESIZE } from "@/lib/utils";
+import useGETcourseTasklistDailyWorkflowViewas from "@/queries/courses/useGETcourseTasklistDailyWorkflowViewas";
 import { CourseTasksFetchInView } from "./course-tasks-fetch-in-view";
 import { CourseTasksSkeletonsAnimated } from "./fallback/course-tasks-card-skeletons-animated";
 
@@ -18,7 +16,7 @@ export function CourseTasksActive({
 }) {
 	const {
 		data,
-		isLoading,
+		isPending: isLoading,
 		isError,
 		error,
 		hasNextPage,
@@ -30,17 +28,9 @@ export function CourseTasksActive({
 		PageSize: PageSize,
 	});
 
-	const isEmpty =
-		data?.pages[0].EntityArray.length !== undefined &&
-		data?.pages[0].EntityArray.length < 1;
-
 	const tasksFlatMapMemoed = useMemo(
 		() => data?.pages.flatMap((page) => page.EntityArray),
 		[data],
-	);
-
-	const tasksFlatMap = tasksFlatMapMemoed?.flatMap(
-		(tasks) => tasks.TaskDailyWorkflow.EntityArray,
 	);
 
 	const completed = false;

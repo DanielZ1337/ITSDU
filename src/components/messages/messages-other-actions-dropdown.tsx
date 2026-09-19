@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -6,8 +8,6 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
-import { useState } from "react";
 
 export default function MessagesOtherActionsDropdown() {
 	const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +25,7 @@ export default function MessagesOtherActionsDropdown() {
 				<DropdownMenuItem disabled>See participants</DropdownMenuItem>
 				<DropdownMenuItem disabled>Mark as unread</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className="hover:!bg-destructive" disabled>
+				<DropdownMenuItem className="hover:bg-destructive!" disabled>
 					Leave chat
 				</DropdownMenuItem>
 			</DropdownMenuContent>

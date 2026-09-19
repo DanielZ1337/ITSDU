@@ -1,20 +1,21 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETbulletin,
 	GETbulletinApiUrl,
 	GETbulletinParams,
 } from "@/types/api-types/lightbulletin/GETbulletin.ts";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
 
 export default function useGETbulletin(
 	params: GETbulletinParams,
-	queryConfig?: UseQueryOptions<GETbulletin, Error, GETbulletin, string[]>,
+	queryConfig?: QueryConfig<GETbulletin, Error, GETbulletin, string[]>,
 ) {
-	return useQuery(
-		[TanstackKeys.Bulletin, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.Bulletin, ...getQueryKeysFromParamsObject(params)],
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETbulletinApiUrl({
 					...params,
@@ -31,8 +32,7 @@ export default function useGETbulletin(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

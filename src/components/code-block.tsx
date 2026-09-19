@@ -1,10 +1,10 @@
-import { cn } from "@/lib/utils";
-import { customCodeTheme } from "@/styles/custom-code-theme";
-import { AnimatePresence, m } from "framer-motion";
+import { AnimatePresence, m } from "motion/react";
 import { useTheme } from "next-themes";
 import { lazy, useState } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { PrismAsync as SyntaxHighlighter } from "react-syntax-highlighter";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { customCodeTheme } from "@/styles/custom-code-theme";
 
 const LazyCopyButton = lazy(() => import("@/components/copy-button"));
 
@@ -63,7 +63,7 @@ function CodeBlock({
 				)}
 			</AnimatePresence>
 
-			<div className="absolute top-0 -right-4 h-full w-12 bg-gradient-to-l from-black/50 to-transparent blur -z-10"></div>
+			<div className="absolute top-0 -right-4 h-full w-12 bg-linear-to-l from-black/50 to-transparent blur -z-10"></div>
 			<SyntaxHighlighter
 				language={language}
 				className={cn(

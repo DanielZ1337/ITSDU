@@ -1,7 +1,8 @@
-import { Loader } from "@/components/ui/loader";
-import useGETssoUrl from "@/queries/sso/useGETssoUrl";
+import { keepPreviousData } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Loader } from "@/components/ui/loader";
+import useGETssoUrl from "@/queries/sso/useGETssoUrl";
 export default function NativeSSOElement() {
 	const [searchParams] = useSearchParams();
 
@@ -11,7 +12,11 @@ export default function NativeSSOElement() {
 
 	const urlRef = useRef<HTMLIFrameElement>(null);
 
-	const { data, isLoading, refetch } = useGETssoUrl(
+	const {
+		data,
+		isPending: isLoading,
+		refetch,
+	} = useGETssoUrl(
 		{
 			url,
 		},
@@ -22,7 +27,7 @@ export default function NativeSSOElement() {
 						refetchOnWindowFocus: false,
 						refetchOnReconnect: false,
 						refetchOnMount: true,
-						keepPreviousData: true,
+						placeholderData: keepPreviousData,
 					}
 				: {}),
 		},

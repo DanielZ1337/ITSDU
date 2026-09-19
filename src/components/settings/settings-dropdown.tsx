@@ -1,3 +1,7 @@
+import { useAtom } from "jotai";
+import { useTheme } from "next-themes";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import SettingsDropdownUserFullname from "@/components/settings/settings-dropdown-user-fullname.tsx";
 import { buttonVariants } from "@/components/ui/button.tsx";
 import {
@@ -14,10 +18,6 @@ import { useSettings } from "@/hooks/atoms/useSettings.ts";
 import { useShowSettingsModal } from "@/hooks/atoms/useSettingsModal.ts";
 import { useVersion } from "@/hooks/atoms/useVersion.ts";
 import { cn, isMacOS } from "@/lib/utils.ts";
-import { useAtom } from "jotai";
-import { useTheme } from "next-themes";
-import { Suspense, useCallback, useEffect, useState } from "react";
-import { ErrorBoundary } from "react-error-boundary";
 import { browseNavigationAtom as showBrowseNavAtom } from "../../atoms/browse-navigation.ts";
 
 export default function SettingsDropdown({
@@ -38,7 +38,7 @@ export default function SettingsDropdown({
 
 	const handleDarkModeToggle = useCallback(async () => {
 		const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
-		await setSetting("theme", nextTheme);
+		await setSetting("appearance.theme", nextTheme);
 		setTheme(nextTheme);
 	}, [resolvedTheme, setSetting, setTheme]);
 
@@ -161,7 +161,7 @@ export default function SettingsDropdown({
 						});
 					}}
 					className={
-						"hover:!bg-destructive focus:!bg-destructive hover:!text-white"
+						"hover:bg-destructive! focus:bg-destructive! hover:text-white!"
 					}
 				>
 					<span>Sign out</span>
@@ -173,7 +173,7 @@ export default function SettingsDropdown({
 						});
 					}}
 					className={
-						"hover:!bg-destructive focus:!bg-destructive hover:!text-white"
+						"hover:bg-destructive! focus:bg-destructive! hover:text-white!"
 					}
 				>
 					<span>Exit</span>

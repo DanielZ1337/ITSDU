@@ -1,15 +1,14 @@
+import { useAtom } from "jotai";
+import { Suspense, useEffect } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { useParams } from "react-router-dom";
 import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat.ts";
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
 import useGETinstantMessageThread from "@/queries/messages/useGETinstantMessageThread";
-import { useAtom } from "jotai";
-import { Suspense, useEffect } from "react";
-import { ErrorBoundary } from "react-error-boundary";
-import { Helmet } from "react-helmet-async";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
 import MessageChat from "./messages-chat";
-import { useParams } from "react-router-dom";
 
 export default function Messages() {
 	const [currentChat, setCurrentChat] = useAtom(currentChatAtom);
@@ -27,7 +26,7 @@ export default function Messages() {
 		setCurrentChat(Number(params.id));
 	}, [params.id]);
 
-	const { data: messages, isLoading } = useGETinstantMessageThread(
+	const { data: messages, isPending: isLoading } = useGETinstantMessageThread(
 		{
 			threadId: currentChat!,
 			maxMessages: 1,
@@ -42,9 +41,7 @@ export default function Messages() {
 
 	return (
 		<div className="flex h-full w-full flex-1 overflow-y-hidden">
-			<Helmet>
-				<title>Messages</title>
-			</Helmet>
+			<title>Messages</title>
 			<div className="w-1/4 overflow-x-hidden overflow-y-hidden border-r">
 				<MessagesSidebar />
 			</div>

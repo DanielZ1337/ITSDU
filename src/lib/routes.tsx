@@ -1,4 +1,3 @@
-import { NavigationType } from "@/types/navigation-link";
 import {
 	BookCheck,
 	ClipboardList,
@@ -17,6 +16,7 @@ import {
 	AiOutlineMessage,
 	AiOutlineNotification,
 } from "react-icons/ai";
+import { NavigationType } from "@/types/navigation-link";
 import { cn } from "./utils";
 
 const defaultNavLinkClassName = "h-4 w-4 3xl:w-5 3xl:h-5";

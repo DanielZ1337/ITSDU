@@ -1,3 +1,5 @@
+import { UseMutationOptions, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	POSTcourseCardSettings,
@@ -6,8 +8,6 @@ import {
 	POSTcourseCardSettingsParams,
 } from "@/types/api-types/course-cards/POSTcourseCardSettings.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseMutationOptions, useMutation } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function usePOSTcourseCardSettings(
 	params: POSTcourseCardSettingsParams,
@@ -18,9 +18,13 @@ export default function usePOSTcourseCardSettings(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.CourseCardSettings, ...getQueryKeysFromParamsObject(params)],
-		async (body) => {
+	return useMutation({
+		mutationKey: [
+			TanstackKeys.CourseCardSettings,
+			...getQueryKeysFromParamsObject(params),
+		],
+
+		mutationFn: async (body) => {
 			const res = await axios.post(
 				POSTcourseCardSettingsApiUrl({
 					...params,
@@ -38,8 +42,7 @@ export default function usePOSTcourseCardSettings(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

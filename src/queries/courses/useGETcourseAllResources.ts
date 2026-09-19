@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken } from "@/lib/utils.ts";
 import { GETcourseFolderResourcesApiUrl } from "@/types/api-types/courses/GETcourseFolderResources";
 import {
@@ -9,27 +11,25 @@ import { ItslearningPlatformRestApiSdkCommonEntitiesLearningToolType } from "@/t
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
 import { ItsolutionsItslUtilsConstantsElementType } from "@/types/api-types/utils/Itsolutions.ItslUtils.Constants.ElementType";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETcourseAllResources(
 	courseId: number,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		ItslearningRestApiEntitiesPersonalCourseCourseResource[],
 		Error,
 		ItslearningRestApiEntitiesPersonalCourseCourseResource[],
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.CourseAllResources, String(courseId)],
-		async () => {
+	return useQueryCompat({
+		queryKey: [TanstackKeys.CourseAllResources, String(courseId)],
+
+		queryFn: async () => {
 			return await getCourseAllResources(courseId);
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }
 
 export async function getCourseAllResources(

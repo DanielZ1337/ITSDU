@@ -6,18 +6,33 @@ import type {
 	AuthRefreshOptions,
 	AuthSessionStatus,
 } from "../src/types/auth.ts";
-import type { SettingsKey, SettingsOptions } from "../src/types/settings.ts";
+import type {
+	SettingsOptions,
+	SettingsPath,
+	SettingValue,
+} from "../src/types/settings.ts";
 import { sendNotifcation } from "./handlers/notifcation-handler.ts";
+import {
+	createEventsApi,
+	PUSH_CHANNELS,
+	type PushChannel,
+} from "./ipc/channels";
 import { StoreKey } from "./services/itslearning/auth/types/store_keys.ts";
 import type { FileRepository } from "./services/itslearning/resources/resources.ts";
 
 // --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
+// Set by the main process (mock mode); undefined means "use the default itslearning site".
+const apiBaseUrl = process.argv
+	.find((arg) => arg.startsWith("--itsdu-api-base-url="))
+	?.slice("--itsdu-api-base-url=".length);
+contextBridge.exposeInMainWorld("runtime", { apiBaseUrl });
+contextBridge.exposeInMainWorld(
+	"events",
+	createEventsApi(ipcRenderer, PUSH_CHANNELS),
+);
 contextBridge.exposeInMainWorld("auth", {
 	store: {
 		get: (key: StoreKey) => ipcRenderer.invoke("itslearning-store:get", key),
-		set: (key: StoreKey, data: any) =>
-			ipcRenderer.invoke("electron-store:set", key, data),
 		clear: () => ipcRenderer.invoke("itslearning-store:clear"),
 	},
 	logout: () => ipcRenderer.invoke("itslearning-store:logout"),
@@ -52,12 +67,12 @@ contextBridge.exposeInMainWorld("darkMode", {
 });
 contextBridge.exposeInMainWorld("settings", {
 	getAll: () => ipcRenderer.invoke("settings:getAll"),
-	get: (key: SettingsKey) => ipcRenderer.invoke("settings:get", key),
-	set: <K extends SettingsKey>(key: K, value: SettingsOptions[K]) =>
-		ipcRenderer.invoke("settings:set", key, value),
-	reset: (key: SettingsKey) => ipcRenderer.invoke("settings:reset", key),
+	get: (path: SettingsPath) => ipcRenderer.invoke("settings:get", path),
+	set: <P extends SettingsPath>(path: P, value: SettingValue<P>) =>
+		ipcRenderer.invoke("settings:set", path, value),
+	reset: (path: SettingsPath) => ipcRenderer.invoke("settings:reset", path),
 	resetAll: () => ipcRenderer.invoke("settings:resetAll"),
-	migrateLocalStorage: (values: Partial<SettingsOptions>) =>
+	migrateLocalStorage: (values: unknown) =>
 		ipcRenderer.invoke("settings:migrateLocalStorage", values),
 	chooseDownloadDirectory: () =>
 		ipcRenderer.invoke("settings:chooseDownloadDirectory"),
@@ -125,7 +140,7 @@ contextBridge.exposeInMainWorld("ai", {
 	upload: async (elementId: number) => {
 		const allowUpload = await ipcRenderer.invoke(
 			"settings:get",
-			"UploadAIChats",
+			"ai.uploadChats",
 		);
 		if (!allowUpload) {
 			throw new Error("AI document uploads are disabled in settings.");
@@ -247,7 +262,13 @@ contextBridge.exposeInMainWorld("scrape", {
 declare global {
 	// eslint-disable-next-line no-unused-vars
 	interface Window {
-		ipcRenderer: typeof ipcRenderer;
+		runtime: { apiBaseUrl?: string };
+		events: {
+			on: (
+				channel: PushChannel,
+				callback: (payload: any) => void,
+			) => () => void;
+		};
 		resources: {
 			officeDocuments: {
 				get: (
@@ -289,16 +310,14 @@ declare global {
 		};
 		settings: {
 			getAll: () => Promise<SettingsOptions>;
-			get: <K extends SettingsKey>(key: K) => Promise<SettingsOptions[K]>;
-			set: <K extends SettingsKey>(
-				key: K,
-				value: SettingsOptions[K],
+			get: <P extends SettingsPath>(path: P) => Promise<SettingValue<P>>;
+			set: <P extends SettingsPath>(
+				path: P,
+				value: SettingValue<P>,
 			) => Promise<SettingsOptions>;
-			reset: (key: SettingsKey) => Promise<SettingsOptions>;
+			reset: (path: SettingsPath) => Promise<SettingsOptions>;
 			resetAll: () => Promise<SettingsOptions>;
-			migrateLocalStorage: (
-				values: Partial<SettingsOptions>,
-			) => Promise<SettingsOptions>;
+			migrateLocalStorage: (values: unknown) => Promise<SettingsOptions>;
 			chooseDownloadDirectory: () => Promise<SettingsOptions>;
 			subscribe: (callback: (settings: SettingsOptions) => void) => () => void;
 		};
@@ -362,7 +381,6 @@ declare global {
 		auth: {
 			store: {
 				get: (key: StoreKey) => Promise<string | null>;
-				set: (key: StoreKey, data: any) => Promise<void>;
 				clear: () => Promise<void>;
 			};
 			logout: () => Promise<void>;
@@ -383,25 +401,6 @@ declare global {
 			) => Promise<{ data: string; status: number; statusText: string } | null>;
 		};
 	}
-}
-
-// `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
-function withPrototype(obj: Record<string, any>) {
-	const protos = Object.getPrototypeOf(obj);
-
-	for (const [key, value] of Object.entries(protos)) {
-		if (Object.prototype.hasOwnProperty.call(obj, key)) continue;
-
-		if (typeof value === "function") {
-			// Some native APIs, like `NodeJS.EventEmitter['on']`, don't work in the Renderer process. Wrapping them into a function.
-			obj[key] = function (...args: any) {
-				return value.call(obj, ...args);
-			};
-		} else {
-			obj[key] = value;
-		}
-	}
-	return obj;
 }
 
 // --------- Preload scripts loading ---------
@@ -477,7 +476,10 @@ function useLoading() {
 
 	return {
 		async appendLoading() {
-			const theme = await ipcRenderer.invoke("settings:get", "theme");
+			const theme = await ipcRenderer.invoke(
+				"settings:get",
+				"appearance.theme",
+			);
 			const resolvedTheme =
 				theme === "system"
 					? window.matchMedia("(prefers-color-scheme: dark)").matches

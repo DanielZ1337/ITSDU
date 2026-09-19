@@ -1,3 +1,5 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getAccessToken, getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import {
 	GETinstantMessagesRecipientsSearch,
@@ -5,24 +7,23 @@ import {
 	GETinstantMessagesRecipientsSearchParams,
 } from "@/types/api-types/messages/GETinstantMessagesRecipientsSearch.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
 export default function useGETinstantMessagesRecipientsSearch(
 	params: GETinstantMessagesRecipientsSearchParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETinstantMessagesRecipientsSearch,
 		Error,
 		GETinstantMessagesRecipientsSearch,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+		queryKey: [
 			TanstackKeys.MessagesRecipientsSearch,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETinstantMessagesRecipientsSearchApiUrl(params),
 				{
@@ -36,8 +37,7 @@ export default function useGETinstantMessagesRecipientsSearch(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }

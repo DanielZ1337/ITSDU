@@ -1,6 +1,6 @@
+import { m } from "motion/react";
 import { Badge } from "@/components/ui/badge";
 import useGETcourseTasklistDailyWorkflowCompleted from "@/queries/courses/useGETcourseTasklistDailyWorkflowCompleted";
-import { m } from "framer-motion";
 import { CourseTasksFetchInView } from "./course-tasks-fetch-in-view";
 import { CourseTasksSkeletonsAnimated } from "./fallback/course-tasks-card-skeletons-animated";
 
@@ -15,7 +15,7 @@ export function CourseTasksCompleted({
 		data,
 		isError,
 		error,
-		isLoading,
+		isPending: isLoading,
 		hasNextPage,
 		fetchNextPage,
 		isFetchingNextPage,
@@ -25,10 +25,6 @@ export function CourseTasksCompleted({
 		// disable the paramter, as itslearning says it is supported but it is not
 		PageSize: 100,
 	});
-
-	const isEmpty =
-		data?.pages[0].EntityArray.length !== undefined &&
-		data?.pages[0].EntityArray.length < 1;
 
 	const completed = true;
 

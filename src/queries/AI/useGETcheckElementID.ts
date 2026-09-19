@@ -1,19 +1,20 @@
+import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 import { getQueryKeysFromParamsObject } from "@/lib/utils.ts";
 import { GETcheckElementIDApiUrl } from "@/types/api-types/AI/GETcheckElementID.ts";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
 
 export default function useGETcheckElementID(
 	elementId: number | string,
-	queryConfig?: UseQueryOptions<boolean, Error, boolean, string[]>,
+	queryConfig?: QueryConfig<boolean, Error, boolean, string[]>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+		queryKey: [
 			TanstackKeys.AICheckElementID,
 			...getQueryKeysFromParamsObject({ elementId }),
 		],
-		async () => {
+
+		queryFn: async () => {
 			const res = await axios.get(
 				GETcheckElementIDApiUrl({
 					elementId: Number(elementId),
@@ -29,8 +30,7 @@ export default function useGETcheckElementID(
 
 			return exists;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+		...queryConfig,
+	});
 }
