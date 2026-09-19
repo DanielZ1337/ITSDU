@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 

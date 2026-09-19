@@ -1,6 +1,6 @@
 import AISidePanel from "@/components/ai-chat/ai-sidepanel";
 import useResourceByElementID from "@/queries/resources/useResourceByElementID";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { Suspense } from "react";
 import { useParams } from "react-router-dom";
 

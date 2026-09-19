@@ -14,7 +14,7 @@ import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotifications from "@/queries/notifications/useGETnotifications";
 import usePUTnotificationsMarkAllAsRead from "@/queries/notifications/usePUTnotificationsMarkAllAsRead";
 import usePUTnotificationsMarkAllAsReadv2 from "@/queries/notifications/usePUTnotificationsMarkAllAsReadv2";
-import { ScrollShadow } from "@nextui-org/react";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import { ArrowRightIcon } from "lucide-react";
 import { AiOutlineNotification } from "react-icons/ai";
 import { Link } from "react-router-dom";

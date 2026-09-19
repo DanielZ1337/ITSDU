@@ -5,7 +5,7 @@ import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useUnreadMessagesNotification } from "@/hooks/useUnreadMessagesNotification";
 import { isMacOS } from "@/lib/utils";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { Command } from "lucide-react";
 import { Suspense, lazy, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";

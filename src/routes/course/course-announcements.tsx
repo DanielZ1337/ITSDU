@@ -6,7 +6,7 @@ import UpdatesTypeSelect, {
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import useGETcourseBasic from "@/queries/courses/useGETcourseBasic";
 import useGETcourseNotifications from "@/queries/courses/useGETcourseNotifications";
-import { Skeleton } from "@nextui-org/react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense, lazy, memo } from "react";
 import { useParams } from "react-router-dom";
 const FetchMoreInViewLazy = lazy(() =>

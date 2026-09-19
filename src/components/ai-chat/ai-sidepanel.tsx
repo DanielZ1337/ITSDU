@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import useGETcheckElementID from "@/queries/AI/useGETcheckElementID";
 import useGETpreviousMessages from "@/queries/AI/useGETpreviousMessages";
 import { MessageType } from "@/types/ai-message";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { m } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BsStopCircleFill } from "react-icons/bs";

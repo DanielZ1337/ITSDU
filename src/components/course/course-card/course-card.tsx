@@ -4,7 +4,7 @@ import { Loader } from "@/components/ui/loader.tsx";
 import { cn } from "@/lib/utils.ts";
 import usePUTcourseFavorite from "@/queries/courses/usePUTcourseFavorite.ts";
 import { ItslearningRestApiEntitiesCourseCard } from "@/types/api-types/utils/Itslearning.RestApi.Entities.CourseCard.ts";
-import { Checkbox } from "@nextui-org/react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAtom } from "jotai";
 import {
 	ArrowRight,
@@ -173,9 +173,7 @@ export default function CourseCard({
 							) : (
 								<Checkbox
 									className="m-0 p-0 w-fit"
-									defaultChecked={card.IsFavouriteCourse}
 									checked={card.IsFavouriteCourse}
-									defaultSelected={card.IsFavouriteCourse}
 								/>
 							)}
 						</Button>

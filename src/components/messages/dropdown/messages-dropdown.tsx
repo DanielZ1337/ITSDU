@@ -20,7 +20,7 @@ import useFetchNextPageOnInView from "@/hooks/useFetchNextPageOnView.ts";
 import { cn } from "@/lib/utils.ts";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2.ts";
 import { TanstackKeys } from "@/types/tanstack-keys.ts";
-import { ScrollShadow } from "@nextui-org/react";
+import { ScrollShadow } from "@/components/ui/scroll-shadow";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { MessageCircle } from "lucide-react";
