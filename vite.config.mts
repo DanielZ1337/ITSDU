@@ -3,8 +3,6 @@ import { resolve } from "node:path";
 // import electron from 'vite-plugin-electron/simple'
 import electron from "vite-plugin-electron";
 import react from "@vitejs/plugin-react";
-import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
-import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +12,6 @@ export default defineConfig({
     // Do not ship sourcemaps in production builds.
     sourcemap: false,
     target: "esnext",
-    minify: "esbuild",
     rollupOptions: {
       input: {
         main: resolve(process.cwd(), "index.html"),
@@ -23,7 +20,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    react({ babel: { plugins: [jotaiDebugLabel, jotaiReactRefresh] } }),
+    react(),
     electron([
       {
         entry: "electron/main.ts",
