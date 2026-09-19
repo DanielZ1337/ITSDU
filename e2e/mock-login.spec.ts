@@ -83,7 +83,7 @@ test("signs in through the mock and reaches the main window without CSP violatio
 	const routes = [
 		"/", "/overview", "/courses", "/courses/1001", "/courses/1001/tasks", "/courses/1001/participants",
 		"/courses/1001/schedule", "/courses/1001/plans", "/courses/1001/resources", "/calendar", "/resources",
-		"/messages", "/updates", "/all-tasks", "/profile", "/person/1001", "/ai-chats",
+		"/messages", "/updates", "/all-tasks", "/profile", "/person/1001", // /ai-chats is skipped: it calls an external AI backend
 	];
 	const failures: string[] = [];
 	for (const route of routes) {
