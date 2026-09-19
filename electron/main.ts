@@ -1,10 +1,19 @@
-import path from "path";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
+import { registerTrustedWindow } from "./ipc/secure";
+import { MOCK_URL } from "./services/itslearning/mock-mode";
+import {
+	hardenWebviews,
+	lockNavigation,
+	restrictPermissions,
+} from "./security/window-security";
 import {
 	net,
 	BrowserWindow,
 	Menu,
 	Tray,
 	app,
+	dialog,
 	nativeTheme,
 	protocol,
 	session,
@@ -15,6 +24,11 @@ process.env.VITE_PUBLIC = app.isPackaged
 	? process.env.DIST
 	: path.join(process.env.DIST, "../public");
 const isDev = !app.isPackaged;
+
+/** Extra argv for preload scripts; carries the mock server URL when mock mode is on. */
+function runtimeArguments() {
+	return MOCK_URL ? [`--itsdu-api-base-url=${MOCK_URL}/`] : [];
+}
 
 let win: BrowserWindow | null;
 let authWindow: BrowserWindow | null;
@@ -57,9 +71,12 @@ async function createMainWindow() {
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
-			nodeIntegration: true,
+			contextIsolation: true,
+			sandbox: true,
+			nodeIntegration: false,
 			devTools: isDev,
-			v8CacheOptions: "bypassHeatCheck",
+			additionalArguments: runtimeArguments(),
+			// Needed only by the SSO element (<webview>); guests are locked down in hardenWebviews().
 			webviewTag: true,
 		},
 		autoHideMenuBar: true,
@@ -75,6 +92,8 @@ async function createMainWindow() {
 		...windowOptions,
 	});
 
+	registerTrustedWindow(win);
+	lockNavigation(win);
 	win.webContents.setWindowOpenHandler((handler) => {
 		// handles office download links
 		const origin = new URL(handler.url);
@@ -187,6 +206,11 @@ export async function createAuthWindow(
 		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 		webPreferences: {
 			preload: path.join(__dirname, "login_preload.js"),
+			contextIsolation: true,
+			sandbox: true,
+			nodeIntegration: false,
+			devTools: isDev,
+			additionalArguments: runtimeArguments(),
 		},
 		width: 800,
 		height: 600,
@@ -201,6 +225,8 @@ export async function createAuthWindow(
         show: true, */
 	});
 
+	registerTrustedWindow(authWindow);
+	lockNavigation(authWindow);
 	try {
 		const { initializeLoginHandler } = await import(
 			"./services/itslearning/auth/auth-service.ts"
@@ -396,39 +422,27 @@ app.whenReady().then(async () => {
 		await startProxyDevServer();
 	}
 
-	const ses = session.defaultSession;
-	ses.protocol.registerBufferProtocol(
-		"itsl-itslearning-file",
-		async (request, callback) => {
-			// get image file path
-			const url = request.url.replace("itsl-itslearning-file://", "");
-			const filePath = path.join(process.env.VITE_PUBLIC, url);
-			// read image file
-			const fs = await import("fs");
-			fs.readFile(filePath, (error, data) => {
-				if (error) {
-					console.error(`Failed to read ${filePath} on ${request.url}`);
-					console.error(error);
-				}
-				const extension = path.extname(filePath).toLowerCase();
-				let mimeType = "";
-				if (extension === ".svg") {
-					mimeType = "image/svg+xml";
-				} else if (extension === ".png") {
-					mimeType = "image/png";
-				} else if (extension === ".jpg" || extension === ".jpeg") {
-					mimeType = "image/jpeg";
-				} else if (extension === ".gif") {
-					mimeType = "image/gif";
-				} else if (extension === ".webp") {
-					mimeType = "image/webp";
-				}
-				callback({ mimeType, data });
-			});
-		},
-	);
+	restrictPermissions(session.defaultSession);
+	hardenWebviews();
 
-	// @ts-ignore
+	// itsl-itslearning-file://<name> serves files from the app's public folder only.
+	protocol.handle("itsl-itslearning-file", async (request) => {
+		const relative = decodeURIComponent(
+			request.url.replace(/^itsl-itslearning-file:\/\//i, "").split(/[?#]/)[0],
+		);
+		const root = path.resolve(process.env.VITE_PUBLIC);
+		const filePath = path.resolve(root, relative);
+		if (path.relative(root, filePath).startsWith("..") || path.isAbsolute(path.relative(root, filePath))) {
+			return new Response("Forbidden", { status: 403 });
+		}
+		try {
+			return await net.fetch(pathToFileURL(filePath).toString());
+		} catch (error) {
+			console.error(`Failed to serve ${filePath} for ${request.url}`, error);
+			return new Response("Not found", { status: 404 });
+		}
+	});
+
 	protocol.handle("itsl-itslearning", async (req) => {
 		const { AuthService, ITSLEARNING_CLIENT_ID, ITSLEARNING_OAUTH_TOKEN_URL } =
 			await import("./services/itslearning/auth/auth-service.ts");
@@ -474,6 +488,8 @@ app.whenReady().then(async () => {
 		} else {
 			authService.loadSigninPage();
 		}
+		// Navigation to the redirect URI is handled here; nothing to render.
+		return new Response(null, { status: 204 });
 	});
 
 	try {
@@ -583,8 +599,8 @@ app.whenReady().then(async () => {
 			e.preventDefault();
 			if (!win) return;
 			// TODO: have some preferences and follow those
-			require("electron")
-				.dialog.showMessageBox(win, {
+			dialog
+				.showMessageBox(win, {
 					type: "question",
 					buttons: ["Yes", "Minimize", "No"],
 					title: "Confirm",
