@@ -937,21 +937,21 @@ function AppUpdatesSettings() {
 		status === "installing";
 
 	useEffect(() => {
-		const onDownloaded = (_event: unknown, info?: UpdateInfo) => {
+		const onDownloaded = (info?: UpdateInfo) => {
 			if (info) setUpdateInfo(info);
 			setDownloadProgress(100);
 			setStatus("downloaded");
 		};
-		const onProgress = (_event: unknown, progress?: DownloadProgress) => {
+		const onProgress = (progress?: DownloadProgress) => {
 			setDownloadProgress(progress?.percent ?? 0);
 		};
 
-		window.ipcRenderer.on("app:updateDownloaded", onDownloaded);
-		window.ipcRenderer.on("app:downloadProgress", onProgress);
+		const offDownloaded = window.events.on("app:updateDownloaded", onDownloaded);
+		const offProgress = window.events.on("app:downloadProgress", onProgress);
 
 		return () => {
-			window.ipcRenderer.removeListener("app:updateDownloaded", onDownloaded);
-			window.ipcRenderer.removeListener("app:downloadProgress", onProgress);
+			offDownloaded();
+			offProgress();
 		};
 	}, []);
 

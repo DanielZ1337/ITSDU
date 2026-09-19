@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { contextBridge, ipcRenderer } from "electron";
+import { PUSH_CHANNELS, type PushChannel, createEventsApi } from "./ipc/channels";
 import { UpdateInfo } from "electron-updater";
 import slugify from "slugify";
 import type {
@@ -12,12 +13,18 @@ import { StoreKey } from "./services/itslearning/auth/types/store_keys.ts";
 import type { FileRepository } from "./services/itslearning/resources/resources.ts";
 
 // --------- Expose some API to the Renderer process ---------
-contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
+// Set by the main process (mock mode); undefined means "use the default itslearning site".
+const apiBaseUrl = process.argv
+	.find((arg) => arg.startsWith("--itsdu-api-base-url="))
+	?.slice("--itsdu-api-base-url=".length);
+contextBridge.exposeInMainWorld("runtime", { apiBaseUrl });
+contextBridge.exposeInMainWorld(
+	"events",
+	createEventsApi(ipcRenderer, PUSH_CHANNELS),
+);
 contextBridge.exposeInMainWorld("auth", {
 	store: {
 		get: (key: StoreKey) => ipcRenderer.invoke("itslearning-store:get", key),
-		set: (key: StoreKey, data: any) =>
-			ipcRenderer.invoke("electron-store:set", key, data),
 		clear: () => ipcRenderer.invoke("itslearning-store:clear"),
 	},
 	logout: () => ipcRenderer.invoke("itslearning-store:logout"),
@@ -247,7 +254,10 @@ contextBridge.exposeInMainWorld("scrape", {
 declare global {
 	// eslint-disable-next-line no-unused-vars
 	interface Window {
-		ipcRenderer: typeof ipcRenderer;
+		runtime: { apiBaseUrl?: string };
+		events: {
+			on: (channel: PushChannel, callback: (payload: any) => void) => () => void;
+		};
 		resources: {
 			officeDocuments: {
 				get: (
@@ -362,7 +372,6 @@ declare global {
 		auth: {
 			store: {
 				get: (key: StoreKey) => Promise<string | null>;
-				set: (key: StoreKey, data: any) => Promise<void>;
 				clear: () => Promise<void>;
 			};
 			logout: () => Promise<void>;
@@ -383,25 +392,6 @@ declare global {
 			) => Promise<{ data: string; status: number; statusText: string } | null>;
 		};
 	}
-}
-
-// `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
-function withPrototype(obj: Record<string, any>) {
-	const protos = Object.getPrototypeOf(obj);
-
-	for (const [key, value] of Object.entries(protos)) {
-		if (Object.prototype.hasOwnProperty.call(obj, key)) continue;
-
-		if (typeof value === "function") {
-			// Some native APIs, like `NodeJS.EventEmitter['on']`, don't work in the Renderer process. Wrapping them into a function.
-			obj[key] = function (...args: any) {
-				return value.call(obj, ...args);
-			};
-		} else {
-			obj[key] = value;
-		}
-	}
-	return obj;
 }
 
 // --------- Preload scripts loading ---------

@@ -92,14 +92,9 @@ export default function Layout() {
 	}, [navigate]);
 
 	useEffect(() => {
-		const handleTrayNavigate = (_event: unknown, routePath: string) => {
+		return window.events.on("tray:navigate", (routePath: string) => {
 			navigate(routePath);
-		};
-
-		window.ipcRenderer.on("tray:navigate", handleTrayNavigate);
-		return () => {
-			window.ipcRenderer.removeAllListeners("tray:navigate");
-		};
+		});
 	}, [navigate]);
 
 	return (

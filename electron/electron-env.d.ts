@@ -21,7 +21,4 @@ declare namespace NodeJS {
 	}
 }
 
-// Used in Renderer process, expose in `preload.ts`
-interface Window {
-	ipcRenderer: import("electron").IpcRenderer;
-}
+// Renderer-facing API is declared next to the contextBridge exposures in `preload.ts`.

@@ -49,7 +49,6 @@ export function useDownloadActivityEvents() {
 
 	useEffect(() => {
 		const onProgress = (
-			_event: unknown,
 			payload?: { id?: string; percent?: number },
 		) => {
 			if (!payload?.id) return;
@@ -62,7 +61,6 @@ export function useDownloadActivityEvents() {
 			);
 		};
 		const onComplete = (
-			_event: unknown,
 			payload?: {
 				id?: string;
 				path?: string;
@@ -87,7 +85,6 @@ export function useDownloadActivityEvents() {
 			);
 		};
 		const onError = (
-			_event: unknown,
 			payload?: { id?: string; error?: string } | string,
 		) => {
 			const id = typeof payload === "object" ? payload.id : undefined;
@@ -108,13 +105,13 @@ export function useDownloadActivityEvents() {
 			);
 		};
 
-		window.ipcRenderer.on("download:progress", onProgress);
-		window.ipcRenderer.on("download:complete", onComplete);
-		window.ipcRenderer.on("download:error", onError);
+		const offs = [
+			window.events.on("download:progress", onProgress),
+			window.events.on("download:complete", onComplete),
+			window.events.on("download:error", onError),
+		];
 		return () => {
-			window.ipcRenderer.removeListener("download:progress", onProgress);
-			window.ipcRenderer.removeListener("download:complete", onComplete);
-			window.ipcRenderer.removeListener("download:error", onError);
+			for (const off of offs) off();
 		};
 	}, [setEntries]);
 }

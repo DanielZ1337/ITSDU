@@ -77,9 +77,11 @@ export function getFormattedSize(size: number) {
 	return `${size.toFixed(2)} ${units[i]}`;
 }
 
-export const baseUrl = import.meta.env.DEV
+export const baseUrl =
+	(typeof window !== "undefined" ? window.runtime?.apiBaseUrl : undefined) ??
+	(import.meta.env.DEV
 	? "http://localhost:8080/"
-	: "https://sdu.itslearning.com/";
+	: "https://sdu.itslearning.com/");
 
 export const apiUrl = (
 	route: string,

@@ -42,19 +42,21 @@ export function useUpdateAvailableToast() {
 	}
 
 	useEffect(() => {
-		if (isUpdateAvailable) {
-			window.ipcRenderer.on("app:updateDownloaded", () => {
-				setIsDownloading(false);
-				setUpdateReady(true);
-			});
-			window.ipcRenderer.on("app:downloadProgress", (_event, progress) => {
+		if (!isUpdateAvailable) return;
+		const offDownloaded = window.events.on("app:updateDownloaded", () => {
+			setIsDownloading(false);
+			setUpdateReady(true);
+		});
+		const offProgress = window.events.on(
+			"app:downloadProgress",
+			(progress: { percent: number }) => {
 				setDownloadProgress(progress.percent);
-			});
-		}
+			},
+		);
 
 		return () => {
-			window.ipcRenderer.removeAllListeners("app:updateDownloaded");
-			window.ipcRenderer.removeAllListeners("app:downloadProgress");
+			offDownloaded();
+			offProgress();
 		};
 	}, [isUpdateAvailable, setUpdateReady]);
 

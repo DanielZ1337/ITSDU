@@ -37,9 +37,11 @@ const router = createHashRouter([
 	},
 ]);
 
-const baseUrl = import.meta.env.DEV
+const baseUrl =
+	window.runtime?.apiBaseUrl ??
+	(import.meta.env.DEV
 	? "http://localhost:8080/"
-	: "https://sdu.itslearning.com/";
+	: "https://sdu.itslearning.com/");
 
 function Login() {
 	const [organisations, setOrganisations] =
@@ -153,6 +155,6 @@ interface Organisation {
 postMessage({ payload: "removeLoading" }, "*");
 
 // Use contextBridge
-window.ipcRenderer.on("main-process-message", (_event, message) => {
+window.events.on("main-process-message", (message) => {
 	console.log(message);
 });
