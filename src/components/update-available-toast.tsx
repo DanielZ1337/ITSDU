@@ -1,6 +1,6 @@
 import type { UpdateInfo } from "electron-updater";
 import { useSetAtom } from "jotai";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import {
 	updateAvailableVersionAtom,
@@ -71,23 +71,22 @@ export function useUpdateAvailableToast() {
 		);
 	}, [downloadProgress, isDownloading, t]);
 
-	const handleUpdateClick = async () => {
-		if (isUpdateAvailable) {
-			setIsDownloading(true);
-			toast.promise(
-				window.app
-					.downloadUpdate()
-					.then(() => window.app.update())
-					.then(() => window.app.exit()),
-				{
-					id: "update-available-toast",
-					loading: t("common.downloading"),
-					success: t("settings.appUpdates.download.title"),
-					error: t("errors.updateCheck"),
-				},
-			);
-		}
-	};
+	const handleUpdateClick = useCallback(() => {
+		if (!isUpdateAvailable) return;
+		setIsDownloading(true);
+		toast.promise(
+			window.app
+				.downloadUpdate()
+				.then(() => window.app.update())
+				.then(() => window.app.exit()),
+			{
+				id: "update-available-toast",
+				loading: t("common.downloading"),
+				success: t("settings.appUpdates.download.title"),
+				error: t("errors.updateCheck"),
+			},
+		);
+	}, [isUpdateAvailable, t]);
 
 	useEffect(() => {
 		if (
@@ -108,6 +107,7 @@ export function useUpdateAvailableToast() {
 	useEffect(() => {
 		if (settings.notifications.appUpdates && isUpdateAvailable) {
 			toast.info(t("settings.appUpdates.download.title"), {
+				id: "update-available-toast",
 				duration: 10000,
 				action: {
 					label: t("common.install"),

@@ -124,6 +124,8 @@ jobs:
       - name: Create version tag
         shell: bash
         env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
         run: |
           TAG="$RELEASE_TAG"
@@ -145,14 +147,25 @@ jobs:
             exit 0
           fi
 
-          git -c user.name="github-actions[bot]" \
-              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
-              tag -a "$TAG" "$GITHUB_SHA" \
-              -m "Release $TAG"
+          # Created via the API (rather than a local `git tag` + push) so GitHub signs the tag
+          # object itself and shows it as Verified.
+          TAG_SHA=$(
+            gh api "repos/$GH_REPO/git/tags" \
+              -f tag="$TAG" \
+              -f message="Release $TAG" \
+              -f object="$GITHUB_SHA" \
+              -f type="commit" \
+              -f "tagger[name]=github-actions[bot]" \
+              -f "tagger[email]=41898282+github-actions[bot]@users.noreply.github.com" \
+              -f "tagger[date]=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              --jq '.sha'
+          )
 
-          git push origin "refs/tags/$TAG"
+          gh api "repos/$GH_REPO/git/refs" \
+            -f ref="refs/tags/$TAG" \
+            -f sha="$TAG_SHA"
 
-          echo "Created release tag: $TAG"
+          echo "Created verified release tag: $TAG"
 
   release:
     name: Build and publish ${{ matrix.platform }}
@@ -214,3 +227,27 @@ jobs:
           npm_config_msvs_version: "2022"
           VITE_ITSLEARNING_STORE_KEY: ${{ secrets.VITE_ITSLEARNING_STORE_KEY }}
           VITE_ITSLEARNING_OAUTH_STATE: ${{ secrets.VITE_ITSLEARNING_OAUTH_STATE }}
+
+  publish:
+    name: Publish release
+    needs:
+      - prepare
+      - release
+
+    if: needs.prepare.outputs.should_release == 'true'
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      # electron-builder publishes each platform's assets to a draft release (electron-builder's
+      # GitHub publish default). Un-drafting only here, after mac/linux/win have all succeeded,
+      # avoids notifying users of a release that's still missing installers for other platforms.
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.tag }}
+        run: gh release edit "$RELEASE_TAG" --draft=false

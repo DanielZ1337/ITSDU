@@ -28,6 +28,19 @@ process.env.VITE_PUBLIC = app.isPackaged
 	: path.join(process.env.DIST, "../public");
 const isDev = !app.isPackaged;
 
+// Electron's Linux keyring auto-detection for safeStorage can fail to find a running
+// gnome-keyring even when one is available (observed with certain launch flags, e.g.
+// Playwright's --inspect), leaving safeStorage.isEncryptionAvailable() false and breaking
+// token persistence. Forcing the backend skips that detection. Left untouched on KDE,
+// where the equivalent fix would be a different backend (kwallet) we haven't verified.
+// Must run before app.whenReady() (safeStorage reads it at first use).
+if (
+	process.platform === "linux" &&
+	!/KDE/i.test(process.env.XDG_CURRENT_DESKTOP ?? "")
+) {
+	app.commandLine.appendSwitch("password-store", "gnome-libsecret");
+}
+
 /** Extra argv for preload scripts; carries the mock server URL when mock mode is on. */
 function runtimeArguments() {
 	return MOCK_URL ? [`--itsdu-api-base-url=${MOCK_URL}/`] : [];
