@@ -4,6 +4,39 @@ import { resolve } from "node:path";
 import electron from "vite-plugin-electron";
 import react from "@vitejs/plugin-react";
 
+// Production-only CSP (dev needs inline scripts for HMR). connect/img stay on https: because course content
+// and API calls go to itslearning-owned hosts that vary per customer; tighten once measured.
+// Only builds made with ITSLEARNING_MOCK_URL set (mock/e2e builds) also allow that origin.
+const mockOrigin = process.env.ITSLEARNING_MOCK_URL
+	? new URL(process.env.ITSLEARNING_MOCK_URL).origin
+	: "";
+
+const contentSecurityPolicy = [
+	"default-src 'self'",
+	"script-src 'self' 'wasm-unsafe-eval'",
+	"style-src 'self' 'unsafe-inline' https://rsms.me",
+	`img-src 'self' data: blob: https: itsl-itslearning-file: ${mockOrigin}`.trim(),
+	"font-src 'self' data: https://rsms.me",
+	`connect-src 'self' https: ${mockOrigin}`.trim(),
+	"media-src 'self' blob: https:",
+	"worker-src 'self' blob:",
+	"frame-src https: blob:",
+	"object-src 'none'",
+	"base-uri 'self'",
+	"form-action 'none'",
+].join("; ");
+
+const csp = () => ({
+	name: "itsdu-csp",
+	apply: "build" as const,
+	transformIndexHtml: (html: string) =>
+		html.replace(
+			"<head>",
+			`<head>
+    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />`,
+		),
+});
+
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
@@ -21,6 +54,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    csp(),
     electron([
       {
         entry: "electron/main.ts",

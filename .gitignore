@@ -39,3 +39,6 @@ release
 *.env.production
 *.env.production.local
 .env
+
+test-results
+playwright-report

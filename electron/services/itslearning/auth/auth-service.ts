@@ -1,4 +1,8 @@
-import { BrowserWindow, ipcMain, safeStorage } from "electron";
+import { BrowserWindow, app, ipcMain, safeStorage } from "electron";
+import type Store from "electron-store";
+import { randomBytes } from "node:crypto";
+import fs from "node:fs";
+import path from "node:path";
 import type {
 	AuthSessionReason,
 	AuthSessionStatus,
@@ -7,8 +11,9 @@ import { ITSLEARNING_URL } from "../itslearning.ts";
 import { storeName as mockAwareStoreName } from "../mock-mode";
 import { GrantType } from "./types/grant_type";
 import { StoreKey } from "./types/store_keys";
+import { handle } from "../../../ipc/secure";
 
-const Store = require("electron-store");
+import { openAuthStore } from "./store-key";
 
 // https://sdu.itslearning.com/oauth2/authorize.aspx?client_id=10ae9d30-1853-48ff-81cb-47b58a325685&state=A59QS4pAT9cF3tES/66w254LVt3XqdGH0p5T+I7U34Y=&response_type=code&scope=Calendar%20Children%20CkEditor%20Courses%20Hierarchies%20LearningObjectiveRepository%20LearningObjectivesReports%20LightBulletin%20Messages%20Notifications%20Person%20Planner%20Sso%20Statistics%20StudentPlan%20Supervisor%20TaskListDailyWorkflow%20Tasks%20Workload&redirect_uri=itsl-itslearning://login
 
@@ -21,15 +26,15 @@ const ITSLEARNING_OAUTH_URL = (baseUrl?: string) =>
 	new URL("/oauth2/authorize.aspx", baseUrl ?? ITSLEARNING_URL()).toString();
 export const ITSLEARNING_OAUTH_TOKEN_URL = () =>
 	new URL("/restapi/oauth2/token", ITSLEARNING_URL()).toString();
+let pendingOAuthState: string | null = null;
+
 export const getItslearningOAuthUrl = (oauthUrl?: string) => {
 	const url = new URL(oauthUrl ?? ITSLEARNING_OAUTH_URL());
 	url.searchParams.append("client_id", ITSLEARNING_CLIENT_ID);
 
-	const STATE = import.meta.env.VITE_ITSLEARNING_OAUTH_STATE;
-	if (!STATE)
-		throw new Error("Missing VITE_ITSLEARNING_OAUTH_STATE in .env file");
-
-	url.searchParams.append("state", STATE);
+	// Fresh, unguessable CSRF state for every sign-in attempt (verified in getAuthCodeFromURI).
+	pendingOAuthState = randomBytes(24).toString("base64url");
+	url.searchParams.append("state", pendingOAuthState);
 	url.searchParams.append("response_type", "code");
 	url.searchParams.append("scope", ITSLEARNING_SCOPES.join(" "));
 	url.searchParams.append("redirect_uri", ITSLEARNING_REDIRECT_URI);
@@ -57,14 +62,14 @@ export const initializeLoginHandler = () => {
 	} catch (error) {
 		console.error(error);
 	}
-	ipcMain.handle("itslearning:login", async (_event, baseUrl) => {
+	handle("itslearning:login", async (_event, baseUrl) => {
 		const authService = AuthService.getInstance();
 		await authService.loadSigninPage(undefined, baseUrl);
 	});
 };
 
 export class AuthService {
-	private store: typeof Store;
+	private store!: Store<Record<string, unknown>>;
 	private refreshInFlight: Promise<AuthSessionStatus> | null = null;
 	private listeners = new Set<(status: AuthSessionStatus) => void>();
 	private status: AuthSessionStatus = {
@@ -84,38 +89,27 @@ export class AuthService {
 	}
 
 	private initializeStore() {
-		const { VITE_ITSLEARNING_STORE_KEY } = import.meta.env;
-		if (!VITE_ITSLEARNING_STORE_KEY)
-			throw new Error("Missing VITE_ITSLEARNING_STORE_KEY in .env file");
-
 		const storeName = mockAwareStoreName(
-			require("electron").app.isPackaged
-				? "itsdu-auth-store"
-				: "itsdu-auth-store-dev",
+			app.isPackaged ? "itsdu-auth-store" : "itsdu-auth-store-dev",
 		);
+		const legacyKey = import.meta.env.VITE_ITSLEARNING_STORE_KEY as
+			| string
+			| undefined;
 
 		try {
-			this.store = new Store({
-				name: storeName,
-				watch: true,
-				encryptionKey: VITE_ITSLEARNING_STORE_KEY,
-			});
+			this.store = openAuthStore(storeName, legacyKey);
 		} catch (error) {
+			// Unreadable store (for example a lost OS keychain entry): start clean, the user signs in again.
 			console.error(error);
-			AuthService.clearAuthStore(storeName);
-			this.initializeStore(); // Retry initialization
+			AuthService.clearAuthStore(`${storeName}-v2`);
+			this.store = openAuthStore(storeName, undefined);
 		}
 	}
 
 	private static clearAuthStore(storeName: string) {
-		const appPath = require("electron").app.getPath("userData");
-		const authStorePath = require("path").join(appPath, `${storeName}.json`);
-		const fs = require("fs");
-		fs.unlinkSync(authStorePath);
-		console.error(`Deleted auth store at ${authStorePath}`);
-		console.error(
-			"Make sure you have the correct ENV variables set in your .env file",
-		);
+		const authStorePath = path.join(app.getPath("userData"), `${storeName}.json`);
+		fs.rmSync(authStorePath, { force: true });
+		console.error(`Deleted unreadable auth store at ${authStorePath}`);
 	}
 
 	public static getInstance(): AuthService {
@@ -151,7 +145,7 @@ export class AuthService {
 		try {
 			if (!this.store.has(key)) return null;
 			return safeStorage.decryptString(
-				Buffer.from(this.store.get(key), "latin1"),
+				Buffer.from(String(this.store.get(key)), "latin1"),
 			);
 		} catch (error) {
 			console.error(error);
@@ -318,7 +312,8 @@ export class AuthService {
 			const params = new URLSearchParams(url.search);
 			const code = params.get("code");
 			const state = params.get("state");
-			if (state === import.meta.env.VITE_ITSLEARNING_OAUTH_STATE && code) {
+			if (code && pendingOAuthState && state === pendingOAuthState) {
+				pendingOAuthState = null;
 				return code;
 			}
 		} catch (error) {
@@ -330,7 +325,7 @@ export class AuthService {
 	public async loadSigninPage(win?: BrowserWindow | null, baseUrl?: string) {
 		if (!win) {
 			win = new BrowserWindow({
-				icon: require("path").join(process.env.VITE_PUBLIC, "icon.ico"),
+				icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
 				width: 800,
 				height: 600,
 				webPreferences: {
