@@ -13,7 +13,7 @@ Anything not listed was not measured.
 | Renderer CSS | 270,193 B | 179,781 B |
 | `tsc --noEmit` errors | 125 | 0 (and no `@ts-ignore` left) |
 | `npm audit` | 68 (2 critical, 46 high) | 0 |
-| `app.asar` (packaged, win x64) | not measured | 59 MB (274 MB when every renderer dependency sat in `dependencies`) |
+| `app.asar` (packaged, win x64) | not measured | 52.7 MB (274 MB when every renderer dependency sat in `dependencies`) |
 | Main process: handlers initialised | not measured | +228..304 ms after process start |
 | Relaunch with a saved session: main window `did-finish-load` | not measured | +420 ms after process start |
 | First sign-in through the mock to a rendered main window | not measured | ~2.4 s |
