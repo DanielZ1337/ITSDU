@@ -1,3 +1,4 @@
+import { addDays, format, isBefore, isValid, parse } from "date-fns";
 import * as fs from "fs";
 import path from "path";
 import axios from "axios";
@@ -765,13 +766,13 @@ async function getCoursePlansInformation(body: string) {
 		const fromDateString = dates[0];
 		const toDateString = dates[2];
 
-		import("moment").then((momentImport) => {
-			const moment = momentImport.default;
-			fromDate =
-				fromDateString && moment(fromDateString, "DD-MM-YYYY").toDate();
-
-			toDate = toDateString && moment(toDateString, "DD-MM-YYYY").toDate();
-		});
+		const parsePlanDate = (value: string | undefined) => {
+			if (!value) return null;
+			const parsed = parse(value, "dd-MM-yyyy", new Date());
+			return isValid(parsed) ? parsed : null;
+		};
+		fromDate = parsePlanDate(fromDateString);
+		toDate = parsePlanDate(toDateString);
 
 		const coursePlan = {
 			dataTopicId,
@@ -862,8 +863,8 @@ async function getCoursePlansElements(html: string) {
 		let fromDate;
 		let toDate;
 
-		fromDate = date.from && date.from.toDate();
-		toDate = date.to && date.to.toDate();
+		fromDate = date.from;
+		toDate = date.to;
 
 		const descriptionContainer = row.find(".itsl-planner-htmltext-viewer");
 		const descriptionText = descriptionContainer.text().trim();
@@ -975,35 +976,25 @@ function parseDateAndTime(dateString: string) {
 		/(\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2}) – (\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2})/;
 	const timeRegex = /(\d{1,2}:\d{2}) – (\d{1,2}:\d{2})/;
 
-	let fromDate, toDate;
-
 	const dateMatch = dateString.match(dateRegex);
 	const timeMatch = dateString.match(timeRegex);
+	const parseAt = (value: string) => parse(value, "dd. MMM HH:mm", new Date());
 
-	const moment = require("moment");
+	let from: Date | null = null;
+	let to: Date | null = null;
 
 	if (dateMatch) {
-		fromDate = moment(dateMatch[1], "DD. MMM HH:mm");
-		toDate = moment(dateMatch[3], "DD. MMM HH:mm");
-		if (!toDate.isValid()) {
-			toDate = moment(dateMatch[3], "DD. MMM HH:mm").add(1, "day");
-		}
+		from = parse(dateMatch[1], "dd. MMM", new Date());
+		to = parse(dateMatch[3], "dd. MMM", new Date());
+		if (!isValid(to)) to = addDays(to, 1);
 	} else if (timeMatch) {
-		const currentTime = moment().format("DD. MMM");
-		fromDate = moment(`${currentTime} ${timeMatch[1]}`, "DD. MMM HH:mm");
-		toDate = moment(`${currentTime} ${timeMatch[2]}`, "DD. MMM HH:mm");
-		if (!toDate.isValid() || toDate.isBefore(fromDate)) {
-			toDate = moment(`${currentTime} ${timeMatch[2]}`, "DD. MMM HH:mm").add(
-				1,
-				"day",
-			);
-		}
-	} else {
-		fromDate = null;
-		toDate = null;
+		const currentDay = format(new Date(), "dd. MMM");
+		from = parseAt(`${currentDay} ${timeMatch[1]}`);
+		to = parseAt(`${currentDay} ${timeMatch[2]}`);
+		if (!isValid(to) || isBefore(to, from)) to = addDays(to, 1);
 	}
 
-	return { from: fromDate, to: toDate };
+	return { from, to };
 }
 
 function streamFileHandler() {
