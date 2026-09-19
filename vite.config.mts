@@ -18,7 +18,7 @@ const contentSecurityPolicy = [
 	"style-src 'self' 'unsafe-inline' https://rsms.me",
 	`img-src 'self' data: blob: https: itsl-itslearning-file: ${mockOrigin}`.trim(),
 	"font-src 'self' data: https://rsms.me",
-	`connect-src 'self' https: ${mockOrigin}`.trim(),
+	`connect-src 'self' blob: https: ${mockOrigin}`.trim(),
 	"media-src 'self' blob: https:",
 	"worker-src 'self' blob:",
 	"frame-src https: blob:",

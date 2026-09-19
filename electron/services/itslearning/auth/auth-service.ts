@@ -8,6 +8,7 @@ import type {
 	AuthSessionStatus,
 } from "../../../../src/types/auth";
 import { handle } from "../../../ipc/secure";
+import { getAppIconPath } from "../../../utils/icon";
 import { ITSLEARNING_URL } from "../itslearning.ts";
 import { storeName as mockAwareStoreName } from "../mock-mode";
 import { openAuthStore } from "./store-key";
@@ -327,9 +328,16 @@ export class AuthService {
 	public async loadSigninPage(win?: BrowserWindow | null, baseUrl?: string) {
 		if (!win) {
 			win = new BrowserWindow({
-				icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
+				icon: getAppIconPath(),
 				width: 800,
 				height: 600,
+				// Pinned alongside width/height: frameless windows don't get the same size hints from
+				// some Linux WMs/compositors as decorated ones, so without this they can render at the
+				// wrong size despite resizable:false.
+				minWidth: 800,
+				minHeight: 600,
+				maxWidth: 800,
+				maxHeight: 600,
 				webPreferences: {
 					nodeIntegration: false,
 					contextIsolation: true,
@@ -345,6 +353,17 @@ export class AuthService {
 				show: true,
 				skipTaskbar: true,
 				parent: BrowserWindow.getFocusedWindow() || undefined,
+				// Native (server-side) window decorations segfault Chromium's GTK integration on some
+				// Linux setups (e.g. GNOME/GTK versions missing the font-antialiasing key under
+				// org.gnome.desktop.interface); see createAuthWindow() in electron/main.ts for the same fix.
+				frame: false,
+				roundedCorners: true,
+			});
+			// This window is frameless with no preload script (it loads itslearning's own OAuth page),
+			// so there is no native or in-page close affordance. Escape is the only way out if the
+			// automated sign-in below doesn't complete.
+			win.webContents.on("before-input-event", (_event, input) => {
+				if (input.type === "keyDown" && input.key === "Escape") win?.close();
 			});
 		}
 
