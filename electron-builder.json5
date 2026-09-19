@@ -29,10 +29,15 @@
         target: 'dmg',
         arch: ['x64']
       },
-	{
-	target: 'pkg',
-	arch: ['arm64']
-	}
+      {
+        target: 'pkg',
+        arch: ['arm64']
+      },
+      // electron-updater on macOS updates from zip archives; dmg/pkg alone cannot auto-update.
+      {
+        target: 'zip',
+        arch: ['x64', 'arm64']
+      }
     ],
     artifactName: '${productName}-Mac-${version}-${arch}-Installer.${ext}'
   },
@@ -49,7 +54,8 @@
     oneClick: true,
     perMachine: false,
     //		allowToChangeInstallationDirectory: true,
-    deleteAppDataOnUninstall: true
+    // Keep settings, tokens and downloads when the app is uninstalled or reinstalled.
+    deleteAppDataOnUninstall: false
   },
   linux: {
     target: ['deb', 'AppImage'],

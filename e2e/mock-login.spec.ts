@@ -1,4 +1,4 @@
-import { type ChildProcess, spawn } from "node:child_process";
+import { type ChildProcess, spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -55,8 +55,11 @@ test.afterAll(async () => {
 
 test("signs in through the mock and reaches the main window without CSP violations", async () => {
 	const userData = mkdtempSync(path.join(tmpdir(), "itsdu-e2e-"));
+	// ITSDU_EXECUTABLE points at a packaged build (e.g. release/<version>/win-unpacked/ITSDU.exe).
+	const executablePath = process.env.ITSDU_EXECUTABLE;
 	app = await electron.launch({
-		args: [".", `--user-data-dir=${userData}`],
+		...(executablePath ? { executablePath } : {}),
+		args: [...(executablePath ? [] : ["."]), `--user-data-dir=${userData}`],
 		env: {
 			...process.env,
 			ITSLEARNING_MOCK_URL: mockUrl,
@@ -78,6 +81,30 @@ test("signs in through the mock and reaches the main window without CSP violatio
 		timeout: 30_000,
 	});
 	await login.getByText("Mock University").first().click();
+
+	if (executablePath) {
+		// Packaged builds relaunch themselves after sign-in, which ends this controlled process.
+		await Promise.race([
+			new Promise<void>((resolve) => app!.on("close", () => resolve())),
+			new Promise<void>((_, reject) =>
+				setTimeout(
+					() =>
+						reject(new Error("packaged app did not relaunch after sign-in")),
+					60_000,
+				),
+			),
+		]);
+		await new Promise((r) => setTimeout(r, 8000));
+		// Stop the relaunched instance (it uses the same throw-away user data dir).
+		if (process.platform === "win32") {
+			spawnSync("powershell", [
+				"-NoProfile",
+				"-Command",
+				`Get-CimInstance Win32_Process | ? { $_.ExecutablePath -eq '${path.resolve(executablePath).replace(/'/g, "''")}' } | % { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }`,
+			]);
+		}
+		return;
+	}
 
 	// 2) the sign-in window auto-selects the default persona and redirects back; the main window opens
 	await expect
