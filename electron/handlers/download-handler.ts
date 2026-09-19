@@ -1,8 +1,9 @@
+import { assertAllowedPathName, assertOpenableLocalPath, assertSafeExternalUrl } from "../ipc/validators";
 import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
 import * as fs from "fs";
 import path from "path";
 import axios from "axios";
-import { BrowserWindow, app, ipcMain, shell } from "electron";
+import { BrowserWindow, app, shell } from "electron";
 import type JSZip from "jszip";
 import { ITSLEARNING_URL } from "../../electron/services/itslearning/itslearning.ts";
 import {
@@ -24,6 +25,7 @@ import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { SettingsService } from "../services/settings/settings-service.ts";
 import { getFormattedCookies } from "../utils/cookies.ts";
+import { handle } from "../ipc/secure";
 
 const authService = AuthService.getInstance();
 
@@ -67,47 +69,64 @@ export async function openLinkInBrowser(url: string, sso: boolean = true) {
 		url = data.Url;
 	}
 
-	// open the url with the default browser
-	await shell.openExternal(url);
+	// open the url with the default browser (never a non-web scheme, even if the server returned one)
+	await shell.openExternal(assertSafeExternalUrl(url).href);
 }
 
 function openExternalHandler() {
-	ipcMain.handle("app:openExternal", async (_, url, sso) => {
-		await openLinkInBrowser(url, sso);
+	handle("app:openExternal", async (_, url, sso) => {
+		await openLinkInBrowser(assertSafeExternalUrl(url).href, sso);
 	});
 }
 
 function getPathHandler() {
-	ipcMain.handle("app:getPath", async (_, path) => {
-		return app.getPath(path);
+	handle("app:getPath", async (_, name) => {
+		return app.getPath(assertAllowedPathName(name));
 	});
 
-	ipcMain.handle("app:getDownloadPath", async () => {
+	handle("app:getDownloadPath", async () => {
 		return getConfiguredDownloadDirectory();
 	});
 }
 
+function openableRoots() {
+	return [
+		getConfiguredDownloadDirectory(),
+		app.getPath("downloads"),
+		app.getPath("documents"),
+		app.getPath("desktop"),
+		app.getPath("temp"),
+		app.getPath("userData"),
+	];
+}
+
+/** Open a local file/folder, or hand a web/mail link to the default handler. */
+async function openLocalOrLink(target: unknown) {
+	if (typeof target === "string" && /^(https?|mailto):/i.test(target)) {
+		await shell.openExternal(assertSafeExternalUrl(target).href);
+		return;
+	}
+	const error = await shell.openPath(assertOpenableLocalPath(target, openableRoots()));
+	if (error) throw new Error(error);
+}
+
 function openShellHandler() {
-	ipcMain.handle("app:openShell", async (_, path) => {
-		await shell.openPath(path);
-	});
+	handle("app:openShell", async (_, path) => openLocalOrLink(path));
 }
 
 function openItemHandler() {
-	ipcMain.handle("app:openItem", async (_, path) => {
-		await shell.openPath(path);
-	});
+	handle("app:openItem", async (_, path) => openLocalOrLink(path));
 }
 
 function getResourceDownloadLinkForElementId() {
-	ipcMain.handle(
+	handle(
 		"get-resource-download-link",
 		async (_, elementId) => await getResourceLinkByElementID(elementId),
 	);
 }
 
 async function getBlobFromUrl() {
-	ipcMain.handle(
+	handle(
 		"get-blob-from-element-id",
 		async (_, elementId: string | number) => {
 			const win = createScrapeWindow({
@@ -134,7 +153,7 @@ async function getBlobFromUrl() {
 }
 
 async function getResourceAsFileHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-file",
 		async (_, elementId: string | number) => {
 			const win = createScrapeWindow({
@@ -163,7 +182,7 @@ async function getResourceAsFileHandler() {
 }
 
 async function getResourceDirectFileRepositoryHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-direct-file-repository",
 		async (_, elementId: string | number) => {
 			const win = createScrapeWindow({
@@ -179,7 +198,7 @@ async function getResourceDirectFileRepositoryHandler() {
 }
 
 async function getResourceDirectUrlHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-direct-url",
 		async (_, elementId: string | number) => {
 			const win = createScrapeWindow({
@@ -195,7 +214,7 @@ async function getResourceDirectUrlHandler() {
 }
 
 async function getMicrosoftOfficeDocument() {
-	ipcMain.handle(
+	handle(
 		"resources:get-office-document",
 		async (_, elementId: string | number) => {
 			try {
@@ -216,7 +235,7 @@ async function getMicrosoftOfficeDocument() {
 }
 
 function uploadDocumentForAI() {
-	ipcMain.handle(
+	handle(
 		"uploadfile-for-ai",
 		async (
 			event,
@@ -280,7 +299,7 @@ function uploadDocumentForAI() {
 }
 
 function itslearningElementDownload() {
-	ipcMain.handle(
+	handle(
 		"itslearning-element:download",
 		async (event, { url, filename, id }) => {
 			try {
@@ -408,7 +427,7 @@ async function downloadPDF(win: BrowserWindow, url: string) {
 }
 
 function mergePDFsHandler() {
-	ipcMain.handle(
+	handle(
 		"app:mergePDFs",
 		async (event, { elementIds }: { elementIds: string[] }) => {
 			try {
@@ -477,7 +496,7 @@ function mergePDFsHandler() {
 }
 
 function zipDownloadAllCourseResourcesHandler() {
-	ipcMain.handle(
+	handle(
 		"app:zipDownloadAllCourseResources",
 		async (
 			event,
@@ -620,7 +639,7 @@ function zipDownloadAllCourseResourcesHandler() {
 }
 
 function downloadExternalHandler() {
-	ipcMain.handle("download:external", async (event, { url, filename, id }) => {
+	handle("download:external", async (event, { url, filename, id }) => {
 		try {
 			console.log(url, filename);
 
@@ -666,7 +685,7 @@ function downloadExternalHandler() {
 }
 
 function downloadStartHandler() {
-	ipcMain.handle("download:start", async (_, url) => {
+	handle("download:start", async (_, url) => {
 		try {
 			const fileLink = await getResourceDownloadLink(url);
 			return fileLink;
@@ -678,7 +697,7 @@ function downloadStartHandler() {
 }
 
 function getVideoLinkHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-media",
 		async (_, elementId: string | number) => {
 			try {
@@ -796,7 +815,7 @@ async function getCoursePlans(url: string) {
 }
 
 function getCoursePlansHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-course-plans",
 		async (_, courseId: string | number) => {
 			try {
@@ -916,7 +935,7 @@ async function getCoursePlansElements(html: string) {
 }
 
 function getCoursePlanElementsHandler() {
-	ipcMain.handle(
+	handle(
 		"resources:get-course-plan-elements",
 		async (_, courseId: string | number, topicId: string | number) => {
 			try {
@@ -967,7 +986,7 @@ function getCoursePlanElementsHandler() {
 }
 
 function streamFileHandler() {
-	ipcMain.handle("resources:stream-start", async (event, elementId) => {
+	handle("resources:stream-start", async (event, elementId) => {
 		try {
 			const win = createScrapeWindow();
 			const ssoLink = await getResourceLinkByElementID(elementId);

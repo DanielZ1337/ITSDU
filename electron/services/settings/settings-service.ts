@@ -2,7 +2,6 @@ import {
 	BrowserWindow,
 	type OpenDialogOptions,
 	dialog,
-	ipcMain,
 	nativeTheme,
 } from "electron";
 import Store from "electron-store";
@@ -14,6 +13,7 @@ import {
 	validateSetting,
 } from "../../../src/types/settings";
 import { themeStore } from "../theme/theme-service";
+import { handle } from "../../ipc/secure";
 
 type SettingsStore = Partial<SettingsOptions>;
 
@@ -138,32 +138,32 @@ export class SettingsService {
 	}
 
 	private registerIpcListeners(): void {
-		ipcMain.handle("settings:getAll", () => this.getAll());
+		handle("settings:getAll", () => this.getAll());
 
-		ipcMain.handle("settings:get", (_, key: SettingsKey) => {
+		handle("settings:get", (_, key: SettingsKey) => {
 			return this.get(key);
 		});
 
-		ipcMain.handle(
+		handle(
 			"settings:set",
 			(_, key: SettingsKey, value: SettingsOptions[SettingsKey]) => {
 				return this.set(key, value);
 			},
 		);
 
-		ipcMain.handle("settings:reset", (_, key: SettingsKey) => {
+		handle("settings:reset", (_, key: SettingsKey) => {
 			return this.reset(key);
 		});
 
-		ipcMain.handle("settings:resetAll", () => {
+		handle("settings:resetAll", () => {
 			return this.resetAll();
 		});
 
-		ipcMain.handle("settings:migrateLocalStorage", (_, values) => {
+		handle("settings:migrateLocalStorage", (_, values) => {
 			return this.migrate(normalizeSettings(values));
 		});
 
-		ipcMain.handle("settings:chooseDownloadDirectory", async (event) => {
+		handle("settings:chooseDownloadDirectory", async (event) => {
 			const window = BrowserWindow.fromWebContents(event.sender);
 			const dialogOptions: OpenDialogOptions = {
 				title: "Choose download folder",

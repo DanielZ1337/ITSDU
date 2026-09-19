@@ -2,6 +2,7 @@ import axios from "axios";
 import { ipcMain } from "electron";
 import Store from "electron-store";
 import { MOCK_URL, storeName } from "./mock-mode";
+import { handle } from "../../ipc/secure";
 
 export type ItslearningStore = {
 	IsFronterUpgradedSite: boolean;
@@ -41,9 +42,9 @@ export const initializeItslearningPreload = () => {
 	} catch (error) {
 		console.error(error);
 	}
-	ipcMain.handle(
+	handle(
 		"itslearning:setOrganisation",
-		async (event, customerId: number) => {
+		async (_event, customerId: number) => {
 			await ItslearningService.getInstance().setCustomerById(customerId);
 		},
 	);

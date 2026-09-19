@@ -15,7 +15,7 @@ export async function startProxyDevServer() {
 			target: ITSLEARNING_URL(),
 			changeOrigin: true,
 			secure: false,
-			onProxyReq: (proxyReq, req, res) => {
+			onProxyReq: (_proxyReq, req) => {
 				console.log("Sending Request to the Target:", req.method, req.url);
 			},
 		}),
