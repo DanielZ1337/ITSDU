@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import renderLink from "@/components/custom-render-link-linkify";
 import PersonHoverCard from "@/components/person/person-hover-card";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRelativeTimeString } from "@/lib/utils";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
@@ -88,7 +89,7 @@ export default function NotificationID() {
 
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
-			<title>{currentNotification.Text}</title>
+			<TabTitle>{currentNotification.Text}</TabTitle>
 
 			{/* Header */}
 			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">

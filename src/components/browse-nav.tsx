@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useNavigation } from "react-router-dom";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 import { useBrowseNavigation } from "@/hooks/atoms/useBrowseNavigation";
 import { queryClient } from "@/lib/tanstack-client";
@@ -15,28 +15,23 @@ import { Input } from "./ui/input";
 export default function BrowserNav() {
 	const { showBrowseNavigation, toggleBrowseNavigation } =
 		useBrowseNavigation();
-	const navigate = useNavigate();
-	const location = useLocation();
-	const pathname = location.pathname;
-	const [address, setAddress] = useState(pathname);
-	const navigation = useNavigation();
+	const { activeTab, navigate, goBack, goForward, reload } = useTabs();
+	const [address, setAddress] = useState(activeTab.location.pathname);
 
 	useEffect(() => {
-		const pathname = location.pathname;
-		const search = location.search;
-		setAddress(pathname + search);
-		// console.log(navigation)
-	}, [location.pathname, location.search, navigation]);
+		const { pathname, search, hash } = activeTab.location;
+		setAddress(pathname + search + hash);
+	}, [activeTab.location]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			// alt left and right arrow
 			if (e.altKey && e.key === "ArrowLeft") {
 				e.preventDefault();
-				navigate(-1);
+				void goBack();
 			} else if (e.altKey && e.key === "ArrowRight") {
 				e.preventDefault();
-				navigate(1);
+				void goForward();
 			}
 
 			if (e.ctrlKey && e.key === "r") {
@@ -62,13 +57,13 @@ export default function BrowserNav() {
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [navigate]);
+	}, [goBack, goForward, toggleBrowseNavigation]);
 
 	const handleReload = () => {
 		window.auth.refresh().finally(() => {
 			queryClient.invalidateQueries();
 			queryClient.resetQueries();
-			navigate(0);
+			void reload();
 		});
 	};
 
@@ -88,7 +83,7 @@ export default function BrowserNav() {
 							className="no-drag"
 							variant={"ghost"}
 							size={"icon"}
-							onClick={() => navigate(-1)}
+							onClick={() => void goBack()}
 						>
 							<ArrowLeftCircleIcon />
 						</Button>
@@ -97,7 +92,7 @@ export default function BrowserNav() {
 							className="no-drag"
 							variant={"ghost"}
 							size={"icon"}
-							onClick={() => navigate(1)}
+							onClick={() => void goForward()}
 						>
 							<ArrowRightCircleIcon />
 						</Button>
@@ -115,7 +110,7 @@ export default function BrowserNav() {
 							className="no-drag"
 							variant={"ghost"}
 							size={"icon"}
-							onClick={() => navigate("/")}
+							onClick={() => void navigate("/")}
 						>
 							<HomeIcon />
 						</Button>
@@ -123,7 +118,7 @@ export default function BrowserNav() {
 						<form
 							onSubmit={(e) => {
 								e.preventDefault();
-								navigate(address);
+								void navigate(address);
 							}}
 							className="w-full px-2 no-drag"
 						>

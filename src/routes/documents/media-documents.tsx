@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Loader } from "@/components/ui/loader";
 import useDirectFileUrlByElementID from "@/queries/resources/useDirectFileUrlByElementID";
 
@@ -24,6 +25,7 @@ function MediaDocuments() {
 
 	return (
 		<div className="m-auto flex h-fit max-h-full max-w-full flex-col items-center justify-center p-6">
+			<TabTitle>{`${type === "video" ? "Video" : "Image"} ${elementId}`}</TabTitle>
 			<div className="m-auto flex max-h-full flex-col items-center justify-center rounded-md p-4 ring ring-purple-500/50 bg-foreground/10">
 				<div className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-md">
 					{isLoading || !data ? (

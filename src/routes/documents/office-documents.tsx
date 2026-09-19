@@ -1,5 +1,6 @@
 import { memo, useCallback, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Loader } from "@/components/ui/loader";
 import useOfficeDocumentByElementId from "../../queries/resources/useOfficeDocumentByElementID";
 
@@ -97,6 +98,7 @@ function OfficeDocuments() {
 			id="ctl00_MainFormContent_FileRepoViewer_ctl00"
 			className="h-full w-full"
 		>
+			<TabTitle>{`Office document ${elementId}`}</TabTitle>
 			{/* {!isLoading && !error && accessToken && downloadUrl && (
                 <iframe
                     name="office_frame"

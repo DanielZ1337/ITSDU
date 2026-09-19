@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -168,7 +169,7 @@ export default function Resources() {
 
 	return (
 		<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 pb-12 sm:gap-5 sm:p-6 lg:p-8">
-			<title>Resources</title>
+			<TabTitle>Resources</TabTitle>
 
 			<header className="overflow-hidden rounded-xl border bg-card">
 				<div className="flex flex-col gap-4 border-b bg-muted/20 p-5 sm:p-6 lg:flex-row lg:items-center lg:justify-between">

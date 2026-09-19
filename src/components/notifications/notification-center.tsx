@@ -9,12 +9,12 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
 	updateAvailableVersionAtom,
 	updateCheckErrorAtom,
 	updateReadyAtom,
 } from "@/atoms/update-status";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 import {
 	Popover,
@@ -49,7 +49,7 @@ const sourceIcon: Record<AppNotificationSource, React.ReactNode> = {
 
 export default function NotificationCenter() {
 	const [open, setOpen] = useState(false);
-	const navigate = useNavigate();
+	const { navigate } = useTabs();
 	const { settings } = useSettings();
 	const { openSettingsSection } = useShowSettingsModal();
 	const { seenIds, markSeen } = useNotificationCenter();
@@ -137,7 +137,7 @@ export default function NotificationCenter() {
 			void window.app.openExternal(item.href);
 			return;
 		}
-		navigate(item.href);
+		void navigate(item.href);
 	};
 
 	return (

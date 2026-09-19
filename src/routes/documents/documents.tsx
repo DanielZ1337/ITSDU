@@ -9,6 +9,7 @@ import { lazy, memo, useEffect, useMemo } from "react";
 import { useResizeDetector } from "react-resize-detector";
 import { useParams } from "react-router-dom";
 import AISidePanel from "@/components/ai-chat/ai-sidepanel";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/ui/loader";
@@ -72,6 +73,7 @@ function Documents() {
 
 	return (
 		<div className="relative flex h-full max-h-full w-full flex-1 overflow-hidden">
+			<TabTitle>{memoizedData?.name ?? `PDF ${elementId}`}</TabTitle>
 			{data?.fromCache && (
 				<div className="pointer-events-none absolute right-4 top-4 z-10">
 					<Badge

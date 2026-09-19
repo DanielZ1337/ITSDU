@@ -1,14 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useAtom } from "jotai";
 import { MessageCircle } from "lucide-react";
 import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
-import { currentChatAtom } from "@/atoms/current-chat.ts";
 import MessagesDropdownInfiniteFallback from "@/components/messages/dropdown/fallbacks/messages-dropdown-infinite-fallback.tsx";
 import MessagesDropdownHeader from "@/components/messages/dropdown/messages-dropdown-header.tsx";
 import MessagesDropdownInfiniteEnd from "@/components/messages/dropdown/messages-dropdown-infinite-end.tsx";
 import MessageDropdownItem from "@/components/messages/dropdown/messages-dropdown-item.tsx";
 import MessagesDropdownNoMessages from "@/components/messages/dropdown/messages-dropdown-no-messages.tsx";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button.tsx";
 import {
 	DropdownMenu,
@@ -30,7 +28,7 @@ import usePUTinstantMessageThreadUpdateIsRead from "../../../queries/messages/us
 import MessagesDropdownFallback from "./fallbacks/messages-dropdown-fallback.tsx";
 
 export default function MessagesDropdown() {
-	const navigate = useNavigate();
+	const { navigate } = useTabs();
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
 		useGETinstantMessagesv2(
 			{
@@ -58,7 +56,6 @@ export default function MessagesDropdown() {
 		(thread) =>
 			thread.LastMessage.MessageId !== thread.LastReadInstantMessageId,
 	);
-	const [, setCurrentChat] = useAtom(currentChatAtom);
 	const queryClient = useQueryClient();
 
 	return (
@@ -124,9 +121,9 @@ export default function MessagesDropdown() {
 									<div key={idx} className={"overflow-x-hidden w-full"}>
 										<DropdownMenuItem
 											onClick={() => {
-												// navigate(`/messages/${thread.InstantMessageThreadId}`)
-												navigate(`/messages`);
-												setCurrentChat(thread.InstantMessageThreadId);
+												void navigate(
+													`/messages/${thread.InstantMessageThreadId}`,
+												);
 											}}
 										>
 											<MessageDropdownItem thread={thread} />

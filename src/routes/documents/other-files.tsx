@@ -14,6 +14,7 @@ import { ChevronDown, RefreshCcw, WifiOff } from "lucide-react";
 import Papa from "papaparse";
 import React, { lazy, memo, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -265,6 +266,7 @@ function OtherFiles() {
 		data,
 		refetch,
 	} = useResourceByElementID(elementId);
+	const tabTitle = <TabTitle>{data?.name ?? `File ${elementId}`}</TabTitle>;
 
 	useEffect(() => {
 		if (data?.type === "text/csv") {
@@ -279,6 +281,7 @@ function OtherFiles() {
 	if (isError) {
 		return (
 			<div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center">
+				{tabTitle}
 				<div className="flex h-11 w-11 items-center justify-center rounded-full bg-muted">
 					<WifiOff className="h-5 w-5 text-muted-foreground" />
 				</div>
@@ -542,6 +545,7 @@ function OtherFiles() {
 	if (data?.type === "text/csv") {
 		return (
 			<div className="flex h-full flex-col items-center p-6">
+				{tabTitle}
 				<TextFilesDataTable
 					headers={headers}
 					columns={columns}
@@ -555,6 +559,7 @@ function OtherFiles() {
 	//<DownloadButton name={data?.name} url={data?.url} />
 	return (
 		<div className="m-auto flex h-fit max-h-full max-w-full flex-col items-center justify-center p-6">
+			{tabTitle}
 			<div className="m-auto flex max-h-full flex-col items-center justify-center rounded-md p-4 ring ring-purple-500/50 bg-foreground/10">
 				<div className="m-auto flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-md">
 					{isLoading ? (

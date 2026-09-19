@@ -1,6 +1,6 @@
 import { ArrowRightIcon, Megaphone } from "lucide-react";
-import { Link } from "react-router-dom";
 import { UnreadNotificationIndicator } from "@/components/messages/unread-notification-indicator.tsx";
+import { TabLink } from "@/components/tabs/tab-link";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -67,7 +67,7 @@ export default function NotificationsDropdown() {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuLabel className={"flex justify-between items-center"}>
-					<Link
+					<TabLink
 						to={"/updates"}
 						className={"group flex gap-1 items-center justify-center"}
 					>
@@ -79,7 +79,7 @@ export default function NotificationsDropdown() {
 								"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"
 							}
 						/>
-					</Link>
+					</TabLink>
 					<div>
 						<Button
 							variant={"ghost"}
@@ -103,7 +103,7 @@ export default function NotificationsDropdown() {
 				>
 					{notifications?.pages.map((page) =>
 						page.EntityArray.map((notification) => (
-							<Link
+							<TabLink
 								to={`/updates/${notification.NotificationId}`}
 								className={"flex hover:bg-foreground/10 rounded-md my-1"}
 								key={notification.NotificationId}
@@ -140,7 +140,7 @@ export default function NotificationsDropdown() {
 										</div>
 									</div>
 								</div>
-							</Link>
+							</TabLink>
 						)),
 					)}
 					{isFetchingNextPage && <NotificationsDropdownInfiniteFallback />}

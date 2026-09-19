@@ -1,5 +1,5 @@
 import { ArrowRightIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { TabLink } from "@/components/tabs/tab-link";
 import { Button } from "@/components/ui/button.tsx";
 import { ItslearningRestApiEntitiesInstantMessageThread } from "@/types/api-types/utils/Itslearning.RestApi.Entities.InstantMessageThread.ts";
 
@@ -16,7 +16,7 @@ export default function MessagesDropdownHeader({
 }) {
 	return (
 		<>
-			<Link
+			<TabLink
 				to={"/messages"}
 				className={"group flex gap-1 items-center justify-center"}
 			>
@@ -28,7 +28,7 @@ export default function MessagesDropdownHeader({
 						"stroke-foreground w-4 h-4 group-hover:translate-x-1/3 transition-all duration-200"
 					}
 				/>
-			</Link>
+			</TabLink>
 			<div>
 				<Button
 					variant={"ghost"}

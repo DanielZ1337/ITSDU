@@ -2,284 +2,21 @@ import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { createHashRouter, Navigate } from "react-router-dom";
-import { useSettings } from "@/hooks/atoms/useSettings";
+import { TabsProvider } from "@/components/tabs/tab-manager";
 import { setupAuthRefreshInterceptor } from "@/lib/auth/session-client";
 import { GlobalShortcuts } from "./components/global-shortcuts";
-import { Loader } from "./components/ui/loader";
 import { GlobalErrorBoundaryProvider } from "./contexts/global-error-boundary-context";
 
-const AllTasks = lazy(() => import("./routes/all-tasks"));
-const RouterProvider = lazy(() =>
-	import("react-router-dom").then((module) => ({
-		default: module.RouterProvider,
-	})),
-);
 const Providers = lazy(() => import("@/components/providers.tsx"));
 const ReactQueryDevtools = lazy(() =>
 	import("@tanstack/react-query-devtools").then((module) => ({
 		default: module.ReactQueryDevtools,
 	})),
 );
-const MediaDocuments = lazy(() => import("./routes/documents/media-documents"));
-const CoursePlans = lazy(() => import("./routes/course/course-plans"));
-const Documents = lazy(() => import("./routes/documents/documents"));
 const Layout = lazy(() => import("./components/layout"));
-const ErrorPage = lazy(() => import("@/error-page.tsx"));
-const Profile = lazy(() => import("@/routes/profile.tsx"));
-const Index = lazy(() => import("@/routes/index.tsx"));
-const Calendar = lazy(() => import("@/routes/calendar.tsx"));
 const SuspenseWrapper = lazy(() => import("@/components/suspense-wrapper.tsx"));
-const Messages = lazy(() => import("@/components/messages/messages.tsx"));
-const CourseLayout = lazy(
-	() => import("@/components/course/layout/course-layout.tsx"),
-);
-const CourseIndex = lazy(() => import("@/routes/course/course-index.tsx"));
-const CourseParticipants = lazy(
-	() => import("@/routes/course/course-participants.tsx"),
-);
-const CourseInformation = lazy(
-	() => import("@/routes/course/course-information.tsx"),
-);
-const CourseResources = lazy(() => import("@/routes/course/course-resources"));
-const CourseRootResources = lazy(
-	() => import("@/routes/course/course-root-resources"),
-);
-const CourseTasks = lazy(() => import("@/routes/course/course-tasks.tsx"));
-const PersonIndex = lazy(() => import("@/routes/person/person-index.tsx"));
-const CoursesIndex = lazy(() => import("@/routes/courses.tsx"));
-const CourseError = lazy(() => import("@/routes/course/course-error"));
-
-const NotificationUpdates = lazy(
-	() => import("@/routes/notifications/notification-updates"),
-);
-const CourseAnnouncements = lazy(
-	() => import("@/routes/course/course-announcements"),
-);
-const NotificationID = lazy(
-	() => import("@/routes/notifications/notification-id"),
-);
-const CourseAnnouncementError = lazy(
-	() => import("@/routes/course/errors-pages/course-announcement-error"),
-);
-const CourseSchedule = lazy(() => import("@/routes/course/course-schedule"));
-const OfficeDocuments = lazy(
-	() => import("@/routes/documents/office-documents"),
-);
-const OtherFiles = lazy(() => import("@/routes/documents/other-files"));
-const Overview = lazy(() => import("@/routes/overview"));
-const ResourcesLazy = lazy(() => import("@/routes/resources"));
-const AIChats = lazy(() => import("@/routes/ai-chats"));
-const MergeZIPDocumentsLazy = lazy(
-	() => import("@/routes/merge-zip-documents"),
-);
-const TestNewCalenderLazy = lazy(() => import("@/routes/test-new-calendar"));
-const NativeSSOElement = lazy(() => import("@/routes/sso/native-sso-element"));
 
 setupAuthRefreshInterceptor();
-
-function LandingRedirect() {
-	const { settings, isHydrated } = useSettings();
-
-	if (!isHydrated) return <Loader />;
-
-	const landingPath =
-		{
-			overview: "/overview",
-			courses: "/courses",
-			calendar: "/calendar",
-			tasks: "/all-tasks",
-			messages: "/messages",
-		}[settings.navigation.defaultLandingPage] ?? "/overview";
-
-	return <Navigate to={landingPath} replace />;
-}
-
-const router = createHashRouter([
-	{
-		element: <Layout />,
-		errorElement: <ErrorPage />,
-		children: [
-			{
-				element: <LandingRedirect />,
-				errorElement: <ErrorPage />,
-				index: true,
-			},
-			{
-				path: "/documents",
-				errorElement: <ErrorPage />,
-				children: [
-					{
-						path: "pdf/:elementId",
-						element: <Documents />,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "office/:elementId",
-						element: <OfficeDocuments />,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "media/:elementId",
-						element: <MediaDocuments />,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "other/:elementId",
-						element: <OtherFiles />,
-						errorElement: <ErrorPage />,
-					},
-				],
-			},
-			{
-				path: "/overview",
-				element: <Overview />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/resources",
-				element: <ResourcesLazy />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/person/:id",
-				element: <PersonIndex />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/courses",
-				element: <Index />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/courses-legacy",
-				element: <CoursesIndex />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/updates",
-				errorElement: <ErrorPage />,
-				children: [
-					{
-						element: <NotificationUpdates />,
-						errorElement: <ErrorPage />,
-						index: true,
-					},
-					{
-						path: ":notificationId",
-						element: <NotificationID />,
-						errorElement: <ErrorPage />,
-					},
-				],
-			},
-			{
-				path: "/all-tasks",
-				element: <AllTasks />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/calendar",
-				element: <Calendar />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/courses/:id",
-				element: <CourseLayout />,
-				errorElement: <CourseError />,
-				children: [
-					{
-						element: <CourseIndex />,
-						index: true,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "resources",
-						errorElement: <ErrorPage />,
-						children: [
-							{
-								element: <CourseRootResources />,
-								errorElement: <ErrorPage />,
-								index: true,
-							},
-							{
-								path: ":folderId",
-								element: <CourseResources />,
-								errorElement: <ErrorPage />,
-							},
-						],
-					},
-					{
-						path: "schedule",
-						element: <CourseSchedule />,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "updates",
-						element: <CourseAnnouncements />,
-						errorElement: <CourseAnnouncementError />,
-					},
-					{
-						path: "course-information",
-						element: <CourseInformation />,
-					},
-					{
-						path: "tasks",
-						element: <CourseTasks />,
-					},
-					{
-						path: "participants",
-						element: <CourseParticipants />,
-					},
-					{
-						path: "plans",
-						element: <CoursePlans />,
-						errorElement: <ErrorPage />,
-					},
-					{
-						path: "*",
-						element: <ErrorPage />,
-						errorElement: <ErrorPage />,
-					},
-				],
-			},
-			{
-				path: "/profile",
-				element: <Profile />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/messages/:id?",
-				element: <Messages />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/ai-chats/:page?",
-				element: <AIChats />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/merge-zip-documents",
-				element: <MergeZIPDocumentsLazy />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/test-calendar",
-				element: <TestNewCalenderLazy />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "/sso",
-				element: <NativeSSOElement />,
-				errorElement: <ErrorPage />,
-			},
-			{
-				path: "*",
-				element: <ErrorPage />,
-				errorElement: <ErrorPage />,
-			},
-		],
-	},
-]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
 	<GlobalErrorBoundaryProvider>
@@ -287,12 +24,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 			<SuspenseWrapper max>
 				<Providers>
 					{/* <React.StrictMode> */}
-					<RouterProvider router={router} />
+					<TabsProvider>
+						<Layout />
+						<GlobalShortcuts />
+					</TabsProvider>
 					{import.meta.env.DEV && (
 						<ReactQueryDevtools position="top" buttonPosition="top-left" />
 					)}
 					{/* </React.StrictMode> */}
-					<GlobalShortcuts />
 				</Providers>
 			</SuspenseWrapper>
 		</ErrorBoundary>

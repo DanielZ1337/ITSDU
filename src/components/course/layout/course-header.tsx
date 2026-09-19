@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { Link } from "react-router-dom";
 import { CourseNavigationMenu } from "@/components/course-navigation-menu";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button.tsx";
 import { Loader } from "@/components/ui/loader";
 import { cn } from "@/lib/utils.ts";
@@ -73,7 +74,7 @@ export default function CourseHeader({ courseId }: { courseId: number }) {
 
 	return (
 		<header className="sticky top-0 z-10 flex w-full items-center gap-4 border-b bg-zinc-100/40 px-6 shadow h-[60px] dark:bg-zinc-800/40">
-			<title>{course!.Title}</title>
+			<TabTitle>{course!.Title}</TabTitle>
 			<div className="flex w-full flex-1 justify-between">
 				<div className={"flex flex-row items-center gap-2"}>
 					<Button

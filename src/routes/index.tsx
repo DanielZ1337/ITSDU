@@ -7,6 +7,7 @@ import CourseCardStarredSelect from "@/components/course/course-card/course-card
 import CourseCards from "@/components/course/course-card/course-cards.tsx";
 import CourseSearchDialog from "@/components/course/course-search-dialog";
 import CourseSortSelect from "@/components/course/course-sort-select.tsx";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Input } from "@/components/ui/input.tsx";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSettings } from "@/hooks/atoms/useSettings";
@@ -33,7 +34,7 @@ export default function Index() {
 
 	return (
 		<div className="flex flex-col flex-1 h-full w-full">
-			<title>itslearning</title>
+			<TabTitle>Courses</TabTitle>
 
 			{/* Header section */}
 			<div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg border-b border-border/50">

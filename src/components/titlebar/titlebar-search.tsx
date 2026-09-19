@@ -4,7 +4,8 @@ import { CommandLoading } from "cmdk";
 import { DownloadIcon } from "lucide-react";
 import { motion, useCycle } from "motion/react";
 import React, { useCallback, useEffect } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import type { To } from "react-router-dom";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 import {
 	CommandDialog,
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/command";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TabButtonHoverProvider } from "@/contexts/tab-button-hover-context";
-import { useCourse } from "@/hooks/atoms/useCourse";
 import { useTabButtonHover } from "@/hooks/useTabButtonHover";
 import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
@@ -38,9 +38,8 @@ export default function TitlebarSearch() {
 	const [isOpen, setIsOpen] = React.useState(false);
 	const [query, setQuery] = React.useState("");
 	const debouncedQuery = useDebounce(query, 300);
-	const { courseId } = useCourse();
+	const { activeCourseId: courseId, navigate } = useTabs();
 	const t = useT();
-	const navigate = useNavigate();
 
 	const { data: starredCourses, isPending: isStarredFetching } =
 		useGETstarredCourses(
@@ -400,7 +399,7 @@ function CoursesCommandList({
 	isUnstarredFetching: boolean;
 	starredCourses?: GETstarredCourses;
 	unstarredCourses?: GETunstarredCourses;
-	navigate: NavigateFunction;
+	navigate: (to: To) => Promise<void>;
 	handleSelect: (callback: () => unknown) => void;
 }) {
 	const t = useT();

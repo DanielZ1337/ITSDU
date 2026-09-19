@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 import { toast as sonnerToast } from "sonner";
+import { TabLink } from "@/components/tabs/tab-link";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -852,9 +852,9 @@ function CacheSettings() {
 				description={t("settings.cache.browse.description")}
 			>
 				<Button asChild type="button" variant="outline" size="sm">
-					<Link to="/resources" onClick={() => setShowSettingsModal(false)}>
+					<TabLink to="/resources" onClick={() => setShowSettingsModal(false)}>
 						{t("common.open")}
-					</Link>
+					</TabLink>
 				</Button>
 			</SettingRow>
 			<SettingRow

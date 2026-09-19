@@ -1,9 +1,10 @@
 import { Command } from "lucide-react";
 import { lazy, Suspense, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MessagesDropDownSkeleton from "@/components/messages/dropdown/fallbacks/messages-dropdown-titlebar-fallback";
 import NotificationsDropDownSkeleton from "@/components/notifications/fallback/notifications-dropdown-fallback";
+import { TabContentHost, useTabs } from "@/components/tabs/tab-manager";
+import TabStrip from "@/components/tabs/tab-strip";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useCommandPalette } from "@/hooks/atoms/useCommandPalette";
@@ -72,14 +73,12 @@ export default function Layout() {
 	useUnreadMessagesNotification();
 	const { sidebarActive } = useSidebar();
 	const ref = useRef<HTMLDivElement>(null);
-	const navigate = useNavigate();
+	const { navigate } = useTabs();
 	const { toggleCommandPalette } = useCommandPalette();
-
-	const { pathname } = useLocation();
 
 	useEffect(() => {
 		function handleKeyDown(e: KeyboardEvent) {
-			if (!(e.ctrlKey || e.metaKey)) return;
+			if (!e.altKey) return;
 			const index = Number(e.key) - 1;
 			if (Number.isInteger(index) && quickNavRoutes[index]) {
 				e.preventDefault();
@@ -103,9 +102,10 @@ export default function Layout() {
 				<IsOnlineIndicatorLazy />
 			</Suspense>
 			<div className="flex items-center justify-between border-b px-4 py-2 drag border-background/40">
-				<Link
+				<button
+					type="button"
 					className="shrink-0 no-drag mt-2 px-2 py-1 bg-muted/20 rounded-lg"
-					to={"/"}
+					onClick={() => void navigate("/")}
 				>
 					<img
 						loading="eager"
@@ -113,7 +113,7 @@ export default function Layout() {
 						alt="itslearning"
 						className="my-auto h-8 w-8"
 					/>
-				</Link>
+				</button>
 				<div className="w-full max-w-xl px-4">
 					<ErrorBoundary
 						fallback={
@@ -177,6 +177,7 @@ export default function Layout() {
 					</Suspense>
 				</div>
 			</div>
+			<TabStrip />
 			<Suspense fallback={null}>
 				<BrowserNavLazy />
 			</Suspense>
@@ -200,18 +201,9 @@ export default function Layout() {
 								/>
 							}
 						>
-							<div
-								className="flex min-h-0 flex-1 flex-col overflow-x-auto overflow-y-auto"
-								/*style={{
-									scrollbarGutter: "stable both-edges"
-								}}*/
-								ref={ref}
-								key={pathname}
-							>
-								<SuspenseWrapperLazy>
-									<Outlet />
-								</SuspenseWrapperLazy>
-							</div>
+							<SuspenseWrapperLazy>
+								<TabContentHost viewportRef={ref} />
+							</SuspenseWrapperLazy>
 						</Suspense>
 					</ErrorBoundary>
 				</div>

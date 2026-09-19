@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 
 export default function CourseError() {
@@ -6,7 +7,7 @@ export default function CourseError() {
 
 	return (
 		<div className={"m-auto"}>
-			<title>Course not found</title>
+			<TabTitle>Course not found</TabTitle>
 			<div className={"flex flex-col gap-4 w-full p-4 items-center"}>
 				<p className={"text-3xl font-bold text-balance"}>Course not found</p>
 				<Button variant={"secondary"} size={"lg"} onClick={() => navigate(-1)}>

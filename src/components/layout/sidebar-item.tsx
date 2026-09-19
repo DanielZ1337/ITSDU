@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { NavLink, useMatch } from "react-router-dom";
+import { useTabs } from "@/components/tabs/tab-manager";
 import {
 	Tooltip,
 	TooltipContent,
@@ -17,18 +17,22 @@ export default function SidebarItem({
 	end = true,
 	disabled,
 }: NavigationType) {
-	const match = useMatch(href);
-	const isActive = !!match;
+	const { activeTab, navigate } = useTabs();
+	const pathname = activeTab.location.pathname;
+	const isActive = end
+		? pathname === href
+		: pathname === href || pathname.startsWith(`${href}/`);
 	const [isHovering, setIsHovering] = useState(false);
 	const { settings } = useSettings();
 
 	return (
 		<Tooltip disableHoverableContent>
 			<TooltipTrigger asChild>
-				<NavLink
+				<button
+					type="button"
 					onMouseEnter={() => setIsHovering(true)}
 					onMouseLeave={() => setIsHovering(false)}
-					onClick={(e) => disabled && e.preventDefault()}
+					onClick={() => !disabled && void navigate(href)}
 					className={cn(
 						"group/item relative flex items-center justify-center",
 						settings.appearance.sidebarDensity === "compact"
@@ -42,60 +46,56 @@ export default function SidebarItem({
 							: "text-muted-foreground hover:text-foreground",
 						disabled && "opacity-40 cursor-not-allowed pointer-events-none",
 					)}
-					to={href}
-					end={end}
 				>
-					{({ isActive }) => (
-						<>
-							{/* Active indicator pill with glow */}
-							{isActive && (
+					<>
+						{/* Active indicator pill with glow */}
+						{isActive && (
+							<motion.div
+								layoutId="active-pill"
+								transition={{
+									type: "spring",
+									stiffness: 400,
+									damping: 30,
+									mass: 0.8,
+								}}
+								className={cn(
+									"absolute -left-1.5 inset-y-0 w-1 rounded-full",
+									"bg-primary/80 shadow-md shadow-primary",
+									"drop-shadow-[0px_0px_8px_hsl(var(--primary))]",
+								)}
+							/>
+						)}
+
+						{/* Hover indicator pill */}
+						<AnimatePresence mode="popLayout">
+							{!isActive && isHovering && (
 								<motion.div
-									layoutId="active-pill"
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
 									transition={{
-										type: "spring",
-										stiffness: 400,
-										damping: 30,
-										mass: 0.8,
+										duration: 0.15,
+										ease: "easeOut",
 									}}
 									className={cn(
-										"absolute -left-1.5 inset-y-0 w-1 rounded-full",
-										"bg-primary/80 shadow-md shadow-primary",
-										"drop-shadow-[0px_0px_8px_hsl(var(--primary))]",
+										"absolute -left-1.5 inset-y-1 w-1 rounded-full",
+										"bg-muted-foreground/40",
 									)}
 								/>
 							)}
+						</AnimatePresence>
 
-							{/* Hover indicator pill */}
-							<AnimatePresence mode="popLayout">
-								{!isActive && isHovering && (
-									<motion.div
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										exit={{ opacity: 0, scale: 0.8 }}
-										transition={{
-											duration: 0.15,
-											ease: "easeOut",
-										}}
-										className={cn(
-											"absolute -left-1.5 inset-y-1 w-1 rounded-full",
-											"bg-muted-foreground/40",
-										)}
-									/>
-								)}
-							</AnimatePresence>
-
-							{/* Icon with subtle scale on hover */}
-							<span
-								className={cn(
-									"relative z-10 transition-transform duration-200",
-									"group-hover/item:scale-110",
-								)}
-							>
-								{icon}
-							</span>
-						</>
-					)}
-				</NavLink>
+						{/* Icon with subtle scale on hover */}
+						<span
+							className={cn(
+								"relative z-10 transition-transform duration-200",
+								"group-hover/item:scale-110",
+							)}
+						>
+							{icon}
+						</span>
+					</>
+				</button>
 			</TooltipTrigger>
 			<TooltipContent side="right" sideOffset={8} className="font-medium">
 				{title}

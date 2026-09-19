@@ -3,6 +3,7 @@ import { useAtom } from "jotai";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import { currentChatAtom } from "@/atoms/current-chat";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { useUser } from "@/hooks/atoms/useUser";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import usePUTinstantMessageThread from "@/queries/messages/usePUTinstantMessageThread";
@@ -108,7 +109,7 @@ export default function MessageTitleForm({
 
 	return (
 		<>
-			<title>{MessagesHeaderTitleString()}</title>
+			<TabTitle>{MessagesHeaderTitleString()}</TabTitle>
 			{!isChatNew && !isChatUndefined && isSettingNewThreadName ? (
 				<form
 					className={"flex items-center space-x-2"}

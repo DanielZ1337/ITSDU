@@ -1,8 +1,8 @@
 import { AnimatePresence, m } from "motion/react";
 import { lazy, Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useCourse } from "@/hooks/atoms/useCourse";
 import { useSettings } from "@/hooks/atoms/useSettings";
 import { useSidebar } from "@/hooks/atoms/useSidebar";
 import { useT } from "@/lib/i18n";
@@ -16,7 +16,7 @@ const LazySidebarUser = lazy(() => import("./sidebar-user"));
 export default function Sidebar() {
 	const { setSidebarActive } = useSidebar();
 	const { settings } = useSettings();
-	const { courseId } = useCourse();
+	const { activeCourseId: courseId } = useTabs();
 	const courseActive = courseId !== undefined;
 	const t = useT();
 

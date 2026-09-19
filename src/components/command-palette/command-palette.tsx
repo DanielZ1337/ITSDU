@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { updateReadyAtom } from "@/atoms/update-status";
 import { sectionIds, sectionMeta } from "@/components/settings/settings-modal";
+import { useTabs } from "@/components/tabs/tab-manager";
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -64,7 +64,7 @@ const quickNavShortcuts: Record<string, string> = {
 
 export default function CommandPalette() {
 	const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useCommandPalette();
-	const navigate = useNavigate();
+	const { navigate } = useTabs();
 	const { settings, setSetting } = useSettings();
 	const { openSettingsSection } = useShowSettingsModal();
 	const t = useT();

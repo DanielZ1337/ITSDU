@@ -30,6 +30,7 @@ import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -93,7 +94,7 @@ export default function CalendarIndex() {
 	const t = useT();
 	return (
 		<>
-			<title>{t("nav.calendar")}</title>
+			<TabTitle>{t("nav.calendar")}</TabTitle>
 			<CalendarPlanner />
 		</>
 	);

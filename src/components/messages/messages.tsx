@@ -6,6 +6,7 @@ import { currentChatAtom, currentChatEnum } from "@/atoms/current-chat.ts";
 import MessagesChatHeader from "@/components/messages/messages-chat-header.tsx";
 import MessagesChatInputsField from "@/components/messages/messages-chat-inputs-field.tsx";
 import MessagesSidebar from "@/components/messages/messages-sidebar.tsx";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import useGETinstantMessageThread from "@/queries/messages/useGETinstantMessageThread";
 import MessagesChatFallback from "./fallbacks/messages-chat-fallback";
 import MessageChat from "./messages-chat";
@@ -41,7 +42,7 @@ export default function Messages() {
 
 	return (
 		<div className="flex h-full w-full flex-1 overflow-y-hidden">
-			<title>Messages</title>
+			<TabTitle>Messages</TabTitle>
 			<div className="w-1/4 overflow-x-hidden overflow-y-hidden border-r">
 				<MessagesSidebar />
 			</div>

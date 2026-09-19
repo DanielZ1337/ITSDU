@@ -1,4 +1,5 @@
 import ProfileAvatar from "@/components/profile-avatar";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import { useUser } from "@/hooks/atoms/useUser.ts";
 
 export default function UserProfile() {
@@ -14,7 +15,7 @@ export default function UserProfile() {
 
 	return (
 		<div className="m-auto w-full p-10">
-			<title>{`User Profile for ${user.FullName}`}</title>
+			<TabTitle>{`User Profile for ${user.FullName}`}</TabTitle>
 			<div className="mx-auto max-w-3xl rounded-lg border p-6 px-8 shadow-lg">
 				<h2 className="mb-4 py-4 text-center text-2xl font-bold">
 					User Profile

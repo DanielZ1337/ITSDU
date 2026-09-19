@@ -6,6 +6,7 @@ import NotificationCards from "@/components/notifications/notifications-cards";
 import UpdatesTypeSelect, {
 	useUpdatesTypeSelect,
 } from "@/components/notifications/notifications-updates-type-select";
+import { TabTitle } from "@/components/tabs/tab-manager";
 import useGETnotificationsStream from "@/queries/notifications/useGETnotificationsStream";
 
 const FetchMoreInviewLazy = lazy(() =>
@@ -38,7 +39,7 @@ function NotificationUpdates() {
 
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
-			<title>Recent Updates</title>
+			<TabTitle>Recent Updates</TabTitle>
 			{/* Header */}
 			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
 				<div className="flex items-center justify-between gap-4">
