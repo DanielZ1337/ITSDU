@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import { ItslearningRestApiEntitiesPersonalCourseCourseResource } from "@/types/api-types/utils/Itslearning.RestApi.Entities.Personal.Course.CourseResource";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { type NavigateFunction, type NavigateOptions, type To, useNavigate } from "react-router-dom";
 import type { ItslearningRestApiEntitiesElementLink } from "../utils/Itslearning.RestApi.Entities.ElementLink";
 import {
 	ItslearningRestApiEntitiesElementType,
@@ -62,8 +62,17 @@ type ResourceObject = {
 
 //https://platform.itslearning.com/Handlers/ExtensionIconHandler.ashx?ExtensionId=5009&IconFormat=Png&IconSize=2&IconsVersion=143&UseDoubleResolutionIconSizeIfAvailable=False&UseMonochromeIconAsDefault=False
 
-export function useNavigateToResource(navigater?: NavigateFunction) {
-	const navigate = navigater || useNavigate();
+type CompatibleNavigate = (
+	to: To,
+	options?: NavigateOptions,
+) => void | Promise<void>;
+
+export function useNavigateToResource(navigater?: NavigateFunction | CompatibleNavigate) {
+	// Always call the hook unconditionally (rules-of-hooks); prefer an
+	// explicitly injected navigator (e.g. shell-level useTabs().navigate
+	// which works outside per-tab <Router>s) when provided.
+	const routerNavigate = useNavigate();
+	const navigate: CompatibleNavigate = navigater ?? routerNavigate;
 
 	const navigateToResource = (resource: ResourceObject | string | number) => {
 		const elementId =

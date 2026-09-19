@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useTabs } from "@/components/tabs/tab-manager";
 import { queryClient } from "@/lib/tanstack-client";
 import useGETinstantMessagesv2 from "@/queries/messages/useGETinstantMessagesv2";
 import useGETunreadInstantMessageCount from "@/queries/messages/useGETunreadInstantMessageCount";
@@ -11,7 +11,10 @@ const REFETCH_INTERVAL = 1000 * 30; // 30 seconds
 const MIN_NOTIFICATION_INTERVAL = 1000 * 60 * 5; // 5 minutes
 
 export function useUnreadMessagesNotification() {
-	const navigate = useNavigate();
+	// Shell-level hook (rendered in Layout outside per-tab RouterProviders),
+	// so navigate via the tab manager (active tab) instead of react-router's
+	// useNavigate(), which requires a <Router> ancestor and crashes here.
+	const { navigate } = useTabs();
 	const lastNotificationTimestamp = useRef<number>(0);
 	const lastNotificationCount = useRef<number>(0);
 	const [unreadCount, setUnreadCount] = useState<number>(0);
