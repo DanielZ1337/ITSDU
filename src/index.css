@@ -101,6 +101,17 @@
     scrollbar-color: #5e5e5e rgba(0, 0, 0, 0) !important;
   }
 
+  /* Scrolls, but shows no scrollbar (must beat the global scrollbar rules below/above, hence !important). */
+  .scrollbar-hide {
+    scrollbar-width: none !important;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
   *::-webkit-scrollbar {
     width: 8px !important;
     height: 8px !important;
