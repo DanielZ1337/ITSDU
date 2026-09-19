@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Encrypted store fixtures must stay byte-exact
+tests/fixtures/electron-store-v8/* -text
