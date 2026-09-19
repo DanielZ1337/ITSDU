@@ -26,11 +26,32 @@ npm install
 ```
 
 ## Usage
-Run the application in development mode:
+Run the application in development mode (Node 22.12+ or 24):
 
 ```bash
-npm dev
+npm run dev
 ```
+
+Develop without an itslearning account against the local mock API (see the `itslearning-mock-api` repo, expected as a
+sibling folder or set `ITSLEARNING_MOCK_DIR`):
+
+```bash
+npm run dev:mock
+```
+
+## Scripts
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` / `dev:mock` | Development (real site / mock API) |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run check` / `lint` / `format` | Biome |
+| `npm test` | Unit tests (Vitest) |
+| `npm run test:e2e` | Builds with the mock allowed by the CSP and runs the Electron end-to-end tests (needs the mock repo and a desktop) |
+| `npm run build` | Renderer + Electron bundles only |
+| `npm run package` / `package:dir` | electron-builder (installers / unpacked folder) |
+| `npm run win` / `mac` / `linux` / `release:*` | Build + package (+ publish for `release:*`) |
+
+`ITSDU_PERF=1` prints startup timing marks from the main process. More in `docs/modernization/`.
 
 ## Build
 How to build and run production application:
