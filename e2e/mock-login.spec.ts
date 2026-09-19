@@ -76,4 +76,22 @@ test("signs in through the mock and reaches the main window without CSP violatio
 		events: typeof (window as any).events?.on,
 	}));
 	expect(exposed).toEqual({ require: "undefined", process: "undefined", ipcRenderer: "undefined", events: "function" });
+
+	// 4) core routes render against the mock without runtime errors or the error page
+	const pageErrors: string[] = [];
+	main.on("pageerror", (e) => pageErrors.push(e.message));
+	const routes = [
+		"/", "/overview", "/courses", "/courses/1001", "/courses/1001/tasks", "/courses/1001/participants",
+		"/courses/1001/schedule", "/courses/1001/plans", "/courses/1001/resources", "/calendar", "/resources",
+		"/messages", "/updates", "/all-tasks", "/profile", "/person/1001", "/ai-chats",
+	];
+	const failures: string[] = [];
+	for (const route of routes) {
+		await main.evaluate((r) => { window.location.hash = r; }, route);
+		await main.waitForTimeout(1500);
+		const text = await main.evaluate(() => document.body.innerText);
+		if (/unexpected error has occurred|Something went wrong/i.test(text)) failures.push(`${route}: ${text.slice(0, 120).replace(/\s+/g, " ")}`);
+	}
+	expect(failures).toEqual([]);
+	expect(pageErrors).toEqual([]);
 });
