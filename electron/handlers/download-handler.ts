@@ -1,4 +1,4 @@
-import { addDays, format, isBefore, isValid, parse } from "date-fns";
+import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
 import * as fs from "fs";
 import path from "path";
 import axios from "axios";
@@ -766,13 +766,8 @@ async function getCoursePlansInformation(body: string) {
 		const fromDateString = dates[0];
 		const toDateString = dates[2];
 
-		const parsePlanDate = (value: string | undefined) => {
-			if (!value) return null;
-			const parsed = parse(value, "dd-MM-yyyy", new Date());
-			return isValid(parsed) ? parsed : null;
-		};
-		fromDate = parsePlanDate(fromDateString);
-		toDate = parsePlanDate(toDateString);
+		fromDate = parseCoursePlanDate(fromDateString);
+		toDate = parseCoursePlanDate(toDateString);
 
 		const coursePlan = {
 			dataTopicId,
@@ -969,32 +964,6 @@ function getCoursePlanElementsHandler() {
 			}
 		},
 	);
-}
-
-function parseDateAndTime(dateString: string) {
-	const dateRegex =
-		/(\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2}) – (\d{1,2}\. [a-zA-Z]+) (\d{1,2}:\d{2})/;
-	const timeRegex = /(\d{1,2}:\d{2}) – (\d{1,2}:\d{2})/;
-
-	const dateMatch = dateString.match(dateRegex);
-	const timeMatch = dateString.match(timeRegex);
-	const parseAt = (value: string) => parse(value, "dd. MMM HH:mm", new Date());
-
-	let from: Date | null = null;
-	let to: Date | null = null;
-
-	if (dateMatch) {
-		from = parse(dateMatch[1], "dd. MMM", new Date());
-		to = parse(dateMatch[3], "dd. MMM", new Date());
-		if (!isValid(to)) to = addDays(to, 1);
-	} else if (timeMatch) {
-		const currentDay = format(new Date(), "dd. MMM");
-		from = parseAt(`${currentDay} ${timeMatch[1]}`);
-		to = parseAt(`${currentDay} ${timeMatch[2]}`);
-		if (!isValid(to) || isBefore(to, from)) to = addDays(to, 1);
-	}
-
-	return { from, to };
 }
 
 function streamFileHandler() {
