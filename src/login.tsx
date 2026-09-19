@@ -1,8 +1,8 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { CommandLoading } from "cmdk";
-import { MdOutlineClose } from "react-icons/md";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { MdOutlineClose } from "react-icons/md";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import Providers from "@/components/providers";
 import {
@@ -97,7 +97,7 @@ function Login() {
 					className={cn(
 						"min-h-96 h-full max-h-full",
 						!memoizedOrganisations &&
-						"flex flex-col items-center justify-center",
+							"flex flex-col items-center justify-center",
 					)}
 				>
 					<CommandEmpty>No results found.</CommandEmpty>
