@@ -39,7 +39,7 @@ const csp = () => ({
 });
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
 	build: {
 		outDir: "dist",
 		emptyOutDir: true,
@@ -61,7 +61,13 @@ export default defineConfig({
 			{
 				entry: "electron/main.ts",
 				vite: {
+					resolve: {
+						alias: {
+							undici: resolve(process.cwd(), "electron/stubs/undici.ts"),
+						},
+					},
 					build: {
+						minify: command === "build",
 						rollupOptions: {
 							// Dev-only API proxy: loaded from node_modules in development, never shipped.
 							external: ["express", "cors", "http-proxy-middleware"],
@@ -92,4 +98,4 @@ export default defineConfig({
 			"@": resolve(process.cwd(), "./src"),
 		},
 	},
-});
+}));

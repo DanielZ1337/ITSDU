@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from "electron";
-import { autoUpdater } from "electron-updater";
 import { handle } from "../ipc/secure";
+import { getAutoUpdater } from "../services/updater/updater";
 
 function exitHandler() {
 	handle("app:exit", () => {
@@ -51,12 +51,17 @@ function MaximizerHandler() {
 
 function checkForUpdatesHandler() {
 	handle("app:checkForUpdates", async (_event) => {
-		return (await autoUpdater.checkForUpdates())?.updateInfo;
+		return (await (await getAutoUpdater()).checkForUpdates())?.updateInfo;
 	});
 }
 
 function downloadUpdateHandler() {
 	handle("app:downloadUpdate", async (event) => {
+		const autoUpdater = await getAutoUpdater();
+		// Replace listeners from an earlier attempt so progress is not reported twice.
+		autoUpdater.removeAllListeners("download-progress");
+		autoUpdater.removeAllListeners("update-downloaded");
+
 		autoUpdater.on("download-progress", (progress) => {
 			event.sender.send("app:downloadProgress", progress);
 		});
@@ -71,7 +76,7 @@ function downloadUpdateHandler() {
 
 function updateHandler() {
 	handle("app:update", async (_event) => {
-		return autoUpdater.quitAndInstall();
+		return (await getAutoUpdater()).quitAndInstall();
 	});
 }
 

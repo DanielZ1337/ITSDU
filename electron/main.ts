@@ -18,6 +18,7 @@ import {
 	restrictPermissions,
 } from "./security/window-security";
 import { MOCK_URL } from "./services/itslearning/mock-mode";
+import { getAutoUpdater } from "./services/updater/updater";
 import { mark } from "./utils/perf";
 
 process.env.DIST = path.join(__dirname, "../dist");
@@ -353,7 +354,7 @@ async function checkForUpdatesFromTray() {
 	const icon = path.join(process.env.VITE_PUBLIC, "icon.ico");
 
 	try {
-		const { autoUpdater } = await import("electron-updater");
+		const autoUpdater = await getAutoUpdater();
 		const result = await autoUpdater.checkForUpdates();
 		new Notification({
 			title: "ITSDU",
@@ -385,10 +386,6 @@ async function initializeAllHandlers() {
 		.default;
 	const initDownloadHandlers = (await import("./handlers/download-handler.ts"))
 		.default;
-	const { autoUpdater } = await import("electron-updater");
-	autoUpdater.autoRunAppAfterInstall = true;
-	autoUpdater.autoInstallOnAppQuit = false;
-	autoUpdater.autoDownload = false;
 	SettingsService.getInstance();
 	darkModeHandlerInitializer();
 	appHandlerInitializer();
