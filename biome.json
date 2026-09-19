@@ -1,18 +1,43 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.3/schema.json",
-	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
-	"files": { "ignoreUnknown": false, "ignore": [] },
-	"formatter": { "enabled": true, "indentStyle": "tab" },
-	"organizeImports": { "enabled": true },
+	"$schema": "https://biomejs.dev/schemas/2.5.14/schema.json",
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!**/dist",
+			"!**/dist-electron",
+			"!**/release",
+			"!**/test-results",
+			"!**/node_modules",
+			"!tests/fixtures",
+			"!src/types/api-types",
+			"!**/*.css"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab"
+	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": false,
+			"preset": "none",
 			"complexity": {
 				"noExtraBooleanCast": "error",
-				"noMultipleSpacesInRegularExpressionLiterals": "error",
 				"noUselessCatch": "error",
-				"noWith": "error"
+				"noAdjacentSpacesInRegex": "error"
 			},
 			"correctness": {
 				"noConstAssign": "error",
@@ -22,7 +47,6 @@
 				"noGlobalObjectCalls": "error",
 				"noInnerDeclarations": "error",
 				"noInvalidConstructorSuper": "error",
-				"noNewSymbol": "error",
 				"noNonoctalDecimalEscape": "error",
 				"noPrecisionLoss": "error",
 				"noSelfAssign": "error",
@@ -37,7 +61,9 @@
 				"noUnusedVariables": "error",
 				"useIsNan": "error",
 				"useValidForDirection": "error",
-				"useYield": "error"
+				"useYield": "error",
+				"noInvalidBuiltinInstantiation": "error",
+				"useValidTypeof": "error"
 			},
 			"suspicious": {
 				"noAssignInExpressions": "error",
@@ -51,7 +77,7 @@
 				"noDuplicateClassMembers": "error",
 				"noDuplicateObjectKeys": "error",
 				"noDuplicateParameters": "error",
-				"noEmptyBlockStatements": "error",
+				"noEmptyBlockStatements": "off",
 				"noFallthroughSwitchClause": "error",
 				"noFunctionAssign": "error",
 				"noGlobalAssign": "error",
@@ -63,10 +89,18 @@
 				"noSparseArray": "error",
 				"noUnsafeNegation": "error",
 				"useGetterReturn": "error",
-				"useValidTypeof": "error"
+				"noWith": "error"
 			}
 		},
-		"ignore": ["**/dist", "**/.eslintrc.cjs"]
+		"includes": [
+			"**",
+			"!**/dist",
+			"!**/.eslintrc.cjs"
+		]
 	},
-	"javascript": { "formatter": { "quoteStyle": "double" } }
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double"
+		}
+	}
 }

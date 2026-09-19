@@ -54,10 +54,10 @@
 		"dev": "vite",
 		"dev:mock": "node scripts/dev-mock.mjs",
 		"typecheck": "tsc --noEmit",
-		"lint": "biome lint ./src ./electron",
-		"lint:fix": "biome lint --write ./src ./electron",
-		"format": "biome format --write ./src ./electron",
-		"check": "biome check ./src ./electron",
+		"lint": "biome lint ./src ./electron ./e2e ./tests/*.ts ./scripts ./vite.config.mts ./vitest.config.mts ./playwright.config.ts",
+		"lint:fix": "biome lint --write ./src ./electron ./e2e ./tests/*.ts ./scripts ./vite.config.mts ./vitest.config.mts ./playwright.config.ts",
+		"format": "biome format --write ./src ./electron ./e2e ./tests/*.ts ./scripts ./vite.config.mts ./vitest.config.mts ./playwright.config.ts",
+		"check": "biome check ./src ./electron ./e2e ./tests/*.ts ./scripts ./vite.config.mts ./vitest.config.mts ./playwright.config.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "node scripts/e2e.mjs",
@@ -146,7 +146,7 @@
 		"zod": "^4.6.5"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.3",
+		"@biomejs/biome": "^2.5.14",
 		"@playwright/test": "^1.63.0",
 		"@tailwindcss/vite": "^4.3.3",
 		"@testing-library/react": "^16.3.3",
