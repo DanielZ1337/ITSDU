@@ -19,9 +19,10 @@ export default function usePOSTcourseAllResources(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.CourseAllResources, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useMutation({
+        mutationKey: [TanstackKeys.CourseAllResources, ...getQueryKeysFromParamsObject(params)],
+
+        mutationFn: async () => {
 			const res = await axios.post(
 				POSTcourseAllResourcesApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function usePOSTcourseAllResources(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

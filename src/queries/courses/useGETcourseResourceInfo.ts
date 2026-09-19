@@ -5,21 +5,22 @@ import {
 	GETcourseResourceInfoParams,
 } from "@/types/api-types/courses/GETcourseResourceInfo.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseResourceInfo(
 	params: GETcourseResourceInfoParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcourseResourceInfo,
 		Error,
 		GETcourseResourceInfo,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.CourseResourceInfo, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.CourseResourceInfo, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETcourseResourceInfoApiUrl({
 					...params,
@@ -36,8 +37,7 @@ export default function useGETcourseResourceInfo(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

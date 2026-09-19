@@ -18,12 +18,13 @@ export default function usePUTlightbulletinUpdateComment(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+        mutationKey: [
 			TanstackKeys.LightbulletinUpdateComment,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async (body) => {
+
+        mutationFn: async (body) => {
 			const res = await axios.put(
 				PUTlightbulletinUpdateCommentApiUrl({
 					...params,
@@ -41,8 +42,7 @@ export default function usePUTlightbulletinUpdateComment(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

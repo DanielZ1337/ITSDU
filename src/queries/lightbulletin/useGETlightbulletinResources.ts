@@ -5,24 +5,25 @@ import {
 	GETlightbulletinResourcesParams,
 } from "@/types/api-types/lightbulletin/GETlightbulletinResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETlightbulletinResources(
 	params: GETlightbulletinResourcesParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETlightbulletinResources,
 		Error,
 		GETlightbulletinResources,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+        queryKey: [
 			TanstackKeys.LightbulletinResources,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETlightbulletinResourcesApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useGETlightbulletinResources(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

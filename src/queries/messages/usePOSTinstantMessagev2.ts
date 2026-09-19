@@ -16,9 +16,10 @@ export default function usePOSTinstantMessagev2(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.POSTinstantMessagev2],
-		async (body) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.POSTinstantMessagev2],
+
+        mutationFn: async (body) => {
 			const res = await axios.post(POSTinstantMessagev2ApiUrl(), body, {
 				params: {
 					access_token: await getAccessToken(),
@@ -31,8 +32,7 @@ export default function usePOSTinstantMessagev2(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

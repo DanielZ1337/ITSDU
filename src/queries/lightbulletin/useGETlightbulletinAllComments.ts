@@ -4,25 +4,26 @@ import {
 	GETlightbulletinAllCommentsApiUrl,
 	GETlightbulletinAllCommentsParams,
 } from "@/types/api-types/lightbulletin/GETlightbulletinAllComments.ts";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETlightbulletinAllComments(
 	params: GETlightbulletinAllCommentsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETlightbulletinAllComments,
 		Error,
 		GETlightbulletinAllComments,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+        queryKey: [
 			TanstackKeys.LightbulletinAllComments,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETlightbulletinAllCommentsApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useGETlightbulletinAllComments(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

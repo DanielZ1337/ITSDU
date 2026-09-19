@@ -15,9 +15,10 @@ export default function usePATCHrestoreDeletedMessage(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.PATCHrestoreDeletedMessage],
-		async (params) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.PATCHrestoreDeletedMessage],
+
+        mutationFn: async (params) => {
 			const res = await axios.patch(
 				PATCHrestoreDeletedMessageApiUrl(params),
 				{},
@@ -32,8 +33,7 @@ export default function usePATCHrestoreDeletedMessage(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

@@ -4,25 +4,26 @@ import {
 	GETnotificationElementsApiUrl,
 	GETnotificationElementsParams,
 } from "@/types/api-types/notifications/GETnotificationElements";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETnotificationElements(
 	params: GETnotificationElementsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETnotificationElements,
 		Error,
 		GETnotificationElements,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+        queryKey: [
 			TanstackKeys.NotificationElements,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETnotificationElementsApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useGETnotificationElements(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

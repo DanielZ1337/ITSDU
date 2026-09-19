@@ -4,11 +4,11 @@ import {
 	GETcurrentUserApiUrl,
 } from "@/types/api-types/person/GETcurrentUser.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default async function useGETcurrentUser(
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcurrentUser,
 		Error,
 		GETcurrentUser,
@@ -17,9 +17,10 @@ export default async function useGETcurrentUser(
 ) {
 	const access_token = await getAccessToken();
 
-	return useQuery(
-		[TanstackKeys.CurrentUser, access_token],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.CurrentUser, access_token],
+
+        queryFn: async () => {
 			const res = await axios.get(GETcurrentUserApiUrl(), {
 				params: {
 					access_token: await getAccessToken(),
@@ -30,8 +31,7 @@ export default async function useGETcurrentUser(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

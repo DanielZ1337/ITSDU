@@ -4,20 +4,21 @@ import {
 	GETunreadInstantMessagesCountApiUrl,
 } from "@/types/api-types/messages/GETunreadInstantMessagesCount";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETunreadInstantMessageCount(
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETunreadInstantMessagesCount,
 		Error,
 		GETunreadInstantMessagesCount,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.MessagesUnreadCount, ""],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.MessagesUnreadCount, ""],
+
+        queryFn: async () => {
 			console.log("useGETunreadInstantMessageCount");
 			const res = await axios.get(GETunreadInstantMessagesCountApiUrl(), {
 				params: {
@@ -29,8 +30,7 @@ export default function useGETunreadInstantMessageCount(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

@@ -1,5 +1,5 @@
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 type OfficeDocument = {
 	accessToken: string;
@@ -8,26 +8,28 @@ type OfficeDocument = {
 
 export default function useOfficeDocumentByElementId(
 	elementId: number | string,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		OfficeDocument,
 		Error,
 		OfficeDocument,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.ResourceOfficeDocumentByElementID, elementId.toString()],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.ResourceOfficeDocumentByElementID, elementId.toString()],
+
+        queryFn: async () => {
 			return await window.resources.officeDocuments.get(elementId);
 		},
-		{
-			...queryConfig,
-			// complete caching of resources
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchIntervalInBackground: false,
-		},
-	);
+
+        ...queryConfig,
+
+        // complete caching of resources
+        refetchInterval: false,
+
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchIntervalInBackground: false
+    });
 }

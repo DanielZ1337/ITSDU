@@ -18,12 +18,13 @@ export default function usePUTlightbulletinNotifications(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+        mutationKey: [
 			TanstackKeys.LightbulletinNotifications,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async (body) => {
+
+        mutationFn: async (body) => {
 			const res = await axios.put(
 				PUTlightbulletinNotificationsApiUrl({
 					...params,
@@ -41,8 +42,7 @@ export default function usePUTlightbulletinNotifications(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

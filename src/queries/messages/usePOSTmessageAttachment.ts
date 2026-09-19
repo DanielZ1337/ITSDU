@@ -15,9 +15,10 @@ export default function usePOSTmessageAttachment(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.POSTmessageAttachment],
-		async (files) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.POSTmessageAttachment],
+
+        mutationFn: async (files) => {
 			const formData = new FormData();
 			files.forEach((file) => {
 				formData.append(`${file.name}`, file);
@@ -34,8 +35,7 @@ export default function usePOSTmessageAttachment(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

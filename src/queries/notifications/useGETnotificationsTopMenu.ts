@@ -5,24 +5,25 @@ import {
 	GETnotificationsTopMenuApiUrl,
 } from "@/types/api-types/notifications/GETnotifcationsTopMenu";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETnotificationsTopMenu(
 	params: GETnotificationsTopMenuApiParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETnotificationsTopMenuApiParams,
 		Error,
 		GETnotificationsTopMenu,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+        queryKey: [
 			TanstackKeys.NotificationsTopMenu,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        queryFn: async () => {
 			const res = await axios.get(GETnotificationsTopMenuApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -33,8 +34,7 @@ export default function useGETnotificationsTopMenu(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

@@ -12,9 +12,10 @@ export default function usePOSTnewAIMessage(
 	params: POSTnewAIMessageParams,
 	queryConfig?: UseMutationOptions<any, Error, any, string[]>,
 ) {
-	return useMutation(
-		[TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)],
-		async (body: POSTnewAIMessageBody) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.AInewMessage, ...getQueryKeysFromParamsObject(params)],
+
+        mutationFn: async (body: POSTnewAIMessageBody) => {
 			const res = await axios.post(POSTnewAIMessageApiUrl(params), body, {
 				params: {
 					...params,
@@ -27,8 +28,7 @@ export default function usePOSTnewAIMessage(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

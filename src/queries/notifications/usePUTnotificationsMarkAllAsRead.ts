@@ -7,9 +7,10 @@ import axios from "axios";
 export default function usePUTnotificationsMarkAllAsRead(
 	queryConfig?: UseMutationOptions<undefined, Error, undefined, string[]>,
 ) {
-	return useMutation(
-		[TanstackKeys.PUTnotificationsMarkAllAsRead],
-		async () => {
+	return useMutation({
+        mutationKey: [TanstackKeys.PUTnotificationsMarkAllAsRead],
+
+        mutationFn: async () => {
 			const res = await axios.put(
 				PUTnotificationsMarkAllAsReadApiUrl(),
 				undefined,
@@ -24,8 +25,7 @@ export default function usePUTnotificationsMarkAllAsRead(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

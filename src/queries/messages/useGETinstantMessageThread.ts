@@ -5,21 +5,22 @@ import {
 	GETinstantMessageThreadParams,
 } from "@/types/api-types/messages/GETinstantMessageThread.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETinstantMessageThread(
 	params: GETinstantMessageThreadParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETinstantMessageThread,
 		Error,
 		GETinstantMessageThread,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.MessageThread, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.MessageThread, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			const res = await axios.get(GETinstantMessageThreadApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -30,8 +31,7 @@ export default function useGETinstantMessageThread(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

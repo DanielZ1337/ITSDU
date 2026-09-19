@@ -16,12 +16,13 @@ export default function useDELETEinstantMessageThread(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+        mutationKey: [
 			TanstackKeys.DELETEinstantMessageThread,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        mutationFn: async () => {
 			const res = await axios.delete(DELETEinstantMessageThreadApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -32,8 +33,7 @@ export default function useDELETEinstantMessageThread(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

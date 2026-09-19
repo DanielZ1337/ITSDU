@@ -5,21 +5,22 @@ import {
 	GETpersonalTasksParams,
 } from "@/types/api-types/tasks/GETpersonalTasks.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpersonalTasks(
 	params: GETpersonalTasksParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETpersonalTasks,
 		Error,
 		GETpersonalTasks,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.PersonalTasks, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.PersonalTasks, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETpersonalTasksApiUrl({
 					...params,
@@ -36,8 +37,7 @@ export default function useGETpersonalTasks(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

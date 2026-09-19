@@ -13,8 +13,8 @@ export const usePOSTpersonUpdateProfileImage = (
 		unknown
 	>,
 ) => {
-	return useMutation(
-		async (image) => {
+	return useMutation({
+        mutationFn: async (image) => {
 			const res = await axios.post(
 				POSTpersonUpdateProfileImageApiUrl(),
 				image,
@@ -26,8 +26,7 @@ export const usePOSTpersonUpdateProfileImage = (
 			);
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 };

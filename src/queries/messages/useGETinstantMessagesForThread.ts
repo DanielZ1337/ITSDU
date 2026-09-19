@@ -5,25 +5,16 @@ import {
 	GETinstantMessagesForThreadParams,
 } from "@/types/api-types/messages/GETinstantMessagesForThread.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
 import axios from "axios";
+import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETinstantMessagesForThread(
 	params: GETinstantMessagesForThreadParams,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETinstantMessagesForThread,
-		Error,
-		GETinstantMessagesForThread,
-		GETinstantMessagesForThread,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETinstantMessagesForThread>,
 ) {
-	return useInfiniteQuery(
-		[TanstackKeys.Messagesv2, ...getQueryKeysFromParamsObject(params)],
-		async ({ pageParam = params.fromId }) => {
+	return useInfiniteQueryCompat({
+		queryKey: [TanstackKeys.Messagesv2, ...getQueryKeysFromParamsObject(params)],
+		queryFn: async ({ pageParam }) => {
 			console.log("useGETmessages");
 			const res = await axios.get(
 				GETinstantMessagesForThreadApiUrl({
@@ -41,9 +32,9 @@ export default function useGETinstantMessagesForThread(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
+		initialPageParam: params.fromId,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
 				const lowestId = lastPage.Messages.EntityArray.reduce((prev, curr) => {
 					if (curr.MessageId < prev) {
 						return curr.MessageId;
@@ -54,6 +45,5 @@ export default function useGETinstantMessagesForThread(
 
 				return lastPage.HasMore ? lowestId : undefined;
 			},
-		},
-	);
+	});
 }

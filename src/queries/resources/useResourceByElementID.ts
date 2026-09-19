@@ -5,9 +5,9 @@ import {
 	GETcourseResourceInfo,
 	GETcourseResourceInfoApiUrl,
 } from "@/types/api-types/courses/GETcourseResourceInfo";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export type ResourceFileType = {
 	name: string;
@@ -87,16 +87,17 @@ function offlineResourceError(elementId: number | string) {
 
 export default function useResourceByElementID(
 	elementId: number | string,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		ResourceFileType,
 		Error,
 		ResourceFileType,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.ResourceByElementID, elementId.toString()],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.ResourceByElementID, elementId.toString()],
+
+        queryFn: async () => {
 			const db = await ItsduResourcesDBWrapper.getInstance();
 			const resource = await db.getResourceById(elementId.toString());
 			const last_accessed = new Date();
@@ -191,14 +192,15 @@ export default function useResourceByElementID(
 				{ fromCache: false },
 			);
 		},
-		{
-			...queryConfig,
-			// complete caching of resources
-			refetchInterval: false,
-			refetchOnWindowFocus: false,
-			refetchOnMount: false,
-			refetchOnReconnect: false,
-			refetchIntervalInBackground: false,
-		},
-	);
+
+        ...queryConfig,
+
+        // complete caching of resources
+        refetchInterval: false,
+
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
+        refetchIntervalInBackground: false
+    });
 }

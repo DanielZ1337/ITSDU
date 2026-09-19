@@ -5,21 +5,22 @@ import {
 	GETpersonsRelationsParams,
 } from "@/types/api-types/person/GETpersonsRelations.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpersonsRelations(
 	params: GETpersonsRelationsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETpersonsRelations,
 		Error,
 		GETpersonsRelations,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.PersonsRelations, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.PersonsRelations, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			const res = await axios.get(GETpersonsRelationsApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -30,8 +31,7 @@ export default function useGETpersonsRelations(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

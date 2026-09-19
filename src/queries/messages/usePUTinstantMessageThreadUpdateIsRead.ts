@@ -16,9 +16,10 @@ export default function usePUTinstantMessageThreadUpdateIsRead(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.PUTinstantMessageThreadUpdateIsRead],
-		async (body: PUTinstantMessageThreadUpdateIsReadParams) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.PUTinstantMessageThreadUpdateIsRead],
+
+        mutationFn: async (body: PUTinstantMessageThreadUpdateIsReadParams) => {
 			const res = await axios.put(
 				PUTinstantMessageThreadUpdateIsReadApiUrl(body || params),
 				{},
@@ -33,8 +34,7 @@ export default function usePUTinstantMessageThreadUpdateIsRead(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

@@ -17,9 +17,10 @@ export default function usePUTcourseFavorite(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.CourseFavorite, ...getQueryKeysFromParamsObject(params)],
-		async (variables) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.CourseFavorite, ...getQueryKeysFromParamsObject(params)],
+
+        mutationFn: async (variables) => {
 			const res = await axios.put(
 				PUTcourseFavoriteApiUrl({
 					...(variables || params),
@@ -39,8 +40,7 @@ export default function usePUTcourseFavorite(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

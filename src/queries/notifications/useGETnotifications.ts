@@ -5,25 +5,16 @@ import {
 	GETnotificationsParams,
 } from "@/types/api-types/notifications/GETnotifications";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
 import axios from "axios";
+import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETnotifications(
 	params: GETnotificationsParams,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETnotifications,
-		Error,
-		GETnotifications,
-		GETnotifications,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETnotifications>,
 ) {
-	return useInfiniteQuery(
-		[TanstackKeys.Notifications, ...getQueryKeysFromParamsObject(params)],
-		async ({ pageParam = params.PageIndex }) => {
+	return useInfiniteQueryCompat({
+		queryKey: [TanstackKeys.Notifications, ...getQueryKeysFromParamsObject(params)],
+		queryFn: async ({ pageParam }) => {
 			const res = await axios.get(
 				GETnotificationsApiUrl({
 					...params,
@@ -40,22 +31,21 @@ export default function useGETnotifications(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
+		initialPageParam: params.PageIndex,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
 				if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
 					return lastPage.CurrentPageIndex + 1;
 				} else {
 					return undefined;
 				}
 			},
-			getPreviousPageParam: (firstPage) => {
+		getPreviousPageParam: (firstPage) => {
 				if (firstPage.CurrentPageIndex > 0) {
 					return firstPage.CurrentPageIndex - 1;
 				} else {
 					return undefined;
 				}
 			},
-		},
-	);
+	});
 }

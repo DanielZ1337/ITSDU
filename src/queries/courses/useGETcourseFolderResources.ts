@@ -5,24 +5,25 @@ import {
 	GETcourseFolderResourcesParams,
 } from "@/types/api-types/courses/GETcourseFolderResources.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseFolderResources(
 	params: GETcourseFolderResourcesParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcourseFolderResources,
 		Error,
 		GETcourseFolderResources,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[
+	return useQueryCompat({
+        queryKey: [
 			TanstackKeys.CourseFolderResources,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETcourseFolderResourcesApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useGETcourseFolderResources(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

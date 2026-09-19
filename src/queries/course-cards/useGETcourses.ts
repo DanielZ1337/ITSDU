@@ -10,22 +10,23 @@ import {
 	GETunstarredCoursesParams,
 } from "@/types/api-types/course-cards/GETunstarredCourses.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourses(
 	isStarred: "Starred" | "Unstarred" | "All" = "Starred",
 	params: GETstarredCoursesParams | GETunstarredCoursesParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETstarredCourses | GETunstarredCourses,
 		Error,
 		GETstarredCourses | GETunstarredCourses,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.Courses, isStarred, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.Courses, isStarred, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			if (isStarred === "All") {
 				const starredRes = await axios.get(
 					GETstarredCoursesApiUrl({
@@ -90,9 +91,8 @@ export default function useGETcourses(
 				return res.data as GETstarredCourses | GETunstarredCourses;
 			}
 		},
-		{
-			suspense: true,
-			...queryConfig,
-		},
-	);
+
+        suspense: true,
+        ...queryConfig
+    });
 }

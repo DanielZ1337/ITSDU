@@ -15,9 +15,10 @@ export default function useDELETEinstantMessage(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.DELETEinstantMessage],
-		async (params) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.DELETEinstantMessage],
+
+        mutationFn: async (params) => {
 			const res = await axios.delete(DELETEinstantMessageApiUrl(params), {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -28,8 +29,7 @@ export default function useDELETEinstantMessage(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

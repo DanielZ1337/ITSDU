@@ -1,4 +1,4 @@
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, keepPreviousData } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
 	defaultOptions: {
@@ -7,9 +7,9 @@ export const queryClient = new QueryClient({
 			refetchOnMount: false,
 			retry: false,
 			// No global polling: queries that need it opt in via their own refetchInterval.
-			keepPreviousData: true,
+			placeholderData: keepPreviousData,
 			refetchOnReconnect: "always",
-			// useErrorBoundary: true
+			// throwOnError: true
 		},
 	},
 });

@@ -5,28 +5,19 @@ import {
 	GETcourseTasksParams,
 } from "@/types/api-types/courses/GETcourseTasks.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
 import axios from "axios";
+import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseTasks(
 	params: GETcourseTasksParams,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETcourseTasks,
-		Error,
-		GETcourseTasks,
-		GETcourseTasks,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETcourseTasks>,
 ) {
-	return useInfiniteQuery(
-		[
+	return useInfiniteQueryCompat({
+		queryKey: [
 			TanstackKeys.CourseTasklistDailyWorkflow,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async ({ pageParam = params.PageIndex || 0 }) => {
+		queryFn: async ({ pageParam }) => {
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 			const res = await axios.get(
 				GETcourseTasksApiUrl({
@@ -45,22 +36,21 @@ export default function useGETcourseTasks(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
+		initialPageParam: params.PageIndex || 0,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
 				if (lastPage.CurrentPageIndex * lastPage.PageSize < lastPage.Total) {
 					return lastPage.CurrentPageIndex + 1;
 				} else {
 					return undefined;
 				}
 			},
-			getPreviousPageParam: (firstPage) => {
+		getPreviousPageParam: (firstPage) => {
 				if (firstPage.CurrentPageIndex > 0) {
 					return firstPage.CurrentPageIndex - 1;
 				} else {
 					return undefined;
 				}
 			},
-		},
-	);
+	});
 }

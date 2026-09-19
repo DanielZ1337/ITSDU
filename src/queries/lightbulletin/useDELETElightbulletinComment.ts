@@ -17,12 +17,13 @@ export default function useDELETElightbulletinComment(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[
+	return useMutation({
+        mutationKey: [
 			TanstackKeys.LightbulletinComment,
 			...getQueryKeysFromParamsObject(params),
 		],
-		async () => {
+
+        mutationFn: async () => {
 			const res = await axios.delete(
 				DELETElightbulletinCommentApiUrl({
 					...params,
@@ -39,8 +40,7 @@ export default function useDELETElightbulletinComment(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

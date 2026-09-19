@@ -5,31 +5,22 @@ import {
 	GETpreviousChatsParams,
 	GETpreviousChatsResponse,
 } from "@/types/api-types/AI/GETpreviousChats.ts";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
 import axios from "axios";
 import { TanstackKeys } from "../../types/tanstack-keys";
+import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETpreviousChats(
 	params?: Omit<GETpreviousChatsParams, "userId">,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETpreviousChatsResponse,
-		Error,
-		GETpreviousChatsResponse,
-		GETpreviousChatsResponse,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETpreviousChatsResponse>,
 ) {
 	const user = useUser();
 
-	return useInfiniteQuery(
-		[
+	return useInfiniteQueryCompat({
+		queryKey: [
 			TanstackKeys.AIpreviousMessages,
 			...getQueryKeysFromParamsObject(params ?? {}),
 		],
-		async ({ pageParam = params?.pageIndex }) => {
+		queryFn: async ({ pageParam }) => {
 			if (!user) throw new Error("User not found");
 
 			const previousMessages = await axios.get(
@@ -46,9 +37,9 @@ export default function useGETpreviousChats(
 
 			return previousMessages.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
+		initialPageParam: params?.pageIndex,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
 				const { totalFiles, pageSize, pageIndex } = lastPage;
 				const parsedTotalMessages = Number(totalFiles);
 				const parsedPageSize = Number(pageSize);
@@ -59,6 +50,5 @@ export default function useGETpreviousChats(
 					return undefined;
 				}
 			},
-		},
-	);
+	});
 }

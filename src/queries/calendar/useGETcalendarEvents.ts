@@ -5,21 +5,22 @@ import {
 	GETcalenderEventsApiUrl,
 } from "@/types/api-types/calendar/GETcalendarEvents.ts";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import { UseQueryOptions, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { QueryConfig, useQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcalendarEvents(
 	params: GETcalendarEventsParams,
-	queryConfig?: UseQueryOptions<
+	queryConfig?: QueryConfig<
 		GETcalendarEvents,
 		Error,
 		GETcalendarEvents,
 		string[]
 	>,
 ) {
-	return useQuery(
-		[TanstackKeys.CalendarEvents, ...getQueryKeysFromParamsObject(params)],
-		async () => {
+	return useQueryCompat({
+        queryKey: [TanstackKeys.CalendarEvents, ...getQueryKeysFromParamsObject(params)],
+
+        queryFn: async () => {
 			const res = await axios.get(
 				GETcalenderEventsApiUrl({
 					...params,
@@ -36,8 +37,7 @@ export default function useGETcalendarEvents(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }

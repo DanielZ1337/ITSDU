@@ -5,25 +5,16 @@ import {
 	GETcourseNotificationsParams,
 } from "@/types/api-types/courses/GETcourseNotifications";
 import { TanstackKeys } from "@/types/tanstack-keys";
-import {
-	UseInfiniteQueryOptions,
-	useInfiniteQuery,
-} from "@tanstack/react-query";
 import axios from "axios";
+import { InfiniteQueryConfig, useInfiniteQueryCompat } from "@/lib/query-compat";
 
 export default function useGETcourseNotifications(
 	params: GETcourseNotificationsParams,
-	queryConfig?: UseInfiniteQueryOptions<
-		GETcourseNotifications,
-		Error,
-		GETcourseNotifications,
-		GETcourseNotifications,
-		string[]
-	>,
+	queryConfig?: InfiniteQueryConfig<GETcourseNotifications>,
 ) {
-	return useInfiniteQuery(
-		[TanstackKeys.CourseNotifications, ...getQueryKeysFromParamsObject(params)],
-		async ({ pageParam = params.PageIndex }) => {
+	return useInfiniteQueryCompat({
+		queryKey: [TanstackKeys.CourseNotifications, ...getQueryKeysFromParamsObject(params)],
+		queryFn: async ({ pageParam }) => {
 			const res = await axios.get(
 				GETcourseNotificationsApiUrl({
 					...params,
@@ -40,9 +31,9 @@ export default function useGETcourseNotifications(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-			getNextPageParam: (lastPage) => {
+		initialPageParam: params.PageIndex,
+		...queryConfig,
+		getNextPageParam: (lastPage) => {
 				console.log(
 					lastPage.PageSize,
 					lastPage.Total,
@@ -55,13 +46,12 @@ export default function useGETcourseNotifications(
 					return undefined;
 				}
 			},
-			getPreviousPageParam: (firstPage) => {
+		getPreviousPageParam: (firstPage) => {
 				if (firstPage.CurrentPageIndex > 0) {
 					return firstPage.CurrentPageIndex - 1;
 				} else {
 					return undefined;
 				}
 			},
-		},
-	);
+	});
 }

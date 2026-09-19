@@ -15,9 +15,10 @@ export default function usePOSTcourseCardsRank(
 		string[]
 	>,
 ) {
-	return useMutation(
-		[TanstackKeys.CourseCardsRank],
-		async (body) => {
+	return useMutation({
+        mutationKey: [TanstackKeys.CourseCardsRank],
+
+        mutationFn: async (body) => {
 			const res = await axios.post(POSTcourseCardsRankApiUrl, body, {
 				params: {
 					access_token: (await getAccessToken()) || "",
@@ -28,8 +29,7 @@ export default function usePOSTcourseCardsRank(
 
 			return res.data;
 		},
-		{
-			...queryConfig,
-		},
-	);
+
+        ...queryConfig
+    });
 }
