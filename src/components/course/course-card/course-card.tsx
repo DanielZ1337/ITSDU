@@ -118,7 +118,7 @@ export default function CourseCard({
 
 				{/* Subtle gradient background on hover */}
 				<div className={cn(
-					"absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+					"absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-300",
 					color.bg,
 				)} />
 

@@ -20,8 +20,8 @@ export default function SidebarUser() {
 						"w-full flex items-center justify-center",
 						"p-2 mx-1 rounded-xl",
 						"transition-all duration-200 ease-out",
-						"hover:bg-foreground/[0.08] active:scale-95",
-						(isHovering || isOpen) && "bg-foreground/[0.05]"
+						"hover:bg-foreground/8 active:scale-95",
+						(isHovering || isOpen) && "bg-foreground/5"
 					)}
 				>
 					<ProfileAvatar

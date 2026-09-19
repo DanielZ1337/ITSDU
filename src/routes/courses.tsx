@@ -44,7 +44,7 @@ export default function CoursesIndex() {
 											{idx !== course.TeachersInCourse.length - 1 && (
 												<div
 													className={
-														"shrink-0 grow-0 my-4 h-[1px] w-full rounded-full bg-foreground/50"
+														"shrink-0 grow-0 my-4 h-px w-full rounded-full bg-foreground/50"
 													}
 												/>
 											)}

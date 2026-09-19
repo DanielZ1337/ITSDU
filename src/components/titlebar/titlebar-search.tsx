@@ -176,7 +176,7 @@ export default function TitlebarSearch() {
 				</div>
 				<CommandList
 					className={
-						"overflow-hidden h-[var(--cmdk-list-height)] transition-height scroll-py-2"
+						"overflow-hidden h-(--cmdk-list-height) transition-height scroll-py-2"
 					}
 				>
 					<motion.div

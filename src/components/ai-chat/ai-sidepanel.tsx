@@ -329,7 +329,7 @@ export default function AISidePanel({
 						</div>
 						{messageIsLoading && (
 							<Button
-								className="flex-shrink-0 bg-white/50 text-black hover:bg-white/40 dark:bg-white dark:hover:bg-white/90"
+								className="shrink-0 bg-white/50 text-black hover:bg-white/40 dark:bg-white dark:hover:bg-white/90"
 								onClick={abortResponse}
 							>
 								<BsStopCircleFill size={24} className="mr-2 text-red-500/80" />
@@ -356,7 +356,7 @@ export default function AISidePanel({
 								}
 								type="submit"
 								variant={"secondary"}
-								className="ml-2 flex-shrink-0"
+								className="ml-2 shrink-0"
 							>
 								Send
 							</Button>

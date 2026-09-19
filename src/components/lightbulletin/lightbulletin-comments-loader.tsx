@@ -10,7 +10,7 @@ export default function LightbulletinCommentsLoader({
             {[...Array(Math.min(count, 5)).keys()].map((i) => (
                 <div key={i} className="flex gap-3 p-2">
                     {/* Avatar */}
-                    <Skeleton className="h-8 w-8 rounded-full flex-shrink-0" />
+                    <Skeleton className="h-8 w-8 rounded-full shrink-0" />
 
                     {/* Content */}
                     <div className="flex-1 space-y-2">

@@ -350,7 +350,7 @@ function CalendarPlanner({
 				/>
 			) : (
 				<div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-					<section className="flex min-h-0 flex-col overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 dark:bg-foreground/[0.02]">
+					<section className="flex min-h-0 flex-col overflow-hidden rounded-2xl bg-card shadow-sm ring-1 ring-border/60 dark:bg-foreground/2">
 						{view === "month" && (
 							<MonthView
 								anchorDate={anchorDate}
@@ -447,7 +447,7 @@ function CalendarHeader({
 				</p>
 			</div>
 
-			<dl className="flex items-stretch self-start divide-x divide-border/60 rounded-xl bg-foreground/[0.03] ring-1 ring-border/50">
+			<dl className="flex items-stretch self-start divide-x divide-border/60 rounded-xl bg-foreground/3 ring-1 ring-border/50">
 				<HeaderStat label={t("common.today")} value={todayCount} />
 				<HeaderStat label={t("common.upcoming")} value={upcomingCount} />
 				<HeaderStat
@@ -461,7 +461,7 @@ function CalendarHeader({
 
 function HeaderStat({ label, value }: { label: string; value: number }) {
 	return (
-		<div className="flex min-w-[5rem] flex-col px-4 py-2.5">
+		<div className="flex min-w-20 flex-col px-4 py-2.5">
 			<dt className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
 				{label}
 			</dt>
@@ -500,7 +500,7 @@ function CalendarToolbar({
 	const { locale } = useLocale();
 	const t = useT();
 	return (
-		<div className="flex flex-col gap-2 rounded-xl bg-foreground/[0.03] p-2 ring-1 ring-border/50">
+		<div className="flex flex-col gap-2 rounded-xl bg-foreground/3 p-2 ring-1 ring-border/50">
 			<div className="flex flex-wrap items-center gap-2">
 				<Button
 					type="button"
@@ -715,10 +715,10 @@ function MonthCell({
 			}}
 			className={cn(
 				"relative flex min-h-[112px] min-w-0 flex-col gap-1 border-b border-r border-border/40 p-1.5 text-left outline-none transition-colors motion-reduce:transition-none",
-				"hover:bg-foreground/[0.03] focus-visible:bg-foreground/[0.05]",
-				!currentMonth && "bg-foreground/[0.015]",
+				"hover:bg-foreground/3 focus-visible:bg-foreground/5",
+				!currentMonth && "bg-foreground/1.5",
 				today &&
-					"bg-gradient-to-br from-primary/[0.12] via-primary/[0.04] to-transparent",
+					"bg-linear-to-br from-primary/12 via-primary/4 to-transparent",
 				selected && "ring-1 ring-inset ring-primary/50",
 			)}
 		>
@@ -756,7 +756,7 @@ function MonthCell({
 							clickEvent.stopPropagation();
 							onSelectDay(startOfDay(day));
 						}}
-						className="mt-0.5 rounded-md px-1.5 py-0.5 text-left text-[11px] font-medium text-muted-foreground transition-colors hover:bg-foreground/[0.06] hover:text-foreground motion-reduce:transition-none"
+						className="mt-0.5 rounded-md px-1.5 py-0.5 text-left text-[11px] font-medium text-muted-foreground transition-colors hover:bg-foreground/6 hover:text-foreground motion-reduce:transition-none"
 					>
 						+{more} more
 					</button>
@@ -785,7 +785,7 @@ function MonthChip({
 			}}
 			className={cn(
 				"group flex w-full items-center gap-1.5 rounded-md py-[3px] pl-1 pr-1.5 text-left transition-colors motion-reduce:transition-none",
-				past ? "hover:bg-foreground/[0.06]" : accent.chipBg,
+				past ? "hover:bg-foreground/6" : accent.chipBg,
 			)}
 		>
 			<span
@@ -856,7 +856,7 @@ function WeekView({
 							key={day.toISOString()}
 							className={cn(
 								"flex min-h-0 flex-col border-r border-border/40 last:border-r-0",
-								today && "bg-primary/[0.03]",
+								today && "bg-primary/3",
 							)}
 						>
 							<button
@@ -864,7 +864,7 @@ function WeekView({
 								onClick={() => onSelectDay(startOfDay(day))}
 								className={cn(
 									"sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border/50 bg-card/90 px-3 py-2.5 text-left backdrop-blur transition-colors dark:bg-background/80",
-									selected && "bg-primary/[0.06] dark:bg-primary/[0.08]",
+									selected && "bg-primary/6 dark:bg-primary/8",
 								)}
 							>
 								<div className="flex items-baseline gap-2">
@@ -939,7 +939,7 @@ function WeekEventBlock({
 			onClick={onClick}
 			className={cn(
 				"group flex w-full items-stretch gap-2 overflow-hidden rounded-lg p-2 text-left transition-all duration-150 hover:-translate-y-px hover:shadow-sm motion-reduce:transition-none motion-reduce:hover:translate-y-0",
-				past ? "bg-foreground/[0.03] opacity-70" : accent.soft,
+				past ? "bg-foreground/3 opacity-70" : accent.soft,
 			)}
 		>
 			<span
@@ -987,7 +987,7 @@ function DayView({
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col">
-			<header className="shrink-0 border-b border-border/60 bg-gradient-to-b from-foreground/[0.03] to-transparent px-5 py-4">
+			<header className="shrink-0 border-b border-border/60 bg-linear-to-b from-foreground/3 to-transparent px-5 py-4">
 				<p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
 					{format(date, "EEEE")}
 				</p>
@@ -1048,7 +1048,7 @@ function DayTimelineRow({
 		<li className="relative">
 			<span
 				className={cn(
-					"absolute -left-[27px] top-4 h-2.5 w-2.5 rounded-full ring-4 ring-card dark:ring-background",
+					"absolute left-[-27px] top-4 h-2.5 w-2.5 rounded-full ring-4 ring-card dark:ring-background",
 					past ? "bg-muted-foreground/50" : accent.dot,
 				)}
 			/>
@@ -1056,7 +1056,7 @@ function DayTimelineRow({
 				type="button"
 				onClick={onClick}
 				className={cn(
-					"group flex w-full gap-3 rounded-xl p-2 text-left transition-colors hover:bg-foreground/[0.04] motion-reduce:transition-none",
+					"group flex w-full gap-3 rounded-xl p-2 text-left transition-colors hover:bg-foreground/4 motion-reduce:transition-none",
 					past && "opacity-70",
 				)}
 			>
@@ -1189,7 +1189,7 @@ function AgendaRow({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"group flex w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-foreground/[0.03] motion-reduce:transition-none",
+				"group flex w-full items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-foreground/3 motion-reduce:transition-none",
 				past && "opacity-60",
 			)}
 		>
@@ -1246,8 +1246,8 @@ function DaySidePanel({
 }) {
 	const t = useT();
 	return (
-		<aside className="hidden min-h-0 flex-col overflow-hidden rounded-2xl bg-muted/30 ring-1 ring-border/60 dark:bg-foreground/[0.03] xl:flex">
-			<header className="shrink-0 border-b border-border/50 bg-gradient-to-b from-foreground/[0.04] to-transparent px-4 py-4">
+		<aside className="hidden min-h-0 flex-col overflow-hidden rounded-2xl bg-muted/30 ring-1 ring-border/60 dark:bg-foreground/3 xl:flex">
+			<header className="shrink-0 border-b border-border/50 bg-linear-to-b from-foreground/4 to-transparent px-4 py-4">
 				<p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
 					{format(date, "EEEE")}
 				</p>
@@ -1303,7 +1303,7 @@ function RailRow({
 			type="button"
 			onClick={onClick}
 			className={cn(
-				"group flex w-full items-stretch gap-2.5 rounded-xl p-2.5 text-left transition-colors hover:bg-foreground/[0.05] motion-reduce:transition-none",
+				"group flex w-full items-stretch gap-2.5 rounded-xl p-2.5 text-left transition-colors hover:bg-foreground/5 motion-reduce:transition-none",
 				past && "opacity-60",
 			)}
 		>
@@ -1396,7 +1396,7 @@ function EventDetailDrawer({
 						<SheetHeader className="relative shrink-0 space-y-0 overflow-hidden border-b border-border/60 px-5 pb-4 pt-5 text-left">
 							<div
 								className={cn(
-									"pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b to-transparent",
+									"pointer-events-none absolute inset-x-0 top-0 h-24 bg-linear-to-b to-transparent",
 									accent.gradient,
 								)}
 							/>
@@ -1427,7 +1427,7 @@ function EventDetailDrawer({
 
 						<ScrollArea className="min-h-0 flex-1">
 							<div className="flex flex-col gap-5 p-5 pb-8">
-								<div className="grid grid-cols-2 overflow-hidden rounded-xl bg-foreground/[0.03] ring-1 ring-border/50">
+								<div className="grid grid-cols-2 overflow-hidden rounded-xl bg-foreground/3 ring-1 ring-border/50">
 									<DetailFact
 										icon={<Clock className="h-3.5 w-3.5" />}
 										label={t("calendar.detail.time")}
@@ -1499,11 +1499,11 @@ function EventDetailDrawer({
 										{t("calendar.detail.description")}
 									</h3>
 									{description ? (
-										<div className="whitespace-pre-wrap rounded-xl bg-foreground/[0.03] p-4 text-sm leading-6 ring-1 ring-border/40">
+										<div className="whitespace-pre-wrap rounded-xl bg-foreground/3 p-4 text-sm leading-6 ring-1 ring-border/40">
 											{description}
 										</div>
 									) : (
-										<p className="rounded-xl bg-foreground/[0.02] p-4 text-sm text-muted-foreground ring-1 ring-border/40">
+										<p className="rounded-xl bg-foreground/2 p-4 text-sm text-muted-foreground ring-1 ring-border/40">
 											{noDescription}
 										</p>
 									)}
@@ -1563,7 +1563,7 @@ function DetailFact({
 				{icon}
 				{label}
 			</span>
-			<span className="break-words text-sm font-medium">{value}</span>
+			<span className="wrap-break-word text-sm font-medium">{value}</span>
 		</div>
 	);
 }
@@ -1575,7 +1575,7 @@ function DetailFact({
 function CalendarSkeleton() {
 	return (
 		<div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-			<div className="overflow-hidden rounded-2xl ring-1 ring-border/60 dark:bg-foreground/[0.02]">
+			<div className="overflow-hidden rounded-2xl ring-1 ring-border/60 dark:bg-foreground/2">
 				<div className="grid grid-cols-7 gap-px bg-border/30 p-px">
 					{Array.from({ length: 35 }, (_, index) => (
 						<div
@@ -1589,7 +1589,7 @@ function CalendarSkeleton() {
 					))}
 				</div>
 			</div>
-			<div className="hidden rounded-2xl p-4 ring-1 ring-border/60 dark:bg-foreground/[0.03] xl:block">
+			<div className="hidden rounded-2xl p-4 ring-1 ring-border/60 dark:bg-foreground/3 xl:block">
 				<Skeleton className="h-8 w-2/3 rounded" />
 				<div className="mt-4 flex flex-col gap-2">
 					<Skeleton className="h-14 rounded-lg" />
@@ -1613,7 +1613,7 @@ function CalendarError({
 		import.meta.env.DEV && error instanceof Error ? error.message : null;
 
 	return (
-		<div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl p-10 text-center ring-1 ring-border/60 dark:bg-foreground/[0.02]">
+		<div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-2xl p-10 text-center ring-1 ring-border/60 dark:bg-foreground/2">
 			<div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
 				<AlertTriangle className="h-6 w-6" />
 			</div>
@@ -1648,7 +1648,7 @@ function EmptyState({
 }) {
 	return (
 		<div className="flex flex-col items-center justify-center px-6 py-12 text-center">
-			<div className="flex h-12 w-12 items-center justify-center rounded-full bg-foreground/[0.06] text-muted-foreground">
+			<div className="flex h-12 w-12 items-center justify-center rounded-full bg-foreground/6 text-muted-foreground">
 				{icon}
 			</div>
 			<p className="mt-4 text-sm font-semibold">{title}</p>

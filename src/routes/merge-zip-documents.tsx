@@ -87,7 +87,7 @@ function PageSkeleton() {
 	return (
 		<div className="flex h-full w-full gap-6 p-6">
 			{/* Left panel skeleton */}
-			<div className="flex w-80 flex-shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 p-4">
+			<div className="flex w-80 shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 p-4">
 				<Skeleton className="mb-4 h-8 w-48" />
 				<Skeleton className="mb-6 h-4 w-full" />
 				<div className="flex gap-2 mb-6">
@@ -296,9 +296,9 @@ export default function MergeZIPDocuments() {
 		<MergeDocumentsContext.Provider value={contextValue}>
 			<div className="flex h-full w-full gap-6 p-6 overflow-hidden">
 				{/* Left Panel - Selected Documents */}
-				<div className="flex w-96 flex-shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden">
+				<div className="flex w-96 shrink-0 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
+					<div className="shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
 						<div className="flex items-center justify-between mb-1">
 							<h2 className="text-lg font-semibold text-foreground">Selected Documents</h2>
 							{selectedCount > 0 && (
@@ -314,7 +314,7 @@ export default function MergeZIPDocuments() {
 
 					{/* Action Buttons */}
 					{selectedCount > 0 && (
-						<div className="flex-shrink-0 border-b border-border/50 p-3 space-y-2">
+						<div className="shrink-0 border-b border-border/50 p-3 space-y-2">
 							<div className="flex gap-2">
 								<Button
 									variant="default"
@@ -416,7 +416,7 @@ export default function MergeZIPDocuments() {
 				{/* Right Panel - Course Browser */}
 				<div className="flex flex-1 flex-col rounded-xl border border-border/50 bg-card/50 overflow-hidden min-w-0">
 					{/* Header */}
-					<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
+					<div className="shrink-0 border-b border-border/50 bg-muted/30 px-5 py-4">
 						<h2 className="text-lg font-semibold text-foreground">Browse Courses</h2>
 						<p className="text-sm text-muted-foreground">
 							Select documents from your courses
@@ -538,11 +538,11 @@ function SortableDocumentItem({
 			<button
 				{...attributes}
 				{...listeners}
-				className="flex-shrink-0 cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
+				className="shrink-0 cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing"
 			>
 				<GripVertical className="h-4 w-4" />
 			</button>
-			<span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-primary">
+			<span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-primary/10 text-xs font-medium text-primary">
 				{index + 1}
 			</span>
 			<div className="flex-1 min-w-0">
@@ -555,7 +555,7 @@ function SortableDocumentItem({
 			</div>
 			<button
 				onClick={onRemove}
-				className="flex-shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+				className="shrink-0 rounded-md p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
 			>
 				<X className="h-4 w-4" />
 			</button>
@@ -588,10 +588,10 @@ function CourseAccordionItem({
 			>
 				<AccordionTrigger className="rounded-md px-3 py-2 hover:no-underline hover:bg-muted/50 [&>svg]:hidden [&[data-state=open]_.chevron-icon]:rotate-90">
 					<div className="flex items-center gap-2 flex-1 min-w-0">
-						<FolderOpen className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+						<FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
 						<span className="text-sm truncate">{course.Title}</span>
 					</div>
-					<ChevronRight className="chevron-icon h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200" />
+					<ChevronRight className="chevron-icon h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
 				</AccordionTrigger>
 				<AccordionContent className="pl-4 pt-1 pb-2">
 					{isOpen && (
@@ -779,7 +779,7 @@ function SelectableDocumentCard({
 				disabled={isLoading}
 				onClick={handleToggle}
 				className={cn(
-					"flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border transition-colors",
+					"flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
 					selected
 						? "border-primary bg-primary text-primary-foreground"
 						: "border-muted-foreground/30 group-hover:border-muted-foreground/50"
@@ -787,7 +787,7 @@ function SelectableDocumentCard({
 			>
 				{selected && <Check className="h-3 w-3" />}
 			</button>
-			<FileText className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+			<FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
 			<span
 				className="flex-1 text-sm truncate cursor-pointer hover:text-primary hover:underline"
 				onClick={openResource}

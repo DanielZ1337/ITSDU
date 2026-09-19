@@ -84,7 +84,7 @@ export default function LightbulletinCommentDropdown({
 								commentId: comment.Id,
 							});
 						}}
-						className="hover:!bg-destructive"
+						className="hover:bg-destructive!"
 					>
 						Delete
 					</DropdownMenuItem>

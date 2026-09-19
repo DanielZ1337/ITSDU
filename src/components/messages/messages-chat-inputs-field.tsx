@@ -190,7 +190,7 @@ export default function MessagesChatInputsField() {
 				<div className={"flex-1 relative"}>
 					<Textarea
 						rows={1}
-						className="max-h-48 w-full overflow-hidden min-h-[2.5rem]"
+						className="max-h-48 w-full overflow-hidden min-h-10"
 						ref={textareaRef}
 						autoFocus
 						onInput={(e) => {

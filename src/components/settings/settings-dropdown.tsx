@@ -161,7 +161,7 @@ export default function SettingsDropdown({
 						});
 					}}
 					className={
-						"hover:!bg-destructive focus:!bg-destructive hover:!text-white"
+						"hover:bg-destructive! focus:bg-destructive! hover:text-white!"
 					}
 				>
 					<span>Sign out</span>
@@ -173,7 +173,7 @@ export default function SettingsDropdown({
 						});
 					}}
 					className={
-						"hover:!bg-destructive focus:!bg-destructive hover:!text-white"
+						"hover:bg-destructive! focus:bg-destructive! hover:text-white!"
 					}
 				>
 					<span>Exit</span>

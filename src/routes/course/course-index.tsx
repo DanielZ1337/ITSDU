@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { Bell, Files, PanelRightClose, PanelRightOpen, Search, X } from "lucide-react";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import "@/styles/splitter-custom.css";
 import {
 	ResizableHandle,
 	ResizablePanel,
@@ -91,7 +90,7 @@ export default function CourseIndex() {
 	return (
 		<div className="flex flex-col flex-1 h-full max-h-full overflow-hidden">
 			{/* Unified Header */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-background">
+			<div className="shrink-0 border-b border-border/50 bg-background">
 				<div className="flex items-center justify-between px-6 py-3">
 					<div className="flex items-center gap-3">
 						<div className="flex items-center justify-center w-9 h-9 rounded-lg bg-primary/10">
@@ -214,7 +213,7 @@ function ResourcesPanel({
 	return (
 		<div className="flex flex-col h-full max-h-full overflow-hidden border-l border-border/50 bg-muted/30">
 			{/* Resources Header with Search */}
-			<div className="flex-shrink-0 p-3 border-b border-border/30">
+			<div className="shrink-0 p-3 border-b border-border/30">
 				<div className="relative">
 					<Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
 					<SearchInput
@@ -261,7 +260,7 @@ function ResourcesSkeleton() {
 		<div className="space-y-2 p-2">
 			{Array.from({ length: 10 }).map((_, i) => (
 				<div key={i} className="flex items-center gap-2">
-					<Skeleton className="h-6 w-6 rounded flex-shrink-0 bg-foreground/20" />
+					<Skeleton className="h-6 w-6 rounded shrink-0 bg-foreground/20" />
 					<Skeleton
 						className="h-6 rounded bg-foreground/20"
 						style={{ width: `${60 + (i % 3) * 15}%` }}

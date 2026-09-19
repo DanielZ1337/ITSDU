@@ -24,7 +24,7 @@ export default function UserProfile() {
 				</h2>
 				<div className="rounded-lg border px-4 py-8 bg-foreground/10">
 					<div className="mb-4 flex items-center justify-center space-x-20">
-						<div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-full group">
+						<div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full group">
 							<button className="absolute inset-0 z-10 flex items-center justify-center rounded-full opacity-0 backdrop-blur-sm transition-all group-hover:bg-black/20 group-hover:opacity-100">
 								<label className="absolute inset-0 flex cursor-pointer items-center justify-center text-sm font-semibold text-white">
 									Upload

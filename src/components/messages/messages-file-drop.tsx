@@ -67,7 +67,7 @@ export function MessagesFileDrop({
 					value={uploadProgress}
 				/>
 			)}
-			{/*<h2 className="m-0 text-xs leading-5 h-[1.25rem] text-foreground/25">
+			{/*<h2 className="m-0 text-xs leading-5 h-5 text-foreground/25">
                 Image (2MB)
             </h2>*/}
 		</button>

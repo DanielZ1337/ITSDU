@@ -146,7 +146,7 @@ export default function SearchResourcesDialog({
 				className={cn(
 					"h-9 border-0 inline-flex items-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground relative justify-start text-sm text-muted-foreground",
 					sidebarActive
-						? "lg:border-1 lg:py-2 lg:pr-12 lg:w-40 xl:w-52 justify-start"
+						? "lg:border lg:py-2 lg:pr-12 lg:w-40 xl:w-52 justify-start"
 						: "w-full mx-auto justify-center",
 				)}
 				onClick={() => {

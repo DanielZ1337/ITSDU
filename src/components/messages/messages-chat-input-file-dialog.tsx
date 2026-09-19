@@ -49,7 +49,7 @@ export default function MessagesChatInputFileDialog({
 				/>
 				<div
 					className={
-						"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-[20rem] p-1"
+						"flex flex-col gap-2 overflow-x-hidden overflow-y-auto break-all max-h-80 p-1"
 					}
 				>
 					{files?.map((file, idx) => (

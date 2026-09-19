@@ -186,7 +186,7 @@ export default function Layout() {
 				</Suspense>
 				<div
 					className={
-						"no-drag h-full flex flex-1 overflow-hidden dark:bg-foreground/[2%] transition-colors rounded-tl-md border-t border-l"
+						"no-drag h-full flex flex-1 overflow-hidden dark:bg-foreground/2 transition-colors rounded-tl-md border-t border-l"
 					}
 				>
 					<ErrorBoundary fallback={<div>ERROR</div>}>

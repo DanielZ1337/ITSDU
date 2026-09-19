@@ -68,7 +68,7 @@ export default function Sidebar() {
 								}}
 								className="flex flex-col gap-0.5"
 							>
-								<div className="my-3 mx-2 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+								<div className="my-3 mx-2 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 								{courseNavLinks.map((link, index) => (
 									<Suspense fallback={null} key={link.href}>
 										<m.div
@@ -99,7 +99,7 @@ export default function Sidebar() {
 
 				{/* User section */}
 				<div className="mt-auto pt-2">
-					<div className="mx-2 mb-3 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+					<div className="mx-2 mb-3 h-px bg-linear-to-r from-transparent via-border to-transparent" />
 					<ErrorBoundary fallback={<SidebarUserFallback />}>
 						<Suspense fallback={<SidebarUserFallback />}>
 							<LazySidebarUser />

@@ -18,7 +18,7 @@ export default function WeekHeaderDay({
 				"relative flex group rounded-lg mx-1 transition-all duration-300 cursor-pointer justify-center w-16",
 				isActive
 					? "bg-purple-600 shadow-lg dark-shadow"
-					: "hover:bg-purple-500 dark:bg-foreground/[2%] hover:shadow-lg hover-dark-shadow",
+					: "hover:bg-purple-500 dark:bg-foreground/2 hover:shadow-lg hover-dark-shadow",
 			)}
 		>
 			{isActive && (

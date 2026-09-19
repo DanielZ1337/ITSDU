@@ -18,7 +18,7 @@ function NotificationDetailSkeleton() {
 	return (
 		<div className="flex h-full w-full flex-col overflow-hidden">
 			{/* Header skeleton */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
+			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
 				<Skeleton className="h-4 w-24 mb-3" />
 				<Skeleton className="h-7 w-96" />
 			</div>
@@ -90,7 +90,7 @@ export default function NotificationID() {
 			<title>{currentNotification.Text}</title>
 
 			{/* Header */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
+			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-4">
 				<Link
 					to="/notifications"
 					className="mb-2 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"

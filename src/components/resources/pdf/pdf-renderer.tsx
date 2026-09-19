@@ -636,7 +636,7 @@ export default function PdfRenderer({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  className="gap-1 group px-2 h-8 min-w-[5.5rem] tabular-nums"
+                  className="gap-1 group px-2 h-8 min-w-22 tabular-nums"
                   aria-label="Zoom level"
                   variant="ghost"
                 >
@@ -832,7 +832,7 @@ export default function PdfRenderer({
                     fitMode === "custom" && "rounded-sm shadow-lg"
                   )}>
                     <Page
-                      className="block [&.react-pdf__Page]:!bg-transparent [&>canvas]:block"
+                      className="block [&.react-pdf__Page]:bg-transparent! [&>canvas]:block"
                       width={baseWidth}
                       pageNumber={currPage}
                       scale={fitMode === "custom" ? scale : 1}

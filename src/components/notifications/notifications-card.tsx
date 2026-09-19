@@ -36,10 +36,10 @@ export default function NotificationCard({
 			{/* Header */}
 			<div className="flex items-start gap-3">
 				<div className={cn(
-					"flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0 overflow-hidden",
+					"flex h-11 w-11 items-center justify-center rounded-xl shrink-0 overflow-hidden",
 					isAnnouncement
-						? "bg-gradient-to-br from-purple-500/20 to-pink-500/20 ring-1 ring-purple-500/20"
-						: "bg-gradient-to-br from-primary/10 to-orange-500/10 ring-1 ring-primary/20"
+						? "bg-linear-to-br from-purple-500/20 to-pink-500/20 ring-1 ring-purple-500/20"
+						: "bg-linear-to-br from-primary/10 to-orange-500/10 ring-1 ring-primary/20"
 				)}>
 					<img
 						loading="lazy"

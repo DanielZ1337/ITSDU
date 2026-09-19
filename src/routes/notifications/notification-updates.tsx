@@ -40,7 +40,7 @@ function NotificationUpdates() {
 		<div className="flex h-full w-full flex-col overflow-hidden">
 			<title>Recent Updates</title>
 			{/* Header */}
-			<div className="flex-shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
+			<div className="shrink-0 border-b border-border/50 bg-muted/30 px-6 py-5">
 				<div className="flex items-center justify-between gap-4">
 					<div className="flex items-center gap-3">
 						<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">

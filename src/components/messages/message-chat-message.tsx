@@ -136,7 +136,7 @@ export default function MessageChatMessage({
 									<DropdownMenuItem
 										onClick={handleDelete}
 										disabled={isDeletingMessage}
-										className="hover:!bg-destructive"
+										className="hover:bg-destructive!"
 									>
 										Delete
 									</DropdownMenuItem>

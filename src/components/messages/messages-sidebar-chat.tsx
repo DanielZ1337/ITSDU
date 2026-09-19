@@ -103,7 +103,7 @@ export default function MessagesSidebarChat({
 						});
 					}}
 					className={
-						"group-hover:flex hidden shrink-0 ml-auto mr-[-0.5rem] p-1 rounded-full"
+						"group-hover:flex hidden shrink-0 ml-auto -mr-2 p-1 rounded-full"
 					}
 				>
 					<Trash2Icon

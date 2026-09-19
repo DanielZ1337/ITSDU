@@ -21,7 +21,7 @@ export default function Message({
 				role === "user" && "flex-row-reverse",
 			)}
 		>
-			<div className="flex-shrink-0">
+			<div className="shrink-0">
 				<MessageAvatar role={role} />
 			</div>
 			<div className="mx-2 flex flex-col overflow-x-hidden drop-shadow">

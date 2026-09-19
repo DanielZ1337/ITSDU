@@ -36,7 +36,7 @@ export default function SidebarItem({
 							: "p-2.5 mx-1 rounded-xl",
 						"cursor-pointer",
 						"transition-all duration-200 ease-out",
-						"hover:bg-foreground/[0.08] active:scale-95",
+						"hover:bg-foreground/8 active:scale-95",
 						isActive
 							? "text-foreground"
 							: "text-muted-foreground hover:text-foreground",

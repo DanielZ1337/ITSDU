@@ -25,7 +25,7 @@ export default function MessagesOtherActionsDropdown() {
 				<DropdownMenuItem disabled>See participants</DropdownMenuItem>
 				<DropdownMenuItem disabled>Mark as unread</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem className="hover:!bg-destructive" disabled>
+				<DropdownMenuItem className="hover:bg-destructive!" disabled>
 					Leave chat
 				</DropdownMenuItem>
 			</DropdownMenuContent>

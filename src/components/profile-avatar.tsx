@@ -18,10 +18,10 @@ export default function ProfileAvatar({
 	children?: React.ReactNode;
 }) {
 	return (
-		<Avatar className={cn("flex-shrink-0", className)}>
+		<Avatar className={cn("shrink-0", className)}>
 			<AvatarImage src={src} alt={name} className={"object-cover"} />
 			<AvatarFallback>
-				<Avatar className={cn("flex-shrink-0", classNameFallbackAvatar)}>
+				<Avatar className={cn("shrink-0", classNameFallbackAvatar)}>
 					<AvatarImage
 						src={fallbackImage}
 						alt={name}

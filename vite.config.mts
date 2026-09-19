@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "node:path";
 // import electron from 'vite-plugin-electron/simple'
 import electron from "vite-plugin-electron";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 
 // Production-only CSP (dev needs inline scripts for HMR). connect/img stay on https: because course content
@@ -54,6 +55,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    tailwindcss(),
     csp(),
     electron([
       {

@@ -23,7 +23,7 @@ export default function LightbulletinAvatar({
 }
 
 /**
- * <Avatar className={"flex-shrink-0 w-10 h-10 border-2 border-primary/20"}>
+ * <Avatar className={"shrink-0 w-10 h-10 border-2 border-primary/20"}>
  <AvatarImage src={bulletin.PublishedBy.ProfileImageUrlSmall}
  alt={bulletin.PublishedBy.FullName}
  className={"object-cover"}

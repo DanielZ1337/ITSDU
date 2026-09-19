@@ -60,7 +60,7 @@ export default function LightbulletinComment({
 			<LightbulletinAvatar
 				src={comment.Author.ProfileImageUrlSmall}
 				name={comment.Author.FullName}
-				className="mt-0.5 flex-shrink-0"
+				className="mt-0.5 shrink-0"
 			/>
 			<div className="flex-1 min-w-0">
 				<div className="flex items-baseline gap-2">
@@ -149,7 +149,7 @@ export default function LightbulletinComment({
 			{comment.Author.PersonId === user.PersonId && (
 				<>
 					{/* the dropdown menu button will move otherwise, don't know why. This works tho */}
-					<div className="flex-grow" />
+					<div className="grow" />
 					<LightbulletinCommentDropdown
 						comment={comment}
 						setIsEditing={setIsEditing}

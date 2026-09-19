@@ -57,7 +57,7 @@ export default function LightbulletinCard({
 			data-readmore={readMore}
 			data-hasreadmore={hasReadMore}
 			key={bulletin.LightBulletinId}
-			className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-300 hover:bg-gradient-to-b hover:from-muted/30 hover:to-muted/10 overflow-hidden"
+			className="group relative rounded-xl border border-border/40 bg-card/50 transition-all duration-300 hover:bg-linear-to-b hover:from-muted/30 hover:to-muted/10 overflow-hidden"
 		>
 			{/* Card Header */}
 			<div className="flex items-start justify-between gap-4 p-4 pb-0">
@@ -112,7 +112,7 @@ export default function LightbulletinCard({
 					}}
 					size="icon"
 					variant="ghost"
-					className="h-8 w-8 rounded-full flex-shrink-0 hover:bg-muted"
+					className="h-8 w-8 rounded-full shrink-0 hover:bg-muted"
 				>
 					{bulletin.IsSubscribed ? (
 						<BellRing className="w-4 h-4 text-primary" />

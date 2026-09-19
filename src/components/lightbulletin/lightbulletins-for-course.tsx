@@ -230,14 +230,14 @@ export default function LightbulletinsForCourse({
 							<div key={bulletin.LightBulletinId}>
 								{shouldMakeNewHeader && hasNextBulletin && (
 									<div className="flex items-center gap-3 py-4">
-										<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+										<div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
 										<span className="text-xs font-medium text-muted-foreground px-2">
 											{currentBulletinDate.toLocaleString("default", {
 												month: "long",
 												year: showYear ? "numeric" : undefined,
 											})}
 										</span>
-										<div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+										<div className="h-px flex-1 bg-linear-to-r from-transparent via-border to-transparent" />
 									</div>
 								)}
 								<LightbulletinCard

@@ -29,9 +29,9 @@ export function Shadow({ position }: { position: ShadowPosition }) {
 
 	//bg-neutral-100 dark:bg-neutral-800
 	const topClassName =
-		"top-0 bg-gradient-to-t from-transparent dark:to-neutral-800 to-neutral-100";
+		"top-0 bg-linear-to-t from-transparent dark:to-neutral-800 to-neutral-100";
 	const bottomClassName =
-		"bottom-0 bg-gradient-to-b from-transparent dark:to-neutral-800 to-neutral-100";
+		"bottom-0 bg-linear-to-b from-transparent dark:to-neutral-800 to-neutral-100";
 
 	const topComponent = () => {
 		return (

@@ -72,7 +72,7 @@ export default function MessagesAddRecipients() {
 				onPointerDownOutside={() => {
 					setRecipientsSearchInput("");
 				}}
-				className={"min-w-[50rem] max-h-[30rem] flex flex-col"}
+				className={"min-w-200 max-h-120 flex flex-col"}
 			>
 				<DialogHeader>
 					<DialogTitle>Create a new chat</DialogTitle>
@@ -126,7 +126,7 @@ export default function MessagesAddRecipients() {
 											setRecipientsSelected([...recipientsSelected!, recipient])
 										}
 									>
-										<Avatar className={"flex-shrink-0 w-9 h-9"}>
+										<Avatar className={"shrink-0 w-9 h-9"}>
 											<AvatarImage
 												src={recipient.ProfileImageUrl}
 												alt={recipient.SearchLabel}
@@ -164,7 +164,7 @@ export default function MessagesAddRecipients() {
 							style={{
 								scrollbarGutter: "stable",
 							}}
-							className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 min-w-[15rem] max-h-[30rem]"
+							className="flex flex-1 flex-col gap-2 overflow-y-auto overflow-x-hidden px-2 min-w-60 max-h-120"
 						>
 							{recipientsSelected.map((recipient) => (
 								<Button
@@ -179,7 +179,7 @@ export default function MessagesAddRecipients() {
 										)
 									}
 								>
-									<Avatar className={"flex-shrink-0 w-9 h-9"}>
+									<Avatar className={"shrink-0 w-9 h-9"}>
 										<AvatarImage
 											src={recipient.ProfileImageUrl}
 											alt={recipient.SearchLabel}
