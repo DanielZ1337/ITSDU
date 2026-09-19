@@ -61,7 +61,10 @@
     target: ['deb', 'AppImage'],
     artifactName: '${productName}-Linux-${version}.${ext}',
     // icon: 'build/icon.png',
-    category: 'Education'
+    category: 'Education',
+    // desktopName itself is read from package.json (electron-builder and Electron's own app_id
+    // derivation both expect it there, not in this config); this just turns on the sync.
+    syncDesktopName: true
   },
   npmRebuild: false
 }

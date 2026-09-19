@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import { CommandLoading } from "cmdk";
+import { MdOutlineClose } from "react-icons/md";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 import Providers from "@/components/providers";
@@ -72,8 +73,16 @@ function Login() {
 	}, []);
 
 	return (
-		<div className="p-4 h-screen">
-			<Command className="h-full border" loop shouldFilter={false}>
+		<div className="flex flex-col h-screen w-full px-4">
+			<div className="drag flex items-center justify-end h-8 shrink-0">
+				<button
+					className="no-drag w-6 h-6 -mr-2 rounded-full inline-flex items-center justify-center hover:bg-red-800 hover:text-white transition-colors"
+					onClick={() => window.close()}
+				>
+					<MdOutlineClose className="w-4 h-4" />
+				</button>
+			</div>
+			<Command className="flex-1 min-h-0 border mb-4" loop shouldFilter={false}>
 				<CommandInput
 					autoFocus
 					autoCapitalize=""
@@ -86,9 +95,9 @@ function Login() {
 				/>
 				<CommandList
 					className={cn(
-						"min-h-96 h-screen max-h-full",
+						"min-h-96 h-full max-h-full",
 						!memoizedOrganisations &&
-							"flex flex-col items-center justify-center",
+						"flex flex-col items-center justify-center",
 					)}
 				>
 					<CommandEmpty>No results found.</CommandEmpty>

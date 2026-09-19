@@ -19,6 +19,7 @@ import {
 } from "./security/window-security";
 import { MOCK_URL } from "./services/itslearning/mock-mode";
 import { getAutoUpdater } from "./services/updater/updater";
+import { getAppIconPath } from "./utils/icon";
 import { mark } from "./utils/perf";
 
 process.env.DIST = path.join(__dirname, "../dist");
@@ -70,7 +71,7 @@ async function createMainWindow() {
 			: startUpTheme === "dark";
 
 	win = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
+		icon: getAppIconPath(),
 		webPreferences: {
 			preload: path.join(__dirname, "preload.js"),
 			contextIsolation: true,
@@ -206,7 +207,7 @@ export async function createAuthWindow(
 			: startUpTheme === "dark";
 
 	authWindow = new BrowserWindow({
-		icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
+		icon: getAppIconPath(),
 		webPreferences: {
 			preload: path.join(__dirname, "login_preload.js"),
 			contextIsolation: true,
@@ -217,15 +218,21 @@ export async function createAuthWindow(
 		},
 		width: 800,
 		height: 600,
+		// Frameless windows don't get the same size hints from some Linux WMs/compositors as decorated
+		// ones; pinning min/max alongside width/height keeps this a fixed 800x600 dialog everywhere.
+		minWidth: 800,
+		minHeight: 600,
+		maxWidth: 800,
+		maxHeight: 600,
 		autoHideMenuBar: true,
 		darkTheme: shouldUseDarkTheme,
 		backgroundColor: shouldUseDarkTheme ? "black" : "white",
 		resizable: false,
-		/* 
-        alwaysOnTop: true,
-        focusable: true,
-        roundedCorners: true,
-        show: true, */
+		// Same as the main window: native (server-side) window decorations segfault Chromium's GTK
+		// integration on some Linux setups (e.g. GNOME/GTK versions where the "font-antialiasing" key
+		// is missing from org.gnome.desktop.interface). Frameless avoids that codepath entirely.
+		frame: false,
+		roundedCorners: true,
 	});
 
 	registerTrustedWindow(authWindow);
@@ -351,7 +358,7 @@ function navigateTrayTo(routePath: string) {
 
 async function checkForUpdatesFromTray() {
 	const { Notification } = await import("electron");
-	const icon = path.join(process.env.VITE_PUBLIC, "icon.ico");
+	const icon = getAppIconPath();
 
 	try {
 		const autoUpdater = await getAutoUpdater();
@@ -612,7 +619,7 @@ app.whenReady().then(async () => {
 					buttons: ["Yes", "Minimize", "No"],
 					title: "Confirm",
 					message: "Are you sure you want to quit?",
-					icon: path.join(process.env.VITE_PUBLIC, "icon.ico"),
+					icon: getAppIconPath(),
 					noLink: true,
 				})
 				.then((result) => {
@@ -633,7 +640,7 @@ app.whenReady().then(async () => {
 				});
 		});
 
-		const tray = new Tray(path.join(process.env.VITE_PUBLIC, "icon.ico"));
+		const tray = new Tray(getAppIconPath());
 
 		tray.on("double-click", () => {
 			win?.show();
