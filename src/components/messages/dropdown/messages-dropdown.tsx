@@ -65,7 +65,7 @@ export default function MessagesDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
-					<MessageCircle />
+					<MessageCircle className="h-5 w-5" />
 					{unreadThreads && unreadThreads.length > 0 && (
 						<UnreadNotificationsPingIndicator amount={unreadThreads.length} />
 					)}

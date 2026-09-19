@@ -1,5 +1,4 @@
-import { ArrowRightIcon } from "lucide-react";
-import { AiOutlineNotification } from "react-icons/ai";
+import { ArrowRightIcon, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { UnreadNotificationIndicator } from "@/components/messages/unread-notification-indicator.tsx";
 import { Button } from "@/components/ui/button";
@@ -58,7 +57,7 @@ export default function NotificationsDropdown() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant={"ghost"} size={"icon"} className={"shrink-0 relative"}>
-					<AiOutlineNotification className={"w-7 h-7"} />
+					<Megaphone className="h-5 w-5" />
 					{unreadNotifications.length > 0 && (
 						<UnreadNotificationsPingIndicator
 							amount={unreadNotifications.length}

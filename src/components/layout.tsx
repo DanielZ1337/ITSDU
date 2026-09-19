@@ -180,7 +180,7 @@ export default function Layout() {
 			<Suspense fallback={null}>
 				<BrowserNavLazy />
 			</Suspense>
-			<div className="relative flex max-h-screen flex-1 overflow-hidden drag bg-background transition-colors ">
+			<div className="relative flex max-h-screen flex-1 overflow-hidden bg-background transition-colors">
 				<Suspense fallback={null}>
 					<SidebarLazy />
 				</Suspense>
