@@ -42,159 +42,119 @@ export const calendarWeekStartOptions = ["monday", "sunday"] as const;
 export type CalendarWeekStartSetting =
 	(typeof calendarWeekStartOptions)[number];
 
+// --- Setting definitions -------------------------------------------------------------------------------------------
+// One entry per setting: its default and how to validate a stored/incoming value. `SettingsOptions`, `defaultSettings`,
+// `validateSetting` and `normalizeSettings` are all derived from `settingDefinitions`, so adding a setting is one line.
+// Keys are persisted in electron-store: never rename an existing one.
+
+type Definition<T> = {
+	readonly default: T;
+	/** Returns the value when valid, otherwise the default. */
+	readonly parse: (value: unknown) => T;
+};
+
+/** Build a definition from a check that returns the cleaned value, or `undefined` when the input is invalid. */
+const define = <T>(
+	fallback: T,
+	check: (value: unknown) => T | undefined,
+): Definition<T> => ({
+	default: fallback,
+	parse: (value) => check(value) ?? fallback,
+});
+
+const oneOf = <const O extends readonly string[]>(
+	options: O,
+	fallback: O[number],
+) =>
+	define<O[number]>(fallback, (value) =>
+		typeof value === "string" && (options as readonly string[]).includes(value)
+			? value
+			: undefined,
+	);
+
+const flag = (fallback: boolean) =>
+	define(fallback, (value) => (typeof value === "boolean" ? value : undefined));
+
+const clampedInt = (fallback: number, min: number, max: number) =>
+	define(fallback, (value) =>
+		typeof value === "number" && Number.isFinite(value)
+			? Math.min(Math.max(Math.round(value), min), max)
+			: undefined,
+	);
+
+const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+const timeOfDay = (fallback: string) =>
+	define(fallback, (value) =>
+		typeof value === "string" && timePattern.test(value) ? value : undefined,
+	);
+
+const optionalPath = define<string | null>(null, (value) =>
+	typeof value === "string" && value.trim().length > 0 ? value : undefined,
+);
+
+const settingDefinitions = {
+	theme: oneOf(themeOptions, "system"),
+	language: oneOf(languageOptions, "system"),
+	defaultLandingPage: oneOf(landingPageOptions, "overview"),
+	courseSortBy: oneOf(courseSortOptions, "LastOnline"),
+	sidebarDensity: oneOf(sidebarDensityOptions, "comfortable"),
+	notificationsMessages: flag(true),
+	notificationsTasks: flag(true),
+	notificationsAppUpdates: flag(true),
+	notificationQuietHoursEnabled: flag(false),
+	notificationQuietHoursStart: timeOfDay("22:00"),
+	notificationQuietHoursEnd: timeOfDay("07:00"),
+	downloadDirectory: optionalPath,
+	downloadAutoOpen: oneOf(downloadAutoOpenOptions, "never"),
+	resourceCacheMaxSizeMb: clampedInt(512, 50, 10_240),
+	resourceCacheMode: oneOf(resourceCacheModeOptions, "opened"),
+	calendarDefaultView: oneOf(calendarViewOptions, "agenda"),
+	calendarWeekStartsOn: oneOf(calendarWeekStartOptions, "monday"),
+	calendarShowWeekends: flag(true),
+	CustomPDFrenderer: flag(true),
+	CustomTitleBar: flag(true),
+	CustomTitleBarButtons: flag(true),
+	UploadAIChats: flag(false),
+	pdfAIChatSidepanelOpenByDefault: flag(false),
+	DefaultAIChatSidepanel: flag(false),
+	CustomPDFSidebarOpened: flag(true),
+	updatesAutoCheckOnStartup: flag(true),
+	authRefreshIntervalMinutes: clampedInt(45, 5, 240),
+} as const;
+
+type Definitions = typeof settingDefinitions;
+
 export type SettingsOptions = {
-	theme: ThemeSetting;
-	language: LanguageSetting;
-	defaultLandingPage: LandingPageSetting;
-	courseSortBy: CourseSortSetting;
-	sidebarDensity: SidebarDensitySetting;
-	notificationsMessages: boolean;
-	notificationsTasks: boolean;
-	notificationsAppUpdates: boolean;
-	notificationQuietHoursEnabled: boolean;
-	notificationQuietHoursStart: string;
-	notificationQuietHoursEnd: string;
-	downloadDirectory: string | null;
-	downloadAutoOpen: DownloadAutoOpenSetting;
-	resourceCacheMaxSizeMb: number;
-	resourceCacheMode: ResourceCacheModeSetting;
-	calendarDefaultView: CalendarViewSetting;
-	calendarWeekStartsOn: CalendarWeekStartSetting;
-	calendarShowWeekends: boolean;
-	CustomPDFrenderer: boolean;
-	CustomTitleBar: boolean;
-	CustomTitleBarButtons: boolean;
-	UploadAIChats: boolean;
-	pdfAIChatSidepanelOpenByDefault: boolean;
-	DefaultAIChatSidepanel: boolean;
-	CustomPDFSidebarOpened: boolean;
-	updatesAutoCheckOnStartup: boolean;
-	authRefreshIntervalMinutes: number;
+	-readonly [K in keyof Definitions]: Definitions[K]["default"];
 };
 
 export type SettingsKey = keyof SettingsOptions;
 
-export const defaultSettings: SettingsOptions = {
-	theme: "system",
-	language: "system",
-	defaultLandingPage: "overview",
-	courseSortBy: "LastOnline",
-	sidebarDensity: "comfortable",
-	notificationsMessages: true,
-	notificationsTasks: true,
-	notificationsAppUpdates: true,
-	notificationQuietHoursEnabled: false,
-	notificationQuietHoursStart: "22:00",
-	notificationQuietHoursEnd: "07:00",
-	downloadDirectory: null,
-	downloadAutoOpen: "never",
-	resourceCacheMaxSizeMb: 512,
-	resourceCacheMode: "opened",
-	calendarDefaultView: "agenda",
-	calendarWeekStartsOn: "monday",
-	calendarShowWeekends: true,
-	CustomPDFrenderer: true,
-	CustomTitleBar: true,
-	CustomTitleBarButtons: true,
-	UploadAIChats: false,
-	pdfAIChatSidepanelOpenByDefault: false,
-	DefaultAIChatSidepanel: false,
-	CustomPDFSidebarOpened: true,
-	updatesAutoCheckOnStartup: true,
-	authRefreshIntervalMinutes: 45,
-};
+export const settingKeys = Object.keys(settingDefinitions) as SettingsKey[];
 
-const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
-
-const isOption = <T extends readonly string[]>(
-	options: T,
-	value: unknown,
-): value is T[number] => typeof value === "string" && options.includes(value);
+export const defaultSettings = Object.fromEntries(
+	settingKeys.map((key) => [key, settingDefinitions[key].default]),
+) as SettingsOptions;
 
 export function validateSetting<K extends SettingsKey>(
 	key: K,
 	value: unknown,
 ): SettingsOptions[K] {
-	const fallback = defaultSettings[key];
-
-	switch (key) {
-		case "theme":
-			return (
-				isOption(themeOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "language":
-			return (
-				isOption(languageOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "defaultLandingPage":
-			return (
-				isOption(landingPageOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "courseSortBy":
-			return (
-				isOption(courseSortOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "sidebarDensity":
-			return (
-				isOption(sidebarDensityOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "downloadAutoOpen":
-			return (
-				isOption(downloadAutoOpenOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "resourceCacheMode":
-			return (
-				isOption(resourceCacheModeOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "resourceCacheMaxSizeMb":
-			return (
-				typeof value === "number" && Number.isFinite(value)
-					? Math.min(Math.max(Math.round(value), 50), 10_240)
-					: fallback
-			) as SettingsOptions[K];
-		case "authRefreshIntervalMinutes":
-			return (
-				typeof value === "number" && Number.isFinite(value)
-					? Math.min(Math.max(Math.round(value), 5), 240)
-					: fallback
-			) as SettingsOptions[K];
-		case "calendarDefaultView":
-			return (
-				isOption(calendarViewOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "calendarWeekStartsOn":
-			return (
-				isOption(calendarWeekStartOptions, value) ? value : fallback
-			) as SettingsOptions[K];
-		case "downloadDirectory":
-			return (
-				typeof value === "string" && value.trim().length > 0 ? value : null
-			) as SettingsOptions[K];
-		case "notificationQuietHoursStart":
-		case "notificationQuietHoursEnd":
-			return (
-				typeof value === "string" && timePattern.test(value) ? value : fallback
-			) as SettingsOptions[K];
-		default:
-			return (
-				typeof fallback === "boolean" && typeof value === "boolean"
-					? value
-					: fallback
-			) as SettingsOptions[K];
-	}
+	return settingDefinitions[key].parse(value) as SettingsOptions[K];
 }
 
+/** Every known key, validated; unknown keys are dropped and missing/invalid ones fall back to their default. */
 export function normalizeSettings(
 	input: Partial<Record<SettingsKey, unknown>> = {},
 ): SettingsOptions {
-	return Object.keys(defaultSettings).reduce(
-		(acc, key) => {
-			const settingKey = key as SettingsKey;
-			acc[settingKey] = validateSetting(settingKey, input[settingKey]) as never;
-			return acc;
-		},
-		{ ...defaultSettings },
-	);
+	const result = { ...defaultSettings };
+	for (const key of settingKeys) {
+		(result as Record<SettingsKey, unknown>)[key] = validateSetting(
+			key,
+			input[key],
+		);
+	}
+	return result;
 }
 
 export function isQuietHoursActive(
