@@ -65,22 +65,6 @@ export default function CourseIndex() {
 		document.addEventListener("touchcancel", clearLongPress);
 	};
 
-	const handleClick = () => {
-		if (!longPress) {
-			const panel = ref.current;
-			if (panel) {
-				const isCollapsed = panel.isCollapsed();
-				if (isCollapsed) {
-					panel.expand();
-					setIsResourcesPanelCollapsed(false);
-				} else {
-					panel.collapse();
-					setIsResourcesPanelCollapsed(true);
-				}
-			}
-		}
-	};
-
 	const toggleResourcesPanel = () => {
 		const panel = ref.current;
 		if (panel) {
@@ -93,6 +77,21 @@ export default function CourseIndex() {
 				setIsResourcesPanelCollapsed(true);
 			}
 		}
+	};
+
+	// react-resizable-panels v4 handles the pointer on the separator itself, so a plain click is detected from
+	// capture-phase pointer events: press and release close together, without dragging.
+	const pressRef = useRef<{ x: number; y: number; t: number } | null>(null);
+	const handlePointerDown = (event: React.PointerEvent) => {
+		pressRef.current = { x: event.clientX, y: event.clientY, t: Date.now() };
+		handleMouseDown();
+	};
+	const handlePointerUp = (event: React.PointerEvent) => {
+		const press = pressRef.current;
+		pressRef.current = null;
+		if (!press) return;
+		const moved = Math.hypot(event.clientX - press.x, event.clientY - press.y);
+		if (moved < 4 && Date.now() - press.t < 400) toggleResourcesPanel();
 	};
 
 	return (
@@ -169,9 +168,8 @@ export default function CourseIndex() {
 						<TooltipTrigger asChild>
 							<button
 								type="button"
-								onMouseUp={handleClick}
-								onMouseDown={handleMouseDown}
-								onTouchStart={handleMouseDown}
+								onPointerUpCapture={handlePointerUp}
+								onPointerDownCapture={handlePointerDown}
 								className="py-40 hover:py-20 active:py-0 transition-all duration-1000 ease-in-out group"
 							>
 								<ResizableHandle

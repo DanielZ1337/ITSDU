@@ -324,7 +324,7 @@ export default function CommandPalette() {
 							{filteredEvents.map((event) => (
 								<CommandItem
 									key={event.id}
-									value={`event ${event.title}`}
+									value={`event ${event.title} ${event.id}`}
 									onSelect={() => close(() => openEvent(event))}
 								>
 									<CalendarDays className="h-4 w-4" />
@@ -347,7 +347,7 @@ export default function CommandPalette() {
 							{filteredTasks.map((task) => (
 								<CommandItem
 									key={task.TaskId}
-									value={`task ${task.Title}`}
+									value={`task ${task.Title} ${task.TaskId}`}
 									onSelect={() =>
 										close(() => void window.app.openExternal(task.Url))
 									}
@@ -367,7 +367,7 @@ export default function CommandPalette() {
 							{filteredThreads.map((thread) => (
 								<CommandItem
 									key={thread.InstantMessageThreadId}
-									value={`message ${thread.Name ?? thread.LastMessage?.CreatedByName ?? ""}`}
+									value={`message ${thread.Name ?? thread.LastMessage?.CreatedByName ?? ""} ${thread.InstantMessageThreadId}`}
 									onSelect={() =>
 										close(() =>
 											navigate(`/messages/${thread.InstantMessageThreadId}`),
@@ -393,7 +393,7 @@ export default function CommandPalette() {
 							{filteredResources.map((resource) => (
 								<CommandItem
 									key={resource.elementId}
-									value={`resource ${resource.name}`}
+									value={`resource ${resource.name} ${resource.elementId}`}
 									onSelect={() =>
 										close(() => {
 											const route = getResourceOpenRoute(
@@ -419,7 +419,7 @@ export default function CommandPalette() {
 							{courseResults.map((course) => (
 								<CommandItem
 									key={course.CourseId}
-									value={`course ${course.Title}`}
+									value={`course ${course.Title} ${course.CourseId}`}
 									onSelect={() =>
 										close(() => navigate(`/courses/${course.CourseId}`))
 									}

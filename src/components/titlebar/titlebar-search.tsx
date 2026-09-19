@@ -433,7 +433,7 @@ function CoursesCommandList({
 									{starredCourses.EntityArray.map((element) => (
 										<CommandItem
 											key={element.CourseId}
-											value={element.Title}
+											value={`${element.Title} ${element.CourseId}`}
 											onSelect={() =>
 												handleSelect(() => {
 													console.log("Selected    course", element);
@@ -455,7 +455,7 @@ function CoursesCommandList({
 									{unstarredCourses.EntityArray.map((element) => (
 										<CommandItem
 											key={element.CourseId}
-											value={element.Title}
+											value={`${element.Title} ${element.CourseId}`}
 											onSelect={() =>
 												handleSelect(() => {
 													console.log("Selected course", element);

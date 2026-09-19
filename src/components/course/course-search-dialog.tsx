@@ -152,7 +152,7 @@ export default function CourseSearchDialog({
 						element={(resource: any) => (
 							<CommandItem
 								key={resource.CourseId}
-								value={resource.Title}
+								value={`${resource.Title} ${resource.CourseId}`}
 								className="truncate break-all line-clamp-1"
 								onSelect={() =>
 									handleSelect(() => {
@@ -167,7 +167,7 @@ export default function CourseSearchDialog({
 						element1={(resource: any) => (
 							<CommandItem
 								key={resource.CourseId}
-								value={resource.Title}
+								value={`${resource.Title} ${resource.CourseId}`}
 								className="truncate break-all line-clamp-1"
 								onSelect={() =>
 									handleSelect(() => {

@@ -98,6 +98,7 @@ function Login() {
 								{memoizedOrganisations?.map((org) => (
 									<CommandItem
 										key={org.CustomerId}
+										value={`${org.SiteName} ${org.CustomerId}`}
 										onSelect={() => setSelectedOrganisation(org)}
 									>
 										{org.SiteName}

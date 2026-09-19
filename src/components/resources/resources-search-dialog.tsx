@@ -192,7 +192,7 @@ export default function SearchResourcesDialog({
 										<CommandItem
 											data-elementid={resource.ElementId}
 											key={resource.ElementId}
-											value={resource.Title}
+											value={`${resource.Title} ${resource.ElementId}`}
 											className="flex items-center justify-between"
 											onSelect={() =>
 												handleSelect(() => {
