@@ -414,7 +414,11 @@ async function initializeAllHandlers() {
 }
 
 async function sendDeviceStartupPing() {
-	if (isDev) return;
+	// Never record an install for development launches (unpackaged app or
+	// running against the Vite dev server).
+	if (isDev || VITE_DEV_SERVER_URL || process.env.NODE_ENV === "development") {
+		return;
+	}
 
 	try {
 		const { DeviceService } = await import(
