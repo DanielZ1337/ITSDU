@@ -61,6 +61,20 @@ npm run dev:mock
 
 `ITSDU_PERF=1` prints startup timing marks from the main process. More in `docs/modernization/`.
 
+## Release recovery
+
+A version change pushed to `main` starts the Release workflow, which verifies the
+app before creating the tag and publishing installers. If that push did not start
+the workflow, run it manually against `main` with the exact version in
+`package.json`:
+
+```bash
+gh workflow run release.yml --ref main -f version=0.3.0
+```
+
+The manual run uses the same verification and existing tag-safety checks as the
+automatic release. GitHub Actions must be available on the repository.
+
 ## Build
 How to build and run production application:
 

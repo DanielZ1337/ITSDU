@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version to release (for example 0.3.0)'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -33,10 +39,22 @@ jobs:
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+          REQUESTED_VERSION: ${{ inputs.version }}
         run: |
           CURRENT_VERSION=$(jq -r '.version' package.json)
 
-          if git cat-file -e "${BEFORE_SHA}:package.json" 2>/dev/null; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+              echo "::error::Manual releases must run on main."
+              exit 1
+            fi
+            if [ "$REQUESTED_VERSION" != "$CURRENT_VERSION" ]; then
+              echo "::error::Requested version does not match package.json."
+              exit 1
+            fi
+            PREVIOUS_VERSION=""
+          elif git cat-file -e "${BEFORE_SHA}:package.json" 2>/dev/null; then
             PREVIOUS_VERSION=$(
               git show "${BEFORE_SHA}:package.json" |
               jq -r '.version'
