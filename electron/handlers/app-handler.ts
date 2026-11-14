@@ -1,8 +1,8 @@
 import { app, BrowserWindow } from "electron";
 import { handle } from "../ipc/secure";
-import { getAutoUpdater } from "../services/updater/updater";
-import { reportTelemetry } from "../services/telemetry/telemetry";
 import { DeviceService } from "../services/device/device-service";
+import { reportTelemetry } from "../services/telemetry/telemetry";
+import { getAutoUpdater } from "../services/updater/updater";
 
 function exitHandler() {
 	handle("app:exit", () => {
@@ -54,9 +54,11 @@ function MaximizerHandler() {
 function checkForUpdatesHandler() {
 	handle("app:checkForUpdates", async (_event) => {
 		try {
-			const info = (await (await getAutoUpdater()).checkForUpdates())?.updateInfo;
+			const info = (await (await getAutoUpdater()).checkForUpdates())
+				?.updateInfo;
 			void reportTelemetry("update_checked");
-			if (info?.version && info.version !== app.getVersion()) void reportTelemetry("update_available");
+			if (info?.version && info.version !== app.getVersion())
+				void reportTelemetry("update_available");
 			return info;
 		} catch (error) {
 			void reportTelemetry("update_check_failed");
@@ -95,7 +97,10 @@ function downloadUpdateHandler() {
 function updateHandler() {
 	handle("app:update", async (_event) => {
 		DeviceService.getInstance().markUpdatePending(app.getVersion());
-		await Promise.race([reportTelemetry("update_install_started"), new Promise((resolve) => setTimeout(resolve, 1000))]);
+		await Promise.race([
+			reportTelemetry("update_install_started"),
+			new Promise((resolve) => setTimeout(resolve, 1000)),
+		]);
 		return (await getAutoUpdater()).quitAndInstall();
 	});
 }

@@ -284,12 +284,20 @@ export class AuthService {
 						: undefined,
 				reason: "none",
 			});
-			void import("../../telemetry/telemetry").then(({ reportTelemetry }) => reportTelemetry("auth_refresh_succeeded"));
+			void import("../../telemetry/telemetry").then(({ reportTelemetry }) =>
+				reportTelemetry("auth_refresh_succeeded"),
+			);
 			return this.getSessionStatus();
 		} catch (error) {
 			const classified =
 				error instanceof AuthRefreshError ? error : classifyRefreshError(error);
-			void import("../../telemetry/telemetry").then(({ reportTelemetry }) => reportTelemetry(classified.terminal ? "auth_refresh_terminal_failed" : "auth_refresh_network_failed"));
+			void import("../../telemetry/telemetry").then(({ reportTelemetry }) =>
+				reportTelemetry(
+					classified.terminal
+						? "auth_refresh_terminal_failed"
+						: "auth_refresh_network_failed",
+				),
+			);
 
 			if (classified.terminal) {
 				this.store.clear();

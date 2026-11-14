@@ -47,8 +47,14 @@ describe("grouped settings", () => {
 		expect(normalizeSettings({}).appearance.theme).toBe("system");
 	});
 	it("keeps new reporting and download history opt-in", () => {
-		expect(normalizeSettings({}).privacy).toEqual({ shareAppHealth: false, saveDownloadHistory: false });
-		expect(normalizeSettings({ privacy: { shareAppHealth: true } }).privacy.shareAppHealth).toBe(true);
+		expect(normalizeSettings({}).privacy).toEqual({
+			shareAppHealth: false,
+			saveDownloadHistory: false,
+		});
+		expect(
+			normalizeSettings({ privacy: { shareAppHealth: true } }).privacy
+				.shareAppHealth,
+		).toBe(true);
 	});
 });
 

@@ -20,7 +20,6 @@ import {
 	getCookiesForDomain,
 } from "../../electron/services/scrape/scraper.ts";
 import { handle } from "../ipc/secure";
-import { reportTelemetry } from "../services/telemetry/telemetry";
 import {
 	assertAllowedPathName,
 	assertOpenableLocalPath,
@@ -29,6 +28,7 @@ import {
 import { VITE_DEV_SERVER_URL } from "../main.ts";
 import { AuthService } from "../services/itslearning/auth/auth-service.ts";
 import { SettingsService } from "../services/settings/settings-service.ts";
+import { reportTelemetry } from "../services/telemetry/telemetry";
 import { getFormattedCookies } from "../utils/cookies.ts";
 import { parseCoursePlanDate, parseDateAndTime } from "../utils/plan-dates";
 

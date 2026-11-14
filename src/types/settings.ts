@@ -297,7 +297,12 @@ export function normalizeSettings(input: unknown = {}): SettingsOptions {
 			key
 		];
 		const legacyKey = pathToLegacyKey[path];
-		const raw = grouped !== undefined ? grouped : legacyKey ? source[legacyKey] : undefined;
+		const raw =
+			grouped !== undefined
+				? grouped
+				: legacyKey
+					? source[legacyKey]
+					: undefined;
 		(result[group] as Record<string, unknown>)[key] = validateSetting(
 			path,
 			raw,
