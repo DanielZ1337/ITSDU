@@ -2,7 +2,7 @@
   "name": "itsdu",
   "desktopName": "itsdu.desktop",
   "private": false,
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "An electron app for students to interact with itslearning",
   "author": {
     "name": "Daniel Bermann Schmidt",
