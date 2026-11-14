@@ -135,6 +135,10 @@ const settingSchema = {
 		uploadChats: flag(false),
 		defaultChatSidepanel: flag(false),
 	},
+	privacy: {
+		shareAppHealth: flag(false),
+		saveDownloadHistory: flag(false),
+	},
 	updates: {
 		autoCheckOnStartup: flag(true),
 	},
@@ -276,7 +280,7 @@ export const hasLegacySettingKeys = (input: unknown): boolean =>
 
 const pathToLegacyKey = Object.fromEntries(
 	Object.entries(legacyKeyToPath).map(([legacy, path]) => [path, legacy]),
-) as Record<SettingsPath, LegacySettingsKey>;
+) as Partial<Record<SettingsPath, LegacySettingsKey>>;
 
 /**
  * Every setting, validated. Accepts the grouped shape, the old flat shape, or a mix (a grouped value wins); unknown
@@ -292,7 +296,8 @@ export function normalizeSettings(input: unknown = {}): SettingsOptions {
 		const grouped = (source[group] as Record<string, unknown> | undefined)?.[
 			key
 		];
-		const raw = grouped !== undefined ? grouped : source[pathToLegacyKey[path]];
+		const legacyKey = pathToLegacyKey[path];
+		const raw = grouped !== undefined ? grouped : legacyKey ? source[legacyKey] : undefined;
 		(result[group] as Record<string, unknown>)[key] = validateSetting(
 			path,
 			raw,

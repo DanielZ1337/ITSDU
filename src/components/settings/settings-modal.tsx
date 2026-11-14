@@ -1120,6 +1120,16 @@ function PrivacySettings() {
 	return (
 		<SettingsGroup>
 			<SettingSwitch
+				settingKey="privacy.shareAppHealth"
+				title={t("settings.privacy.shareAppHealth.title")}
+				description={t("settings.privacy.shareAppHealth.description")}
+			/>
+			<SettingSwitch
+				settingKey="privacy.saveDownloadHistory"
+				title={t("settings.privacy.saveDownloadHistory.title")}
+				description={t("settings.privacy.saveDownloadHistory.description")}
+			/>
+			<SettingSwitch
 				settingKey="ai.uploadChats"
 				title={t("settings.privacy.uploadAi.title")}
 				description={t("settings.privacy.uploadAi.description")}

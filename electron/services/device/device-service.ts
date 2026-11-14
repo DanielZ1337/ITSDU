@@ -3,6 +3,7 @@ import Store from "electron-store";
 
 type DeviceStore = {
 	deviceId: string;
+	pendingUpdateFrom?: string;
 };
 
 export class DeviceService {
@@ -25,6 +26,17 @@ export class DeviceService {
 
 	getDeviceId(): string {
 		return this.store.get("deviceId");
+	}
+
+	markUpdatePending(version: string): void {
+		this.store.set("pendingUpdateFrom", version);
+	}
+
+	consumeUpdatePending(version: string): boolean {
+		const previous = this.store.get("pendingUpdateFrom");
+		if (!previous || previous === version) return false;
+		this.store.delete("pendingUpdateFrom");
+		return true;
 	}
 }
 

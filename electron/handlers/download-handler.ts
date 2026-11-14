@@ -20,6 +20,7 @@ import {
 	getCookiesForDomain,
 } from "../../electron/services/scrape/scraper.ts";
 import { handle } from "../ipc/secure";
+import { reportTelemetry } from "../services/telemetry/telemetry";
 import {
 	assertAllowedPathName,
 	assertOpenableLocalPath,
@@ -299,6 +300,7 @@ function itslearningElementDownload() {
 	handle(
 		"itslearning-element:download",
 		async (event, { url, filename, id }) => {
+			void reportTelemetry("download_started");
 			try {
 				const win = BrowserWindow.fromWebContents(event.sender);
 
@@ -371,6 +373,7 @@ function itslearningElementDownload() {
 								};
 
 								resolve(data);
+								void reportTelemetry("download_completed");
 								void applyDownloadOpenPreference(downloadedFilePath);
 								event.sender.send("download:complete", data);
 							});
@@ -382,10 +385,12 @@ function itslearningElementDownload() {
 									error: err.message,
 								});
 							});
-						});
+						})
+						.catch(reject);
 				});
 				// logEverywhere('download# ' + downloadItem.getSavePath())
 			} catch (e) {
+				void reportTelemetry("download_failed");
 				if (e instanceof Error) {
 					console.error(e);
 					event.sender.send("download:error", {
@@ -637,6 +642,7 @@ function zipDownloadAllCourseResourcesHandler() {
 
 function downloadExternalHandler() {
 	handle("download:external", async (event, { url, filename, id }) => {
+		void reportTelemetry("download_started");
 		try {
 			console.log(url, filename);
 
@@ -670,8 +676,10 @@ function downloadExternalHandler() {
 				id,
 			};
 			event.sender.send("download:complete", result);
+			void reportTelemetry("download_completed");
 			return result;
 		} catch (e) {
+			void reportTelemetry("download_failed");
 			console.error(e);
 			event.sender.send("download:error", {
 				id,

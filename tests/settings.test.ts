@@ -46,19 +46,23 @@ describe("grouped settings", () => {
 		a.appearance.theme = "dark";
 		expect(normalizeSettings({}).appearance.theme).toBe("system");
 	});
+	it("keeps new reporting and download history opt-in", () => {
+		expect(normalizeSettings({}).privacy).toEqual({ shareAppHealth: false, saveDownloadHistory: false });
+		expect(normalizeSettings({ privacy: { shareAppHealth: true } }).privacy.shareAppHealth).toBe(true);
+	});
 });
 
 describe("legacy flat settings", () => {
 	it("maps every legacy key to a real path, one to one", () => {
 		const targets = Object.values(legacyKeyToPath);
 		expect(new Set(targets).size).toBe(targets.length);
-		expect([...targets].sort()).toEqual([...settingPaths].sort());
+		expect(targets.every((target) => settingPaths.includes(target))).toBe(true);
 	});
 	it("recognises the old flat shape", () => {
 		expect(hasLegacySettingKeys({ theme: "dark" })).toBe(true);
 		expect(hasLegacySettingKeys({ appearance: { theme: "dark" } })).toBe(false);
 		expect(hasLegacySettingKeys(null)).toBe(false);
-		expect(legacySettingKeys.length).toBe(settingPaths.length);
+		expect(legacySettingKeys.length).toBe(Object.keys(legacyKeyToPath).length);
 	});
 	it("migrates a full flat store into groups without losing values", () => {
 		const flat = {

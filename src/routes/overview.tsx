@@ -19,6 +19,7 @@ import { useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Link } from "react-router-dom";
 import { ResourceTypeBadge } from "@/components/resources/resource-type-badge";
+import { AppHealth } from "@/components/overview/app-health";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -153,6 +154,11 @@ export default function Overview() {
 	const eventsTodayCount =
 		eventGroups.find((group) => group.key === "today")?.items.length ?? 0;
 	const unreadCount = threads.filter((thread) => thread.unread).length;
+	const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+	const weekEnd = new Date(startOfToday);
+	weekEnd.setDate(weekEnd.getDate() + 7);
+	const dueThisWeek = tasks.filter((task) => task.deadline && task.deadline >= startOfToday && task.deadline < weekEnd).length;
+	const eventsThisWeek = normalizeCalendarEvents(calendarQuery.data?.EntityArray ?? []).filter((event) => event.startsAt && event.startsAt >= startOfToday && event.startsAt < weekEnd).length;
 
 	return (
 		<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 p-4 pb-12 sm:gap-5 sm:p-6 lg:p-8">
@@ -164,6 +170,12 @@ export default function Overview() {
 				eventsToday={eventsTodayCount}
 				unread={unreadCount}
 			/>
+			<AppHealth locale={locale} health={recent.health} />
+			<section className="rounded-xl border bg-card p-5" aria-labelledby="week-overview-title">
+				<h2 id="week-overview-title" className="font-semibold">{locale === "da" ? "De næste 7 dage" : "Next 7 days"}</h2>
+				<p className="mt-2 text-sm">{tasksQuery.data ? `${dueThisWeek} ${locale === "da" ? "opgaver med frist" : "tasks due"}` : (locale === "da" ? "Opgaver ikke tilgængelige" : "Tasks unavailable")} · {calendarQuery.data ? `${eventsThisWeek} ${locale === "da" ? "kalenderaftaler" : "calendar events"}` : (locale === "da" ? "Kalender ikke tilgængelig" : "Calendar unavailable")}</p>
+				<p className="mt-1 text-xs text-muted-foreground">{locale === "da" ? "Baseret på de op til 20 opgaver og 16 kalenderaftaler, der er indlæst på oversigten." : "Based on the up to 20 tasks and 16 calendar events loaded on the overview."}</p>
+			</section>
 
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
 				<div className="flex flex-col gap-4 lg:col-span-2">
