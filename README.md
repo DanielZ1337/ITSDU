@@ -1,5 +1,13 @@
 # ITSDU
 
+In Privacy settings, users can optionally share coarse app-health statistics and
+separately choose to keep up to 100 finished downloads on their device. Health
+reporting is off by default and sends event categories, an installation ID, app
+version and OS; it does not send course, file or account content. Broad aggregate
+statistics can be public, while detailed breakdowns remain private. The existing
+startup installation ping is separate. Saved download history stays local and can
+be cleared by turning the setting off or clearing finished downloads.
+
 **Unofficial** desktop application for interacting with itslearning.
 
 ## Features

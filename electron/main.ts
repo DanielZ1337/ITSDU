@@ -186,6 +186,12 @@ async function createMainWindow() {
 		// win?.show()
 		win?.webContents.send("main-process-message", new Date().toLocaleString());
 	});
+	win.webContents.once("did-finish-load", () => {
+		if (!isDev)
+			void import("./services/telemetry/telemetry").then(({ reportStartup }) =>
+				reportStartup(Math.round(process.uptime() * 1000)),
+			);
+	});
 
 	nativeTheme.on("updated", () => {
 		const backgroundColor = nativeTheme.shouldUseDarkColors ? "black" : "white";

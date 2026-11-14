@@ -1,5 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { handle } from "../ipc/secure";
+import { DeviceService } from "../services/device/device-service";
+import { reportTelemetry } from "../services/telemetry/telemetry";
 import { getAutoUpdater } from "../services/updater/updater";
 
 function exitHandler() {
@@ -51,12 +53,23 @@ function MaximizerHandler() {
 
 function checkForUpdatesHandler() {
 	handle("app:checkForUpdates", async (_event) => {
-		return (await (await getAutoUpdater()).checkForUpdates())?.updateInfo;
+		try {
+			const info = (await (await getAutoUpdater()).checkForUpdates())
+				?.updateInfo;
+			void reportTelemetry("update_checked");
+			if (info?.version && info.version !== app.getVersion())
+				void reportTelemetry("update_available");
+			return info;
+		} catch (error) {
+			void reportTelemetry("update_check_failed");
+			throw error;
+		}
 	});
 }
 
 function downloadUpdateHandler() {
 	handle("app:downloadUpdate", async (event) => {
+		void reportTelemetry("update_download_started");
 		const autoUpdater = await getAutoUpdater();
 		// Replace listeners from an earlier attempt so progress is not reported twice.
 		autoUpdater.removeAllListeners("download-progress");
@@ -70,12 +83,24 @@ function downloadUpdateHandler() {
 			event.sender.send("app:updateDownloaded", info);
 		});
 
-		return autoUpdater.downloadUpdate();
+		try {
+			const result = await autoUpdater.downloadUpdate();
+			void reportTelemetry("update_download_completed");
+			return result;
+		} catch (error) {
+			void reportTelemetry("update_download_failed");
+			throw error;
+		}
 	});
 }
 
 function updateHandler() {
 	handle("app:update", async (_event) => {
+		DeviceService.getInstance().markUpdatePending(app.getVersion());
+		await Promise.race([
+			reportTelemetry("update_install_started"),
+			new Promise((resolve) => setTimeout(resolve, 1000)),
+		]);
 		return (await getAutoUpdater()).quitAndInstall();
 	});
 }

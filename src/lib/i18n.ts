@@ -197,6 +197,13 @@ const translations = {
 		"settings.appUpdates.autoCheck.description":
 			"Runs a quiet update check after settings are loaded.",
 		"settings.privacy.uploadAi.title": "Allow AI document uploads",
+		"settings.privacy.shareAppHealth.title": "Share app health statistics",
+		"settings.privacy.saveDownloadHistory.title":
+			"Keep download history on this device",
+		"settings.privacy.saveDownloadHistory.description":
+			"Save the latest 100 completed or failed downloads locally. Turning this off clears the saved history.",
+		"settings.privacy.shareAppHealth.description":
+			"Optional: send an installation ID, app version, OS and event categories for starts, downloads, updates and sign-in health. Aggregate statistics may be public; detailed breakdowns are private. No course or account content is sent. Turning this off stops new reports; past reports expire after about 180 days. The existing startup ping is separate.",
 		"settings.privacy.uploadAi.description":
 			"Controls whether files can be sent to the AI upload flow.",
 		"settings.privacy.copyDiagnostics.title": "Copy diagnostics",
@@ -537,6 +544,13 @@ const translations = {
 		"settings.appUpdates.autoCheck.description":
 			"Kører et stille opdateringstjek, efter indstillingerne er indlæst.",
 		"settings.privacy.uploadAi.title": "Tillad upload af dokumenter til AI",
+		"settings.privacy.shareAppHealth.title": "Del statistik om appens tilstand",
+		"settings.privacy.saveDownloadHistory.title":
+			"Gem downloadhistorik på denne enhed",
+		"settings.privacy.saveDownloadHistory.description":
+			"Gem de seneste 100 gennemførte eller fejlede downloads lokalt. Hvis du slår det fra, slettes den gemte historik.",
+		"settings.privacy.shareAppHealth.description":
+			"Frivilligt: send et installations-id, appversion, styresystem og hændelsestyper for opstart, downloads, opdateringer og login. Samlede statistikker kan være offentlige; detaljerede opdelinger er private. Ingen kursus- eller kontooplysninger sendes. Hvis du slår det fra, stopper nye rapporter; tidligere rapporter udløber efter cirka 180 dage. Det eksisterende opstartsping er separat.",
 		"settings.privacy.uploadAi.description":
 			"Styrer om filer må sendes til AI-upload-flowet.",
 		"settings.advanced.resetAll.title": "Nulstil alle indstillinger",
